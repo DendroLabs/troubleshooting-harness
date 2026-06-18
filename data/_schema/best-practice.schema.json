@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "best-practice.schema.json",
+  "title": "Best-Practice Reference Index",
+  "description": "Curated index of authoritative design/operations references for an OS, grouped by topic category. Reference material (links), not operational data — every entry points to an external vendor document.",
+
+  "$defs": {
+    "doc_ref": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "url": { "type": "string" },
+        "format": { "type": "string", "description": "e.g., HTML, PDF" },
+        "description": { "type": "string" }
+      },
+      "required": ["title", "url"],
+      "additionalProperties": false
+    },
+
+    "category": {
+      "type": "object",
+      "properties": {
+        "category": { "type": "string" },
+        "documents": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/doc_ref" }
+        }
+      },
+      "required": ["category", "documents"],
+      "additionalProperties": false
+    }
+  },
+
+  "type": "object",
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+    "deprecated": { "type": "boolean", "default": false },
+
+    "best_practice_id": { "type": "string" },
+    "os": { "type": "string" },
+
+    "categories": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/category" },
+      "minItems": 1
+    },
+    "cisco_live_sessions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/doc_ref" }
+    },
+    "notes": { "type": "array", "items": { "type": "string" } },
+    "tags": { "type": "array", "items": { "type": "string" } },
+
+    "sources": {
+      "type": "array",
+      "items": { "$ref": "protocol.schema.json#/$defs/source" }
+    }
+  },
+  "required": ["schema_version", "best_practice_id", "os", "categories"],
+  "additionalProperties": false
+}

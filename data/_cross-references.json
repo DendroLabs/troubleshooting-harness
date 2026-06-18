@@ -1,0 +1,532 @@
+{
+  "schema_version": "1.0.0",
+  "related_protocols": {
+    "bfd": [
+      "ospfv2",
+      "ospfv3",
+      "bgp-4",
+      "isis",
+      "eigrp",
+      "static-routing"
+    ],
+    "bgp-4": [
+      "ospfv2",
+      "isis",
+      "bfd",
+      "static-routing",
+      "vxlan-evpn"
+    ],
+    "cfm-y1731": [
+      "rstp",
+      "mst",
+      "lacp",
+      "l2-infrastructure",
+      "evpn"
+    ],
+    "dhcp": [
+      "dot1x",
+      "l2-infrastructure",
+      "static-routing"
+    ],
+    "dot1x": [
+      "lldp"
+    ],
+    "eigrp": [
+      "bfd",
+      "ospfv2"
+    ],
+    "evpn": [
+      "vxlan",
+      "bgp-4",
+      "vxlan-evpn"
+    ],
+    "g8032-erps": [
+      "rstp",
+      "mst",
+      "cfm-y1731",
+      "lacp",
+      "l2-infrastructure"
+    ],
+    "gre-ipsec": [
+      "ospfv2",
+      "bgp-4",
+      "bfd",
+      "static-routing"
+    ],
+    "hsrp": [
+      "vrrp",
+      "rstp"
+    ],
+    "igmp": [
+      "pim-sparse-mode",
+      "l2-infrastructure",
+      "vpc"
+    ],
+    "isis": [
+      "ospfv2",
+      "ospfv3",
+      "bfd"
+    ],
+    "l2-infrastructure": [
+      "rstp",
+      "lacp",
+      "vxlan"
+    ],
+    "lacp": [
+      "rstp",
+      "vpc",
+      "stp",
+      "lldp",
+      "mclag"
+    ],
+    "lldp": [
+      "dot1x",
+      "lacp"
+    ],
+    "mclag": [
+      "lacp",
+      "stp",
+      "bgp-4"
+    ],
+    "mpls-ldp": [
+      "ospfv2",
+      "isis",
+      "bgp-4"
+    ],
+    "mpls-tp": [
+      "mpls-ldp",
+      "bfd",
+      "cfm-y1731",
+      "evpn"
+    ],
+    "mst": [
+      "rstp",
+      "lacp",
+      "stp"
+    ],
+    "nat": [
+      "static-routing",
+      "bgp-4",
+      "ospfv2"
+    ],
+    "netconf-restconf": [
+      "snmp",
+      "tacacs"
+    ],
+    "netflow": [
+      "snmp"
+    ],
+    "ntp": [
+      "ptp-synce"
+    ],
+    "ospfv2": [
+      "ospfv3",
+      "bfd",
+      "isis",
+      "bgp-4",
+      "static-routing"
+    ],
+    "ospfv3": [
+      "ospfv2",
+      "bfd"
+    ],
+    "pbr": [
+      "static-routing",
+      "bgp-4",
+      "ospfv2"
+    ],
+    "pim-sparse-mode": [
+      "igmp",
+      "bgp-4",
+      "ospfv2",
+      "vxlan",
+      "evpn"
+    ],
+    "ptp-synce": [
+      "bfd",
+      "lldp",
+      "l2-infrastructure"
+    ],
+    "radius": [
+      "dot1x",
+      "tacacs"
+    ],
+    "rstp": [
+      "mst",
+      "lacp",
+      "hsrp",
+      "vrrp",
+      "stp"
+    ],
+    "segment-routing": [
+      "isis",
+      "ospfv2",
+      "bgp-4",
+      "mpls-ldp",
+      "evpn",
+      "vxlan"
+    ],
+    "snmp": [
+      "ntp",
+      "tacacs"
+    ],
+    "span-erspan": [
+      "l2-infrastructure"
+    ],
+    "static-routing": [
+      "bfd",
+      "ospfv2",
+      "bgp-4"
+    ],
+    "stp": [
+      "lacp",
+      "vxlan-evpn",
+      "rstp",
+      "mst"
+    ],
+    "system-management": [
+      "tacacs",
+      "radius"
+    ],
+    "tacacs": [
+      "radius",
+      "dot1x"
+    ],
+    "vpc": [
+      "lacp",
+      "rstp",
+      "hsrp",
+      "vxlan",
+      "evpn"
+    ],
+    "vrf": [
+      "bgp-4",
+      "mpls-ldp",
+      "ospfv2",
+      "static-routing"
+    ],
+    "vrrp": [
+      "hsrp"
+    ],
+    "vtp": [
+      "rstp",
+      "l2-infrastructure"
+    ],
+    "vxlan": [
+      "evpn",
+      "bgp-4",
+      "vxlan-evpn"
+    ],
+    "vxlan-evpn": [
+      "bgp-4",
+      "bfd",
+      "stp",
+      "evpn",
+      "vxlan"
+    ]
+  },
+  "def_ref_usage": {
+    "daemon:bfdd": [
+      "bfd",
+      "wrong-frr-restart"
+    ],
+    "daemon:bgpcfgd": [
+      "bgp-4",
+      "config-reload",
+      "direct-frr-vtysh",
+      "direct-redis-write",
+      "dpkg-force-install",
+      "express-reboot",
+      "manual-config-db-json-edit",
+      "wrong-frr-restart",
+      "wrong-reload-order"
+    ],
+    "daemon:bgpd": [
+      "bfd",
+      "container-restart",
+      "vxlan-evpn",
+      "warm-reboot",
+      "wrong-frr-restart"
+    ],
+    "daemon:buffermgrd": [
+      "restart-swss-during-traffic"
+    ],
+    "daemon:coppmgrd": [
+      "restart-swss-during-traffic"
+    ],
+    "daemon:fpmsyncd": [
+      "bgp-4",
+      "dpkg-force-install",
+      "ospfv2",
+      "static-routing",
+      "vxlan-evpn",
+      "warm-reboot",
+      "wrong-frr-restart",
+      "wrong-reload-order"
+    ],
+    "daemon:frrcfgd": [
+      "ospfv2"
+    ],
+    "daemon:iccpd": [
+      "mclag"
+    ],
+    "daemon:intfmgrd": [
+      "config-reload",
+      "direct-redis-write",
+      "manual-config-db-json-edit",
+      "manual-ip-link",
+      "restart-swss-during-traffic",
+      "wrong-reload-order"
+    ],
+    "daemon:lldpmgrd": [
+      "lldp"
+    ],
+    "daemon:lldpsyncd": [
+      "container-restart",
+      "lldp",
+      "wrong-reload-order"
+    ],
+    "daemon:mclagsyncd": [
+      "mclag"
+    ],
+    "daemon:neighsyncd": [
+      "restart-swss-during-traffic",
+      "wrong-reload-order"
+    ],
+    "daemon:orchagent": [
+      "bfd",
+      "bgp-4",
+      "container-restart",
+      "dpkg-force-install",
+      "express-reboot",
+      "lacp",
+      "lldp",
+      "manual-ip-link",
+      "mclag",
+      "ospfv2",
+      "restart-swss-during-traffic",
+      "sonic-upgrade",
+      "stale-warmboot-files",
+      "static-routing",
+      "stp",
+      "vxlan-evpn",
+      "warm-reboot",
+      "wrong-reload-order"
+    ],
+    "daemon:ospfd": [
+      "bfd",
+      "ospfv2"
+    ],
+    "daemon:portmgrd": [
+      "config-reload",
+      "direct-redis-write",
+      "manual-config-db-json-edit",
+      "manual-ip-link",
+      "restart-swss-during-traffic",
+      "wrong-reload-order"
+    ],
+    "daemon:portsyncd": [
+      "lacp",
+      "manual-ip-link",
+      "restart-swss-during-traffic",
+      "wrong-reload-order"
+    ],
+    "daemon:redis-server": [
+      "container-restart",
+      "sonic-upgrade",
+      "warm-reboot",
+      "wrong-reload-order"
+    ],
+    "daemon:staticd": [
+      "static-routing",
+      "wrong-frr-restart"
+    ],
+    "daemon:stpmgrd": [
+      "stp"
+    ],
+    "daemon:syncd": [
+      "container-restart",
+      "dpkg-force-install",
+      "express-reboot",
+      "express-reboot-wrong-platform",
+      "ospfv2",
+      "restart-swss-during-traffic",
+      "sonic-upgrade",
+      "stale-warmboot-files",
+      "static-routing",
+      "vxlan-evpn",
+      "warm-reboot",
+      "wrong-reload-order"
+    ],
+    "daemon:teammgrd": [
+      "container-restart",
+      "lacp",
+      "mclag",
+      "restart-swss-during-traffic",
+      "wrong-reload-order"
+    ],
+    "daemon:teamsyncd": [
+      "lacp",
+      "mclag",
+      "wrong-reload-order"
+    ],
+    "daemon:tunnelmgrd": [
+      "restart-swss-during-traffic",
+      "vxlan-evpn"
+    ],
+    "daemon:vlanmgrd": [
+      "restart-swss-during-traffic",
+      "stp",
+      "wrong-reload-order"
+    ],
+    "daemon:xcvrd": [
+      "container-restart"
+    ],
+    "daemon:zebra": [
+      "bfd",
+      "ospfv2",
+      "static-routing",
+      "vxlan-evpn",
+      "warm-reboot",
+      "wrong-frr-restart"
+    ],
+    "db:appl_db": [
+      "bfd",
+      "bgp-4",
+      "container-restart",
+      "direct-redis-write",
+      "dpkg-force-install",
+      "lacp",
+      "lldp",
+      "manual-ip-link",
+      "mclag",
+      "ospfv2",
+      "restart-swss-during-traffic",
+      "sonic-upgrade",
+      "static-routing",
+      "stp",
+      "vxlan-evpn",
+      "warm-reboot",
+      "wrong-frr-restart",
+      "wrong-reload-order"
+    ],
+    "db:asic_db": [
+      "dpkg-force-install",
+      "manual-ip-link",
+      "ospfv2",
+      "restart-swss-during-traffic",
+      "static-routing",
+      "vxlan-evpn",
+      "warm-reboot",
+      "wrong-reload-order"
+    ],
+    "db:config_db": [
+      "bfd",
+      "bgp-4",
+      "config-reload",
+      "container-restart",
+      "direct-frr-vtysh",
+      "direct-redis-write",
+      "dpkg-force-install",
+      "express-reboot",
+      "lacp",
+      "lldp",
+      "manual-config-db-json-edit",
+      "manual-ip-link",
+      "mclag",
+      "ospfv2",
+      "restart-swss-during-traffic",
+      "sonic-upgrade",
+      "stale-warmboot-files",
+      "static-routing",
+      "stp",
+      "vxlan-evpn",
+      "warm-reboot",
+      "wrong-frr-restart",
+      "wrong-reload-order"
+    ],
+    "db:counters_db": [
+      "wrong-reload-order"
+    ],
+    "db:state_db": [
+      "bfd",
+      "container-restart",
+      "express-reboot",
+      "express-reboot-wrong-platform",
+      "lacp",
+      "lldp",
+      "mclag",
+      "ospfv2",
+      "restart-swss-during-traffic",
+      "sonic-upgrade",
+      "stale-warmboot-files",
+      "static-routing",
+      "stp",
+      "vxlan-evpn",
+      "warm-reboot",
+      "wrong-frr-restart",
+      "wrong-reload-order"
+    ],
+    "timer:bfd-detect-multiplier": [
+      "bfd"
+    ],
+    "timer:bfd-rx-interval": [
+      "bfd"
+    ],
+    "timer:bfd-tx-interval": [
+      "bfd"
+    ],
+    "timer:bgp-connect-retry": [
+      "bgp-4"
+    ],
+    "timer:bgp-hold": [
+      "bgp-4"
+    ],
+    "timer:bgp-keepalive": [
+      "bgp-4"
+    ],
+    "timer:lacp-actor-timeout": [
+      "lacp"
+    ],
+    "timer:lacp-pdu-interval": [
+      "lacp"
+    ],
+    "timer:lldp-reinit-delay": [
+      "lldp"
+    ],
+    "timer:lldp-tx-hold": [
+      "lldp"
+    ],
+    "timer:lldp-tx-interval": [
+      "lldp"
+    ],
+    "timer:mclag-keepalive": [
+      "mclag"
+    ],
+    "timer:mclag-session-timeout": [
+      "mclag"
+    ],
+    "timer:ospf-dead": [
+      "ospfv2"
+    ],
+    "timer:ospf-hello": [
+      "ospfv2"
+    ],
+    "timer:ospf-lsa-age": [
+      "ospfv2"
+    ],
+    "timer:ospf-spf-delay": [
+      "ospfv2"
+    ],
+    "timer:stp-forward-delay": [
+      "stp"
+    ],
+    "timer:stp-hello": [
+      "stp"
+    ],
+    "timer:stp-max-age": [
+      "stp"
+    ]
+  },
+  "dangling_def_refs": []
+}

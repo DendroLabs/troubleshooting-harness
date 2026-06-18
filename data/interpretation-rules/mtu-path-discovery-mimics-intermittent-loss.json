@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "mtu-path-discovery-mimics-intermittent-loss",
+  "display_name": "Small packets (pings) succeed but large transfers fail — this is path MTU failure, not intermittent connectivity",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "sonic", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Intermittent application failures or slow transfers between two endpoints, but standard 100-byte ICMP pings succeed consistently",
+  "observation": "Small ICMP pings (default 56-100 bytes) succeed with 0% loss, but application traffic (SSH, HTTPS, file transfers, database replication) fails, hangs, or experiences very slow throughput",
+  "naive_interpretation": "The network path is working (pings succeed) so the problem must be on the application or server side — check the application, firewall rules, or server load",
+  "correct_interpretation": "When small packets succeed but large data transfers fail, the most likely cause is a path MTU (PMTU) mismatch. Somewhere along the path, a link has a lower MTU than the endpoints expect (commonly 1500 on standard Ethernet, but tunnels, VXLAN overlays, MPLS, and VPN encapsulation reduce the effective MTU by 50-200 bytes). Large packets that exceed the path MTU are either dropped silently (if DF bit is set and ICMP 'need to fragment' messages are blocked by a firewall), or fragmented (adding overhead and reordering that breaks some applications). Standard pings are 56-100 bytes and fit within any MTU, so they always succeed. The definitive test is to ping with a large payload and the DF (Don't Fragment) bit set — if this fails but small pings succeed, PMTU is the issue. The fix is either to reduce the endpoint MTU, fix the intermediate link MTU, or ensure ICMP 'Packet Too Big' messages are not being filtered.",
+  "why": [
+    "Default ICMP pings are 56-100 bytes, far smaller than the typical 1500-byte MTU — they pass through any MTU bottleneck, giving a false impression that the path is healthy",
+    "TCP segments for bulk transfers are typically 1460-1500 bytes (MSS + headers) — these are the packets that hit the MTU ceiling and get dropped or fragmented",
+    "VXLAN adds 50 bytes of encapsulation, MPLS adds 4-16 bytes per label, GRE adds 24-28 bytes, IPsec adds 50-80 bytes — overlay networks commonly reduce effective MTU below 1500 without any explicit MTU change on the physical interfaces",
+    "If the DF bit is set (common in modern TCP) and ICMP 'Packet Too Big' (type 3 code 4 for IPv4, type 2 for IPv6) is blocked by an intermediate firewall, PMTU discovery breaks silently — the sender never learns to reduce packet size, and large packets are simply black-holed",
+    "The failure pattern is characteristically 'intermittent' because small transactions (DNS, HTTP GET of small pages) succeed while only large transfers (file downloads, database sync, large API responses) fail"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "ping <destination> count 5 packet-size 1500 df-bit",
+      "purpose": "Send 1500-byte pings with Don't Fragment set — if these fail but default pings succeed, the path has an MTU bottleneck"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "ping <destination> size 1500 df-bit repeat 5",
+      "purpose": "Test whether full-size frames traverse the path without fragmentation"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface <interface> | include MTU",
+      "purpose": "Check the configured MTU on local interfaces to identify any non-standard values"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip interface <interface> | include MTU",
+      "purpose": "Verify the IP MTU on the interface, which may differ from the L2 MTU"
+    },
+    {
+      "os": "sonic",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces status",
+      "purpose": "Display interface MTU values to identify any non-standard or mismatched MTU settings"
+    },
+    {
+      "os": "junos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "ping <destination> size 1500 do-not-fragment count 5",
+      "purpose": "Send DF-bit pings at full MTU size to test path MTU"
+    }
+  ],
+  "traps": [
+    "Using default-size pings to 'prove' the network is working — small pings pass through any MTU bottleneck and do not test the actual data-path conditions",
+    "Blaming the application or server when large transfers fail — application timeouts caused by PMTU black holes look exactly like server-side hangs",
+    "Not considering overlay encapsulation overhead — VXLAN, MPLS, GRE, and IPsec all reduce effective MTU without changing the physical interface MTU, so 'show interface' looks normal",
+    "Blocking ICMP type 3 code 4 (Packet Too Big) at firewalls for 'security' — this breaks PMTU discovery entirely and causes silent black-holing of large packets",
+    "Fixing the MTU on only one end of a link — MTU must match on both sides, and on every hop along the path for end-to-end PMTU to work correctly",
+    "Confusing L2 MTU with L3 MTU — some platforms allow configuring them independently; the IP MTU can be lower than the interface MTU"
+  ],
+  "related_rules": [
+    "ospf-exstart-stuck-is-mtu-mismatch",
+    "interface-drops-input-vs-output-queue"
+  ],
+  "related_protocols": ["gre-ipsec", "vxlan"],
+  "keywords": ["MTU", "fragmentation", "PMTU", "path MTU", "DF bit", "don't fragment", "packet too big", "ICMP type 3", "black hole", "jumbo frame", "overlay", "encapsulation"],
+  "sources": [
+    {
+      "id": "rfc-1191",
+      "title": "RFC 1191 - Path MTU Discovery",
+      "type": "rfc"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

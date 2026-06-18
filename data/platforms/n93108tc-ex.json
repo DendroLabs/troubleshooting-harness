@@ -1,0 +1,109 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:cloud-scale",
+      "asic_id": 0,
+      "asic_model": "Memory Machine",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 3,
+          "ifg_serdes": "HS0-HS8",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "RJ45",
+              "end_port": 15,
+              "label": "Eth1/1-15 (10GbaseT RJ45)",
+              "native_speed": "10G",
+              "start_port": 1
+            },
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 49,
+              "label": "Eth1/48-49 (QSFP)",
+              "native_speed": "100G",
+              "start_port": 48
+            },
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 51,
+              "label": "Eth1/50-51 (QSFP)",
+              "native_speed": "100G",
+              "start_port": 50
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        },
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 3,
+          "ifg_serdes": "HS9-HS16",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "RJ45",
+              "end_port": 47,
+              "label": "Eth1/16-47 (10GbaseT RJ45)",
+              "native_speed": "10G",
+              "start_port": 16
+            },
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 53,
+              "label": "Eth1/52-53 (QSFP)",
+              "native_speed": "100G",
+              "start_port": 52
+            }
+          ],
+          "slice_id": 1,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 3600.0
+    }
+  ],
+  "chassis_type": "fixed",
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9300",
+  "platform_id": "n93108tc-ex",
+  "platform_name": "Nexus 93108TC-EX",
+  "platform_pid": "N9K-C93108TC-EX",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-n93108tc-ex",
+      "title": "Tech Zone: Nexus 9k ASIC Mappings, Turin SerDes diagram",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-9300/n93108tc-ex.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-9300/n93108tc-ex.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 3.6,
+  "total_ports": 54
+}

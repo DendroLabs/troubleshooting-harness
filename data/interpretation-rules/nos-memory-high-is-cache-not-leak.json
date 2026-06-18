@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "nos-memory-high-is-cache-not-leak",
+  "display_name": "High memory utilization on a Linux-based NOS is usually buffers/cache, not a leak",
+  "category": "baseline-awareness",
+  "applicable_os": ["nxos", "eos", "sonic", "iosxr"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Reviewing memory utilization on a modern Linux-based network OS and seeing total memory usage near 80-95%",
+  "observation": "Reported memory utilization is high and 'free' memory is very low",
+  "naive_interpretation": "The device has a memory leak and is about to run out of memory or crash",
+  "correct_interpretation": "Linux-based NOSes (SONiC, EOS, NX-OS, IOS-XR) deliberately use otherwise-idle RAM for page cache and buffers, so 'free' memory is expected to be low on a healthy system. The kernel reclaims cache instantly under pressure. The number that matters is available memory (free + reclaimable cache) and whether the system is actually under pressure — swapping, OOM-killer events, or a single process whose RSS grows monotonically. High total utilization with healthy available memory and no OOM activity is normal steady state.",
+  "why": [
+    "The Linux kernel caches file/page data in free RAM to speed I/O and frees it on demand, so low 'free' is by design, not exhaustion",
+    "The meaningful metric is MemAvailable (free plus reclaimable), not 'free' alone",
+    "True exhaustion shows up as swap-in/out activity, OOM-killer log entries, or a specific process RSS climbing without bound",
+    "A leak is identified by tracking a single process's memory growth over time, not by the system-wide percentage"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "sonic",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "free -h",
+      "purpose": "Read 'available' (not just 'free') and check whether swap is in use to judge real pressure"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show system resources",
+      "purpose": "Show used/free/available memory; compare available against demand rather than reacting to used percentage"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show processes memory | sort",
+      "purpose": "Identify whether a single process RSS is growing over time, which distinguishes a leak from normal cache use"
+    }
+  ],
+  "traps": [
+    "Reading 'free' memory instead of 'available' and concluding the device is out of memory",
+    "Calling normal page-cache usage a leak without trending a specific process over time",
+    "Ignoring the real exhaustion signals — swap activity and OOM-killer events — that actually indicate trouble",
+    "Rebooting to 'recover' memory that the kernel would have reclaimed automatically under pressure"
+  ],
+  "related_rules": [
+    "tcam-utilization-high-is-by-feature-scale",
+    "system-uptime-as-counter-context",
+    "snmp-poll-high-cpu-is-the-poll"
+  ],
+  "related_protocols": ["system-management"],
+  "keywords": ["memory", "utilization", "buffers", "cache", "available", "free", "OOM", "leak", "swap", "Linux", "SONiC"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

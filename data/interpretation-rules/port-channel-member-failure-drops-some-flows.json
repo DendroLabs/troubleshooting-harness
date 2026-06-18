@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "port-channel-member-failure-drops-some-flows",
+  "display_name": "A single port-channel member going down drops only flows hashed to that member — other flows work fine, mimicking intermittent loss",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "sonic", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Reports of intermittent connectivity loss or selective application failures across a port-channel (link aggregation) bundle",
+  "observation": "Some traffic flows across a port-channel work perfectly while others fail or experience packet loss; the failures affect specific source-destination pairs consistently rather than all traffic randomly",
+  "naive_interpretation": "There is intermittent packet loss on the port-channel — possibly a hardware issue, a spanning-tree problem, or congestion causing random drops",
+  "correct_interpretation": "Port-channels (LAGs) distribute traffic across member links using a hash algorithm (typically based on source/destination IP, source/destination MAC, or L4 ports). Each flow is deterministically assigned to one specific member link. When a member link fails, only flows hashed to that specific member are disrupted — all other flows continue on their existing member links unaffected. The port-channel itself may show as 'up' because it has surviving members, and aggregate counters show only partial loss, not total failure. The failure pattern is characteristically selective: certain source-destination pairs fail completely while others work perfectly. After the failed member is removed from the bundle, the hash function redistributes the affected flows to surviving members and traffic recovers. During the brief window between member failure and hash redistribution, the affected flows are black-holed.",
+  "why": [
+    "The hash algorithm is deterministic — the same source-destination pair always maps to the same member link, so a member failure consistently affects the same flows every time",
+    "Port-channel status shows 'up' as long as at least one member is active — operators checking 'show port-channel summary' see the bundle as healthy and don't investigate individual members",
+    "The aggregate throughput counter drops proportionally (e.g., 25% for a 4-member LAG losing 1 member) but individual flow counters show complete loss for affected flows and zero loss for unaffected ones — this bimodal pattern is the diagnostic signature",
+    "Hash redistribution timing varies by platform — some redistribute immediately when a member is removed, others wait for a keepalive/LACP timeout, creating a window of traffic loss for affected flows",
+    "The 'intermittent' appearance comes from users testing with different source IPs or applications that use different ports — some tests hit working members and succeed, others hit the failed member and fail"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show port-channel summary",
+      "purpose": "Display port-channel bundle status and individual member states — look for members in 'D' (down) or 's' (suspended) state while the bundle itself shows 'U' (up)"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show etherchannel summary",
+      "purpose": "Show LAG bundle and member status — identify any members not in 'P' (bundled in port-channel) state"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show port-channel load-balance forwarding-path interface port-channel<N> src-ip <src> dst-ip <dst>",
+      "purpose": "Determine which member link a specific flow hashes to — verify whether the failing flow is assigned to the down member"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show etherchannel load-balance",
+      "purpose": "Display the hash algorithm in use to understand which fields determine member selection"
+    },
+    {
+      "os": "sonic",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces portchannel",
+      "purpose": "Display port-channel member status and identify any failed or inactive members"
+    },
+    {
+      "os": "junos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show lacp interfaces",
+      "purpose": "Display LACP state per member link to identify down or suspended members in the aggregate"
+    }
+  ],
+  "traps": [
+    "Seeing the port-channel as 'up' and concluding it is healthy — the bundle is up with reduced capacity but specific flows are completely broken",
+    "Interpreting selective flow failure as an application-level problem because 'the network is up' — the bimodal success/failure pattern by source-destination pair is the signature of a member failure",
+    "Not checking individual member states — 'show port-channel summary' shows the bundle status prominently but member status requires looking at each member column",
+    "Confusing the uneven distribution caused by the hash algorithm (see ecmp-uneven-distribution-is-flow-hashing) with a member failure — uneven distribution affects throughput but not reachability; a failed member causes complete loss for specific flows",
+    "Testing reachability with a single ping source and concluding the LAG is fine — different source IPs hash to different members, so one test IP may hit a working member while the production traffic hits the failed one"
+  ],
+  "related_rules": [
+    "ecmp-uneven-distribution-is-flow-hashing",
+    "interface-drops-input-vs-output-queue"
+  ],
+  "related_protocols": ["lacp"],
+  "keywords": ["port-channel", "LAG", "link aggregation", "LACP", "member", "hash", "load balance", "etherchannel", "bundle", "intermittent", "flow", "selective loss"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

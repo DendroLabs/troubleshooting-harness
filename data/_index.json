@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "datasets": {
+    "protocols": {
+      "count": 44,
+      "index": "protocols/_index.json"
+    },
+    "definitions": {
+      "count": 4
+    },
+    "diagnostics": {
+      "count": 7
+    },
+    "procedures": {
+      "count": 11
+    },
+    "human-errors": {
+      "count": 10
+    },
+    "platforms": {
+      "count": 53
+    },
+    "concepts": {
+      "count": 1
+    },
+    "best-practices": {
+      "count": 3
+    },
+    "interpretation-rules": {
+      "count": 65
+    }
+  }
+}

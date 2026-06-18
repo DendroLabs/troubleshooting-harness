@@ -1,0 +1,77 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:cloud-scale",
+      "asic_id": 0,
+      "asic_model": "Homewood",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "48x SGMII + 4x 25G + 2x 100G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "RJ45",
+              "end_port": 48,
+              "label": "Eth1/1-48 (RJ45 1G PoE)",
+              "native_speed": "1G",
+              "start_port": 1
+            },
+            {
+              "breakout_options": [],
+              "connector": "SFP28",
+              "end_port": 52,
+              "label": "Eth1/49-52 (SFP28 25G)",
+              "native_speed": "25G",
+              "start_port": 49
+            },
+            {
+              "breakout_options": [
+                "4x25G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 54,
+              "label": "Eth1/53-54 (QSFP28 100G)",
+              "native_speed": "100G",
+              "start_port": 53
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 176.0
+    }
+  ],
+  "chassis_type": "fixed",
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9300",
+  "platform_id": "n9348gc-fxp",
+  "platform_name": "Nexus 9348GC-FXP",
+  "platform_pid": "N9K-C9348GC-FXP",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-n9348gc-fxp",
+      "title": "Tech Zone: Nexus 9k ASIC Mappings, Pipedream Block Diagram",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-9300/n9348gc-fxp.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-9300/n9348gc-fxp.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 0.176,
+  "total_ports": 54
+}

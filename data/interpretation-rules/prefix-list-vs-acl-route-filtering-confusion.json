@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "prefix-list-vs-acl-route-filtering-confusion",
+  "display_name": "Prefix-list matches on prefix length (le/ge), not on address bits like an ACL — confusing the two causes silent filtering failures",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Configuring route filtering on BGP or OSPF using a prefix-list, and routes are unexpectedly permitted or denied",
+  "observation": "A prefix-list entry like 'permit 10.0.0.0/8 le 24' is configured for route filtering, but specific /16 or /24 subnets within 10.0.0.0/8 are being filtered differently than expected — some are matched and some are not, or matching seems inconsistent compared to how an ACL would work",
+  "naive_interpretation": "The prefix-list works like an ACL with a wildcard mask — 'permit 10.0.0.0/8' matches any address that starts with 10, and 'le 24' means something about the host portion",
+  "correct_interpretation": "A prefix-list matches on TWO dimensions simultaneously: the network address AND the prefix length (subnet mask). 'permit 10.0.0.0/8 le 24' means: match any route whose network address falls within 10.0.0.0/8 AND whose prefix length is between /8 and /24 inclusive. A route for 10.1.0.0/26 would NOT match because /26 is longer than /24, even though 10.1.0.0 is within 10.0.0.0/8. Without 'le' or 'ge', a prefix-list entry is an EXACT match on both the network and the mask: 'permit 10.0.0.0/8' matches ONLY the exact prefix 10.0.0.0/8, NOT 10.1.0.0/24 or 10.0.0.0/16. This is fundamentally different from an ACL, where '10.0.0.0 0.255.255.255' matches any PACKET with a source or destination in that range, regardless of subnet mask — ACLs have no concept of prefix length because they match packet headers, not routing table entries.",
+  "why": [
+    "ACLs match packet headers (source/destination IP address) using address bits and wildcard masks — they operate at the data plane on individual packets and have no knowledge of the routing table",
+    "Prefix-lists match routing table entries (network + prefix length pairs) — they operate at the control plane on route advertisements, where the subnet mask is a key part of the route identity",
+    "The 'le' (less-or-equal) and 'ge' (greater-or-equal) modifiers define a range of acceptable prefix lengths — without them, only the exact prefix length matches",
+    "The most common mistake is writing 'permit 10.0.0.0/8' expecting it to match all subnets of 10.0.0.0/8 — it only matches the single exact route 10.0.0.0/8; use 'permit 10.0.0.0/8 le 32' to match all subnets"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip prefix-list <name>",
+      "purpose": "Display the prefix-list entries with their le/ge modifiers to verify matching criteria"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip prefix-list <name> <prefix>",
+      "purpose": "Test whether a specific prefix matches any entry in the prefix-list"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip prefix-list detail <name>",
+      "purpose": "Display prefix-list entries with hit counts to see which entries are matching traffic"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip bgp | include <network>",
+      "purpose": "Verify the exact prefix and mask in the BGP table to confirm what the prefix-list is matching against"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show prefix-list <name>",
+      "purpose": "Display prefix-list entries and verify the le/ge range"
+    }
+  ],
+  "traps": [
+    "Writing 'permit 10.0.0.0/8' and expecting it to match all subnets within 10.0.0.0/8 — without le/ge it is an EXACT match for the /8 route only",
+    "Confusing prefix-list le/ge with ACL wildcard masks — 'le 24' is about prefix LENGTH, not about which address bits to ignore",
+    "Using 'ge 24 le 32' to match host routes and specific subnets but forgetting that 'ge' sets the MINIMUM prefix length — 'ge 24' excludes /8 through /23",
+    "Not realizing that 'permit 0.0.0.0/0 le 32' is the prefix-list equivalent of 'permit any' — it matches every prefix of every length",
+    "Applying an ACL instead of a prefix-list in a route-map 'match ip address' clause when the intent is to filter by prefix length — ACLs in route-maps match the prefix as if it were a packet, ignoring the mask entirely on some platforms"
+  ],
+  "related_rules": ["acl-implicit-deny-logs-are-expected"],
+  "related_protocols": ["bgp-4", "ospfv2", "static-routing"],
+  "keywords": ["prefix-list", "ACL", "access-list", "route filter", "le", "ge", "wildcard mask", "prefix length", "subnet mask", "route-map", "match"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

@@ -1,0 +1,1110 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "PIM acts on IGMP group membership to build/prune multicast trees. IGMP without PIM only provides local group state with no upstream forwarding.",
+      "name": "PIM",
+      "type": "protocol"
+    },
+    {
+      "description": "L2 switches snoop IGMP to constrain multicast to only ports with interested receivers. Misconfigured snooping can block IGMP Reports from reaching the L3 router.",
+      "name": "IGMP Snooping (L2)",
+      "type": "protocol"
+    },
+    {
+      "description": "On NX-OS, IGMP is automatically enabled when PIM is configured on an interface ('ip pim sparse-mode'). Without PIM, IGMP is not active.",
+      "name": "PIM on interface (NX-OS)",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "Hosts are sending IGMP Reports but the first-hop L3 router's 'show ip igmp groups' does not show the group.",
+      "resolutions": [
+        {
+          "action": "Verify PIM on interface: 'show ip pim interface' should list the SVI",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PIM on interface: 'show ip pim interface' should list the SVI",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PIM on interface: 'show ip pim interface' should list the SVI",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check IGMP version: 'show ip igmp interface <intf>' — match host IGMP version",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check IGMP version: 'show ip igmp interface <intf>' — match host IGMP version",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check IGMP version: 'show ip igmp interface <intf>' — match host IGMP version",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check join policy: 'show ip igmp policy statistics reports' for deny counters",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check join policy: 'show ip igmp policy statistics reports' for deny counters",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check join policy: 'show ip igmp policy statistics reports' for deny counters",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On L2 switch: 'show ip igmp snooping mrouter' must show router port",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On L2 switch: 'show ip igmp snooping mrouter' must show router port",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On L2 switch: 'show ip igmp snooping mrouter' must show router port",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN assignment and SVI state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN assignment and SVI state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN assignment and SVI state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "PIM not enabled on the SVI/interface — IGMP is auto-enabled by PIM on NX-OS",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGMP join policy filtering the group — route-map or access-group denying the join",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGMP version mismatch — host sending v3 to a v2-only interface or vice versa",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGMP snooping on intermediate L2 switch not forwarding Reports to the router (no mrouter port)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Wrong VLAN — host in a different VLAN than the SVI where PIM is enabled",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Hosts joining but group not appearing on router",
+      "symptoms": [
+        "show ip igmp groups shows no entry for the group",
+        "Host application reports it has joined",
+        "show ip igmp snooping groups may show the join at L2",
+        "Multicast traffic not reaching the host"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip igmp groups",
+          "confirms_if": "IGMP join is being processed",
+          "look_for": "Group address on the expected interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp groups",
+          "confirms_if": "IGMP join is being processed",
+          "look_for": "Group address on the expected interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp groups",
+          "confirms_if": "IGMP join is being processed",
+          "look_for": "Group address on the expected interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp policy statistics reports",
+          "confirms_if": "IGMP policy is not filtering the join",
+          "look_for": "Zero deny counters for the group",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp policy statistics reports",
+          "confirms_if": "IGMP policy is not filtering the join",
+          "look_for": "Zero deny counters for the group",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp policy statistics reports",
+          "confirms_if": "IGMP policy is not filtering the join",
+          "look_for": "Zero deny counters for the group",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "IGMP snooping is enabled but multicast traffic is not reaching host ports. Snooping is filtering traffic to ports that should be receiving it.",
+      "resolutions": [
+        {
+          "action": "Verify querier: 'show ip igmp snooping querier' — L3 PIM router should be querier",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify querier: 'show ip igmp snooping querier' — L3 PIM router should be querier",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify querier: 'show ip igmp snooping querier' — L3 PIM router should be querier",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check snooping stats: 'show ip igmp snooping statistics' for errors or report drops",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check snooping stats: 'show ip igmp snooping statistics' for errors or report drops",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check snooping stats: 'show ip igmp snooping statistics' for errors or report drops",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check lookup mode: 'show ip igmp snooping lookup-mode' — 'ip' is preferred over 'mac'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check lookup mode: 'show ip igmp snooping lookup-mode' — 'ip' is preferred over 'mac'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check lookup mode: 'show ip igmp snooping lookup-mode' — 'ip' is preferred over 'mac'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify group on port: 'show ip igmp snooping groups' should show host port",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify group on port: 'show ip igmp snooping groups' should show host port",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify group on port: 'show ip igmp snooping groups' should show host port",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check filter: 'show ip igmp snooping filter details'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check filter: 'show ip igmp snooping filter details'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check filter: 'show ip igmp snooping filter details'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "No IGMP querier on the VLAN — snooping entries expire without periodic queries",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGMP snooping not learning the Report (e.g., received on a port not in the VLAN, or CRC errors)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGMP snooping lookup mode mismatch (IP vs MAC) — hardware not matching correctly",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Max-groups limit hit on a port — new joins are denied",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGMP snooping filter/access-group blocking the group",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "IGMP snooping preventing multicast forwarding at L2",
+      "symptoms": [
+        "Host has joined (IGMP Report seen in capture)",
+        "show ip igmp snooping groups does not show the host's port for this group",
+        "Multicast traffic visible on uplink but not on host port",
+        "Disabling IGMP snooping on the VLAN 'fixes' the issue (but floods everything)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip igmp snooping groups",
+          "confirms_if": "IGMP snooping has learned the group on the correct ports",
+          "look_for": "Group listed with correct port membership",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp snooping groups",
+          "confirms_if": "IGMP snooping has learned the group on the correct ports",
+          "look_for": "Group listed with correct port membership",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp snooping groups",
+          "confirms_if": "IGMP snooping has learned the group on the correct ports",
+          "look_for": "Group listed with correct port membership",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp snooping querier",
+          "confirms_if": "IGMP querier is present — snooping entries will be maintained",
+          "look_for": "Active querier with IP address on the VLAN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp snooping querier",
+          "confirms_if": "IGMP querier is present — snooping entries will be maintained",
+          "look_for": "Active querier with IP address on the VLAN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp snooping querier",
+          "confirms_if": "IGMP querier is present — snooping entries will be maintained",
+          "look_for": "Active querier with IP address on the VLAN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "After all hosts leave a multicast group, traffic continues flowing for an extended period (minutes) before stopping. Wastes bandwidth and may cause issues for sensitive applications.",
+      "resolutions": [
+        {
+          "action": "Enable IGMP immediate-leave on the interface (only safe if ONE host per port): 'ip igmp immediate-leave group-list <ACL>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable IGMP immediate-leave on the interface (only safe if ONE host per port): 'ip igmp immediate-leave group-list <ACL>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable IGMP immediate-leave on the interface (only safe if ONE host per port): 'ip igmp immediate-leave group-list <ACL>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce Last-Member-Query-Interval: 'ip igmp last-member-query-interval <ms>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce Last-Member-Query-Interval: 'ip igmp last-member-query-interval <ms>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce Last-Member-Query-Interval: 'ip igmp last-member-query-interval <ms>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify IGMP version — upgrade hosts to IGMPv2 or IGMPv3 for Leave support",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify IGMP version — upgrade hosts to IGMPv2 or IGMPv3 for Leave support",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify IGMP version — upgrade hosts to IGMPv2 or IGMPv3 for Leave support",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use IGMPv3 with explicit tracking for per-host leave tracking",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use IGMPv3 with explicit tracking for per-host leave tracking",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use IGMPv3 with explicit tracking for per-host leave tracking",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "IGMP fast-leave not enabled — router waits for Group Membership Interval to expire",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGMPv1 hosts on the subnet — IGMPv1 has no Leave message, relies entirely on timeout",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Host not sending Leave message (application crashed, or IGMPv1/v3 report suppression)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Last-member-query-interval too high — slow Group-Specific Query cycle",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Slow leave — group traffic continues after all receivers leave",
+      "symptoms": [
+        "All hosts have left but show ip igmp groups still shows the group",
+        "Multicast traffic still flowing on the network after leave",
+        "Group eventually times out after ~260 seconds (Group Membership Interval)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip igmp groups",
+          "confirms_if": "Leave processing is working at expected speed",
+          "look_for": "Group removed within expected time after last Leave",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp groups",
+          "confirms_if": "Leave processing is working at expected speed",
+          "look_for": "Group removed within expected time after last Leave",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp groups",
+          "confirms_if": "Leave processing is working at expected speed",
+          "look_for": "Group removed within expected time after last Leave",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "No router is acting as IGMP querier on a VLAN. Without a querier, IGMP snooping group entries will age out and multicast traffic will either stop flowing to receivers or be flooded to all ports.",
+      "resolutions": [
+        {
+          "action": "Ensure SVI exists and is up with PIM enabled: 'interface Vlan<id>; ip pim sparse-mode'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure SVI exists and is up with PIM enabled: 'interface Vlan<id>; ip pim sparse-mode'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure SVI exists and is up with PIM enabled: 'interface Vlan<id>; ip pim sparse-mode'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If no L3 gateway on this VLAN, configure snooping querier: 'ip igmp snooping querier <ip>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If no L3 gateway on this VLAN, configure snooping querier: 'ip igmp snooping querier <ip>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If no L3 gateway on this VLAN, configure snooping querier: 'ip igmp snooping querier <ip>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify with 'show ip igmp snooping querier' after fix",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify with 'show ip igmp snooping querier' after fix",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify with 'show ip igmp snooping querier' after fix",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "No L3 PIM router on this VLAN — PIM router is the natural querier",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SVI is admin-down or does not exist for this VLAN",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PIM not enabled on the SVI — IGMP querier requires PIM",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGMP snooping querier not configured as a fallback (when no L3 router exists)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "No IGMP querier on VLAN",
+      "symptoms": [
+        "show ip igmp snooping querier shows no querier for the VLAN",
+        "IGMP snooping group entries aging out and disappearing",
+        "Intermittent multicast — works initially (unsolicited Reports) then stops (entries age out)",
+        "Multicast may start flooding to all ports after snooping entries expire"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip igmp snooping querier",
+          "confirms_if": "Querier is present — IGMP snooping will maintain group state",
+          "look_for": "Active querier IP address for the VLAN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp snooping querier",
+          "confirms_if": "Querier is present — IGMP snooping will maintain group state",
+          "look_for": "Active querier IP address for the VLAN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp snooping querier",
+          "confirms_if": "Querier is present — IGMP snooping will maintain group state",
+          "look_for": "Active querier IP address for the VLAN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Sent by querier to 224.0.0.1 to solicit group membership from all hosts on the subnet. Any host in any group must respond.",
+      "key_fields": [
+        "Max Response Time",
+        "Group Address (0.0.0.0 for general query)"
+      ],
+      "name": "Membership Query (General)",
+      "when_sent": "Periodically by the IGMP querier (every Query Interval)"
+    },
+    {
+      "description": "Sent to the specific group address to check if any hosts are still members. Triggered by receiving a Leave Group message.",
+      "key_fields": [
+        "Max Response Time",
+        "Group Address (specific group being queried)"
+      ],
+      "name": "Membership Query (Group-Specific)",
+      "when_sent": "After receiving IGMP Leave for a group, sent Last-Member-Query-Count times"
+    },
+    {
+      "description": "Sent by host to the group address to indicate it wants to receive traffic for this group. Report suppression: if host hears another Report for the same group, it may suppress its own.",
+      "key_fields": [
+        "Group Address"
+      ],
+      "name": "Membership Report (IGMPv2)",
+      "when_sent": "In response to a Query, or unsolicited when host first joins a group"
+    },
+    {
+      "description": "Sent to 224.0.0.22 (IGMPv3 all-routers). Supports source filtering — host can specify INCLUDE (only these sources) or EXCLUDE (all sources except these).",
+      "key_fields": [
+        "Number of Group Records",
+        "Group Record: Record Type (IS_IN, IS_EX, TO_IN, TO_EX, ALLOW, BLOCK)",
+        "Group Record: Group Address",
+        "Group Record: Source Addresses"
+      ],
+      "name": "Membership Report (IGMPv3)",
+      "when_sent": "In response to a Query, or unsolicited when host joins/modifies group membership"
+    },
+    {
+      "description": "Sent by host to 224.0.0.2 (all-routers) when it wants to leave a group. Triggers Group-Specific Query from the querier.",
+      "key_fields": [
+        "Group Address"
+      ],
+      "name": "Leave Group (IGMPv2)",
+      "when_sent": "When host application closes its multicast socket or explicitly leaves the group"
+    }
+  ],
+  "operates_at": "Layer 3 (host-to-router signaling), Layer 2 (IGMP snooping on switches)",
+  "protocol_family": "multicast",
+  "protocol_id": "igmp",
+  "protocol_name": "IGMP",
+  "purpose": "Internet Group Management Protocol — manages multicast group membership between hosts and their first-hop router. Hosts use IGMP to signal which multicast groups they want to receive.",
+  "related_protocols": [
+    "pim-sparse-mode",
+    "l2-infrastructure",
+    "vpc"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-3376",
+      "rfc_number": 3376,
+      "title": "RFC 3376",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc3376.txt"
+    },
+    {
+      "id": "rfc-2236",
+      "rfc_number": 2236,
+      "title": "RFC 2236",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc2236.txt"
+    },
+    {
+      "id": "rfc-1112",
+      "rfc_number": 1112,
+      "title": "RFC 1112",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc1112.txt"
+    },
+    {
+      "id": "agent-cisco-kb:multicast/igmp.json",
+      "title": "agent-cisco-kb knowledge base — multicast/igmp.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 3376 (IGMPv3), RFC 2236 (IGMPv2), RFC 1112 (IGMPv1)",
+  "states": [
+    {
+      "description": "No hosts on this interface have joined the multicast group. Router has no IGMP group state for this interface/group pair.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "NO_MEMBERS"
+    },
+    {
+      "description": "One or more hosts on this interface have joined the group via IGMP Report. Router maintains group state and PIM is notified of local interest.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "MEMBERS_PRESENT"
+    },
+    {
+      "description": "Router received an IGMP Leave and has sent a Group-Specific Query to check if other members exist on this interface. Waiting for responses before removing state.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "CHECKING_MEMBERSHIP"
+    },
+    {
+      "description": "This router is the IGMP querier on the subnet — responsible for sending periodic General Queries. Lowest IP address wins querier election.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "QUERIER"
+    },
+    {
+      "description": "Another router on this subnet has a lower IP address and is the IGMP querier. This router processes Reports but does not send Queries.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "NON_QUERIER"
+    }
+  ],
+  "tags": [
+    "multicast",
+    "igmp",
+    "igmpv2",
+    "igmpv3",
+    "snooping",
+    "group-membership",
+    "receiver",
+    "join",
+    "leave",
+    "querier",
+    "mrouter",
+    "layer-2",
+    "layer-3",
+    "host-signaling"
+  ],
+  "timers": [
+    {
+      "default_rfc": "125s",
+      "description": "Interval between General Query messages sent by the querier to solicit group membership from all hosts",
+      "name": "Query Interval",
+      "on_expiry": "Querier sends a General Query to 224.0.0.1 (all hosts)",
+      "os_defaults": [
+        {
+          "default": "125s",
+          "notes": "Configure with 'ip igmp query-interval' under interface. NX-OS default is per RFC.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "60s",
+          "notes": "IOS-XE default is 60s, NOT 125s per RFC. Important cross-platform trap.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-65535s",
+      "tuning_advice": "Lower values mean faster detection of group leaves but more query traffic. 60s is common for faster convergence."
+    },
+    {
+      "default_rfc": "10s",
+      "description": "Maximum time a host can delay sending its IGMP Report in response to a General Query. Used for report suppression randomization.",
+      "name": "Query Max Response Time",
+      "on_expiry": "Host must have sent Report by this time or be considered non-member for next cleanup cycle",
+      "os_defaults": [
+        {
+          "default": "10s",
+          "notes": "Configure with 'ip igmp query-max-response-time' under interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-25s",
+      "tuning_advice": "Lower = faster convergence but less report suppression benefit. 10s is standard."
+    },
+    {
+      "default_rfc": "1s",
+      "description": "Interval between Group-Specific Queries sent after a Leave is received. Determines how fast a group is removed after last member leaves.",
+      "name": "Last-Member-Query-Interval",
+      "on_expiry": "Send next Group-Specific Query (up to Last-Member-Query-Count times)",
+      "os_defaults": [
+        {
+          "default": "1s",
+          "notes": "Configure with 'ip igmp last-member-query-interval' under interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "0.1-25.5s",
+      "tuning_advice": "Lower = faster leave detection. Default 1s with count=2 means ~2s leave latency."
+    },
+    {
+      "default_rfc": "2",
+      "description": "Number of Group-Specific Queries sent after a Leave before removing group state",
+      "name": "Last-Member-Query-Count",
+      "on_expiry": "After last query with no response, group removed from IGMP table",
+      "range": "1-5",
+      "tuning_advice": "Higher = more reliable leave detection but slower. Default 2 is correct for most environments."
+    },
+    {
+      "default_rfc": "260s",
+      "description": "Time after which a group is removed if no Report is received. Calculated as (Robustness x Query Interval) + Max Response Time.",
+      "name": "Group Membership Interval",
+      "on_expiry": "Group state removed — router tells PIM no local members, PIM may prune",
+      "range": "Derived from other timers",
+      "tuning_advice": "Do not set directly — tune Query Interval and Robustness instead."
+    },
+    {
+      "default_rfc": "255s",
+      "description": "Time a non-querier waits before assuming the querier is down and taking over querier role",
+      "name": "Other-Querier-Present Interval",
+      "on_expiry": "This router transitions to QUERIER state and starts sending General Queries",
+      "range": "Derived: (Robustness x Query Interval) + 0.5 x Max Response Time",
+      "tuning_advice": "Derived automatically. If querier failover is too slow, reduce Query Interval."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "NO_MEMBERS",
+      "to_state": "MEMBERS_PRESENT",
+      "trigger": "IGMP Membership Report received from a host for this group on this interface"
+    },
+    {
+      "from_state": "MEMBERS_PRESENT",
+      "to_state": "CHECKING_MEMBERSHIP",
+      "trigger": "IGMP Leave Group received from last reporter (IGMPv2) or source filter change (IGMPv3)"
+    },
+    {
+      "from_state": "CHECKING_MEMBERSHIP",
+      "to_state": "NO_MEMBERS",
+      "trigger": "Last-Member-Query-Count queries sent with no response — no remaining members"
+    },
+    {
+      "from_state": "CHECKING_MEMBERSHIP",
+      "to_state": "MEMBERS_PRESENT",
+      "trigger": "IGMP Report received during Group-Specific Query period — members still present"
+    },
+    {
+      "from_state": "MEMBERS_PRESENT",
+      "to_state": "NO_MEMBERS",
+      "trigger": "Group membership timer expires (no IGMP Report received within Query Interval x Robustness + Max Response Time)"
+    },
+    {
+      "from_state": "NON_QUERIER",
+      "to_state": "QUERIER",
+      "trigger": "Other-Querier-Present timer expires (querier went away) or this router has a lower IP address"
+    },
+    {
+      "from_state": "QUERIER",
+      "to_state": "NON_QUERIER",
+      "trigger": "Received a General Query from a router with a lower IP address"
+    }
+  ],
+  "transport": "IP protocol 2 (encapsulated directly in IP, TTL=1)",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "interface Vlan100\n  ip pim sparse-mode\n  ip igmp query-interval 125"
+      ],
+      "notes": [
+        {
+          "note": "IOS-XE default IGMP query interval is 60 seconds, NOT 125 seconds (RFC default). This is a cross-platform trap when migrating from NX-OS. IGMP snooping enabled by default.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "interface Vlan100\n  ip pim sparse-mode\n  ip igmp version 2\n  ip igmp query-interval 60"
+      ],
+      "notes": [
+        {
+          "note": "IGMPv3 is the default version on NX-OS. IGMP is automatically enabled by PIM — no separate 'feature igmp'. To change version: 'ip igmp version 2' under interface. IGMP snooping is enabled globally by default.",
+          "versions": "all"
+        },
+        {
+          "note": "On vPC, IGMP groups should appear on BOTH peers. The 'ip igmp snooping mrouter vpc-peer-link' config controls multicast forwarding over the peer-link. This is a common source of issues in vPC multicast designs.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

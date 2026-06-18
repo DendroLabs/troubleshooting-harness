@@ -1,0 +1,36 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:cloud-scale-fabric",
+      "asic_id": 0,
+      "asic_model": "Lacrosse",
+      "hbm_gb": 0.0,
+      "memory_tables": [],
+      "slices": [],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 0.0
+    }
+  ],
+  "chassis_type": "modular",
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9500",
+  "platform_id": "c9504fm-e",
+  "platform_name": "Nexus 9504 FM-E (Mt.Kato)",
+  "platform_pid": "N9K-C9504-FM-E",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-c9504fm-e",
+      "title": "Tech Zone: Nexus 9k ASIC Mappings, Mt.Kato FM diagram",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-9500/c9504fm-e.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-9500/c9504fm-e.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 0.0,
+  "total_ports": 0
+}

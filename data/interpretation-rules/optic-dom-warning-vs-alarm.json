@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "optic-dom-warning-vs-alarm",
+  "display_name": "An optic DOM warning threshold is a heads-up, not a failure — only the alarm threshold means out of spec",
+  "category": "baseline-awareness",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Reading transceiver digital diagnostic monitoring (DOM) for Rx/Tx power, temperature, bias, or voltage and seeing a flagged value",
+  "observation": "A DOM parameter is flagged as crossing a threshold, or a value sits near the edge of its listed range",
+  "naive_interpretation": "Any flagged DOM value means the optic is failing and must be replaced",
+  "correct_interpretation": "DOM defines two tiers of thresholds per parameter: warning (high/low) and alarm (high/low). A warning means the value is drifting toward the edge of the operating envelope but is still within the vendor's specified range — it is an advisory to monitor, not a failure. An alarm means the value is outside the guaranteed operating spec and link errors are likely. Distinguish which tier was crossed, and check whether the parameter is trending toward alarm, before declaring the optic bad.",
+  "why": [
+    "SFF-8472 (and SFF-8636 for QSFP) defines separate high/low warning and high/low alarm thresholds for each monitored parameter",
+    "Warning thresholds are intentionally inside the alarm thresholds so operators get early notice while the optic is still in spec",
+    "A value between warning and alarm still meets the vendor's link-budget guarantee; only beyond alarm is operation unsupported",
+    "Trend matters: a stable value near warning is fine, while one marching toward alarm signals degradation"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface Ethernet1/1 transceiver details",
+      "purpose": "Show DOM values alongside their warning and alarm thresholds to see which tier (if any) was crossed"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface GigabitEthernet1/0/1 transceiver detail",
+      "purpose": "Display per-parameter measured value with high/low warning and alarm thresholds"
+    },
+    {
+      "os": "eos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces Ethernet1 transceiver",
+      "purpose": "Read Rx/Tx power and temperature against their warning/alarm thresholds"
+    }
+  ],
+  "traps": [
+    "Replacing an optic on a warning-level flag when the value is still within the guaranteed operating range",
+    "Reading a single measured value without its warning/alarm thresholds, so 'high' or 'low' has no reference",
+    "Ignoring the trend — a stable near-warning value is fine, a climbing one is not",
+    "Confusing low Rx power (often a fiber/connector/distance issue on the far end) with a defect in the local optic"
+  ],
+  "related_rules": [
+    "tcam-utilization-high-is-by-feature-scale",
+    "psu-fan-transient-alert-vs-failure",
+    "interface-crc-counters-without-clearing"
+  ],
+  "related_protocols": ["system-management"],
+  "keywords": ["DOM", "transceiver", "optic", "SFP", "QSFP", "Rx power", "Tx power", "warning", "alarm", "threshold", "SFF-8472"],
+  "sources": [
+    {
+      "id": "sff-8472",
+      "title": "SFF-8472 — Diagnostic Monitoring Interface for Optical Transceivers",
+      "type": "standard"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

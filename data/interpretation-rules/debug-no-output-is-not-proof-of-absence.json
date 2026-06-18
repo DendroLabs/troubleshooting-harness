@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "debug-no-output-is-not-proof-of-absence",
+  "display_name": "No debug output does not prove the event isn't happening — the debug may never see it",
+  "category": "log-analysis",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Running a debug to confirm a suspected event and seeing no debug output at all",
+  "observation": "A debug is enabled but produces no output even though the suspected condition appears to be occurring",
+  "naive_interpretation": "The absence of debug output proves the event is not happening, so the hypothesis is wrong",
+  "correct_interpretation": "Debugging only reports what the control-plane/CPU path actually processes. Hardware-forwarded (CEF/hardware-switched) traffic never reaches the CPU, so a packet-level debug will show nothing even while the traffic flows at line rate. Output can also be missing because a debug condition/ACL filtered it, logging to the current terminal isn't enabled, or rate-limiting suppressed it. No output is inconclusive, not disproof — verify the debug can actually observe the path before drawing a conclusion.",
+  "why": [
+    "Production traffic is hardware/CEF-switched and bypasses the CPU, so packet debugs (which run on the CPU path) never see it",
+    "Conditional debugging (debug condition / debug ACLs) restricts output to matching criteria; a mismatched filter yields silence",
+    "Debug output goes to the console/monitor only when logging for that destination is enabled (e.g. terminal monitor), otherwise it is invisible on the current session",
+    "Internal logging rate-limiting can drop debug messages under load, producing gaps that look like absence"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show debugging",
+      "purpose": "Confirm which debugs and conditions are actually active so a filter isn't silently excluding the event"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "terminal monitor",
+      "purpose": "Enable debug/log output to the current VTY session so existing output is not simply unseen"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show hardware rate-limiter",
+      "purpose": "Check whether CPU-bound copies of traffic are rate-limited, which would starve a packet debug of samples"
+    }
+  ],
+  "traps": [
+    "Concluding a hypothesis is wrong because a packet debug for hardware-switched traffic stayed silent",
+    "Forgetting terminal monitor / logging destination, so debug output exists but is not shown on the current session",
+    "Leaving a stale debug condition or ACL that filters out the very traffic being investigated",
+    "Running heavy debugs that get rate-limited under load and reading the gaps as absence of the event"
+  ],
+  "related_rules": [
+    "single-log-message-not-causation",
+    "syslog-severity-is-not-operational-impact"
+  ],
+  "related_protocols": [],
+  "keywords": ["debug", "no output", "CEF", "hardware switched", "process switched", "debug condition", "terminal monitor", "rate-limit", "control plane"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

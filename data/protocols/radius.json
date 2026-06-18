@@ -1,0 +1,2662 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "NAS must reach RADIUS server on UDP 1812 (auth), 1813 (accounting). Server must reach NAS on UDP 1700 or 3799 for CoA/Disconnect. Stateless UDP — no TCP handshake.",
+      "name": "UDP reachability to RADIUS server",
+      "type": "infrastructure"
+    },
+    {
+      "description": "IOS-XE: 'aaa new-model' required. NX-OS: 'feature tacacs+' / 'feature radius' not strictly needed but RADIUS is default for dot1x. IOS-XR: AAA enabled by default.",
+      "name": "AAA model enabled",
+      "type": "infrastructure"
+    },
+    {
+      "description": "NAS and RADIUS server must have identical shared secrets. Used to encrypt User-Password attribute and authenticate responses (Response Authenticator).",
+      "name": "Shared secret configured on both sides",
+      "type": "infrastructure"
+    },
+    {
+      "description": "NAS must have IP route to RADIUS server. VRF-aware config needed if RADIUS server is in a management VRF.",
+      "name": "IP routing / reachability",
+      "type": "protocol"
+    },
+    {
+      "description": "RADIUS server (ISE) must have the NAS registered as a network device with matching IP and shared secret.",
+      "name": "Network device entry on RADIUS server",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "RADIUS shared key differs between NAS and server — server silently drops requests or NAS rejects responses with bad authenticator",
+      "resolutions": [
+        {
+          "action": "Compare shared secret on both NAS and RADIUS server character-by-character",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare shared secret on both NAS and RADIUS server character-by-character",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare shared secret on both NAS and RADIUS server character-by-character",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: 'show run | inc radius' (secret shown as type-7, decrypt to verify)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: 'show run | inc radius' (secret shown as type-7, decrypt to verify)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: 'show run | inc radius' (secret shown as type-7, decrypt to verify)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: 'show run | inc radius' or 'more system:running-config | inc key'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: 'show run | inc radius' or 'more system:running-config | inc key'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: 'show run | inc radius' or 'more system:running-config | inc key'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Re-enter secret on both sides — avoid copy-paste, type manually",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Re-enter secret on both sides — avoid copy-paste, type manually",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Re-enter secret on both sides — avoid copy-paste, type manually",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with 'test aaa group <group> <user> <pass> new-code' (IOS-XE)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with 'test aaa group <group> <user> <pass> new-code' (IOS-XE)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with 'test aaa group <group> <user> <pass> new-code' (IOS-XE)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE: Administration > Network Resources > Network Devices > specific device",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE: Administration > Network Resources > Network Devices > specific device",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE: Administration > Network Resources > Network Devices > specific device",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Shared secret misconfigured on NAS or RADIUS server",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Copy-paste error with trailing whitespace/newline in secret",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Secret contains special characters that shell interprets differently",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ISE network device entry has different secret than switch config",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Key rollover in progress — old and new keys mixed",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Shared secret mismatch",
+      "symptoms": [
+        "Authentication always times out (server drops malformed request)",
+        "'show aaa servers' shows timeouts incrementing but no rejects",
+        "debug radius shows 'invalid message authenticator' or 'bad authenticator in response'",
+        "RADIUS server logs show 'shared secret mismatch' or 'bad authenticator'"
+      ],
+      "verify_commands": [
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Timeouts incrementing while requests sent = strong indicator of shared secret mismatch",
+          "look_for": "High timeout count with zero rejects — requests are being sent but no valid response received",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Timeouts incrementing while requests sent = strong indicator of shared secret mismatch",
+          "look_for": "High timeout count with zero rejects — requests are being sent but no valid response received",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Timeouts incrementing while requests sent = strong indicator of shared secret mismatch",
+          "look_for": "High timeout count with zero rejects — requests are being sent but no valid response received",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug radius authentication",
+          "confirms_if": "Invalid authenticator in debug confirms shared secret mismatch",
+          "look_for": "'RADIUS: Received from id' with 'invalid authenticator' or no response at all",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug radius authentication",
+          "confirms_if": "Invalid authenticator in debug confirms shared secret mismatch",
+          "look_for": "'RADIUS: Received from id' with 'invalid authenticator' or no response at all",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug radius authentication",
+          "confirms_if": "Invalid authenticator in debug confirms shared secret mismatch",
+          "look_for": "'RADIUS: Received from id' with 'invalid authenticator' or no response at all",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "test aaa group radius server <ip> <user> <pass> new-code",
+          "confirms_if": "Test returning timeout confirms server not accepting requests (key mismatch or unreachable)",
+          "look_for": "Timeout vs reject — timeout = likely key mismatch, reject = key is fine but creds wrong",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "test aaa group radius server <ip> <user> <pass> new-code",
+          "confirms_if": "Test returning timeout confirms server not accepting requests (key mismatch or unreachable)",
+          "look_for": "Timeout vs reject — timeout = likely key mismatch, reject = key is fine but creds wrong",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "test aaa group radius server <ip> <user> <pass> new-code",
+          "confirms_if": "Test returning timeout confirms server not accepting requests (key mismatch or unreachable)",
+          "look_for": "Timeout vs reject — timeout = likely key mismatch, reject = key is fine but creds wrong",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "NAS cannot reach RADIUS server — all authentication fails until server recovers or failover activates",
+      "resolutions": [
+        {
+          "action": "Verify basic connectivity: 'ping <radius-ip> source <source-intf>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify basic connectivity: 'ping <radius-ip> source <source-intf>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify basic connectivity: 'ping <radius-ip> source <source-intf>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RADIUS server service status",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RADIUS server service status",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RADIUS server service status",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify firewall rules for UDP 1812, 1813, 1700/3799 (CoA)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify firewall rules for UDP 1812, 1813, 1700/3799 (CoA)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify firewall rules for UDP 1812, 1813, 1700/3799 (CoA)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check source-interface config: 'ip radius source-interface' (IOS-XE)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check source-interface config: 'ip radius source-interface' (IOS-XE)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check source-interface config: 'ip radius source-interface' (IOS-XE)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VRF-aware: ensure RADIUS server in correct VRF context",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VRF-aware: ensure RADIUS server in correct VRF context",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VRF-aware: ensure RADIUS server in correct VRF context",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE: node is up, services running, monitor persona active",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE: node is up, services running, monitor persona active",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE: node is up, services running, monitor persona active",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure deadtime + automate-tester for faster failover",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure deadtime + automate-tester for faster failover",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure deadtime + automate-tester for faster failover",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "RADIUS server down or crashed",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Network path failure (routing, interface down)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Firewall blocking UDP 1812/1813 (auth/acct) or UDP 1700/3799 (CoA)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RADIUS server listening on wrong interface/IP",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Source interface on NAS not configured or wrong VRF",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NAS source IP not matching the network device entry on ISE",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "RADIUS server unreachable",
+      "symptoms": [
+        "All authentications timing out",
+        "'show aaa servers' shows all servers dead or high timeout counts",
+        "New users/devices cannot authenticate",
+        "Existing sessions may continue until re-auth (if authorized)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Server showing DEAD state or 100% timeout rate confirms unreachability",
+          "look_for": "Check 'state' column — DEAD means server marked unreachable; check timeout/request counters",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Server showing DEAD state or 100% timeout rate confirms unreachability",
+          "look_for": "Check 'state' column — DEAD means server marked unreachable; check timeout/request counters",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Server showing DEAD state or 100% timeout rate confirms unreachability",
+          "look_for": "Check 'state' column — DEAD means server marked unreachable; check timeout/request counters",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <radius-ip> source <source-intf>",
+          "confirms_if": "Ping failure confirms network-level unreachability",
+          "look_for": "ICMP reachability to RADIUS server IP from the correct source",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <radius-ip> source <source-intf>",
+          "confirms_if": "Ping failure confirms network-level unreachability",
+          "look_for": "ICMP reachability to RADIUS server IP from the correct source",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <radius-ip> source <source-intf>",
+          "confirms_if": "Ping failure confirms network-level unreachability",
+          "look_for": "ICMP reachability to RADIUS server IP from the correct source",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <radius-ip>",
+          "confirms_if": "Missing route or wrong next-hop explains unreachability",
+          "look_for": "Route exists and points to expected next-hop",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <radius-ip>",
+          "confirms_if": "Missing route or wrong next-hop explains unreachability",
+          "look_for": "Route exists and points to expected next-hop",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <radius-ip>",
+          "confirms_if": "Missing route or wrong next-hop explains unreachability",
+          "look_for": "Route exists and points to expected next-hop",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "test aaa group radius server <ip> <user> <pass> new-code",
+          "confirms_if": "Timeout confirms server is not responding to RADIUS requests",
+          "look_for": "Timeout response",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "test aaa group radius server <ip> <user> <pass> new-code",
+          "confirms_if": "Timeout confirms server is not responding to RADIUS requests",
+          "look_for": "Timeout response",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "test aaa group radius server <ip> <user> <pass> new-code",
+          "confirms_if": "Timeout confirms server is not responding to RADIUS requests",
+          "look_for": "Timeout response",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Without deadtime, NAS keeps trying dead servers on every authentication attempt, causing long delays for all users",
+      "resolutions": [
+        {
+          "action": "Configure deadtime: 'radius-server deadtime 5' (5-15 min recommended)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure deadtime: 'radius-server deadtime 5' (5-15 min recommended)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure deadtime: 'radius-server deadtime 5' (5-15 min recommended)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure dead-criteria: 'radius-server dead-criteria time 10 tries 3'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure dead-criteria: 'radius-server dead-criteria time 10 tries 3'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure dead-criteria: 'radius-server dead-criteria time 10 tries 3'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure automate-tester: 'radius-server host <ip> automate-tester username <user> probe-on'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure automate-tester: 'radius-server host <ip> automate-tester username <user> probe-on'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure automate-tester: 'radius-server host <ip> automate-tester username <user> probe-on'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider reducing retransmit timeout and count for faster failover",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider reducing retransmit timeout and count for faster failover",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider reducing retransmit timeout and count for faster failover",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "radius-server deadtime not configured (default 0 = disabled)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Dead-criteria not configured — server never marked dead",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No automate-tester — NAS cannot detect server recovery proactively",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Deadtime not configured — slow failover",
+      "symptoms": [
+        "Authentication takes 15-45+ seconds when primary server is down",
+        "Users experience long login delays",
+        "Timeouts on primary before falling through to secondary",
+        "'show aaa servers' shows timeouts on primary but eventually succeeds on secondary"
+      ],
+      "verify_commands": [
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Servers with high timeouts that are NOT marked dead = deadtime not configured",
+          "look_for": "Check if dead servers have deadtime shown — if not, deadtime is 0/disabled",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Servers with high timeouts that are NOT marked dead = deadtime not configured",
+          "look_for": "Check if dead servers have deadtime shown — if not, deadtime is 0/disabled",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Servers with high timeouts that are NOT marked dead = deadtime not configured",
+          "look_for": "Check if dead servers have deadtime shown — if not, deadtime is 0/disabled",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include radius-server deadtime",
+          "confirms_if": "Missing deadtime config confirms this is the root cause",
+          "look_for": "Look for 'radius-server deadtime' line — if absent, feature is disabled",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include radius-server deadtime",
+          "confirms_if": "Missing deadtime config confirms this is the root cause",
+          "look_for": "Look for 'radius-server deadtime' line — if absent, feature is disabled",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include radius-server deadtime",
+          "confirms_if": "Missing deadtime config confirms this is the root cause",
+          "look_for": "Look for 'radius-server deadtime' line — if absent, feature is disabled",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "RADIUS server (ISE) sends CoA or Disconnect-Request but NAS does not process it — policy changes don't take effect",
+      "resolutions": [
+        {
+          "action": "Verify CoA port: 'show run | inc coa' — ensure 'aaa server radius dynamic-author'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify CoA port: 'show run | inc coa' — ensure 'aaa server radius dynamic-author'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify CoA port: 'show run | inc coa' — ensure 'aaa server radius dynamic-author'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure 'aaa server radius dynamic-author' with correct client IP and key",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure 'aaa server radius dynamic-author' with correct client IP and key",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure 'aaa server radius dynamic-author' with correct client IP and key",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: configure 'radius-server host <ip> authentication accounting' with CoA support",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: configure 'radius-server host <ip> authentication accounting' with CoA support",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: configure 'radius-server host <ip> authentication accounting' with CoA support",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check firewall permits inbound UDP 1700 (or 3799) to NAS management IP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check firewall permits inbound UDP 1700 (or 3799) to NAS management IP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check firewall permits inbound UDP 1700 (or 3799) to NAS management IP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ISE CoA settings: Administration > Network Resources > Network Devices",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ISE CoA settings: Administration > Network Resources > Network Devices",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ISE CoA settings: Administration > Network Resources > Network Devices",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Match NAS-IP-Address: ensure source-interface on NAS aligns with ISE device entry",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Match NAS-IP-Address: ensure source-interface on NAS aligns with ISE device entry",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Match NAS-IP-Address: ensure source-interface on NAS aligns with ISE device entry",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "CoA port mismatch — NAS expects 1700 (legacy) or 3799 (RFC 5176)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Firewall blocking inbound UDP 1700/3799 to NAS",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Source IP in CoA doesn't match configured RADIUS server on NAS",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "CoA shared secret different from auth secret (some platforms)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NAS source-interface not matching ISE's expected NAS-IP-Address",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Session-ID in CoA doesn't match active session on NAS",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "CoA/Disconnect-Request failure",
+      "symptoms": [
+        "ISE shows CoA timeout or CoA NAK in live logs",
+        "Policy changes on ISE don't take effect on NAS",
+        "VLAN/ACL changes require manual session clear on NAS",
+        "Posture flow stalls — endpoint stays in REDIRECT state"
+      ],
+      "verify_commands": [
+        {
+          "command": "show aaa server radius dynamic-author",
+          "confirms_if": "NAK or no packets received confirms CoA configuration issue",
+          "look_for": "Check CoA client list, port, and statistics (received/ACK/NAK counters)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa server radius dynamic-author",
+          "confirms_if": "NAK or no packets received confirms CoA configuration issue",
+          "look_for": "Check CoA client list, port, and statistics (received/ACK/NAK counters)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa server radius dynamic-author",
+          "confirms_if": "NAK or no packets received confirms CoA configuration issue",
+          "look_for": "Check CoA client list, port, and statistics (received/ACK/NAK counters)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug radius",
+          "confirms_if": "No inbound CoA seen = network/firewall issue; NAK seen = NAS config issue",
+          "look_for": "Look for inbound CoA packets and NAS response (CoA-ACK or CoA-NAK with error-cause)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug radius",
+          "confirms_if": "No inbound CoA seen = network/firewall issue; NAK seen = NAS config issue",
+          "look_for": "Look for inbound CoA packets and NAS response (CoA-ACK or CoA-NAK with error-cause)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug radius",
+          "confirms_if": "No inbound CoA seen = network/firewall issue; NAK seen = NAS config issue",
+          "look_for": "Look for inbound CoA packets and NAS response (CoA-ACK or CoA-NAK with error-cause)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions",
+          "confirms_if": "Stale policy on session after CoA confirms CoA failure",
+          "look_for": "Check if session still shows old policy after CoA was expected",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions",
+          "confirms_if": "Stale policy on session after CoA confirms CoA failure",
+          "look_for": "Check if session still shows old policy after CoA was expected",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions",
+          "confirms_if": "Stale policy on session after CoA confirms CoA failure",
+          "look_for": "Check if session still shows old policy after CoA was expected",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "RADIUS server returns authorization attributes (VLAN, ACL, SGT) but NAS does not apply them — user authenticated but wrong network policy",
+      "resolutions": [
+        {
+          "action": "Check ISE policy result: Operations > RADIUS > Live Logs > details",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE policy result: Operations > RADIUS > Live Logs > details",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE policy result: Operations > RADIUS > Live Logs > details",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify attribute syntax for this NAS platform in ISE authorization profile",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify attribute syntax for this NAS platform in ISE authorization profile",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify attribute syntax for this NAS platform in ISE authorization profile",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure VLAN exists on NAS: 'show vlan' (IOS-XE) or 'show vlan brief' (NX-OS)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure VLAN exists on NAS: 'show vlan' (IOS-XE) or 'show vlan brief' (NX-OS)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure VLAN exists on NAS: 'show vlan' (IOS-XE) or 'show vlan brief' (NX-OS)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For dACL: verify NAS can download ACL from ISE — check 'show ip access-lists'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For dACL: verify NAS can download ACL from ISE — check 'show ip access-lists'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For dACL: verify NAS can download ACL from ISE — check 'show ip access-lists'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For SGT: ensure CTS/TrustSec is configured on NAS and supported in code version",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For SGT: ensure CTS/TrustSec is configured on NAS and supported in code version",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For SGT: ensure CTS/TrustSec is configured on NAS and supported in code version",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'debug radius' to see exact attributes returned by server",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'debug radius' to see exact attributes returned by server",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'debug radius' to see exact attributes returned by server",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "RADIUS attribute name/format incorrect for this NAS platform",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VLAN returned by RADIUS doesn't exist on NAS",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "dACL name doesn't match any ACL on NAS (or dACL download failed)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NAS doesn't support the returned attribute (e.g., SGT on older code)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "cisco-av-pair syntax incorrect (common: missing colon or space)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Attribute returned in wrong RADIUS message (must be in Access-Accept)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "RADIUS attribute / AV-pair not applied",
+      "symptoms": [
+        "User authenticated but in wrong VLAN",
+        "Downloadable ACL not applied",
+        "SGT not assigned despite ISE policy returning it",
+        "'show authentication sessions interface <intf> details' shows missing attributes"
+      ],
+      "verify_commands": [
+        {
+          "command": "show authentication sessions interface <intf> details",
+          "confirms_if": "Missing or wrong attributes confirm RADIUS attribute application failure",
+          "look_for": "Check 'ACS ACL', 'VLAN Group', 'SGT' fields — compare to expected policy",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions interface <intf> details",
+          "confirms_if": "Missing or wrong attributes confirm RADIUS attribute application failure",
+          "look_for": "Check 'ACS ACL', 'VLAN Group', 'SGT' fields — compare to expected policy",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions interface <intf> details",
+          "confirms_if": "Missing or wrong attributes confirm RADIUS attribute application failure",
+          "look_for": "Check 'ACS ACL', 'VLAN Group', 'SGT' fields — compare to expected policy",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug radius authentication",
+          "confirms_if": "Correct attributes in debug but not applied = NAS-side application issue",
+          "look_for": "Check RADIUS attribute values in Access-Accept — look for cisco-av-pair, Tunnel-*, Filter-Id",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug radius authentication",
+          "confirms_if": "Correct attributes in debug but not applied = NAS-side application issue",
+          "look_for": "Check RADIUS attribute values in Access-Accept — look for cisco-av-pair, Tunnel-*, Filter-Id",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug radius authentication",
+          "confirms_if": "Correct attributes in debug but not applied = NAS-side application issue",
+          "look_for": "Check RADIUS attribute values in Access-Accept — look for cisco-av-pair, Tunnel-*, Filter-Id",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan brief",
+          "confirms_if": "Missing VLAN on switch explains why VLAN assignment failed",
+          "look_for": "Verify the RADIUS-assigned VLAN ID exists on the switch",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan brief",
+          "confirms_if": "Missing VLAN on switch explains why VLAN assignment failed",
+          "look_for": "Verify the RADIUS-assigned VLAN ID exists on the switch",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan brief",
+          "confirms_if": "Missing VLAN on switch explains why VLAN assignment failed",
+          "look_for": "Verify the RADIUS-assigned VLAN ID exists on the switch",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Multiple RADIUS servers configured but load-balancing causes session state issues or uneven distribution",
+      "resolutions": [
+        {
+          "action": "For EAP: use failover (ordered) not load-balance — EAP requires session stickiness",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For EAP: use failover (ordered) not load-balance — EAP requires session stickiness",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For EAP: use failover (ordered) not load-balance — EAP requires session stickiness",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If load-balancing needed: use external LB (F5/Radware) with RADIUS session stickiness",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If load-balancing needed: use external LB (F5/Radware) with RADIUS session stickiness",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If load-balancing needed: use external LB (F5/Radware) with RADIUS session stickiness",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: 'load-balance method least-outstanding batch-size 5' in server group",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: 'load-balance method least-outstanding batch-size 5' in server group",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: 'load-balance method least-outstanding batch-size 5' in server group",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Alternatively: use RADIUS proxy (e.g., ISE RADIUS proxy) for session-aware LB",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Alternatively: use RADIUS proxy (e.g., ISE RADIUS proxy) for session-aware LB",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Alternatively: use RADIUS proxy (e.g., ISE RADIUS proxy) for session-aware LB",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE: ensure all PSN nodes have same policy configuration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE: ensure all PSN nodes have same policy configuration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE: ensure all PSN nodes have same policy configuration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Server group configured with load-balance but RADIUS is stateful for EAP",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "EAP multi-round exchanges split across servers (no session stickiness)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Load-balancer in front of ISE without sticky sessions",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Batch size or method-list configuration causing poor distribution",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "RADIUS load-balancing misconfiguration",
+      "symptoms": [
+        "EAP authentications randomly fail when multi-round exchange hits different servers",
+        "Some RADIUS servers overloaded while others idle",
+        "'show aaa servers' shows very uneven request distribution",
+        "ISE shows incomplete EAP sessions in failed attempts"
+      ],
+      "verify_commands": [
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Highly uneven distribution or EAP timeouts on some servers confirms LB issue",
+          "look_for": "Compare request/timeout counts across servers — look for uneven distribution",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Highly uneven distribution or EAP timeouts on some servers confirms LB issue",
+          "look_for": "Compare request/timeout counts across servers — look for uneven distribution",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Highly uneven distribution or EAP timeouts on some servers confirms LB issue",
+          "look_for": "Compare request/timeout counts across servers — look for uneven distribution",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa server-group radius <group>",
+          "confirms_if": "Load-balance with EAP traffic confirms misconfiguration",
+          "look_for": "Check if 'load-balance' is configured and what method",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa server-group radius <group>",
+          "confirms_if": "Load-balance with EAP traffic confirms misconfiguration",
+          "look_for": "Check if 'load-balance' is configured and what method",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa server-group radius <group>",
+          "confirms_if": "Load-balance with EAP traffic confirms misconfiguration",
+          "look_for": "Check if 'load-balance' is configured and what method",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "NAS sends RADIUS packets from wrong source IP or VRF, causing server to reject or not receive requests",
+      "resolutions": [
+        {
+          "action": "IOS-XE: configure 'ip radius source-interface <loopback>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure 'ip radius source-interface <loopback>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure 'ip radius source-interface <loopback>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: configure 'ip radius source-interface <loopback>' (global) or per-server",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: configure 'ip radius source-interface <loopback>' (global) or per-server",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: configure 'ip radius source-interface <loopback>' (global) or per-server",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: configure source-interface under 'radius-server host' or 'aaa group server radius'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: configure source-interface under 'radius-server host' or 'aaa group server radius'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: configure source-interface under 'radius-server host' or 'aaa group server radius'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VRF: add 'vrf <name>' to RADIUS server definition",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VRF: add 'vrf <name>' to RADIUS server definition",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VRF: add 'vrf <name>' to RADIUS server definition",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Update ISE device entry to match NAS source IP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Update ISE device entry to match NAS source IP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Update ISE device entry to match NAS source IP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "ip radius source-interface not configured — NAS uses outgoing interface IP",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RADIUS server in VRF but 'vrf' keyword not specified in server config",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Source interface is in different VRF than RADIUS server",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ISE network device entry has wrong NAS-IP-Address",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Multiple IPs on NAS — RADIUS picks unexpected source",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Source interface / VRF mismatch",
+      "symptoms": [
+        "RADIUS authentication always times out",
+        "ISE doesn't show any incoming requests from this NAS",
+        "NAS IP in ISE device list doesn't match actual source IP",
+        "ping to RADIUS server works but RADIUS auth fails"
+      ],
+      "verify_commands": [
+        {
+          "command": "show running-config | include radius source",
+          "confirms_if": "Missing source-interface or wrong interface confirms VRF/source issue",
+          "look_for": "Check if 'ip radius source-interface' is configured",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include radius source",
+          "confirms_if": "Missing source-interface or wrong interface confirms VRF/source issue",
+          "look_for": "Check if 'ip radius source-interface' is configured",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include radius source",
+          "confirms_if": "Missing source-interface or wrong interface confirms VRF/source issue",
+          "look_for": "Check if 'ip radius source-interface' is configured",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug radius authentication",
+          "confirms_if": "Source IP different from ISE device entry confirms mismatch",
+          "look_for": "Check source IP in outgoing RADIUS packet",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug radius authentication",
+          "confirms_if": "Source IP different from ISE device entry confirms mismatch",
+          "look_for": "Check source IP in outgoing RADIUS packet",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug radius authentication",
+          "confirms_if": "Source IP different from ISE device entry confirms mismatch",
+          "look_for": "Check source IP in outgoing RADIUS packet",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip interface brief | include <loopback>",
+          "confirms_if": "Down interface or wrong IP explains source mismatch",
+          "look_for": "Verify loopback interface is up/up and has expected IP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip interface brief | include <loopback>",
+          "confirms_if": "Down interface or wrong IP explains source mismatch",
+          "look_for": "Verify loopback interface is up/up and has expected IP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip interface brief | include <loopback>",
+          "confirms_if": "Down interface or wrong IP explains source mismatch",
+          "look_for": "Verify loopback interface is up/up and has expected IP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "NAS fails to send Accounting-Stop to RADIUS server, causing phantom active sessions on ISE that consume licenses and break session count policies",
+      "resolutions": [
+        {
+          "action": "Verify accounting config: 'aaa accounting dot1x default start-stop group radius'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify accounting config: 'aaa accounting dot1x default start-stop group radius'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify accounting config: 'aaa accounting dot1x default start-stop group radius'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure 'aaa accounting system default start-stop group radius' for reload events",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure 'aaa accounting system default start-stop group radius' for reload events",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure 'aaa accounting system default start-stop group radius' for reload events",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ISE: configure session stale timer to clean up phantom sessions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ISE: configure session stale timer to clean up phantom sessions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ISE: configure session stale timer to clean up phantom sessions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ISE: Administration > System > Settings > Profiling > set accounting cleanup",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ISE: Administration > System > Settings > Profiling > set accounting cleanup",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ISE: Administration > System > Settings > Profiling > set accounting cleanup",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider periodic 'aaa accounting update periodic <min>' for interim updates",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider periodic 'aaa accounting update periodic <min>' for interim updates",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider periodic 'aaa accounting update periodic <min>' for interim updates",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Accounting not configured on NAS",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Accounting server unreachable when session ended",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NAS reloaded without sending accounting-stop for active sessions",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "aaa accounting method list missing 'stop-only' or 'start-stop'",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Network event (interface flap) causes session teardown without accounting",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Accounting stop not sent / phantom sessions",
+      "symptoms": [
+        "ISE shows sessions active long after user disconnected",
+        "ISE license utilization higher than actual connected users",
+        "Concurrent session limits reached prematurely",
+        "'show aaa servers' shows accounting timeouts"
+      ],
+      "verify_commands": [
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Accounting timeouts or zero acct-requests indicates accounting not working",
+          "look_for": "Compare accounting requests-sent vs responses — high difference = lost accounting",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Accounting timeouts or zero acct-requests indicates accounting not working",
+          "look_for": "Compare accounting requests-sent vs responses — high difference = lost accounting",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Accounting timeouts or zero acct-requests indicates accounting not working",
+          "look_for": "Compare accounting requests-sent vs responses — high difference = lost accounting",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa accounting",
+          "confirms_if": "Missing accounting config confirms root cause",
+          "look_for": "Check for 'aaa accounting' lines — need dot1x, exec, and system accounting",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa accounting",
+          "confirms_if": "Missing accounting config confirms root cause",
+          "look_for": "Check for 'aaa accounting' lines — need dot1x, exec, and system accounting",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa accounting",
+          "confirms_if": "Missing accounting config confirms root cause",
+          "look_for": "Check for 'aaa accounting' lines — need dot1x, exec, and system accounting",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions",
+          "confirms_if": "ISE showing more sessions than NAS confirms phantom sessions",
+          "look_for": "Cross-reference NAS active sessions with ISE active sessions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions",
+          "confirms_if": "ISE showing more sessions than NAS confirms phantom sessions",
+          "look_for": "Cross-reference NAS active sessions with ISE active sessions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions",
+          "confirms_if": "ISE showing more sessions than NAS confirms phantom sessions",
+          "look_for": "Cross-reference NAS active sessions with ISE active sessions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "NAS sends authentication request to RADIUS server with user credentials and NAS attributes",
+      "key_fields": [
+        "User-Name (1)",
+        "User-Password (2) or EAP-Message (79)",
+        "NAS-IP-Address (4)",
+        "NAS-Port (5)",
+        "Called-Station-Id (30)",
+        "Calling-Station-Id (31)",
+        "Service-Type (6)"
+      ],
+      "name": "Access-Request",
+      "when_sent": "When a user/device needs authentication (login, 802.1X, VPN, etc.)"
+    },
+    {
+      "description": "RADIUS server grants access — may include authorization attributes (VLAN, ACL, SGT, etc.)",
+      "key_fields": [
+        "Filter-Id (11) — ACL name",
+        "Tunnel-Type (64) / Tunnel-Medium-Type (65) / Tunnel-Private-Group-Id (81) — dynamic VLAN",
+        "cisco-av-pair VSA — SGT, dACL, URL-redirect, etc.",
+        "Session-Timeout (27)",
+        "Termination-Action (29)",
+        "Class (25) — session identifier for accounting correlation"
+      ],
+      "name": "Access-Accept",
+      "when_sent": "Authentication and authorization policy check succeeded"
+    },
+    {
+      "description": "RADIUS server denies access",
+      "key_fields": [
+        "Reply-Message (18) — optional reason text",
+        "EAP-Message (79) — EAP-Failure if EAP was used"
+      ],
+      "name": "Access-Reject",
+      "when_sent": "Credentials invalid or authorization policy denied"
+    },
+    {
+      "description": "RADIUS server requests additional information — used for multi-round EAP exchanges (PEAP, EAP-TLS, EAP-FAST)",
+      "key_fields": [
+        "EAP-Message (79) — EAP payload",
+        "State (24) — opaque state to correlate multi-round exchange",
+        "Message-Authenticator (80) — required for EAP"
+      ],
+      "name": "Access-Challenge",
+      "when_sent": "During EAP negotiation when more rounds needed"
+    },
+    {
+      "description": "NAS sends accounting record (start, interim-update, or stop)",
+      "key_fields": [
+        "Acct-Status-Type (40) — Start(1), Stop(2), Interim-Update(3)",
+        "Acct-Session-Id (44)",
+        "Acct-Input-Octets (42) / Acct-Output-Octets (43)",
+        "Acct-Terminate-Cause (49) — reason for session end",
+        "NAS-IP-Address (4)"
+      ],
+      "name": "Accounting-Request",
+      "when_sent": "Start: session begins. Interim: periodic update. Stop: session ends."
+    },
+    {
+      "description": "RADIUS server acknowledges accounting record",
+      "key_fields": [
+        "(minimal — acknowledgement only)"
+      ],
+      "name": "Accounting-Response",
+      "when_sent": "After successfully processing an Accounting-Request"
+    },
+    {
+      "description": "RADIUS server pushes policy change to NAS — reauthenticate, change ACL/VLAN, or bounce port",
+      "key_fields": [
+        "cisco-av-pair: subscriber:command=reauthenticate",
+        "cisco-av-pair: subscriber:command=bounce-host-port",
+        "cisco-av-pair: subscriber:command=disable-host-port",
+        "Filter-Id / cisco-av-pair:ip:inacl# — new ACL",
+        "Tunnel-Private-Group-Id — new VLAN"
+      ],
+      "name": "CoA-Request (RFC 5176)",
+      "when_sent": "Administrator changes policy on ISE/RADIUS, or posture status changes, or profiling reclassifies endpoint"
+    },
+    {
+      "description": "RADIUS server instructs NAS to terminate a specific session",
+      "key_fields": [
+        "Acct-Session-Id (44) — identifies which session to terminate",
+        "NAS-IP-Address (4)",
+        "Calling-Station-Id (31) — MAC address for identification"
+      ],
+      "name": "Disconnect-Request (RFC 5176)",
+      "when_sent": "Administrator forces session termination from RADIUS server"
+    }
+  ],
+  "operates_at": "Layer 7 (Application)",
+  "protocol_family": "security",
+  "protocol_id": "radius",
+  "protocol_name": "RADIUS",
+  "purpose": "Client/server protocol for centralized authentication, authorization, and accounting — the transport layer for 802.1X, device admin, and VPN authentication",
+  "related_protocols": [
+    "dot1x",
+    "tacacs"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-2865",
+      "rfc_number": 2865,
+      "title": "RFC 2865",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc2865.txt"
+    },
+    {
+      "id": "rfc-2866",
+      "rfc_number": 2866,
+      "title": "RFC 2866",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc2866.txt"
+    },
+    {
+      "id": "rfc-5176",
+      "rfc_number": 5176,
+      "title": "RFC 5176",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc5176.txt"
+    },
+    {
+      "id": "agent-cisco-kb:security/radius.json",
+      "title": "agent-cisco-kb knowledge base — security/radius.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 2865 (Auth), RFC 2866 (Accounting), RFC 5176 (CoA/DM)",
+  "states": [
+    {
+      "description": "No pending RADIUS transaction — NAS ready to send new requests",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "IDLE"
+    },
+    {
+      "description": "Access-Request or Accounting-Request sent to RADIUS server, waiting for response",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "REQUEST_SENT"
+    },
+    {
+      "description": "No response received within timeout, retransmitting request to same or next server",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "RETRANSMITTING"
+    },
+    {
+      "description": "Access-Accept received — user/device authenticated successfully. NAS applies returned attributes (VLAN, ACL, SGT, etc.)",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "ACCEPTED"
+    },
+    {
+      "description": "Access-Reject received — credentials or policy check failed",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "REJECTED"
+    },
+    {
+      "description": "Access-Challenge received — multi-round EAP exchange in progress (e.g., PEAP, EAP-TLS handshake)",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "CHALLENGED"
+    },
+    {
+      "description": "RADIUS server marked dead after consecutive timeouts — NAS will skip this server until deadtime expires",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "SERVER_DEAD"
+    },
+    {
+      "description": "Change of Authorization request received from RADIUS server (RFC 5176) — NAS processing policy change or disconnect",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "COA_RECEIVED"
+    }
+  ],
+  "tags": [
+    "aaa",
+    "authentication",
+    "authorization",
+    "accounting",
+    "radius",
+    "security",
+    "identity",
+    "ise",
+    "coa",
+    "eap",
+    "udp"
+  ],
+  "timers": [
+    {
+      "default_rfc": "5s",
+      "description": "Time to wait for RADIUS server response before retransmitting",
+      "name": "retransmit-timeout",
+      "on_expiry": "Retransmit the request or try next server",
+      "os_defaults": [
+        {
+          "default": "5s",
+          "notes": "Configured via 'radius-server timeout'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "5s",
+          "notes": "Configured via 'radius-server timeout' or per-server. With automate-tester, dead-criteria uses this value.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "5s",
+          "notes": "Configured under 'radius-server host' or 'aaa group server radius'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-60s",
+      "tuning_advice": "Lower for faster failover (2-3s recommended with multiple servers). Must account for EAP round-trips on the server side."
+    },
+    {
+      "default_rfc": "3",
+      "description": "Number of retransmissions before marking server dead",
+      "name": "retransmit-count",
+      "on_expiry": "Server marked dead after this many consecutive timeouts",
+      "range": "1-100",
+      "tuning_advice": "Lower for faster failover. With 3 servers at 5s timeout and 3 retries, worst-case auth delay is 45s. Recommend 1-2 retries with 2-3s timeout for responsive failover."
+    },
+    {
+      "default_rfc": "0 (disabled)",
+      "description": "Time a RADIUS server remains marked dead after consecutive timeouts — requests skip dead servers during this period",
+      "name": "deadtime",
+      "on_expiry": "Server returned to active pool and probed again",
+      "os_defaults": [
+        {
+          "default": "0 (disabled)",
+          "notes": "Also supports 'radius-server dead-criteria' with time + tries thresholds. Use 'radius-server deadtime' globally or per-server.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "0 (disabled)",
+          "notes": "Configured via 'radius-server deadtime'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "0 (disabled)",
+          "notes": "Configured under 'radius-server deadtime' or per-server in the aaa group",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-1440 min",
+      "tuning_advice": "ALWAYS configure deadtime (5-15 min recommended). Without deadtime, NAS keeps trying dead servers and every auth suffers the full timeout chain. Critical for failover scenarios."
+    },
+    {
+      "default_rfc": "5s (same as auth)",
+      "description": "Timeout for accounting requests — separate from auth timeout on some platforms",
+      "name": "accounting-timeout",
+      "on_expiry": "Accounting request retransmitted or dropped",
+      "range": "1-60s",
+      "tuning_advice": "Accounting can tolerate longer timeouts since it's not in the user auth path. But lost accounting-stop records cause phantom sessions on ISE."
+    },
+    {
+      "default_rfc": "60s",
+      "description": "IOS-XE: interval for sending test probes to RADIUS servers to detect recovery from dead state",
+      "name": "automate-tester-interval",
+      "on_expiry": "Sends a test auth request to probe dead servers",
+      "os_defaults": [
+        {
+          "default": "60s",
+          "notes": "Configured via 'automate-tester username <user> probe-on'. Requires a test user identity. Sends periodic test-auth to dead servers to detect recovery.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-1440 min",
+      "tuning_advice": "Use 'radius-server dead-criteria time <s> tries <n>' with 'automate-tester' to detect server recovery faster than waiting for deadtime to expire naturally."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "IDLE",
+      "to_state": "REQUEST_SENT",
+      "trigger": "Authentication or accounting event triggers RADIUS request"
+    },
+    {
+      "from_state": "REQUEST_SENT",
+      "to_state": "ACCEPTED",
+      "trigger": "Access-Accept received from RADIUS server"
+    },
+    {
+      "from_state": "REQUEST_SENT",
+      "to_state": "REJECTED",
+      "trigger": "Access-Reject received from RADIUS server"
+    },
+    {
+      "from_state": "REQUEST_SENT",
+      "to_state": "CHALLENGED",
+      "trigger": "Access-Challenge received — EAP method exchange in progress"
+    },
+    {
+      "failure_if_stuck": "Check RADIUS server reachability, UDP 1812/1813 not blocked, shared secret correct (server silently drops on mismatch)",
+      "from_state": "REQUEST_SENT",
+      "to_state": "RETRANSMITTING",
+      "trigger": "No response within retransmit timeout"
+    },
+    {
+      "from_state": "CHALLENGED",
+      "to_state": "REQUEST_SENT",
+      "trigger": "NAS forwards next EAP frame from supplicant as new Access-Request"
+    },
+    {
+      "from_state": "CHALLENGED",
+      "to_state": "ACCEPTED",
+      "trigger": "Final Access-Accept received after EAP exchange completes"
+    },
+    {
+      "from_state": "CHALLENGED",
+      "to_state": "REJECTED",
+      "trigger": "Access-Reject received during EAP exchange"
+    },
+    {
+      "from_state": "RETRANSMITTING",
+      "to_state": "REQUEST_SENT",
+      "trigger": "Retransmit sent (same server or next server in group)"
+    },
+    {
+      "from_state": "RETRANSMITTING",
+      "to_state": "SERVER_DEAD",
+      "trigger": "All retransmits exhausted for this server — server marked dead, deadtime starts"
+    },
+    {
+      "from_state": "SERVER_DEAD",
+      "to_state": "IDLE",
+      "trigger": "Deadtime expires — server returned to active pool for probing"
+    },
+    {
+      "from_state": "ACCEPTED",
+      "to_state": "IDLE",
+      "trigger": "Session complete or accounting stop sent"
+    },
+    {
+      "from_state": "REJECTED",
+      "to_state": "IDLE",
+      "trigger": "Rejection processed, NAS returns to idle"
+    },
+    {
+      "from_state": "IDLE",
+      "to_state": "COA_RECEIVED",
+      "trigger": "Unsolicited CoA or Disconnect-Request received from RADIUS server (UDP 1700/3799)"
+    },
+    {
+      "from_state": "COA_RECEIVED",
+      "to_state": "IDLE",
+      "trigger": "CoA processed — CoA-ACK or CoA-NAK sent back to server"
+    }
+  ],
+  "transport": "UDP/1812 (auth), UDP/1813 (acct), UDP/1700 or 3799 (CoA)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "IOS-XE RADIUS: most feature-rich implementation. Supports 'aaa new-model' (required), 'radius server <name>' (named server config), server-groups, per-server keys, dead-criteria, automate-tester, and 'test aaa group <group> <user> <pass> new-code' for live testing.",
+          "versions": "16.12+"
+        },
+        {
+          "note": "IOS-XE dead-server detection: 'radius-server dead-criteria time <s> tries <n>' + 'radius-server deadtime <min>'. Combined with 'automate-tester username <user> probe-on', this provides proactive dead-server detection and recovery. CRITICAL for production deployments.",
+          "versions": "16.12+"
+        },
+        {
+          "note": "IOS-XE CoA: 'aaa server radius dynamic-author' is required for ISE CoA/Disconnect. Configure client IP and key. Default CoA port is 1700 (Cisco legacy); RFC 5176 uses 3799. ISE defaults to 1700 for Cisco devices.",
+          "versions": "16.12+"
+        },
+        {
+          "note": "IOS-XE named RADIUS server syntax (modern): 'radius server <name>' / 'address ipv4 <ip> auth-port 1812 acct-port 1813' / 'key <secret>'. Old syntax 'radius-server host' still works but deprecated. Method lists reference server groups, not individual servers.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "IOS-XR RADIUS: configured under 'radius-server host <ip>' or 'aaa group server radius <name>'. Source interface via 'source-interface <intf>' under group or global. VRF-aware via 'vrf <vrf-name>' in server group.",
+          "versions": "7.5+"
+        },
+        {
+          "note": "IOS-XR CoA: supported but less common — IOS-XR devices are typically routers not access switches. CoA configured under 'aaa server radius dynamic-author'. Used primarily for subscriber management (BNG) scenarios.",
+          "versions": "7.5+"
+        },
+        {
+          "note": "IOS-XR dead-server detection: 'radius-server deadtime <min>' supported. No automate-tester equivalent — relies on deadtime expiry for server re-probing.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "RADIUS on NX-OS: 'radius-server host <ip> key <secret>'. Supports 'test aaa server radius <ip> <user> <pass>' for live testing. Server groups via 'aaa group server radius'. Source interface via 'ip radius source-interface'. NX-OS uses RADIUS primarily for dot1x — device admin typically uses TACACS+.",
+          "versions": "7.0+"
+        },
+        {
+          "note": "NX-OS VRF-aware RADIUS: use 'use-vrf <vrf-name>' under 'aaa group server radius' or globally. Common for mgmt VRF. Without this, RADIUS traffic uses default VRF and may fail.",
+          "versions": "7.0+"
+        },
+        {
+          "note": "NX-OS directed-request: 'radius-server directed-request' allows specifying RADIUS server in username (user@server). Useful for testing but security concern in production.",
+          "versions": "7.0+"
+        }
+      ]
+    }
+  }
+}

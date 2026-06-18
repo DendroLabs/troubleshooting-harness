@@ -1,0 +1,238 @@
+{
+  "def_type": "asic_families",
+  "description": "ASIC families referenced by hardware platform topology files.",
+  "entries": [
+    {
+      "def_id": "asic:aci",
+      "def_type": "asic_family",
+      "description": "Cisco ACI ASIC family. Referenced by 1 platform topology file(s) in the dataset.",
+      "name": "ACI",
+      "platforms": [
+        "n9396tx"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:adelaide-m2",
+      "def_type": "asic_family",
+      "description": "Cisco Adelaide (M2) ASIC family. Referenced by 1 platform topology file(s) in the dataset.",
+      "name": "Adelaide (M2)",
+      "platforms": [
+        "n7k-m108x2-12l"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:albert-park-m1",
+      "def_type": "asic_family",
+      "description": "Cisco Albert Park (M1) ASIC family. Referenced by 1 platform topology file(s) in the dataset.",
+      "name": "Albert Park (M1)",
+      "platforms": [
+        "n7k-m132xp-12"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:alpine",
+      "def_type": "asic_family",
+      "description": "Cisco Alpine ASIC family. Referenced by 1 platform topology file(s) in the dataset.",
+      "name": "Alpine",
+      "platforms": [
+        "n9336pq"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:autodromo-m3",
+      "def_type": "asic_family",
+      "description": "Cisco Autodromo (M3) ASIC family. Referenced by 3 platform topology file(s) in the dataset.",
+      "name": "Autodromo (M3)",
+      "platforms": [
+        "n7k-m202cf-22l",
+        "n7k-m206fq-23l",
+        "n7k-m224xp-23l"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:cloud-scale",
+      "def_type": "asic_family",
+      "description": "Cisco Cloud Scale ASIC family. Referenced by 7 platform topology file(s) in the dataset.",
+      "name": "Cloud Scale",
+      "platforms": [
+        "n93108tc-ex",
+        "n93180yc-ex",
+        "n93180yc-fx",
+        "n93240yc-fx2",
+        "n9348gc-fxp",
+        "x9732c-ex",
+        "x9736c-ex"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:cloud-scale-fabric",
+      "def_type": "asic_family",
+      "description": "Cisco Cloud Scale Fabric ASIC family. Referenced by 2 platform topology file(s) in the dataset.",
+      "name": "Cloud Scale Fabric",
+      "platforms": [
+        "c9504fm-e",
+        "c9508fm-e"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:cloud-scale-fx",
+      "def_type": "asic_family",
+      "description": "Cisco Cloud Scale FX ASIC family. Referenced by 1 platform topology file(s) in the dataset.",
+      "name": "Cloud Scale FX",
+      "platforms": [
+        "x9736c-fx"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:cloud-scale-gx",
+      "def_type": "asic_family",
+      "description": "Cisco Cloud Scale GX ASIC family. Referenced by 1 platform topology file(s) in the dataset.",
+      "name": "Cloud Scale GX",
+      "platforms": [
+        "n93600cd-gx"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:f-series",
+      "def_type": "asic_family",
+      "description": "Cisco F-Series ASIC family. Referenced by 4 platform topology file(s) in the dataset.",
+      "name": "F-Series",
+      "platforms": [
+        "n77-f248xp-23e",
+        "n77-f312ck-26",
+        "n77-f324fq-25",
+        "n77-f348xp-23"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:f2",
+      "def_type": "asic_family",
+      "description": "Cisco F2 ASIC family. Referenced by 2 platform topology file(s) in the dataset.",
+      "name": "F2",
+      "platforms": [
+        "n7k-f132xp-15",
+        "n7k-f248xp-25"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:f2e",
+      "def_type": "asic_family",
+      "description": "Cisco F2e ASIC family. Referenced by 2 platform topology file(s) in the dataset.",
+      "name": "F2e",
+      "platforms": [
+        "n7k-f248xp-25e",
+        "n7k-f248xt-25e"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:f3",
+      "def_type": "asic_family",
+      "description": "Cisco F3 ASIC family. Referenced by 3 platform topology file(s) in the dataset.",
+      "name": "F3",
+      "platforms": [
+        "n7k-f306ck-25",
+        "n7k-f312fq-25",
+        "n7k-f348xp-25"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:jarama-m1",
+      "def_type": "asic_family",
+      "description": "Cisco Jarama (M1) ASIC family. Referenced by 1 platform topology file(s) in the dataset.",
+      "name": "Jarama (M1)",
+      "platforms": [
+        "n7k-m148gs-11"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:m-series",
+      "def_type": "asic_family",
+      "description": "Cisco M-Series ASIC family. Referenced by 3 platform topology file(s) in the dataset.",
+      "name": "M-Series",
+      "platforms": [
+        "n77-m312cq-26l",
+        "n77-m324fq-25l",
+        "n77-m348xp-23l"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:memory-machine",
+      "def_type": "asic_family",
+      "description": "Cisco Memory Machine ASIC family. Referenced by 9 platform topology file(s) in the dataset.",
+      "name": "Memory Machine",
+      "platforms": [
+        "c9508fm-s",
+        "n77-f430cq-36",
+        "n93180yc-fx3",
+        "n9332pq",
+        "n9372px",
+        "n9372tx",
+        "n9396px",
+        "n9396tx",
+        "x9432c-s"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:nurburgring-m1",
+      "def_type": "asic_family",
+      "description": "Cisco Nurburgring (M1) ASIC family. Referenced by 1 platform topology file(s) in the dataset.",
+      "name": "Nurburgring (M1)",
+      "platforms": [
+        "n7k-m148gt-11"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:silicon-one",
+      "def_type": "asic_family",
+      "description": "Cisco Silicon One ASIC family. Referenced by 4 platform topology file(s) in the dataset.",
+      "name": "Silicon One",
+      "platforms": [
+        "8111-32eh",
+        "8201",
+        "n9332d-h2r",
+        "n9336c-fx2"
+      ],
+      "vendor": "Cisco"
+    },
+    {
+      "def_id": "asic:trident2",
+      "def_type": "asic_family",
+      "description": "Broadcom Trident2 ASIC family. Referenced by 2 platform topology file(s) in the dataset.",
+      "name": "Trident2",
+      "platforms": [
+        "n93128tx",
+        "n9336pq"
+      ],
+      "vendor": "Broadcom"
+    },
+    {
+      "def_id": "asic:uadp",
+      "def_type": "asic_family",
+      "description": "Cisco UADP ASIC family. Referenced by 2 platform topology file(s) in the dataset.",
+      "name": "UADP",
+      "platforms": [
+        "c9300-24t",
+        "c9300-48uxm"
+      ],
+      "vendor": "Cisco"
+    }
+  ],
+  "schema_version": "1.0.0"
+}

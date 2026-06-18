@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "protocol.schema.json",
+  "title": "Protocol",
+  "description": "Network protocol definition with states, transitions, timers, failure modes, and vendor-specific operational data. Every operational data point carries full applicability scope.",
+
+  "$defs": {
+    "source": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "type": { "type": "string", "enum": ["rfc", "standard", "ieee_standard", "itu_standard", "book", "article", "documentation", "vendor_doc", "source_code", "lab_verified"] },
+        "rfc_number": { "type": "integer" },
+        "url": { "type": "string" },
+        "verifying_quote": { "type": "string", "description": "Verbatim excerpt proving the source was accessed and this data was derived from it" }
+      },
+      "required": ["id", "title", "type"],
+      "additionalProperties": false
+    },
+
+    "verify_command": {
+      "type": "object",
+      "properties": {
+        "os": { "type": "string" },
+        "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+        "platforms": {
+          "oneOf": [
+            { "type": "array", "items": { "type": "string" } },
+            { "type": "null" }
+          ]
+        },
+        "asic_family": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "null" }
+          ]
+        },
+        "command": { "type": "string" },
+        "look_for": { "type": "string" },
+        "confirms_if": { "type": "string" }
+      },
+      "required": ["os", "version_range", "command", "look_for", "confirms_if"],
+      "additionalProperties": false
+    },
+
+    "state": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "is_steady": { "type": "boolean" },
+        "is_failure": { "type": "boolean" },
+        "verify_commands": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/verify_command" }
+        }
+      },
+      "required": ["name", "description", "is_steady", "is_failure"],
+      "additionalProperties": false
+    },
+
+    "transition": {
+      "type": "object",
+      "properties": {
+        "from_state": { "type": "string" },
+        "to_state": { "type": "string" },
+        "trigger": { "type": "string" },
+        "failure_if_stuck": { "type": "string" }
+      },
+      "required": ["from_state", "to_state", "trigger"],
+      "additionalProperties": false
+    },
+
+    "os_timer_default": {
+      "type": "object",
+      "properties": {
+        "os": { "type": "string" },
+        "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+        "platforms": {
+          "oneOf": [
+            { "type": "array", "items": { "type": "string" } },
+            { "type": "null" }
+          ]
+        },
+        "default": { "type": "string" },
+        "config_path": { "type": "string", "description": "DB config path (e.g., SONiC CONFIG_DB key)" },
+        "frr_path": { "type": "string", "description": "FRR vtysh config path" },
+        "notes": { "type": "string" }
+      },
+      "required": ["os", "version_range", "default"],
+      "additionalProperties": false
+    },
+
+    "protocol_timer": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "default_rfc": { "type": "string", "description": "RFC-specified default" },
+        "range": { "type": "string" },
+        "on_expiry": { "type": "string" },
+        "tuning_advice": { "type": "string" },
+        "os_defaults": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/os_timer_default" }
+        }
+      },
+      "required": ["name", "description", "default_rfc", "on_expiry"],
+      "additionalProperties": false
+    },
+
+    "message": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "when_sent": { "type": "string" },
+        "key_fields": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["name", "description", "when_sent"],
+      "additionalProperties": false
+    },
+
+    "scoped_cause": {
+      "type": "object",
+      "properties": {
+        "cause": { "type": "string" },
+        "os": { "type": "string" },
+        "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+        "platforms": {
+          "oneOf": [
+            { "type": "array", "items": { "type": "string" } },
+            { "type": "null" }
+          ]
+        },
+        "asic_family": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "required": ["cause", "os", "version_range"],
+      "additionalProperties": false
+    },
+
+    "scoped_resolution": {
+      "type": "object",
+      "properties": {
+        "action": { "type": "string" },
+        "os": { "type": "string" },
+        "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+        "platforms": {
+          "oneOf": [
+            { "type": "array", "items": { "type": "string" } },
+            { "type": "null" }
+          ]
+        },
+        "command": { "type": "string", "description": "Fix command if applicable" }
+      },
+      "required": ["action", "os", "version_range"],
+      "additionalProperties": false
+    },
+
+    "failure_mode": {
+      "type": "object",
+      "properties": {
+        "scenario": { "type": "string" },
+        "description": { "type": "string" },
+        "symptoms": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "root_causes": { "type": "array", "items": { "$ref": "#/$defs/scoped_cause" }, "minItems": 1 },
+        "resolutions": { "type": "array", "items": { "$ref": "#/$defs/scoped_resolution" }, "minItems": 1 },
+        "verify_commands": { "type": "array", "items": { "$ref": "#/$defs/verify_command" } },
+        "diagnostic_tree_ref": { "type": "string", "description": "ID of the diagnostic decision tree for this failure" }
+      },
+      "required": ["scenario", "description", "symptoms", "root_causes", "resolutions"],
+      "additionalProperties": false
+    },
+
+    "dependency": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["protocol", "daemon", "infrastructure", "database", "service"] },
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["type", "name", "description"],
+      "additionalProperties": false
+    }
+  },
+
+  "type": "object",
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+    "deprecated": { "type": "boolean", "default": false },
+    "deprecated_by": { "type": "string" },
+
+    "protocol_id": { "type": "string" },
+    "protocol_name": { "type": "string" },
+    "protocol_family": { "type": "string" },
+    "standard": { "type": "string" },
+    "purpose": { "type": "string" },
+    "operates_at": { "type": "string" },
+    "transport": { "type": "string" },
+    "def_refs": { "type": "array", "items": { "type": "string" } },
+
+    "states": { "type": "array", "items": { "$ref": "#/$defs/state" } },
+    "transitions": { "type": "array", "items": { "$ref": "#/$defs/transition" } },
+    "timers": { "type": "array", "items": { "$ref": "#/$defs/protocol_timer" } },
+    "messages": { "type": "array", "items": { "$ref": "#/$defs/message" } },
+    "failure_modes": { "type": "array", "items": { "$ref": "#/$defs/failure_mode" } },
+    "dependencies": { "type": "array", "items": { "$ref": "#/$defs/dependency" } },
+
+    "vendor_notes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "description": "Vendor-specific data keyed by OS name"
+      }
+    },
+
+    "sources": { "type": "array", "items": { "$ref": "#/$defs/source" } },
+    "related_protocols": { "type": "array", "items": { "type": "string" } },
+    "tags": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": [
+    "schema_version", "protocol_id", "protocol_name", "protocol_family",
+    "purpose", "states", "failure_modes", "sources"
+  ],
+  "additionalProperties": false
+}

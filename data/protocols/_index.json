@@ -1,0 +1,1005 @@
+{
+  "schema_version": "1.0.0",
+  "protocols": [
+    {
+      "protocol_id": "bfd",
+      "protocol_name": "BFD",
+      "protocol_family": "transport",
+      "file": "protocols/bfd.json",
+      "tags": [
+        "fault-detection",
+        "sub-second",
+        "convergence",
+        "keepalive",
+        "hardware-offload",
+        "transport",
+        "frr",
+        "bfd"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "bgp-4",
+      "protocol_name": "BGP-4",
+      "protocol_family": "routing",
+      "file": "protocols/bgp-4.json",
+      "tags": [
+        "egp",
+        "path-vector",
+        "inter-as",
+        "ebgp",
+        "ibgp",
+        "routing",
+        "prefix",
+        "as-path",
+        "community",
+        "route-policy",
+        "vrf",
+        "l3vpn",
+        "route-leak",
+        "next-hop",
+        "max-prefix",
+        "frr",
+        "bgpcfgd",
+        "fpmsyncd",
+        "ecmp",
+        "data-center"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "cfm-y1731",
+      "protocol_name": "CFM / Y.1731",
+      "protocol_family": "switching",
+      "file": "protocols/cfm-y1731.json",
+      "tags": [
+        "carrier-ethernet",
+        "oam",
+        "fault-management",
+        "performance-monitoring",
+        "service-assurance",
+        "layer-2",
+        "switching"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "saos"
+      ]
+    },
+    {
+      "protocol_id": "dhcp",
+      "protocol_name": "DHCP Relay/Snooping",
+      "protocol_family": "services",
+      "file": "protocols/dhcp.json",
+      "tags": [
+        "dhcp",
+        "relay",
+        "snooping",
+        "option-82",
+        "helper-address",
+        "lease",
+        "ip-assignment",
+        "services"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "dot1x",
+      "protocol_name": "802.1X",
+      "protocol_family": "adjacency",
+      "file": "protocols/dot1x.json",
+      "tags": [
+        "security",
+        "authentication",
+        "nac",
+        "radius",
+        "eap",
+        "port-security",
+        "identity",
+        "adjacency"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "eigrp",
+      "protocol_name": "EIGRP",
+      "protocol_family": "routing",
+      "file": "protocols/eigrp.json",
+      "tags": [
+        "igp",
+        "distance-vector",
+        "dual",
+        "routing",
+        "convergence",
+        "composite-metric",
+        "redistribution"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "evpn",
+      "protocol_name": "EVPN",
+      "protocol_family": "overlay",
+      "file": "protocols/evpn.json",
+      "tags": [
+        "overlay",
+        "evpn",
+        "vxlan",
+        "bgp",
+        "mac-advertisement",
+        "type-2",
+        "type-5",
+        "data-center",
+        "fabric",
+        "multi-homing"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "g8032-erps",
+      "protocol_name": "G.8032 ERPS",
+      "protocol_family": "switching",
+      "file": "protocols/g8032-erps.json",
+      "tags": [
+        "carrier-ethernet",
+        "ring-protection",
+        "sub-50ms",
+        "layer-2",
+        "service-protection",
+        "deterministic",
+        "switching"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "saos"
+      ]
+    },
+    {
+      "protocol_id": "gre-ipsec",
+      "protocol_name": "GRE/IPsec Tunnels",
+      "protocol_family": "transport",
+      "file": "protocols/gre-ipsec.json",
+      "tags": [
+        "gre",
+        "ipsec",
+        "tunnel",
+        "vpn",
+        "ike",
+        "ikev2",
+        "encryption",
+        "esp",
+        "nat-traversal",
+        "dmvpn",
+        "transport"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "hsrp",
+      "protocol_name": "HSRP",
+      "protocol_family": "fhrp",
+      "file": "protocols/hsrp.json",
+      "tags": [
+        "fhrp",
+        "gateway-redundancy",
+        "failover",
+        "cisco-proprietary",
+        "vip"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "igmp",
+      "protocol_name": "IGMP",
+      "protocol_family": "multicast",
+      "file": "protocols/igmp.json",
+      "tags": [
+        "multicast",
+        "igmp",
+        "igmpv2",
+        "igmpv3",
+        "snooping",
+        "group-membership",
+        "receiver",
+        "join",
+        "leave",
+        "querier",
+        "mrouter",
+        "layer-2",
+        "layer-3",
+        "host-signaling"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "isis",
+      "protocol_name": "IS-IS",
+      "protocol_family": "routing",
+      "file": "protocols/isis.json",
+      "tags": [
+        "igp",
+        "link-state",
+        "spf",
+        "clns",
+        "segment-routing",
+        "routing",
+        "level1",
+        "level2"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "l2-infrastructure",
+      "protocol_name": "L2 Infrastructure",
+      "protocol_family": "switching",
+      "file": "protocols/l2-infrastructure.json",
+      "tags": [
+        "layer2",
+        "vlan",
+        "trunking",
+        "802.1q",
+        "duplex",
+        "mtu",
+        "errdisable",
+        "native-vlan",
+        "unicast-flooding",
+        "cam-table",
+        "switching"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "saos"
+      ]
+    },
+    {
+      "protocol_id": "lacp",
+      "protocol_name": "LACP",
+      "protocol_family": "switching",
+      "file": "protocols/lacp.json",
+      "tags": [
+        "layer2",
+        "link-aggregation",
+        "port-channel",
+        "etherchannel",
+        "bonding",
+        "lag",
+        "switching",
+        "teamd",
+        "layer-2",
+        "lacp",
+        "aggregation"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "lldp",
+      "protocol_name": "LLDP",
+      "protocol_family": "adjacency",
+      "file": "protocols/lldp.json",
+      "tags": [
+        "layer2",
+        "discovery",
+        "neighbor",
+        "cdp-alternative",
+        "adjacency",
+        "topology",
+        "layer-2",
+        "lldp"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "mclag",
+      "protocol_name": "MC-LAG",
+      "protocol_family": "switching",
+      "file": "protocols/mclag.json",
+      "tags": [
+        "multi-chassis",
+        "lag",
+        "redundancy",
+        "iccp",
+        "mclag",
+        "dual-homing",
+        "active-active"
+      ],
+      "os_coverage": [
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "mpls-ldp",
+      "protocol_name": "MPLS/LDP",
+      "protocol_family": "transport",
+      "file": "protocols/mpls-ldp.json",
+      "tags": [
+        "mpls",
+        "label-switching",
+        "ldp",
+        "lsp",
+        "transport",
+        "label-distribution"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "mpls-tp",
+      "protocol_name": "MPLS-TP",
+      "protocol_family": "transport",
+      "file": "protocols/mpls-tp.json",
+      "tags": [
+        "transport",
+        "carrier-ethernet",
+        "deterministic",
+        "static-lsp",
+        "oam",
+        "linear-protection"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "saos"
+      ]
+    },
+    {
+      "protocol_id": "mst",
+      "protocol_name": "MST",
+      "protocol_family": "switching",
+      "file": "protocols/mst.json",
+      "tags": [
+        "layer2",
+        "spanning-tree",
+        "mst",
+        "multi-instance",
+        "vlan-mapping",
+        "loop-prevention",
+        "switching"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "nat",
+      "protocol_name": "NAT (Network Address Translation)",
+      "protocol_family": "services",
+      "file": "protocols/nat.json",
+      "tags": [
+        "nat",
+        "pat",
+        "translation",
+        "inside",
+        "outside",
+        "overload",
+        "alg",
+        "cgnat",
+        "services"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "netconf-restconf",
+      "protocol_name": "NETCONF/RESTCONF/gNMI",
+      "protocol_family": "services",
+      "file": "protocols/netconf-restconf.json",
+      "tags": [
+        "netconf",
+        "restconf",
+        "gnmi",
+        "yang",
+        "automation",
+        "programmability",
+        "telemetry",
+        "grpc",
+        "openconfig",
+        "services"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "netflow",
+      "protocol_name": "NetFlow/IPFIX",
+      "protocol_family": "services",
+      "file": "protocols/netflow.json",
+      "tags": [
+        "netflow",
+        "ipfix",
+        "sflow",
+        "flow-export",
+        "monitoring",
+        "sampling",
+        "telemetry",
+        "fnf",
+        "services"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "ntp",
+      "protocol_name": "NTP",
+      "protocol_family": "services",
+      "file": "protocols/ntp.json",
+      "tags": [
+        "ntp",
+        "time",
+        "synchronization",
+        "stratum",
+        "clock",
+        "authentication",
+        "services"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "ospfv2",
+      "protocol_name": "OSPFv2",
+      "protocol_family": "routing",
+      "file": "protocols/ospfv2.json",
+      "tags": [
+        "igp",
+        "link-state",
+        "spf",
+        "ipv4",
+        "routing",
+        "area",
+        "lsa",
+        "adjacency",
+        "redistribution",
+        "asymmetric-routing",
+        "frr",
+        "ospf"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "ospfv3",
+      "protocol_name": "OSPFv3",
+      "protocol_family": "routing",
+      "file": "protocols/ospfv3.json",
+      "tags": [
+        "igp",
+        "link-state",
+        "ipv6",
+        "dual-stack",
+        "spf",
+        "routing"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "pbr",
+      "protocol_name": "PBR (Policy-Based Routing)",
+      "protocol_family": "routing",
+      "file": "protocols/pbr.json",
+      "tags": [
+        "pbr",
+        "policy-routing",
+        "route-map",
+        "abf",
+        "next-hop",
+        "traffic-steering",
+        "routing"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "pim-sparse-mode",
+      "protocol_name": "PIM Sparse Mode",
+      "protocol_family": "multicast",
+      "file": "protocols/pim-sparse-mode.json",
+      "tags": [
+        "multicast",
+        "pim",
+        "sparse-mode",
+        "rp",
+        "rendezvous-point",
+        "rpf",
+        "spt",
+        "shared-tree",
+        "source-tree",
+        "join",
+        "prune",
+        "register",
+        "layer-3",
+        "mroute",
+        "mrib",
+        "mfib"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "ptp-synce",
+      "protocol_name": "PTP / SyncE",
+      "protocol_family": "transport",
+      "file": "protocols/ptp-synce.json",
+      "tags": [
+        "synchronization",
+        "timing",
+        "frequency",
+        "mobile-backhaul",
+        "carrier-ethernet",
+        "5g",
+        "telecom",
+        "transport"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "saos"
+      ]
+    },
+    {
+      "protocol_id": "radius",
+      "protocol_name": "RADIUS",
+      "protocol_family": "security",
+      "file": "protocols/radius.json",
+      "tags": [
+        "aaa",
+        "authentication",
+        "authorization",
+        "accounting",
+        "radius",
+        "security",
+        "identity",
+        "ise",
+        "coa",
+        "eap",
+        "udp"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "rstp",
+      "protocol_name": "RSTP",
+      "protocol_family": "switching",
+      "file": "protocols/rstp.json",
+      "tags": [
+        "layer2",
+        "loop-prevention",
+        "stp",
+        "rapid-spanning-tree",
+        "convergence",
+        "broadcast-storm",
+        "bpdu-guard",
+        "udld",
+        "storm-control",
+        "switching"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "segment-routing",
+      "protocol_name": "Segment Routing (SR-MPLS / SRv6)",
+      "protocol_family": "routing",
+      "file": "protocols/segment-routing.json",
+      "tags": [
+        "segment-routing",
+        "sr-mpls",
+        "srv6",
+        "sr-te",
+        "traffic-engineering",
+        "source-routing",
+        "prefix-sid",
+        "adjacency-sid",
+        "srgb",
+        "ti-lfa",
+        "fast-reroute",
+        "flex-algo",
+        "pce",
+        "pcep",
+        "binding-sid",
+        "usid",
+        "micro-segment",
+        "label-stack",
+        "routing"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "snmp",
+      "protocol_name": "SNMP",
+      "protocol_family": "services",
+      "file": "protocols/snmp.json",
+      "tags": [
+        "snmp",
+        "monitoring",
+        "polling",
+        "traps",
+        "mib",
+        "oid",
+        "community",
+        "snmpv3",
+        "engine-id",
+        "services"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "sonic-infrastructure",
+      "protocol_name": "SONiC Infrastructure",
+      "protocol_family": "vendor",
+      "file": "protocols/sonic-infrastructure.json",
+      "tags": [
+        "sonic",
+        "infrastructure",
+        "container",
+        "docker",
+        "redis",
+        "sai",
+        "orchagent",
+        "syncd",
+        "warm-reboot",
+        "crm",
+        "asic",
+        "vendor"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "span-erspan",
+      "protocol_name": "SPAN/ERSPAN",
+      "protocol_family": "services",
+      "file": "protocols/span-erspan.json",
+      "tags": [
+        "span",
+        "erspan",
+        "rspan",
+        "mirror",
+        "capture",
+        "monitoring",
+        "packet-capture",
+        "services"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "static-routing",
+      "protocol_name": "Static Routing",
+      "protocol_family": "routing",
+      "file": "protocols/static-routing.json",
+      "tags": [
+        "routing",
+        "static",
+        "default-route",
+        "failover",
+        "ip-sla",
+        "tracking",
+        "floating-static",
+        "next-hop",
+        "frr",
+        "null-route",
+        "blackhole"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "stp",
+      "protocol_name": "STP/RSTP",
+      "protocol_family": "switching",
+      "file": "protocols/stp.json",
+      "tags": [
+        "loop-prevention",
+        "layer-2",
+        "bridge",
+        "rstp",
+        "stp",
+        "bpdu",
+        "pvst"
+      ],
+      "os_coverage": [
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "system-management",
+      "protocol_name": "System Management",
+      "protocol_family": "services",
+      "file": "protocols/system-management.json",
+      "tags": [
+        "system-management",
+        "cli",
+        "parser",
+        "json",
+        "xml",
+        "console",
+        "vty",
+        "supervisor",
+        "redundancy",
+        "switchover",
+        "sso",
+        "rpr",
+        "nsr",
+        "issu",
+        "process-crash",
+        "sysmgr",
+        "ha",
+        "high-availability",
+        "management-plane",
+        "services"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "tacacs",
+      "protocol_name": "TACACS+",
+      "protocol_family": "security",
+      "file": "protocols/tacacs.json",
+      "tags": [
+        "aaa",
+        "authentication",
+        "authorization",
+        "accounting",
+        "tacacs",
+        "security",
+        "device-admin",
+        "command-authorization",
+        "rbac",
+        "tcp"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "vpc",
+      "protocol_name": "vPC",
+      "protocol_family": "vendor",
+      "file": "protocols/vpc.json",
+      "tags": [
+        "vpc",
+        "multi-chassis",
+        "dual-active",
+        "peer-link",
+        "nxos",
+        "cisco-proprietary",
+        "data-center",
+        "vendor"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "vrf",
+      "protocol_name": "VRF (Virtual Routing and Forwarding)",
+      "protocol_family": "routing",
+      "file": "protocols/vrf.json",
+      "tags": [
+        "vrf",
+        "vrf-lite",
+        "mpls-vpn",
+        "route-target",
+        "route-distinguisher",
+        "l3vpn",
+        "isolation",
+        "routing"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "vrrp",
+      "protocol_name": "VRRP",
+      "protocol_family": "fhrp",
+      "file": "protocols/vrrp.json",
+      "tags": [
+        "fhrp",
+        "gateway-redundancy",
+        "failover",
+        "vip"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "vtp",
+      "protocol_name": "VTP",
+      "protocol_family": "switching",
+      "file": "protocols/vtp.json",
+      "tags": [
+        "layer2",
+        "vlan",
+        "vtp",
+        "cisco-proprietary",
+        "vlan-database",
+        "switching"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    },
+    {
+      "protocol_id": "vxlan-evpn",
+      "protocol_name": "VXLAN/EVPN",
+      "protocol_family": "overlay",
+      "file": "protocols/vxlan-evpn.json",
+      "tags": [
+        "overlay",
+        "vxlan",
+        "evpn",
+        "vtep",
+        "nvo",
+        "vni",
+        "type-2",
+        "type-3",
+        "type-5",
+        "frr"
+      ],
+      "os_coverage": [
+        "sonic"
+      ]
+    },
+    {
+      "protocol_id": "vxlan",
+      "protocol_name": "VXLAN",
+      "protocol_family": "overlay",
+      "file": "protocols/vxlan.json",
+      "tags": [
+        "overlay",
+        "vxlan",
+        "vtep",
+        "vni",
+        "encapsulation",
+        "data-center",
+        "fabric"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos"
+      ]
+    }
+  ]
+}

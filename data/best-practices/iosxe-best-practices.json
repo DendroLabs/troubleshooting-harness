@@ -1,0 +1,330 @@
+{
+  "best_practice_id": "iosxe-best-practices",
+  "categories": [
+    {
+      "category": "General / Architecture",
+      "documents": [
+        {
+          "description": "TAC-recommended releases; 17.9/17.12/17.15 are Extended-Support",
+          "format": "HTML",
+          "title": "Recommended Releases for Cat 9200/9300/9400/9500/9600",
+          "url": "https://www.cisco.com/c/en/us/support/docs/switches/catalyst-9300-series-switches/214814-recommended-releases-for-catalyst-9200-9.html"
+        },
+        {
+          "description": "Device tracking, SISF framework",
+          "format": "HTML",
+          "title": "Catalyst 9000 SISF (Integrated Security Features) White Paper",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9000/white-paper-c11-743346.html"
+        },
+        {
+          "description": "App hosting capabilities on Cat 9300",
+          "format": "HTML",
+          "title": "Application Hosting on Catalyst 9000 White Paper",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9300-series-switches/white-paper-c11-742415.html"
+        },
+        {
+          "description": "Master index for Cat 9300 white papers",
+          "format": "HTML",
+          "title": "Catalyst 9300 White Papers Listing",
+          "url": "https://www.cisco.com/c/en/us/products/switches/catalyst-9300-series-switches/white-paper-listing.html"
+        }
+      ]
+    },
+    {
+      "category": "Security Hardening",
+      "documents": [
+        {
+          "description": "Primary reference — SSH, SNMP, BGP/OSPF/EIGRP CoPP, ACLs, management plane",
+          "format": "HTML",
+          "title": "IOS XE Software Hardening Guide",
+          "url": "https://sec.cloudapps.cisco.com/security/center/resources/IOS_XE_hardening"
+        },
+        {
+          "description": "Practical guidance companion",
+          "format": "HTML",
+          "title": "IOS XE Hardening Guide (TAC Support Article)",
+          "url": "https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-xe-16/220270-use-cisco-ios-xe-hardening-guide.html"
+        },
+        {
+          "description": "Version-specific security config",
+          "format": "HTML",
+          "title": "Security Config Guide 17.3.x (Catalyst 9300)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-3/configuration_guide/sec/b_173_sec_9300_cg.html"
+        }
+      ]
+    },
+    {
+      "category": "QoS",
+      "documents": [
+        {
+          "description": "Key reference — buffer, scheduling, policing, remarking architecture",
+          "format": "HTML",
+          "title": "Catalyst 9000 QoS and Queuing White Paper",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9000/white-paper-c11-742388.html"
+        },
+        {
+          "description": "Resource limitations and exhaustion remediation",
+          "format": "HTML",
+          "title": "Understand QoS Hardware Resources on Cat 9000",
+          "url": "https://www.cisco.com/c/en/us/support/docs/switches/catalyst-9200-series-switches/218446-understand-qos-hardware-resources-on-cat.html"
+        },
+        {
+          "description": "RFC 4594-based AutoQoS templates",
+          "format": "HTML",
+          "title": "Configure AutoQoS on Catalyst 9000",
+          "url": "https://www.cisco.com/c/en/us/support/docs/switches/catalyst-9200-series-switches/222225-configure-autoqos-on-catalyst-9000-switc.html"
+        }
+      ]
+    },
+    {
+      "category": "High Availability / StackWise",
+      "documents": [
+        {
+          "description": "Two physical switches -> one logical entity; design guidance",
+          "format": "HTML",
+          "title": "Catalyst 9000 StackWise Virtual White Paper",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9000/nb-06-cat-9k-stack-wp-cte-en.html"
+        },
+        {
+          "description": "StackWise-480/320 architecture, up to 8 members",
+          "format": "HTML",
+          "title": "Catalyst 9300 Stackwise Architecture White Paper",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9300-series-switches/white-paper-c11-741468.html"
+        },
+        {
+          "description": "Config reference",
+          "format": "HTML",
+          "title": "StackWise Virtual Config Guide (17.9.x, Cat 9500)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9500/software/release/17-9/configuration_guide/ha/b_179_ha_9500_cg/configuring_cisco_stackwise_virtual.html"
+        },
+        {
+          "description": "SSO concepts and HA deployment",
+          "format": "PDF",
+          "title": "HA/SSO Deployment Guide (Cat 9800, 17.6)",
+          "url": "https://www.cisco.com/c/dam/en/us/td/docs/wireless/controller/9800/17-6/deployment-guide/c9800-ha-sso-deployment-guide-rel-17-6.pdf"
+        }
+      ]
+    },
+    {
+      "category": "Upgrade / Migration",
+      "documents": [
+        {
+          "description": "Master upgrade guide — BUNDLE/INSTALL mode, pre-checks, rollback",
+          "format": "HTML",
+          "title": "Upgrade Guide for Cisco Catalyst 9000 Switches",
+          "url": "https://www.cisco.com/c/en/us/support/docs/switches/catalyst-9300-series-switches/216231-upgrade-guide-for-cisco-catalyst-9000-sw.html"
+        },
+        {
+          "description": "Cat 9300-specific; includes USB-based upgrade",
+          "format": "HTML",
+          "title": "Upgrading Catalyst 9300 Switches",
+          "url": "https://www.cisco.com/c/en/us/support/docs/switches/catalyst-9300-series-switches/222280-upgrading-catalyst-9300-switches.html"
+        },
+        {
+          "description": "Minimal-downtime upgrade for Cat 9300 (since 17.3.2a)",
+          "format": "HTML",
+          "title": "xFSU (Extended Fast Software Upgrade) — 17.9.x",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/extended-fast-software-upgrade-xfsu.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "xFSU — 17.15.x",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-15/configuration_guide/sys_mgmt/b_1715_sys_mgmt_9300_cg/extended-fast-software-upgrade-xfsu.html"
+        },
+        {
+          "description": "Note: Cat 9300 does NOT support traditional ISSU — use xFSU",
+          "format": "HTML",
+          "title": "ISSU on Catalyst 9000",
+          "url": "https://www.cisco.com/c/en/us/support/docs/switches/catalyst-9500-series-switches/214406-in-service-software-upgrade-issu-on-ca.html"
+        }
+      ]
+    },
+    {
+      "category": "SD-Access / Catalyst Center",
+      "documents": [
+        {
+          "description": "Full SD-Access design with Catalyst Center",
+          "format": "HTML",
+          "title": "Software-Defined Access Solution Design Guide (CVD)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-sda-design-guide.html"
+        },
+        {
+          "description": "WLC/AP in SD-Access fabric",
+          "format": "PDF",
+          "title": "SD-Access Wireless Design/Deployment Guide",
+          "url": "https://www.cisco.com/c/dam/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/deploy-guide/cisco-dna-center-sd-access-wl-dg.pdf"
+        },
+        {
+          "description": "Hardening the appliance",
+          "format": "HTML",
+          "title": "Catalyst Center Security Best Practices",
+          "url": "https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/dna-center/hardening_guide/b_dnac_security_best_practices_guide.html"
+        },
+        {
+          "description": "Day-0 PnP onboarding for Cat 9300",
+          "format": "PDF",
+          "title": "Network Device Onboarding for DNA Center",
+          "url": "https://www.cisco.com/c/dam/en/us/td/docs/solutions/CVD/Campus/dnac-network-device-onboarding-deployment-guide-2020jun.pdf"
+        }
+      ]
+    },
+    {
+      "category": "VXLAN / EVPN (Campus)",
+      "documents": [
+        {
+          "description": "TrustSec + campus fabric reference",
+          "format": "PDF",
+          "title": "Campus Fabric Design (CVD)",
+          "url": "https://www.cisco.com/c/dam/en/us/solutions/collateral/enterprise-networks/trustsec/cvd-campus-fabric-design.pdf"
+        },
+        {
+          "description": "Implementation and verification guide",
+          "format": "HTML",
+          "title": "Implement BGP-Only VXLAN EVPN on Cat 9000",
+          "url": "https://www.cisco.com/c/en/us/support/docs/switches/catalyst-9300-series-switches/221574-implement-and-verify-bgp-only-vxlan-evpn.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "BGP EVPN VXLAN Config Guide (17.15.x, Cat 9300)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-15/configuration_guide/vxlan/b_1715_bgp_evpn_vxlan_9300_cg/bgp_evpn_vxlan_overview.html"
+        }
+      ]
+    },
+    {
+      "category": "Wireless (EWC on Cat 9300)",
+      "documents": [
+        {
+          "description": "Embedded Wireless Controller on Cat 9300",
+          "format": "HTML",
+          "title": "EWC on Catalyst Switches Deployment Guide",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/wireless/catalyst-9800-series-wireless-controllers/guide-c07-744299.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Catalyst 9800 Best Practices — 16.12.x",
+          "url": "https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/16-12/config-guide/b_wl_16_12_cg/best-practices.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Catalyst 9800 Best Practices — 17.9.x",
+          "url": "https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/best-practices.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Catalyst 9800 Best Practices — 17.15.x",
+          "url": "https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-15/config-guide/b_wl_17_15_cg/best-practices.html"
+        }
+      ]
+    },
+    {
+      "category": "Other White Papers",
+      "documents": [
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "MPLS for Catalyst 9000 White Paper",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9000-series-switches/mpls-catalyst-9000-switch-family-wp.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Deploying 90W UPOE+ with Cat 9000",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9300-series-switches/guide-c07-744813.html"
+        }
+      ]
+    },
+    {
+      "category": "CVDs",
+      "documents": [
+        {
+          "description": "Primary campus CVD — StackWise Virtual, SSO, NSF, ISSU patterns",
+          "format": "HTML",
+          "title": "Campus LAN and Wireless LAN Solution Design Guide",
+          "url": "https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-campus-lan-wlan-design-guide.html"
+        },
+        {
+          "description": "Cloud-managed/monitored campus",
+          "format": "HTML",
+          "title": "Cloud Campus LAN Design Guide",
+          "url": "https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-campus/cloud-campus-lan-design-guide.html"
+        }
+      ]
+    }
+  ],
+  "cisco_live_sessions": [
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKENS-2095: Designing Highly Available Networks Using Catalyst 9000",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/emea/docs/2025/pdf/BRKENS-2095.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKENS-2092: Building Scalable VXLAN BGP EVPN Fabrics for Enterprise",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKENS-2092.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "BRKENS-2502: SD-Access Best Practices Design and Deployment",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2024/pdf/BRKENS-2502.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKENS-2610: End-to-End Security Strategy for Enterprise Campuses",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKENS-2610.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "BRKENS-2050: Campus BGP EVPN and External Domain Integration",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/emea/docs/2024/pdf/BRKENS-2050.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKENS-1501: Enterprise Campus Wired Design Fundamentals",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/apjc/docs/2025/pdf/BRKENS-1501.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKTRS-3090: Troubleshooting Catalyst 9000 Series Switches (2025)",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKTRS-3090.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "BRKTRS-3090: Troubleshooting Catalyst 9000 Series Switches (2024)",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2024/pdf/BRKTRS-3090.pdf"
+    }
+  ],
+  "confidence": "medium",
+  "notes": [
+    "Cat 9300 does NOT support traditional ISSU — use xFSU (since 17.3.2a)",
+    "Extended-Support releases: 17.9, 17.12, 17.15",
+    "No single 'IOS-XE Best Practices' PDF — distributed across white papers, CVDs, config guides, CL sessions"
+  ],
+  "os": "iosxe",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco:best-practices/iosxe/index.json",
+      "title": "cisco knowledge base — best-practices/iosxe/index.json",
+      "type": "documentation"
+    }
+  ],
+  "tags": [
+    "catalyst-9300",
+    "iosxe",
+    "campus",
+    "enterprise"
+  ]
+}

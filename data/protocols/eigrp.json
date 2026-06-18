@@ -1,0 +1,1567 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "Requires IP reachability between neighbors. EIGRP uses IP protocol 88 and multicast 224.0.0.10.",
+      "name": "IP connectivity",
+      "type": "infrastructure"
+    },
+    {
+      "description": "All EIGRP neighbors on a segment must share the same autonomous system number to form adjacencies.",
+      "name": "Matching AS number",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Metric weights (K1-K5) must match between EIGRP neighbors. Default: K1=1, K2=0, K3=1, K4=0, K5=0 (bandwidth + delay). Mismatch prevents adjacency.",
+      "name": "Matching K-values",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Interfaces must be included in EIGRP via network statements or interface-level EIGRP configuration for neighbors to form on those interfaces.",
+      "name": "EIGRP enabled on interfaces via network statement",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "EIGRP neighbor adjacency fails to establish. No neighbor appears in the EIGRP neighbor table despite both routers being configured for EIGRP on a shared link.",
+      "resolutions": [
+        {
+          "action": "Verify AS number matches on both routers: 'show eigrp protocols'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify AS number matches on both routers: 'show eigrp protocols'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify AS number matches on both routers: 'show eigrp protocols'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify K-values match on both routers: 'show eigrp protocols' — check metric weights",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify K-values match on both routers: 'show eigrp protocols' — check metric weights",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify K-values match on both routers: 'show eigrp protocols' — check metric weights",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check authentication configuration: key chain, key ID, key string",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check authentication configuration: key chain, key ID, key string",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check authentication configuration: key chain, key ID, key string",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs: look for deny of protocol 88 or 224.0.0.10",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs: look for deny of protocol 88 or 224.0.0.10",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs: look for deny of protocol 88 or 224.0.0.10",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface is not passive: 'show eigrp protocols' — check passive interfaces",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface is not passive: 'show eigrp protocols' — check passive interfaces",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface is not passive: 'show eigrp protocols' — check passive interfaces",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure network statement covers the interface IP or EIGRP is enabled on the interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure network statement covers the interface IP or EIGRP is enabled on the interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure network statement covers the interface IP or EIGRP is enabled on the interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "AS number mismatch between neighbors",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "K-value mismatch (metric weights differ between neighbors)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Authentication mismatch (key chain or key ID)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL blocking IP protocol 88 or multicast 224.0.0.10",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "passive-interface configured on the shared interface",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Neighbor not forming",
+      "symptoms": [
+        "No neighbor in 'show eigrp neighbors'",
+        "Expected adjacency missing on shared segment"
+      ],
+      "verify_commands": [
+        {
+          "command": "show eigrp neighbors",
+          "confirms_if": "Confirms neighbor is not forming",
+          "look_for": "Look for absence of expected neighbor on the shared interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp neighbors",
+          "confirms_if": "Confirms neighbor is not forming",
+          "look_for": "Look for absence of expected neighbor on the shared interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp neighbors",
+          "confirms_if": "Confirms neighbor is not forming",
+          "look_for": "Look for absence of expected neighbor on the shared interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp protocols",
+          "confirms_if": "Identifies AS mismatch, K-value mismatch, or passive-interface misconfiguration",
+          "look_for": "Check AS number, K-values (metric weights), and passive interfaces on both routers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp protocols",
+          "confirms_if": "Identifies AS mismatch, K-value mismatch, or passive-interface misconfiguration",
+          "look_for": "Check AS number, K-values (metric weights), and passive interfaces on both routers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp protocols",
+          "confirms_if": "Identifies AS mismatch, K-value mismatch, or passive-interface misconfiguration",
+          "look_for": "Check AS number, K-values (metric weights), and passive interfaces on both routers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Identifies ACL blocking EIGRP packets",
+          "look_for": "Look for deny rules matching protocol 88 or multicast 224.0.0.10",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Identifies ACL blocking EIGRP packets",
+          "look_for": "Look for deny rules matching protocol 88 or multicast 224.0.0.10",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Identifies ACL blocking EIGRP packets",
+          "look_for": "Look for deny rules matching protocol 88 or multicast 224.0.0.10",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A route remains in ACTIVE state beyond the active timer (default 3 minutes). EIGRP has sent queries for a lost route but one or more neighbors have not replied. When the active timer expires, the non-responding neighbor relationship is reset, which can cascade and cause widespread instability.",
+      "resolutions": [
+        {
+          "action": "Configure EIGRP stub on spoke/leaf routers to limit query scope",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure EIGRP stub on spoke/leaf routers to limit query scope",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure EIGRP stub on spoke/leaf routers to limit query scope",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Implement route summarization at distribution boundaries to contain queries",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Implement route summarization at distribution boundaries to contain queries",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Implement route summarization at distribution boundaries to contain queries",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check neighbor health: CPU utilization, memory, interface errors",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check neighbor health: CPU utilization, memory, interface errors",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check neighbor health: CPU utilization, memory, interface errors",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify bidirectional connectivity to the non-responding neighbor",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify bidirectional connectivity to the non-responding neighbor",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify bidirectional connectivity to the non-responding neighbor",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider increasing active timer only as a temporary measure",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider increasing active timer only as a temporary measure",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider increasing active timer only as a temporary measure",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Query propagating too far — no summarization or stub configuration to limit query scope",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Slow neighbor not responding to query in time (CPU overload, large topology)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Unidirectional link issue preventing reply from reaching querier",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Large topology with many queries overwhelming a neighbor",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Stuck-in-Active (SIA)",
+      "symptoms": [
+        "Route stuck in ACTIVE state in 'show eigrp topology active'",
+        "SIA log messages in syslog",
+        "Neighbor reset after active timer expiry",
+        "Possible cascading neighbor resets in large networks"
+      ],
+      "verify_commands": [
+        {
+          "command": "show eigrp topology active",
+          "confirms_if": "Confirms routes are stuck in ACTIVE state",
+          "look_for": "Look for routes in ACTIVE state and how long they have been active",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp topology active",
+          "confirms_if": "Confirms routes are stuck in ACTIVE state",
+          "look_for": "Look for routes in ACTIVE state and how long they have been active",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp topology active",
+          "confirms_if": "Confirms routes are stuck in ACTIVE state",
+          "look_for": "Look for routes in ACTIVE state and how long they have been active",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp neighbors",
+          "confirms_if": "Identifies which neighbor is not responding to queries",
+          "look_for": "Check Q count (outstanding queries) and retransmit count — high values indicate a neighbor is not acknowledging packets",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp neighbors",
+          "confirms_if": "Identifies which neighbor is not responding to queries",
+          "look_for": "Check Q count (outstanding queries) and retransmit count — high values indicate a neighbor is not acknowledging packets",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp neighbors",
+          "confirms_if": "Identifies which neighbor is not responding to queries",
+          "look_for": "Check Q count (outstanding queries) and retransmit count — high values indicate a neighbor is not acknowledging packets",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include SIA",
+          "confirms_if": "Confirms SIA events and identifies affected routes",
+          "look_for": "Look for Stuck-in-Active log messages and which prefixes are affected",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include SIA",
+          "confirms_if": "Confirms SIA events and identifies affected routes",
+          "look_for": "Look for Stuck-in-Active log messages and which prefixes are affected",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include SIA",
+          "confirms_if": "Confirms SIA events and identifies affected routes",
+          "look_for": "Look for Stuck-in-Active log messages and which prefixes are affected",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Expected EIGRP-learned routes are not present in the routing table or traffic is taking an unexpected path instead of the optimal EIGRP route.",
+      "resolutions": [
+        {
+          "action": "Check for route filtering: 'show eigrp protocols' for distribute-lists",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for route filtering: 'show eigrp protocols' for distribute-lists",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for route filtering: 'show eigrp protocols' for distribute-lists",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify K-values match across the EIGRP domain",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify K-values match across the EIGRP domain",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify K-values match across the EIGRP domain",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check summarization configuration: 'show eigrp topology' for summary routes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check summarization configuration: 'show eigrp topology' for summary routes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check summarization configuration: 'show eigrp topology' for summary routes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure variance for unequal-cost load balancing if needed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure variance for unequal-cost load balancing if needed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure variance for unequal-cost load balancing if needed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify metrics: 'show eigrp topology <prefix>' to compare FD and RD",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify metrics: 'show eigrp topology <prefix>' to compare FD and RD",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify metrics: 'show eigrp topology <prefix>' to compare FD and RD",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "distribute-list filtering routes inbound or outbound",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Mismatched metric K-values causing different path calculations on different routers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Summarization hiding specific routes behind a summary",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Variance not configured for unequal-cost load balancing when expected",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Offset-list modifying metrics and changing path selection",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Routes missing or suboptimal",
+      "symptoms": [
+        "Expected routes not in 'show ip route eigrp'",
+        "Traffic taking an unexpected path through the network",
+        "Ping or traceroute showing suboptimal path"
+      ],
+      "verify_commands": [
+        {
+          "command": "show eigrp topology",
+          "confirms_if": "Shows whether route is known to EIGRP topology and which paths are available",
+          "look_for": "Look for the expected prefix — check if it exists and examine FD, RD, and successor/feasible successor paths",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp topology",
+          "confirms_if": "Shows whether route is known to EIGRP topology and which paths are available",
+          "look_for": "Look for the expected prefix — check if it exists and examine FD, RD, and successor/feasible successor paths",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp topology",
+          "confirms_if": "Shows whether route is known to EIGRP topology and which paths are available",
+          "look_for": "Look for the expected prefix — check if it exists and examine FD, RD, and successor/feasible successor paths",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route eigrp",
+          "confirms_if": "Confirms which EIGRP routes are installed in RIB",
+          "look_for": "Look for presence/absence of expected EIGRP routes and their metrics",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route eigrp",
+          "confirms_if": "Confirms which EIGRP routes are installed in RIB",
+          "look_for": "Look for presence/absence of expected EIGRP routes and their metrics",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route eigrp",
+          "confirms_if": "Confirms which EIGRP routes are installed in RIB",
+          "look_for": "Look for presence/absence of expected EIGRP routes and their metrics",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp protocols",
+          "confirms_if": "Reveals filtering and metric configuration that may affect route selection",
+          "look_for": "Check for distribute-lists, offset-lists, K-values, variance, and maximum-paths settings",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp protocols",
+          "confirms_if": "Reveals filtering and metric configuration that may affect route selection",
+          "look_for": "Check for distribute-lists, offset-lists, K-values, variance, and maximum-paths settings",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp protocols",
+          "confirms_if": "Reveals filtering and metric configuration that may affect route selection",
+          "look_for": "Check for distribute-lists, offset-lists, K-values, variance, and maximum-paths settings",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "When EIGRP and another IGP (typically OSPF) are mutually redistributed at two or more boundary routers, routes can loop back into EIGRP with a better metric or AD than the native EIGRP route, causing routing loops or suboptimal paths. EIGRP external routes (AD 170) vs EIGRP internal (AD 90) vs OSPF (AD 110) creates a complex AD hierarchy that can be exploited by redistribution loops.",
+      "resolutions": [
+        {
+          "action": "Use route tags: 'set tag <N>' during redistribution, then 'deny tag <N>' when redistributing back — prevents routes from being re-imported into their source protocol",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use route tags: 'set tag <N>' during redistribution, then 'deny tag <N>' when redistributing back — prevents routes from being re-imported into their source protocol",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use route tags: 'set tag <N>' during redistribution, then 'deny tag <N>' when redistributing back — prevents routes from being re-imported into their source protocol",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Adjust AD: consider setting EIGRP external AD lower or matching to prevent OSPF redistributed routes from winning",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Adjust AD: consider setting EIGRP external AD lower or matching to prevent OSPF redistributed routes from winning",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Adjust AD: consider setting EIGRP external AD lower or matching to prevent OSPF redistributed routes from winning",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply prefix-lists: only redistribute specific prefixes that belong in each domain",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply prefix-lists: only redistribute specific prefixes that belong in each domain",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply prefix-lists: only redistribute specific prefixes that belong in each domain",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure EIGRP stub on spoke routers to prevent them from becoming redistribution transit points",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure EIGRP stub on spoke routers to prevent them from becoming redistribution transit points",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure EIGRP stub on spoke routers to prevent them from becoming redistribution transit points",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce redistribution points to a single boundary router where possible",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce redistribution points to a single boundary router where possible",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce redistribution points to a single boundary router where possible",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Mutual redistribution at two or more points without loop prevention",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No route tags to identify and filter redistributed routes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "AD hierarchy: EIGRP internal (90) < OSPF (110) < EIGRP external (170) — redistributed routes from OSPF can have better AD than EIGRP external routes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Missing prefix-list or distribute-list at redistribution boundaries",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Route redistribution loop (mutual redistribution with OSPF/BGP)",
+      "symptoms": [
+        "Traceroute shows routing loop",
+        "Route shows as EIGRP external (D EX) when it should be EIGRP internal (D)",
+        "'show ip route <prefix>' shows route learned via redistribution with unexpected metric",
+        "Suboptimal path — traffic traversing both IGP domains unnecessarily"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip route <prefix>",
+          "confirms_if": "Shows which protocol and path the route is being learned from",
+          "look_for": "Check if route is D (internal), D EX (external/redistributed), or O (OSPF) — unexpected source indicates redistribution issue",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <prefix>",
+          "confirms_if": "Shows which protocol and path the route is being learned from",
+          "look_for": "Check if route is D (internal), D EX (external/redistributed), or O (OSPF) — unexpected source indicates redistribution issue",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <prefix>",
+          "confirms_if": "Shows which protocol and path the route is being learned from",
+          "look_for": "Check if route is D (internal), D EX (external/redistributed), or O (OSPF) — unexpected source indicates redistribution issue",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp topology <prefix>",
+          "confirms_if": "Shows EIGRP's view of the route including whether it was redistributed",
+          "look_for": "Check if the route is flagged as external and what the reported tag is",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp topology <prefix>",
+          "confirms_if": "Shows EIGRP's view of the route including whether it was redistributed",
+          "look_for": "Check if the route is flagged as external and what the reported tag is",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp topology <prefix>",
+          "confirms_if": "Shows EIGRP's view of the route including whether it was redistributed",
+          "look_for": "Check if the route is flagged as external and what the reported tag is",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows redistribution setup and any filtering applied",
+          "look_for": "Check redistribution configuration, route-maps, and administrative distances",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows redistribution setup and any filtering applied",
+          "look_for": "Check redistribution configuration, route-maps, and administrative distances",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows redistribution setup and any filtering applied",
+          "look_for": "Check redistribution configuration, route-maps, and administrative distances",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "EIGRP neighbor adjacency repeatedly tears down and re-establishes, causing route instability, topology churn, and potential traffic disruptions during reconvergence.",
+      "resolutions": [
+        {
+          "action": "Check physical layer: 'show interface' for errors, CRC, carrier transitions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check physical layer: 'show interface' for errors, CRC, carrier transitions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check physical layer: 'show interface' for errors, CRC, carrier transitions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CPU: 'show processes cpu' for high utilization preventing Hello processing",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CPU: 'show processes cpu' for high utilization preventing Hello processing",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CPU: 'show processes cpu' for high utilization preventing Hello processing",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider BFD for fast failure detection instead of aggressive EIGRP timers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider BFD for fast failure detection instead of aggressive EIGRP timers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider BFD for fast failure detection instead of aggressive EIGRP timers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize the underlying transport before tuning EIGRP timers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize the underlying transport before tuning EIGRP timers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize the underlying transport before tuning EIGRP timers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for L2 issues: STP convergence, LACP flapping on the path",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for L2 issues: STP convergence, LACP flapping on the path",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for L2 issues: STP convergence, LACP flapping on the path",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Hold timer expiry caused by CPU overload on one or both routers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interface flapping (physical or L2 issue)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Aggressive hello/hold timers without BFD",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Packet loss on the link preventing Hellos from being received",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Neighbor flapping",
+      "symptoms": [
+        "Repeated neighbor up/down syslog messages",
+        "Short uptime values in 'show eigrp neighbors'",
+        "High retransmit count in neighbor table",
+        "Route instability and possible traffic blackholes"
+      ],
+      "verify_commands": [
+        {
+          "command": "show eigrp neighbors",
+          "confirms_if": "Confirms neighbor is flapping — short uptime and high retransmits",
+          "look_for": "Check uptime column for short/resetting values and retransmit count for high values",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp neighbors",
+          "confirms_if": "Confirms neighbor is flapping — short uptime and high retransmits",
+          "look_for": "Check uptime column for short/resetting values and retransmit count for high values",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show eigrp neighbors",
+          "confirms_if": "Confirms neighbor is flapping — short uptime and high retransmits",
+          "look_for": "Check uptime column for short/resetting values and retransmit count for high values",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface",
+          "confirms_if": "Identifies physical layer issues causing flaps",
+          "look_for": "Look for input/output errors, CRC errors, resets, and carrier transitions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface",
+          "confirms_if": "Identifies physical layer issues causing flaps",
+          "look_for": "Look for input/output errors, CRC errors, resets, and carrier transitions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface",
+          "confirms_if": "Identifies physical layer issues causing flaps",
+          "look_for": "Look for input/output errors, CRC errors, resets, and carrier transitions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include EIGRP",
+          "confirms_if": "Shows pattern and frequency of EIGRP neighbor state changes",
+          "look_for": "Look for neighbor state change messages and timestamps to identify flapping pattern",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include EIGRP",
+          "confirms_if": "Shows pattern and frequency of EIGRP neighbor state changes",
+          "look_for": "Look for neighbor state change messages and timestamps to identify flapping pattern",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include EIGRP",
+          "confirms_if": "Shows pattern and frequency of EIGRP neighbor state changes",
+          "look_for": "Look for neighbor state change messages and timestamps to identify flapping pattern",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Neighbor discovery and keepalive",
+      "key_fields": [
+        "AS Number",
+        "K-values (K1-K5)",
+        "Hold Time",
+        "Opcode",
+        "Flags"
+      ],
+      "name": "Hello",
+      "when_sent": "Every hello-interval"
+    },
+    {
+      "description": "Carries topology/route information",
+      "key_fields": [
+        "Prefix",
+        "Reported Distance",
+        "Feasible Distance",
+        "Next-hop",
+        "Delay",
+        "Bandwidth",
+        "Reliability",
+        "Load",
+        "MTU",
+        "Hop Count"
+      ],
+      "name": "Update",
+      "when_sent": "On topology change or initial neighbor exchange"
+    },
+    {
+      "description": "Asks neighbors for route when no feasible successor is available",
+      "key_fields": [
+        "Prefix",
+        "Metric Components"
+      ],
+      "name": "Query",
+      "when_sent": "When route goes ACTIVE"
+    },
+    {
+      "description": "Response to Query with route information",
+      "key_fields": [
+        "Prefix",
+        "Metric Components"
+      ],
+      "name": "Reply",
+      "when_sent": "In response to Query"
+    },
+    {
+      "description": "Acknowledges reliable packets (Update/Query/Reply)",
+      "key_fields": [
+        "(unicast Hello with no data)"
+      ],
+      "name": "Acknowledgment",
+      "when_sent": "After receiving a reliable packet"
+    }
+  ],
+  "operates_at": "Layer 3",
+  "protocol_family": "routing",
+  "protocol_id": "eigrp",
+  "protocol_name": "EIGRP",
+  "purpose": "Enhanced Interior Gateway Routing Protocol — advanced distance-vector (DUAL) IGP with fast convergence",
+  "related_protocols": [
+    "bfd",
+    "ospfv2"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-7868",
+      "rfc_number": 7868,
+      "title": "RFC 7868",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc7868.txt"
+    },
+    {
+      "id": "cisco:routing/eigrp.json",
+      "title": "cisco knowledge base — routing/eigrp.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 7868",
+  "states": [
+    {
+      "description": "No Hello received from neighbor.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "DOWN"
+    },
+    {
+      "description": "Hello received from neighbor, waiting for full initial topology exchange to complete. Stuck in PENDING indicates a problem with adjacency formation — typically K-value mismatch, AS number mismatch, or authentication failure.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "PENDING"
+    },
+    {
+      "description": "Neighbor is up and topology exchange is complete. This is the normal steady state for EIGRP neighbors.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "UP"
+    },
+    {
+      "description": "Route is stable with a valid Feasible Distance (FD) and Reported Distance (RD) calculated. A feasible successor may or may not exist. This is the normal steady state for routes in the EIGRP topology table.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "PASSIVE"
+    },
+    {
+      "description": "Route has lost its feasible successor and no feasible successor is available in the topology table. EIGRP is actively querying neighbors for an alternate path. Stuck in ACTIVE (SIA) indicates a neighbor is not responding to queries — this is a serious condition that leads to neighbor resets.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "ACTIVE"
+    }
+  ],
+  "tags": [
+    "igp",
+    "distance-vector",
+    "dual",
+    "routing",
+    "convergence",
+    "composite-metric",
+    "redistribution"
+  ],
+  "timers": [
+    {
+      "default_rfc": "5s (high-bandwidth links), 60s (low-bandwidth NBMA)",
+      "description": "Interval between Hello packets sent to neighbors",
+      "name": "hello-interval",
+      "on_expiry": "Send Hello",
+      "range": "1-65535s"
+    },
+    {
+      "default_rfc": "15s (3x hello for high-bw), 180s (3x hello for low-bw)",
+      "description": "Time without a Hello before declaring neighbor dead",
+      "name": "hold-time",
+      "on_expiry": "Neighbor declared dead",
+      "range": "1-65535s"
+    },
+    {
+      "default_rfc": "180s (3 minutes)",
+      "description": "Stuck-in-Active (SIA) timer — maximum time a route can remain in ACTIVE state before the non-responding neighbor is reset",
+      "name": "active-timer",
+      "on_expiry": "Stuck-in-Active: neighbor relationship reset",
+      "tuning_advice": "Increase in very large networks to allow queries to propagate; better to use stub configuration to limit query scope"
+    },
+    {
+      "default_rfc": "calculated from SRTT",
+      "description": "Retransmission timeout for reliable transport — controls how long EIGRP waits before retransmitting an unacknowledged reliable packet",
+      "name": "RTO",
+      "on_expiry": "Retransmit unacknowledged packet"
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "DOWN",
+      "to_state": "PENDING",
+      "trigger": "Hello received from neighbor"
+    },
+    {
+      "from_state": "PENDING",
+      "to_state": "UP",
+      "trigger": "All topology updates received and acknowledged"
+    },
+    {
+      "from_state": "UP",
+      "to_state": "DOWN",
+      "trigger": "Hold timer expired or goodbye message received"
+    },
+    {
+      "failure_if_stuck": "Possible K-value mismatch, AS number mismatch, or authentication failure",
+      "from_state": "PENDING",
+      "to_state": "DOWN",
+      "trigger": "Hold timer expired before topology exchange completes"
+    },
+    {
+      "from_state": "PASSIVE",
+      "to_state": "ACTIVE",
+      "trigger": "Best route lost and no feasible successor available"
+    },
+    {
+      "failure_if_stuck": "Stuck-in-Active (SIA) — neighbor not responding to query",
+      "from_state": "ACTIVE",
+      "to_state": "PASSIVE",
+      "trigger": "Reply received from all queried neighbors (new successor found)"
+    }
+  ],
+  "transport": "IP protocol 88, multicast 224.0.0.10",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "EIGRP available in classic and named mode. Named mode recommended: 'router eigrp <name>' with address-family. Wide metrics supported.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "EIGRP supported but not commonly used on IOS-XR platforms. Configured under 'router eigrp <AS>' with address-family. IS-IS or OSPF preferred as IGP on IOS-XR.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "EIGRP requires 'feature eigrp'. Supports named EIGRP mode. Wide metrics enabled by default (64-bit metrics) which changes metric calculation.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

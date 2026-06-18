@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "route-table-entry-ad-determines-source",
+  "display_name": "Administrative distance in the routing table tells you which protocol installed the route, not how good the path is",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "show ip route output displaying a route with its administrative distance and metric",
+  "observation": "A route shows [AD/metric] in the routing table, e.g. [110/20] or [20/0]",
+  "naive_interpretation": "Lower AD means a better or shorter path to the destination",
+  "correct_interpretation": "Administrative distance (AD) is a tiebreaker between routing protocols — it determines which protocol's route is preferred when multiple protocols offer a route to the same prefix. AD does not describe the path quality, latency, or hop count. A directly connected route (AD 0) wins over OSPF (AD 110) which wins over eBGP (AD 20), regardless of the actual path characteristics. The metric (the second number) is what describes the path quality within a single protocol.",
+  "why": [
+    "AD is a local concept to the router — it is not advertised or exchanged between routers",
+    "Two different protocols cannot meaningfully compare their metrics (OSPF cost vs BGP MED vs EIGRP composite metric)",
+    "AD exists solely to pick a winner when multiple protocols offer the same prefix — it says nothing about the actual path"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route 10.0.0.0/24",
+      "purpose": "Check which protocol installed the active route and see if multiple protocols offer the same prefix"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route 10.0.0.0/24 detail",
+      "purpose": "See all candidate routes including those not installed due to higher AD"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route 10.0.0.0 255.255.255.0",
+      "purpose": "Check the routing source and AD/metric for the prefix"
+    }
+  ],
+  "traps": [
+    "Assuming a route with AD 20 (eBGP) is better than AD 110 (OSPF) in terms of actual path quality — AD only determines which protocol wins",
+    "Changing AD values to force traffic over a particular path without understanding the downstream effects on route selection",
+    "Comparing AD values across different routers as if they are synchronized — AD is locally configured and may differ between devices",
+    "Confusing administrative distance with prefix length — prefix length (longest match) is evaluated before AD"
+  ],
+  "related_rules": [],
+  "related_protocols": ["bgp-4", "ospfv2", "eigrp", "static-routing"],
+  "keywords": ["administrative distance", "AD", "routing table", "metric", "route selection", "prefix"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

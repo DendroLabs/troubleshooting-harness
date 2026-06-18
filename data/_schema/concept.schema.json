@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "concept.schema.json",
+  "title": "Concept",
+  "description": "Stateless network concept — operational infrastructure that has no FSM (e.g. L2 switching, VLAN management). Shares failure_mode/timer/source structure with protocols via cross-file $ref.",
+
+  "type": "object",
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+    "deprecated": { "type": "boolean", "default": false },
+    "deprecated_by": { "type": "string" },
+
+    "concept_id": { "type": "string" },
+    "concept_name": { "type": "string" },
+    "concept_family": { "type": "string" },
+    "standard": { "type": "string" },
+    "purpose": { "type": "string" },
+    "operates_at": { "type": "string" },
+    "def_refs": { "type": "array", "items": { "type": "string" } },
+
+    "timers": { "type": "array", "items": { "$ref": "protocol.schema.json#/$defs/protocol_timer" } },
+    "failure_modes": { "type": "array", "items": { "$ref": "protocol.schema.json#/$defs/failure_mode" } },
+    "dependencies": { "type": "array", "items": { "$ref": "protocol.schema.json#/$defs/dependency" } },
+
+    "vendor_notes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "description": "Vendor-specific data keyed by OS name"
+      }
+    },
+
+    "sources": { "type": "array", "items": { "$ref": "protocol.schema.json#/$defs/source" } },
+    "related_protocols": { "type": "array", "items": { "type": "string" } },
+    "tags": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": [
+    "schema_version", "concept_id", "concept_name", "concept_family",
+    "purpose", "failure_modes", "sources"
+  ],
+  "additionalProperties": false
+}

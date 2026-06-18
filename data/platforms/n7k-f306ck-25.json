@@ -1,0 +1,217 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:f3",
+      "asic_id": 0,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "CPAK",
+              "end_port": 1,
+              "label": "Eth-slot/1",
+              "native_speed": "100G",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 100.0
+    },
+    {
+      "asic_family": "asic:f3",
+      "asic_id": 1,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "CPAK",
+              "end_port": 2,
+              "label": "Eth-slot/2",
+              "native_speed": "100G",
+              "start_port": 2
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 100.0
+    },
+    {
+      "asic_family": "asic:f3",
+      "asic_id": 2,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "CPAK",
+              "end_port": 3,
+              "label": "Eth-slot/3",
+              "native_speed": "100G",
+              "start_port": 3
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 100.0
+    },
+    {
+      "asic_family": "asic:f3",
+      "asic_id": 3,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "CPAK",
+              "end_port": 4,
+              "label": "Eth-slot/4",
+              "native_speed": "100G",
+              "start_port": 4
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 100.0
+    },
+    {
+      "asic_family": "asic:f3",
+      "asic_id": 4,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "CPAK",
+              "end_port": 5,
+              "label": "Eth-slot/5",
+              "native_speed": "100G",
+              "start_port": 5
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 100.0
+    },
+    {
+      "asic_family": "asic:f3",
+      "asic_id": 5,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "CPAK",
+              "end_port": 6,
+              "label": "Eth-slot/6",
+              "native_speed": "100G",
+              "start_port": 6
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 100.0
+    }
+  ],
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-7000",
+  "platform_id": "n7k-f306ck-25",
+  "platform_name": "N7K-F306CK-25 (Pescara 100G)",
+  "platform_pid": "N7K-F306CK-25",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-n7k-f306ck-25",
+      "title": "N7K-F306CK-25 datasheet, N7K F3 architecture",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-7000/n7k-f306ck-25.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-7000/n7k-f306ck-25.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 0.6,
+  "total_ports": 6
+}

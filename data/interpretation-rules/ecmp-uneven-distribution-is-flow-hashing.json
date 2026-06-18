@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "ecmp-uneven-distribution-is-flow-hashing",
+  "display_name": "Uneven ECMP member utilization is per-flow hashing at work, not a broken link",
+  "category": "expected-behavior",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Traffic across ECMP or port-channel members is unequal and one or more members carry far more than others",
+  "observation": "Member links in an ECMP set or LAG show significantly different utilization despite equal-cost paths",
+  "naive_interpretation": "Load balancing is broken, a member link is faulty, or the hashing must be misconfigured",
+  "correct_interpretation": "ECMP and port-channels load-balance per flow, not per packet, by hashing header fields (typically src/dst IP and L4 ports) to a member. A given flow is pinned to one member to preserve packet ordering. With few flows, or a few very large 'elephant' flows, or traffic whose hash inputs vary little, the distribution can be quite uneven even though hashing is working correctly. Unequal member load is expected behavior for flow-based hashing — it is not a fault and not packet loss. Investigate the flow profile and hash inputs, not the links.",
+  "why": [
+    "Per-flow hashing keeps each flow on one path to avoid reordering, so balance depends on flow count and diversity, not on equal byte counts",
+    "RFC 2992 analyzes equal-cost multipath hashing and shows distribution skews with small numbers of flows",
+    "Elephant flows (e.g. a single large backup/replication stream) land entirely on one member, dominating its utilization",
+    "Low-entropy hash inputs (same ports, tunneled traffic hiding inner headers) map many flows to the same member"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show port-channel load-balance",
+      "purpose": "Confirm which header fields are hashed, explaining low entropy and skew"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface counters | include Ethernet",
+      "purpose": "Compare member utilization in the context of flow count rather than expecting equal bytes"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show etherchannel load-balance",
+      "purpose": "Show the load-balance hash method to assess whether inputs give enough entropy"
+    }
+  ],
+  "traps": [
+    "Replacing or resetting a 'hot' member when uneven load is just where the elephant flows hashed",
+    "Expecting equal byte counts across members when hashing balances flows, not bytes",
+    "Overlooking tunneled/encapsulated traffic that hides inner headers and collapses hash entropy",
+    "Confusing uneven distribution with packet loss — skew alone is not a drop"
+  ],
+  "related_rules": [
+    "interface-counter-rate-vs-absolute",
+    "qos-microburst-drops-hidden-in-averages"
+  ],
+  "related_protocols": ["lacp"],
+  "keywords": ["ECMP", "load balancing", "port-channel", "LAG", "hashing", "per-flow", "elephant flow", "entropy", "uneven", "distribution"],
+  "sources": [
+    {
+      "id": "rfc-2992",
+      "title": "RFC 2992 — Analysis of an Equal-Cost Multi-Path Algorithm",
+      "type": "rfc",
+      "rfc_number": 2992,
+      "url": "https://www.rfc-editor.org/rfc/rfc2992.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

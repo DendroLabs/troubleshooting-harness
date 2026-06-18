@@ -1,0 +1,170 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:cloud-scale",
+      "asic_id": 0,
+      "asic_model": "Homewood",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "9x 100G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 9,
+              "label": "Eth-slot/1/1-9",
+              "native_speed": "100G",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 900.0
+    },
+    {
+      "asic_family": "asic:cloud-scale",
+      "asic_id": 1,
+      "asic_model": "Homewood",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "9x 100G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 18,
+              "label": "Eth-slot/1/10-18",
+              "native_speed": "100G",
+              "start_port": 10
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 900.0
+    },
+    {
+      "asic_family": "asic:cloud-scale",
+      "asic_id": 2,
+      "asic_model": "Homewood",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "9x 100G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 27,
+              "label": "Eth-slot/1/19-27",
+              "native_speed": "100G",
+              "start_port": 19
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 900.0
+    },
+    {
+      "asic_family": "asic:cloud-scale",
+      "asic_id": 3,
+      "asic_model": "Homewood",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "9x 100G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 36,
+              "label": "Eth-slot/1/28-36",
+              "native_speed": "100G",
+              "start_port": 28
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 900.0
+    }
+  ],
+  "chassis_type": "modular",
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9500",
+  "platform_id": "x9736c-ex",
+  "platform_name": "Nexus 9500 X9736C-EX (Bluewood)",
+  "platform_pid": "N9K-X9736C-EX",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-x9736c-ex",
+      "title": "Tech Zone: Nexus 9k ASIC Mappings, Bluewood LC Port Mapping",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-9500/x9736c-ex.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-9500/x9736c-ex.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 3.6,
+  "total_ports": 36
+}

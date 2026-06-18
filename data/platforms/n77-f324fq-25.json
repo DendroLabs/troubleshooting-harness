@@ -1,0 +1,433 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 0,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "2x 40G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 2,
+              "label": "Eth-slot/1/1-2",
+              "native_speed": "40G",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 1,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "2x 40G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 4,
+              "label": "Eth-slot/1/3-4",
+              "native_speed": "40G",
+              "start_port": 3
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 2,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "2x 40G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 6,
+              "label": "Eth-slot/1/5-6",
+              "native_speed": "40G",
+              "start_port": 5
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 3,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "2x 40G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 8,
+              "label": "Eth-slot/1/7-8",
+              "native_speed": "40G",
+              "start_port": 7
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 4,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "2x 40G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 10,
+              "label": "Eth-slot/1/9-10",
+              "native_speed": "40G",
+              "start_port": 9
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 5,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "2x 40G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 12,
+              "label": "Eth-slot/1/11-12",
+              "native_speed": "40G",
+              "start_port": 11
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 6,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "2x 40G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 14,
+              "label": "Eth-slot/1/13-14",
+              "native_speed": "40G",
+              "start_port": 13
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 7,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "2x 40G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 16,
+              "label": "Eth-slot/1/15-16",
+              "native_speed": "40G",
+              "start_port": 15
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 8,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "2x 40G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 18,
+              "label": "Eth-slot/1/17-18",
+              "native_speed": "40G",
+              "start_port": 17
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 9,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "2x 40G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 20,
+              "label": "Eth-slot/1/19-20",
+              "native_speed": "40G",
+              "start_port": 19
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 10,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "2x 40G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 22,
+              "label": "Eth-slot/1/21-22",
+              "native_speed": "40G",
+              "start_port": 21
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 11,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "2x 40G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 24,
+              "label": "Eth-slot/1/23-24",
+              "native_speed": "40G",
+              "start_port": 23
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    }
+  ],
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-7700",
+  "platform_id": "n77-f324fq-25",
+  "platform_name": "Nexus 7700 N77-F324FQ-25 (CB Pescara 40G)",
+  "platform_pid": "N77-F324FQ-25",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-n77-f324fq-25",
+      "title": "Cisco Tech Zone: N7K ASIC Mappings, CB Pescara 40G diagram",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-7000/n77-f324fq-25.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-7000/n77-f324fq-25.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 0.96,
+  "total_ports": 24
+}

@@ -1,0 +1,1390 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "Requires physical layer connectivity — copper or fiber with proper speed/duplex negotiation",
+      "name": "Physical Ethernet connectivity",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "Two ends of an 802.1Q trunk have different native VLANs configured. Untagged traffic from one side is placed into the wrong VLAN on the other, causing traffic leaking between VLANs (security risk) and connectivity loss for devices on either native VLAN. Tagged VLAN traffic works normally, making this hard to detect.",
+      "resolutions": [
+        {
+          "action": "Check native VLAN on both ends: 'show interfaces trunk' — native VLAN column must match",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check native VLAN on both ends: 'show interfaces trunk' — native VLAN column must match",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check native VLAN on both ends: 'show interfaces trunk' — native VLAN column must match",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set matching native VLAN: 'switchport trunk native vlan <N>' on both ends",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set matching native VLAN: 'switchport trunk native vlan <N>' on both ends",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set matching native VLAN: 'switchport trunk native vlan <N>' on both ends",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Best practice: use an unused VLAN as native (e.g., VLAN 999) and tag all real traffic",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Best practice: use an unused VLAN as native (e.g., VLAN 999) and tag all real traffic",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Best practice: use an unused VLAN as native (e.g., VLAN 999) and tag all real traffic",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable 'vlan dot1q tag native' (IOS-XE) to tag the native VLAN and eliminate the ambiguity entirely",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable 'vlan dot1q tag native' (IOS-XE) to tag the native VLAN and eliminate the ambiguity entirely",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable 'vlan dot1q tag native' (IOS-XE) to tag the native VLAN and eliminate the ambiguity entirely",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Different 'switchport trunk native vlan <N>' configured on each end of the trunk",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "One end configured as access port (native VLAN = access VLAN) and the other as trunk",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Default native VLAN (1) on one end, changed native VLAN on the other",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Copy-paste error during switch provisioning",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Native VLAN mismatch on trunk link",
+      "symptoms": [
+        "CDP/LLDP syslog: '%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on <intf>'",
+        "Hosts on the native VLAN have intermittent or no connectivity",
+        "Traffic from VLAN X on one switch appears in VLAN Y on the other",
+        "Security concern: untagged traffic crosses VLAN boundaries",
+        "All tagged VLANs work fine — only untagged (native VLAN) traffic is affected"
+      ],
+      "verify_commands": [
+        {
+          "command": "show interfaces trunk",
+          "confirms_if": "Shows native VLAN per trunk interface",
+          "look_for": "Compare 'Native VLAN' column for each trunk — both ends must match",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interfaces trunk",
+          "confirms_if": "Shows native VLAN per trunk interface",
+          "look_for": "Compare 'Native VLAN' column for each trunk — both ends must match",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interfaces trunk",
+          "confirms_if": "Shows native VLAN per trunk interface",
+          "look_for": "Compare 'Native VLAN' column for each trunk — both ends must match",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show cdp neighbors detail",
+          "confirms_if": "CDP actively detects and reports native VLAN mismatches",
+          "look_for": "Look for native VLAN mismatch messages in CDP output",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show cdp neighbors detail",
+          "confirms_if": "CDP actively detects and reports native VLAN mismatches",
+          "look_for": "Look for native VLAN mismatch messages in CDP output",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show cdp neighbors detail",
+          "confirms_if": "CDP actively detects and reports native VLAN mismatches",
+          "look_for": "Look for native VLAN mismatch messages in CDP output",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include NATIVE_VLAN",
+          "confirms_if": "Shows history of native VLAN mismatch detections",
+          "look_for": "Look for CDP native VLAN mismatch syslog messages",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include NATIVE_VLAN",
+          "confirms_if": "Shows history of native VLAN mismatch detections",
+          "look_for": "Look for CDP native VLAN mismatch syslog messages",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include NATIVE_VLAN",
+          "confirms_if": "Shows history of native VLAN mismatch detections",
+          "look_for": "Look for CDP native VLAN mismatch syslog messages",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "One side of a link is hard-coded to full duplex while the other uses auto-negotiate. The auto-negotiate side falls back to half duplex per IEEE spec (cannot detect the peer's duplex when the peer doesn't negotiate). The link comes up and appears functional, but performance is severely degraded with late collisions, FCS errors, and runt frames. Often misdiagnosed as a 'slow network' problem.",
+      "resolutions": [
+        {
+          "action": "Check both ends: 'show interface status' — verify speed and duplex match",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check both ends: 'show interface status' — verify speed and duplex match",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check both ends: 'show interface status' — verify speed and duplex match",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Best practice: use auto-negotiate on both ends (IEEE recommendation). If one end must be forced, force BOTH ends to the same speed and duplex",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Best practice: use auto-negotiate on both ends (IEEE recommendation). If one end must be forced, force BOTH ends to the same speed and duplex",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Best practice: use auto-negotiate on both ends (IEEE recommendation). If one end must be forced, force BOTH ends to the same speed and duplex",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For legacy devices that don't support auto-negotiate: force both ends to match",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For legacy devices that don't support auto-negotiate: force both ends to match",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For legacy devices that don't support auto-negotiate: force both ends to match",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear interface counters after fixing to verify errors stop: 'clear counters <intf>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear interface counters after fixing to verify errors stop: 'clear counters <intf>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear interface counters after fixing to verify errors stop: 'clear counters <intf>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "One side hard-coded to 'speed 1000 duplex full', other side left on 'auto' — the auto side falls back to half duplex",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Server NIC configured with forced speed/duplex, switch port on auto",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IP phone or legacy device forcing 100/full, switch on auto negotiating 100/half",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "After replacing hardware, new device defaults to auto while old side retained forced settings",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Duplex mismatch",
+      "symptoms": [
+        "Slow throughput on specific links despite gigabit interface speeds",
+        "Late collisions, FCS errors, runts incrementing in 'show interface' counters",
+        "Link is UP/UP (not down) — makes this hard to detect",
+        "Small transfers work fine but large file transfers fail or are extremely slow",
+        "Users report intermittent slow network on specific ports"
+      ],
+      "verify_commands": [
+        {
+          "command": "show interface status",
+          "confirms_if": "Shows current duplex setting per port",
+          "look_for": "Check 'Duplex' column — 'a-full' = auto-negotiated full, 'full' = forced full, 'a-half' = auto-negotiated half (potential mismatch)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface status",
+          "confirms_if": "Shows current duplex setting per port",
+          "look_for": "Check 'Duplex' column — 'a-full' = auto-negotiated full, 'full' = forced full, 'a-half' = auto-negotiated half (potential mismatch)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface status",
+          "confirms_if": "Shows current duplex setting per port",
+          "look_for": "Check 'Duplex' column — 'a-full' = auto-negotiated full, 'full' = forced full, 'a-half' = auto-negotiated half (potential mismatch)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Non-zero late collisions on a full-duplex interface confirms duplex mismatch",
+          "look_for": "Look for 'late collision', 'FCS errors', 'runts', 'giants' in the error counters — these indicate duplex mismatch",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Non-zero late collisions on a full-duplex interface confirms duplex mismatch",
+          "look_for": "Look for 'late collision', 'FCS errors', 'runts', 'giants' in the error counters — these indicate duplex mismatch",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Non-zero late collisions on a full-duplex interface confirms duplex mismatch",
+          "look_for": "Look for 'late collision', 'FCS errors', 'runts', 'giants' in the error counters — these indicate duplex mismatch",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf> counters errors",
+          "confirms_if": "Active errors confirm an ongoing duplex issue",
+          "look_for": "Look for incrementing Align-Err, FCS-Err, or Late-Col counters",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf> counters errors",
+          "confirms_if": "Active errors confirm an ongoing duplex issue",
+          "look_for": "Look for incrementing Align-Err, FCS-Err, or Late-Col counters",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf> counters errors",
+          "confirms_if": "Active errors confirm an ongoing duplex issue",
+          "look_for": "Look for incrementing Align-Err, FCS-Err, or Late-Col counters",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The switch CAM table aging timer (default 300s) is much shorter than the router ARP cache timer (default 4 hours on Cisco). The switch ages out a MAC entry while the router still has a valid ARP entry for that IP. Subsequent traffic from the router is forwarded as unknown unicast and flooded to ALL ports in the VLAN, wasting bandwidth and creating a security exposure.",
+      "resolutions": [
+        {
+          "action": "Align timers: increase MAC aging to match ARP ('mac address-table aging-time 14400') or decrease ARP cache ('arp timeout 300' on router interface)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align timers: increase MAC aging to match ARP ('mac address-table aging-time 14400') or decrease ARP cache ('arp timeout 300' on router interface)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align timers: increase MAC aging to match ARP ('mac address-table aging-time 14400') or decrease ARP cache ('arp timeout 300' on router interface)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For silent hosts: configure static MAC entry or use 'ip arp inspection' to generate traffic",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For silent hosts: configure static MAC entry or use 'ip arp inspection' to generate traffic",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For silent hosts: configure static MAC entry or use 'ip arp inspection' to generate traffic",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For asymmetric routing: fix routing to ensure symmetric paths, or configure the MAC statically on both switches",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For asymmetric routing: fix routing to ensure symmetric paths, or configure the MAC statically on both switches",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For asymmetric routing: fix routing to ensure symmetric paths, or configure the MAC statically on both switches",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor: 'show mac address-table count' and 'show interface counters' for unknown unicast flooding indicators",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor: 'show mac address-table count' and 'show interface counters' for unknown unicast flooding indicators",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor: 'show mac address-table count' and 'show interface counters' for unknown unicast flooding indicators",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Default CAM aging (300s) vs default ARP aging (14400s/4 hours) creates a 4-hour window where MAC is aged but ARP is valid",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Asymmetric routing: traffic ingresses on one switch but egresses on another — the egress switch never learned the destination MAC",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Silent hosts: devices that receive traffic but rarely transmit (sensors, cameras) — their MAC ages out because the switch only learns from source MAC",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Large L2 domain: CAM table size pressure causes more aggressive aging",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Unicast flooding due to CAM/ARP timer mismatch",
+      "symptoms": [
+        "Unexpectedly high traffic on ports that should not be receiving it",
+        "Bandwidth utilization higher than expected on access ports",
+        "Packet captures on unrelated ports showing traffic destined for other hosts",
+        "'show mac address-table count' shows frequent MAC learning/aging activity",
+        "Problem is periodic — occurs after 5 minutes of silence from a host"
+      ],
+      "verify_commands": [
+        {
+          "command": "show mac address-table aging-time",
+          "confirms_if": "Shows current MAC aging timer",
+          "look_for": "Default 300 seconds — compare with ARP cache timeout on the default gateway router",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table aging-time",
+          "confirms_if": "Shows current MAC aging timer",
+          "look_for": "Default 300 seconds — compare with ARP cache timeout on the default gateway router",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table aging-time",
+          "confirms_if": "Shows current MAC aging timer",
+          "look_for": "Default 300 seconds — compare with ARP cache timeout on the default gateway router",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table count",
+          "confirms_if": "Shows MAC table utilization and churn rate",
+          "look_for": "Check total dynamic MACs and free entries — high churn indicates frequent aging/learning",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table count",
+          "confirms_if": "Shows MAC table utilization and churn rate",
+          "look_for": "Check total dynamic MACs and free entries — high churn indicates frequent aging/learning",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table count",
+          "confirms_if": "Shows MAC table utilization and churn rate",
+          "look_for": "Check total dynamic MACs and free entries — high churn indicates frequent aging/learning",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf> counters",
+          "confirms_if": "Abnormally high TX unicast on access ports indicates unknown unicast flooding",
+          "look_for": "Compare unicast TX counters — if an access port is transmitting far more unicast than expected, it may be receiving flooded traffic",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf> counters",
+          "confirms_if": "Abnormally high TX unicast on access ports indicates unknown unicast flooding",
+          "look_for": "Compare unicast TX counters — if an access port is transmitting far more unicast than expected, it may be receiving flooded traffic",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf> counters",
+          "confirms_if": "Abnormally high TX unicast on access ports indicates unknown unicast flooding",
+          "look_for": "Compare unicast TX counters — if an access port is transmitting far more unicast than expected, it may be receiving flooded traffic",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "MTU mismatches in the network cause large packets to be silently dropped. This is especially common with VXLAN (adds 50 bytes overhead) and MPLS (adds 4+ bytes per label) where the underlay MTU must accommodate the overlay encapsulation. Standard ping (64 bytes) works fine, masking the problem, while real application traffic with larger frames fails.",
+      "resolutions": [
+        {
+          "action": "Test with DF-bit set: 'ping <dest> size 1500 df-bit' (IOS) or 'ping -s 1472 -M do <dest>' (Linux) — timeout indicates MTU problem",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with DF-bit set: 'ping <dest> size 1500 df-bit' (IOS) or 'ping -s 1472 -M do <dest>' (Linux) — timeout indicates MTU problem",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with DF-bit set: 'ping <dest> size 1500 df-bit' (IOS) or 'ping -s 1472 -M do <dest>' (Linux) — timeout indicates MTU problem",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MTU on every hop: 'show interface <intf> | include MTU' on all switches in the path",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MTU on every hop: 'show interface <intf> | include MTU' on all switches in the path",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MTU on every hop: 'show interface <intf> | include MTU' on all switches in the path",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VXLAN: set underlay MTU to 9216 on ALL interfaces in the fabric: 'system jumbomtu 9216' (NX-OS) or 'system mtu 9216' (IOS-XE)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VXLAN: set underlay MTU to 9216 on ALL interfaces in the fabric: 'system jumbomtu 9216' (NX-OS) or 'system mtu 9216' (IOS-XE)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VXLAN: set underlay MTU to 9216 on ALL interfaces in the fabric: 'system jumbomtu 9216' (NX-OS) or 'system mtu 9216' (IOS-XE)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure ICMP is not blocked: allow ICMP type 3 code 4 (fragmentation needed) through all firewalls and ACLs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure ICMP is not blocked: allow ICMP type 3 code 4 (fragmentation needed) through all firewalls and ACLs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure ICMP is not blocked: allow ICMP type 3 code 4 (fragmentation needed) through all firewalls and ACLs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify consistency: all members of a port-channel must have matching MTU",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify consistency: all members of a port-channel must have matching MTU",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify consistency: all members of a port-channel must have matching MTU",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Jumbo frames (MTU 9216) enabled on some switches but not all in the path",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VXLAN underlay MTU not increased to accommodate 50-byte VXLAN overhead (need at least 1550, recommend 9216)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ICMP blocked by firewall or ACL — prevents Path MTU Discovery from working",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "L2 switches do not generate ICMP messages — they silently drop oversized frames without notification",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Inconsistent MTU across port-channel members",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "MTU mismatch causing silent packet drops",
+      "symptoms": [
+        "Small transfers (ping, DNS, SSH) work fine but large transfers (file copy, SCP, HTTPS downloads) fail or are extremely slow",
+        "TCP connections establish but stall during data transfer",
+        "Path MTU Discovery fails silently — ICMP 'fragmentation needed' messages blocked or not generated by L2 switches",
+        "Applications time out after initial connection succeeds",
+        "VXLAN or MPLS overlay traffic fails while underlay pings work"
+      ],
+      "verify_commands": [
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Identifies MTU mismatches between interfaces in the forwarding path",
+          "look_for": "Check MTU value — compare across all interfaces in the path. Default 1500, jumbo 9216",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Identifies MTU mismatches between interfaces in the forwarding path",
+          "look_for": "Check MTU value — compare across all interfaces in the path. Default 1500, jumbo 9216",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Identifies MTU mismatches between interfaces in the forwarding path",
+          "look_for": "Check MTU value — compare across all interfaces in the path. Default 1500, jumbo 9216",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system mtu",
+          "confirms_if": "Shows system-wide MTU configuration",
+          "look_for": "Check system-level MTU setting — this is the maximum MTU any interface can use",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system mtu",
+          "confirms_if": "Shows system-wide MTU configuration",
+          "look_for": "Check system-level MTU setting — this is the maximum MTU any interface can use",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system mtu",
+          "confirms_if": "Shows system-wide MTU configuration",
+          "look_for": "Check system-level MTU setting — this is the maximum MTU any interface can use",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface counters errors",
+          "confirms_if": "Non-zero giants confirms oversized frames are hitting this interface",
+          "look_for": "Look for 'giants' counter incrementing — indicates frames exceeding the interface MTU are being received",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface counters errors",
+          "confirms_if": "Non-zero giants confirms oversized frames are hitting this interface",
+          "look_for": "Look for 'giants' counter incrementing — indicates frames exceeding the interface MTU are being received",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface counters errors",
+          "confirms_if": "Non-zero giants confirms oversized frames are hitting this interface",
+          "look_for": "Look for 'giants' counter incrementing — indicates frames exceeding the interface MTU are being received",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Ports placed into errdisable state silently stop forwarding traffic. Multiple features can trigger errdisable: BPDU Guard, port security, UDLD, storm control, link-flap detection, DHCP snooping rate-limit, and others. Without errdisable recovery configured, ports remain down until an administrator manually bounces them — which can take hours if no one notices.",
+      "resolutions": [
+        {
+          "action": "Identify the cause: 'show errdisable recovery' shows which causes are configured for auto-recovery",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the cause: 'show errdisable recovery' shows which causes are configured for auto-recovery",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the cause: 'show errdisable recovery' shows which causes are configured for auto-recovery",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check the specific cause: 'show interface status err-disabled' shows affected ports, syslog shows the trigger",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check the specific cause: 'show interface status err-disabled' shows affected ports, syslog shows the trigger",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check the specific cause: 'show interface status err-disabled' shows affected ports, syslog shows the trigger",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix the root cause before re-enabling: remove the offending device, fix the cable, adjust thresholds",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix the root cause before re-enabling: remove the offending device, fix the cable, adjust thresholds",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix the root cause before re-enabling: remove the offending device, fix the cable, adjust thresholds",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Re-enable manually: 'shutdown' then 'no shutdown' on the interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Re-enable manually: 'shutdown' then 'no shutdown' on the interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Re-enable manually: 'shutdown' then 'no shutdown' on the interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable auto-recovery for common causes: 'errdisable recovery cause bpduguard', 'errdisable recovery cause udld', etc.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable auto-recovery for common causes: 'errdisable recovery cause bpduguard', 'errdisable recovery cause udld', etc.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable auto-recovery for common causes: 'errdisable recovery cause bpduguard', 'errdisable recovery cause udld', etc.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set recovery interval: 'errdisable recovery interval 300' (5 minutes)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set recovery interval: 'errdisable recovery interval 300' (5 minutes)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set recovery interval: 'errdisable recovery interval 300' (5 minutes)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "BPDU Guard: switch or hub plugged into an edge/portfast port",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Port security: too many MAC addresses learned on a port",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "UDLD: unidirectional link detected",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Storm control: broadcast/multicast threshold exceeded",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Link-flap: interface bouncing too rapidly (5 flaps in 10 seconds default)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "DHCP snooping: rate limit exceeded on untrusted port",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ARP inspection: rate limit exceeded",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Errdisable port — multiple triggers",
+      "symptoms": [
+        "'show interface status' shows port as 'err-disabled'",
+        "Port LED on switch may show amber/orange",
+        "Connected device has no network connectivity",
+        "Syslog message indicating the cause: '%PM-4-ERR_DISABLE: <cause> error detected on <intf>'",
+        "Multiple ports may be affected simultaneously (e.g., link-flap during a storm)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show interface status err-disabled",
+          "confirms_if": "Shows which ports are errdisabled and why",
+          "look_for": "Lists all ports currently in errdisable state with the reason",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface status err-disabled",
+          "confirms_if": "Shows which ports are errdisabled and why",
+          "look_for": "Lists all ports currently in errdisable state with the reason",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface status err-disabled",
+          "confirms_if": "Shows which ports are errdisabled and why",
+          "look_for": "Lists all ports currently in errdisable state with the reason",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show errdisable recovery",
+          "confirms_if": "Shows whether ports will auto-recover or require manual intervention",
+          "look_for": "Check which errdisable causes have auto-recovery enabled and the recovery interval",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show errdisable recovery",
+          "confirms_if": "Shows whether ports will auto-recover or require manual intervention",
+          "look_for": "Check which errdisable causes have auto-recovery enabled and the recovery interval",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show errdisable recovery",
+          "confirms_if": "Shows whether ports will auto-recover or require manual intervention",
+          "look_for": "Check which errdisable causes have auto-recovery enabled and the recovery interval",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include ERR_DISABLE",
+          "confirms_if": "Shows when and why each port was errdisabled",
+          "look_for": "Look for the errdisable syslog messages with timestamps and causes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include ERR_DISABLE",
+          "confirms_if": "Shows when and why each port was errdisabled",
+          "look_for": "Look for the errdisable syslog messages with timestamps and causes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include ERR_DISABLE",
+          "confirms_if": "Shows when and why each port was errdisabled",
+          "look_for": "Look for the errdisable syslog messages with timestamps and causes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "operates_at": "Layer 2",
+  "protocol_family": "switching",
+  "protocol_id": "l2-infrastructure",
+  "protocol_name": "L2 Infrastructure",
+  "purpose": "Layer 2 Ethernet switching infrastructure — covers VLAN trunking, duplex negotiation, MAC learning, MTU handling, and errdisable mechanisms",
+  "related_protocols": [
+    "rstp",
+    "lacp",
+    "vxlan"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "ieee-ieee8021qieee8023",
+      "title": "IEEE 802.1Q, IEEE 802.3",
+      "type": "ieee_standard"
+    },
+    {
+      "id": "agent-cisco-kb:switching/l2-infrastructure.json",
+      "title": "agent-cisco-kb knowledge base — switching/l2-infrastructure.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "IEEE 802.1Q, IEEE 802.3",
+  "states": [],
+  "tags": [
+    "layer2",
+    "vlan",
+    "trunking",
+    "802.1q",
+    "duplex",
+    "mtu",
+    "errdisable",
+    "native-vlan",
+    "unicast-flooding",
+    "cam-table",
+    "switching"
+  ],
+  "timers": [
+    {
+      "default_rfc": "300s (5 minutes)",
+      "description": "Time before a dynamically learned MAC address is removed from the CAM table",
+      "name": "MAC address aging",
+      "on_expiry": "MAC entry removed from CAM table; subsequent traffic to that MAC is flooded as unknown unicast",
+      "range": "0-1000000s (0 = never age)",
+      "tuning_advice": "Default 300s is shorter than ARP cache (4 hours on Cisco). This mismatch causes unicast flooding — the router still has ARP but the switch has aged the MAC. Consider increasing to match ARP cache or reducing ARP cache to match."
+    },
+    {
+      "default_rfc": "300s (if recovery is enabled; disabled by default for most causes)",
+      "description": "Time before an errdisabled port is automatically re-enabled",
+      "name": "errdisable recovery interval",
+      "on_expiry": "Port is automatically re-enabled",
+      "range": "30-86400s",
+      "tuning_advice": "Enable recovery for common causes (bpduguard, udld, link-flap) with 300s interval. Too short = port flaps; too long = extended outage for legitimate devices."
+    }
+  ],
+  "transport": "Ethernet",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "system mtu 9198",
+        "vlan dot1q tag native"
+      ],
+      "notes": [
+        {
+          "note": "IOS-XE system MTU: 'system mtu 9198' (Catalyst 9000) sets the global MTU. Takes effect after reboot on some platforms. Check with 'show system mtu'. For VXLAN, ensure 'system mtu 9198' is configured on all leaf/spine switches.",
+          "versions": "16.12+"
+        },
+        {
+          "note": "IOS-XE 'vlan dot1q tag native': tags the native VLAN with 802.1Q header, eliminating native VLAN ambiguity. Recommended security best practice. Both ends of the trunk must have this configured or native VLAN traffic will be dropped.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "system jumbomtu 9216",
+        "errdisable recovery cause bpduguard\nerrdisable recovery cause udld\nerrdisable recovery cause link-flap-recovery\nerrdisable recovery interval 300"
+      ],
+      "notes": [
+        {
+          "note": "NX-OS system jumbo MTU: 'system jumbomtu 9216' enables jumbo frames globally. Individual interfaces must also have 'mtu 9216' configured. For VXLAN fabrics, jumbo MTU is required on ALL underlay interfaces.",
+          "versions": "all"
+        },
+        {
+          "note": "NX-OS errdisable recovery: 'errdisable recovery cause <cause>' enables per-cause auto-recovery. Common causes to enable: bpduguard, udld, link-flap-recovery, storm-control. Set interval with 'errdisable recovery interval 300'. View status: 'show errdisable recovery'.",
+          "versions": "all"
+        }
+      ]
+    },
+    "saos": {
+      "notes": [
+        {
+          "note": "SAOS L2 uses MEF service model instead of VLAN-centric model. No VLANs — uses Forwarding Domains (FDs), Flow Points (FPs), and Classifiers. Port types: Access (UNI) or Network (NNI). MTU configured per logical port: 'port set port <id> max-frame-size <bytes>'. Storm control via 'traffic-services queuing set port'. EFM OAM (802.3ah) for link-level fault detection. Subject-verb CLI: 'port show' not 'show interface'.",
+          "versions": "6.0+"
+        }
+      ]
+    }
+  }
+}

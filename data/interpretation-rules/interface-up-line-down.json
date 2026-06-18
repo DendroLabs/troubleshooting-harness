@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "interface-up-line-down",
+  "display_name": "Interface up / line protocol down means L1 link exists but L2 negotiation failed",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "show interface status showing interface state as up but line protocol as down",
+  "observation": "Interface shows 'up' but line protocol shows 'down' — the two halves disagree",
+  "naive_interpretation": "The cable is bad or the interface is malfunctioning",
+  "correct_interpretation": "Interface up means the physical layer (L1) is seeing a signal — the link is electrically/optically present. Line protocol down means the data link layer (L2) negotiation failed. This is typically a speed/duplex mismatch, an encapsulation mismatch, a keepalive failure, or the remote end is administratively shut at L2 while still sending a carrier signal. The cable is usually fine — the problem is configuration or protocol negotiation.",
+  "why": [
+    "IOS and NX-OS report L1 and L2 status independently — they can disagree",
+    "A completely dead cable or missing SFP would show both as down, not just line protocol",
+    "Common causes: speed/duplex mismatch on copper, LACP misconfiguration, encapsulation mismatch on WAN links, missing keepalives"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface Ethernet1/1",
+      "purpose": "Check speed/duplex negotiation result and any error messages"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces GigabitEthernet1/0/1",
+      "purpose": "Check speed/duplex, encapsulation type, and keepalive configuration"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show port-channel summary",
+      "purpose": "If this is a port-channel member, check if LACP is failing to bundle"
+    }
+  ],
+  "traps": [
+    "Replacing cables when the L1 signal is actually present and healthy",
+    "Not checking the remote side for configuration mismatches",
+    "Assuming both directions of the link are in the same state — one side can be up/up while the other is up/down"
+  ],
+  "related_rules": [],
+  "related_protocols": ["lacp"],
+  "keywords": ["interface", "line protocol", "up/down", "L1", "L2", "speed", "duplex", "keepalive"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

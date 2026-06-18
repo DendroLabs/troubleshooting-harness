@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "evpn-mac-mobility-sequence-increment",
+  "display_name": "An incrementing EVPN MAC mobility sequence number means the host is moving, not that the table is corrupt",
+  "category": "counter-interpretation",
+  "applicable_os": ["nxos", "iosxe", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Inspecting EVPN Type-2 routes and seeing a non-zero or rising MAC Mobility extended community sequence number for a host MAC",
+  "observation": "The MAC mobility sequence number for a MAC address is non-zero and increasing over time across the fabric",
+  "naive_interpretation": "The EVPN table is corrupt, the route is unstable, or there is a software bug incrementing a counter",
+  "correct_interpretation": "The sequence number is the EVPN mechanism for arbitrating where a MAC currently lives. Each time a MAC is detected behind a new leaf, the advertising leaf increments the sequence number so all leaves agree the highest sequence wins. A slowly rising number tracks legitimate host mobility (vMotion, failover). A rapidly incrementing number means the same MAC is bouncing between two leaves — a true flap, usually from a layer-2 loop, dual-homing misconfiguration, or a duplicated MAC. Watch the rate, not the value.",
+  "why": [
+    "RFC 7432 Section 7.7 defines the MAC Mobility extended community and the sequence number used to resolve which advertisement is most recent",
+    "A higher sequence number always supersedes a lower one, so the number monotonically increases for the lifetime of that MAC's mobility — a non-zero value is normal after any move",
+    "RFC 7432 Section 15.1 defines duplicate-MAC detection: a default of N moves (commonly 5) within M seconds (commonly 180) flags the MAC as duplicate and can freeze advertisement",
+    "Distinguishing legitimate mobility from a flap requires the rate of change, not the absolute sequence value"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp l2vpn evpn <mac> vni-id <vni>",
+      "purpose": "Show the Type-2 route and its MAC mobility sequence number plus the originating leaf"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show l2route mac all detail",
+      "purpose": "List MAC entries with their sequence numbers and producing source to spot a MAC learned from two leaves"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show logging | include DUPLICATE|MAC_MOVE|MOBILITY",
+      "purpose": "Look for duplicate-MAC or mac-move events that indicate a true flap versus a single legitimate move"
+    }
+  ],
+  "traps": [
+    "Treating any non-zero sequence number as an error — a non-zero value just means the host has moved at least once",
+    "Reacting to the absolute number instead of the rate of increase, which is what separates a flap from normal mobility",
+    "Not identifying the two leaves the MAC is bouncing between — the fix lives at the dual-homing or loop, not in EVPN",
+    "Assuming duplicate-MAC freeze is a bug when it is the protocol deliberately damping a flapping or duplicated address"
+  ],
+  "related_rules": [
+    "mac-flapping-log-check-both-ports",
+    "evpn-arp-suppression-hides-arp",
+    "interface-counter-rate-vs-absolute"
+  ],
+  "related_protocols": ["vxlan-evpn", "evpn", "vxlan"],
+  "keywords": ["EVPN", "VXLAN", "MAC mobility", "sequence number", "Type-2", "duplicate MAC", "mac flap", "host move", "vMotion"],
+  "sources": [
+    {
+      "id": "rfc-7432",
+      "title": "RFC 7432 — BGP MPLS-Based Ethernet VPN",
+      "type": "rfc",
+      "rfc_number": 7432,
+      "url": "https://www.rfc-editor.org/rfc/rfc7432.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

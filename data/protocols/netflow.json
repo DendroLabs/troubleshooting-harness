@@ -1,0 +1,1127 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "The exporter must have IP reachability to the collector via the configured source interface.  If the collector is in a different VRF (e.g., management), the export must specify the correct VRF context.",
+      "name": "IP reachability to collector",
+      "type": "infrastructure"
+    },
+    {
+      "description": "NetFlow/IPFIX export uses UDP (commonly port 2055, 9996, or 9995).  UDP is unreliable — dropped export packets are not retransmitted.  ACLs and firewalls must permit the export port.",
+      "name": "UDP transport",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "Flow data never arrives at the collector.  The exporter is caching and aging flows normally, but exported UDP packets are lost in transit or never sent.  This is the most common NetFlow issue and is almost always a reachability or configuration problem between the exporter and the collector.",
+      "resolutions": [
+        {
+          "action": "Verify collector IP and port match the collector application configuration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify collector IP and port match the collector application configuration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify collector IP and port match the collector application configuration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure the source interface used for export has IP reachability to the collector: ping from source interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure the source interface used for export has IP reachability to the collector: ping from source interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure the source interface used for export has IP reachability to the collector: ping from source interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If collector is in management VRF, add 'use-vrf management' (NX-OS) or set source interface in the correct VRF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If collector is in management VRF, add 'use-vrf management' (NX-OS) or set source interface in the correct VRF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If collector is in management VRF, add 'use-vrf management' (NX-OS) or set source interface in the correct VRF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs on all in-path devices for the export UDP port",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs on all in-path devices for the export UDP port",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs on all in-path devices for the export UDP port",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce export MTU or enable fragmentation if needed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce export MTU or enable fragmentation if needed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce export MTU or enable fragmentation if needed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Wrong collector IP address or UDP port configured on the exporter",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Source interface for export is unreachable from the collector (routing or ACL)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL on the exporter or in-path device blocking UDP export traffic (port 2055/9996/9995)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VRF mismatch — export configured in global table but collector reachable only via management VRF (or vice versa)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Collector firewall blocking inbound UDP on the export port",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MTU issue — large export packets fragmented and dropped in transit",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "NetFlow export not reaching collector",
+      "symptoms": [
+        "Collector shows no data or gaps in flow records",
+        "show flow exporter statistics shows incrementing 'packets sent' but collector receives nothing",
+        "show flow exporter statistics shows 'packets dropped' or 'no FIB' errors",
+        "SNMP-based bandwidth graphs exist but flow-based visibility is missing"
+      ],
+      "verify_commands": [
+        {
+          "command": "show flow exporter statistics",
+          "confirms_if": "Packets sent incrementing with zero drops confirms export is leaving the device",
+          "look_for": "Check 'packets sent' vs 'packets dropped'.  Look for 'no FIB' or 'adjacency failure' which indicate routing problems to the collector.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow exporter statistics",
+          "confirms_if": "Packets sent incrementing with zero drops confirms export is leaving the device",
+          "look_for": "Check 'packets sent' vs 'packets dropped'.  Look for 'no FIB' or 'adjacency failure' which indicate routing problems to the collector.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow exporter statistics",
+          "confirms_if": "Packets sent incrementing with zero drops confirms export is leaving the device",
+          "look_for": "Check 'packets sent' vs 'packets dropped'.  Look for 'no FIB' or 'adjacency failure' which indicate routing problems to the collector.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor",
+          "confirms_if": "Monitor active with correct exporter association",
+          "look_for": "Verify the monitor is in 'active' status and associated with the correct exporter and record.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor",
+          "confirms_if": "Monitor active with correct exporter association",
+          "look_for": "Verify the monitor is in 'active' status and associated with the correct exporter and record.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor",
+          "confirms_if": "Monitor active with correct exporter association",
+          "look_for": "Verify the monitor is in 'active' status and associated with the correct exporter and record.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip flow export",
+          "confirms_if": "Export counters incrementing confirms flows are being sent",
+          "look_for": "Check destination IP, port, source interface, and VRF.  Verify 'flows exported' counter is incrementing.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip flow export",
+          "confirms_if": "Export counters incrementing confirms flows are being sent",
+          "look_for": "Check destination IP, port, source interface, and VRF.  Verify 'flows exported' counter is incrementing.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip flow export",
+          "confirms_if": "Export counters incrementing confirms flows are being sent",
+          "look_for": "Check destination IP, port, source interface, and VRF.  Verify 'flows exported' counter is incrementing.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Flow cache operations consume excessive CPU.  On platforms without hardware NetFlow support, all flow classification and cache operations happen in software, which can overwhelm the control plane on high-speed interfaces.  Even on hardware-capable platforms, misconfigured timeouts or missing sampling can cause high CPU from excessive cache management and export processing.",
+      "resolutions": [
+        {
+          "action": "Enable sampling (1:100 to 1:1000) on high-speed interfaces to reduce flow creation rate",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable sampling (1:100 to 1:1000) on high-speed interfaces to reduce flow creation rate",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable sampling (1:100 to 1:1000) on high-speed interfaces to reduce flow creation rate",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase inactive timeout to reduce cache churn (30-60s instead of 15s)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase inactive timeout to reduce cache churn (30-60s instead of 15s)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase inactive timeout to reduce cache churn (30-60s instead of 15s)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify platform supports hardware-based NetFlow/FNF — check line card capabilities",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify platform supports hardware-based NetFlow/FNF — check line card capabilities",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify platform supports hardware-based NetFlow/FNF — check line card capabilities",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce the number of flow record fields to simplify cache lookup",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce the number of flow record fields to simplify cache lookup",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce the number of flow record fields to simplify cache lookup",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider applying flow monitor only on ingress OR egress, not both, if CPU is constrained",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider applying flow monitor only on ingress OR egress, not both, if CPU is constrained",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider applying flow monitor only on ingress OR egress, not both, if CPU is constrained",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Too many active flows in the cache (millions of micro-flows from scanning/DDoS)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Aggressive active/inactive timeouts causing frequent cache churn",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Sampling not enabled on high-speed interfaces (10G/40G/100G) — every packet processed",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Hardware NetFlow not available on the platform or line card, falling back to software",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Multiple flow monitors applied to the same interface (ingress + egress) doubling the load",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "NetFlow causing high CPU",
+      "symptoms": [
+        "High CPU utilization from FLOW-CACHE, FNF, or NetFlow process",
+        "Slow CLI response on the device",
+        "Control-plane protocols (BGP, OSPF) affected by CPU starvation",
+        "'show processes cpu' shows flow-related process at top"
+      ],
+      "verify_commands": [
+        {
+          "command": "show processes cpu | include flow",
+          "confirms_if": "Flow process at top of CPU consumers confirms NetFlow is the cause",
+          "look_for": "Identify which flow-related process is consuming CPU.  Look for FLOW-CACHE, FNF, or NetFlow Export.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu | include flow",
+          "confirms_if": "Flow process at top of CPU consumers confirms NetFlow is the cause",
+          "look_for": "Identify which flow-related process is consuming CPU.  Look for FLOW-CACHE, FNF, or NetFlow Export.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu | include flow",
+          "confirms_if": "Flow process at top of CPU consumers confirms NetFlow is the cause",
+          "look_for": "Identify which flow-related process is consuming CPU.  Look for FLOW-CACHE, FNF, or NetFlow Export.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor cache summary",
+          "confirms_if": "Active entries near cache size confirms cache overload",
+          "look_for": "Check 'active entries' vs 'cache size'.  If active entries are near the cache limit, the cache is overloaded.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor cache summary",
+          "confirms_if": "Active entries near cache size confirms cache overload",
+          "look_for": "Check 'active entries' vs 'cache size'.  If active entries are near the cache limit, the cache is overloaded.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor cache summary",
+          "confirms_if": "Active entries near cache size confirms cache overload",
+          "look_for": "Check 'active entries' vs 'cache size'.  If active entries are near the cache limit, the cache is overloaded.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The flow cache is full and new flows cannot be created, causing flow records to be dropped.  This typically happens during DDoS attacks or network scans that create millions of unique micro-flows (unique src/dst IP + port combinations) that exhaust the cache before inactive timeout can expire them.",
+      "resolutions": [
+        {
+          "action": "Increase flow cache size: 'cache entries <N>' under the flow monitor",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase flow cache size: 'cache entries <N>' under the flow monitor",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase flow cache size: 'cache entries <N>' under the flow monitor",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable sampling to reduce flow creation rate during traffic spikes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable sampling to reduce flow creation rate during traffic spikes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable sampling to reduce flow creation rate during traffic spikes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce inactive timeout to expire stale flows faster (10-15s)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce inactive timeout to expire stale flows faster (10-15s)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce inactive timeout to expire stale flows faster (10-15s)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use flow record with fewer match fields to reduce flow cardinality (e.g., drop L4 ports)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use flow record with fewer match fields to reduce flow cardinality (e.g., drop L4 ports)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use flow record with fewer match fields to reduce flow cardinality (e.g., drop L4 ports)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider permanent cache mode for top-talker analysis instead of full flow export",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider permanent cache mode for top-talker analysis instead of full flow export",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider permanent cache mode for top-talker analysis instead of full flow export",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Cache size too small for the traffic volume and flow cardinality",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "DDoS or network scan creating millions of micro-flows that exhaust cache",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No sampling configured on high-rate interfaces — every packet creates a flow entry",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Inactive timeout too long — stale entries not being expired fast enough",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "NetFlow cache overflow — flow cache full, flows dropped",
+      "symptoms": [
+        "'cache full' or 'flow not created' syslog messages",
+        "Incomplete flow data — collector shows gaps or missing traffic",
+        "Flow export volume drops despite traffic volume increasing",
+        "show flow monitor statistics shows 'flows not added' counter incrementing"
+      ],
+      "verify_commands": [
+        {
+          "command": "show flow monitor cache summary",
+          "confirms_if": "Active entries at cache limit with non-zero 'flows not added' confirms overflow",
+          "look_for": "Compare 'active entries' to 'cache size'.  If they are equal or near-equal, the cache is full.  Check 'flows not added' for drop count.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor cache summary",
+          "confirms_if": "Active entries at cache limit with non-zero 'flows not added' confirms overflow",
+          "look_for": "Compare 'active entries' to 'cache size'.  If they are equal or near-equal, the cache is full.  Check 'flows not added' for drop count.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor cache summary",
+          "confirms_if": "Active entries at cache limit with non-zero 'flows not added' confirms overflow",
+          "look_for": "Compare 'active entries' to 'cache size'.  If they are equal or near-equal, the cache is full.  Check 'flows not added' for drop count.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor statistics",
+          "confirms_if": "Incrementing overflow counters confirm cache exhaustion",
+          "look_for": "Look for 'flows not added' or 'cache overflows' counters.  These directly indicate dropped flow records.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor statistics",
+          "confirms_if": "Incrementing overflow counters confirm cache exhaustion",
+          "look_for": "Look for 'flows not added' or 'cache overflows' counters.  These directly indicate dropped flow records.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor statistics",
+          "confirms_if": "Incrementing overflow counters confirm cache exhaustion",
+          "look_for": "Look for 'flows not added' or 'cache overflows' counters.  These directly indicate dropped flow records.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Flow volumes reported by the collector do not match actual interface counters.  This is usually a sampling misconfiguration where the collector is not properly compensating for the sampling rate, or sampling is applied inconsistently across interfaces.",
+      "resolutions": [
+        {
+          "action": "Verify sampling rate on all monitored interfaces: 'show sampler'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify sampling rate on all monitored interfaces: 'show sampler'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify sampling rate on all monitored interfaces: 'show sampler'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure collector knows the sampling rate and multiplies flow counters accordingly",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure collector knows the sampling rate and multiplies flow counters accordingly",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure collector knows the sampling rate and multiplies flow counters accordingly",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply consistent sampling rate across all monitored interfaces",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply consistent sampling rate across all monitored interfaces",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply consistent sampling rate across all monitored interfaces",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 1:100 to 1:500 for reasonable accuracy; 1:1000+ only for very high-speed links",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 1:100 to 1:500 for reasonable accuracy; 1:1000+ only for very high-speed links",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 1:100 to 1:500 for reasonable accuracy; 1:1000+ only for very high-speed links",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply sampler to both ingress and egress if bidirectional visibility is required",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply sampler to both ingress and egress if bidirectional visibility is required",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply sampler to both ingress and egress if bidirectional visibility is required",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Sampling rate too aggressive (1:1000+) causing significant statistical error for low-volume flows",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Collector not configured with the correct sampling rate multiplier",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Asymmetric sampling — sampler applied to ingress but not egress (or different rates on each)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Sampler not applied to all relevant interfaces — some interfaces missing flow data entirely",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Random vs deterministic sampling producing different accuracy profiles",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "NetFlow sampling rate inaccurate — collected data doesn't match actual traffic",
+      "symptoms": [
+        "Flow-reported traffic volumes are orders of magnitude lower than SNMP interface counters",
+        "Some interfaces show flow data while others do not",
+        "Asymmetric traffic visibility — inbound flows present but outbound missing (or vice versa)",
+        "Collector reports wildly inaccurate bandwidth utilization"
+      ],
+      "verify_commands": [
+        {
+          "command": "show flow monitor",
+          "confirms_if": "Monitor applied consistently across interfaces with correct sampler",
+          "look_for": "Check which interfaces have the flow monitor applied and whether a sampler is associated.  Verify the monitor is active.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor",
+          "confirms_if": "Monitor applied consistently across interfaces with correct sampler",
+          "look_for": "Check which interfaces have the flow monitor applied and whether a sampler is associated.  Verify the monitor is active.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show flow monitor",
+          "confirms_if": "Monitor applied consistently across interfaces with correct sampler",
+          "look_for": "Check which interfaces have the flow monitor applied and whether a sampler is associated.  Verify the monitor is active.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show sampler",
+          "confirms_if": "Sampling rate matches collector configuration",
+          "look_for": "Check sampling mode (random/deterministic) and rate (1-in-N).  Verify it matches what the collector expects.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show sampler",
+          "confirms_if": "Sampling rate matches collector configuration",
+          "look_for": "Check sampling mode (random/deterministic) and rate (1-in-N).  Verify it matches what the collector expects.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show sampler",
+          "confirms_if": "Sampling rate matches collector configuration",
+          "look_for": "Check sampling mode (random/deterministic) and rate (1-in-N).  Verify it matches what the collector expects.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface counters",
+          "confirms_if": "Interface counters within expected range of sampled flow data (adjusted by multiplier)",
+          "look_for": "Compare raw interface byte/packet counters to collector-reported volumes (after applying sampling multiplier) to validate accuracy.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface counters",
+          "confirms_if": "Interface counters within expected range of sampled flow data (adjusted by multiplier)",
+          "look_for": "Compare raw interface byte/packet counters to collector-reported volumes (after applying sampling multiplier) to validate accuracy.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface counters",
+          "confirms_if": "Interface counters within expected range of sampled flow data (adjusted by multiplier)",
+          "look_for": "Compare raw interface byte/packet counters to collector-reported volumes (after applying sampling multiplier) to validate accuracy.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "operates_at": "Layer 3-4",
+  "protocol_family": "services",
+  "protocol_id": "netflow",
+  "protocol_name": "NetFlow/IPFIX",
+  "purpose": "Export IP flow records (source/destination IP, ports, protocol, byte/packet counters) to a collector for traffic analysis, capacity planning, security monitoring, and billing",
+  "related_protocols": [
+    "snmp"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-7011",
+      "rfc_number": 7011,
+      "title": "RFC 7011",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc7011.txt"
+    },
+    {
+      "id": "agent-cisco-kb:services/netflow.json",
+      "title": "agent-cisco-kb knowledge base — services/netflow.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 7011 (IPFIX), Cisco NetFlow v5/v9",
+  "states": [],
+  "tags": [
+    "netflow",
+    "ipfix",
+    "sflow",
+    "flow-export",
+    "monitoring",
+    "sampling",
+    "telemetry",
+    "fnf",
+    "services"
+  ],
+  "timers": [
+    {
+      "default_rfc": "60 s",
+      "description": "Exports long-lived flows periodically even while they remain active.  When the timer fires, the current counters are exported and the flow entry is reset (not removed) so a new record begins accumulating.",
+      "name": "Active flow timeout",
+      "on_expiry": "",
+      "range": "1–3600 s"
+    },
+    {
+      "default_rfc": "15 s",
+      "description": "Expires idle flows — if no packets match a cached flow entry for this duration, the entry is exported and removed from the cache, freeing memory.",
+      "name": "Inactive flow timeout",
+      "on_expiry": "",
+      "range": "1–3600 s"
+    },
+    {
+      "default_rfc": "20 packets or 30 minutes",
+      "description": "NetFlow v9 and IPFIX use template-based export.  The exporter re-sends template records at this interval so collectors can decode data records.  If the collector misses a template, it cannot parse any data records that reference it.",
+      "name": "Template refresh interval",
+      "on_expiry": "",
+      "range": "1–600 packets / 1–3600 minutes"
+    }
+  ],
+  "transport": "UDP 2055/9996 (export)",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "flow record MY-RECORD\n match ipv4 source address\n match ipv4 destination address\n match transport source-port\n match transport destination-port\n match ip protocol\n collect counter bytes long\n collect counter packets long\nflow exporter MY-EXPORTER\n destination 10.1.1.100\n transport udp 2055\n source Loopback0\n export-protocol netflow-v9\nflow monitor MY-MONITOR\n record MY-RECORD\n exporter MY-EXPORTER\n cache timeout active 60\n cache timeout inactive 15\ninterface GigabitEthernet1/0/1\n ip flow monitor MY-MONITOR input\n ip flow monitor MY-MONITOR output"
+      ],
+      "notes": [
+        {
+          "note": "Flexible NetFlow (FNF). 'flow record' + 'flow exporter' + 'flow monitor' + 'ip flow monitor <name> input/output' on interface.  ETA (Encrypted Traffic Analytics) extends NetFlow with TLS metadata for threat visibility in encrypted traffic.  Performance Monitor for ART (Application Response Time) metrics uses the same FNF infrastructure.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "config_examples": [
+        "sampler-map MY-SAMPLER\n random 1 out-of 100\nflow exporter-map MY-EXPORTER\n destination 10.1.1.100\n transport udp 2055\n source Loopback0\n version v9\nflow monitor-map MY-MONITOR\n record ipv4\n exporter MY-EXPORTER\n cache timeout active 60\n cache timeout inactive 15\ninterface GigabitEthernet0/0/0/0\n flow ipv4 monitor MY-MONITOR sampler MY-SAMPLER ingress"
+      ],
+      "notes": [
+        {
+          "note": "'flow exporter-map' + 'flow monitor-map' + interface application under 'interface' config.  Supports NetFlow v9 and IPFIX.  'sampler-map' for sampling configuration.  Hardware-based on NCS 5500 and Cisco 8000 — flow classification done in the forwarding ASIC.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "feature netflow\nflow record MY-RECORD\n  match ipv4 source address\n  match ipv4 destination address\n  match transport source-port\n  match transport destination-port\n  match ip protocol\n  collect counter bytes long\n  collect counter packets long\nflow exporter MY-EXPORTER\n  destination 10.1.1.100 use-vrf management\n  transport udp 2055\n  source mgmt0\n  version 9\nflow monitor MY-MONITOR\n  record MY-RECORD\n  exporter MY-EXPORTER\ninterface Ethernet1/1\n  ip flow monitor MY-MONITOR input"
+      ],
+      "notes": [
+        {
+          "note": "Flexible NetFlow (FNF). 'feature netflow'. Flow record + flow exporter + flow monitor + apply to interface. 'flow export destination <ip> <port> use-vrf management'. Hardware-based on Nexus 9000 — no CPU impact for flow classification.  NX-OS uses 'flow record' to define match/collect fields, 'flow exporter' for collector destination, and 'flow monitor' to bind them together.",
+          "versions": "9.3+"
+        }
+      ]
+    },
+    "sonic": {
+      "config_examples": [
+        "config sflow enable\nconfig sflow collector add COLLECTOR1 10.1.1.100 --port 6343\nconfig sflow interface enable Ethernet0\nconfig sflow polling-interval 20\nconfig sflow agent-id add Loopback0"
+      ],
+      "notes": [
+        {
+          "note": "sFlow (not NetFlow). 'config sflow enable' to activate.  sFlow agent runs in the host OS.  CONFIG_DB SFLOW and SFLOW_COLLECTOR tables store configuration.  Counter and flow sampling via psample kernel module.  sFlow uses a different packet format (RFC 3176) but serves the same traffic visibility purpose.",
+          "versions": "202311+"
+        }
+      ]
+    }
+  }
+}

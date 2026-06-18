@@ -1,0 +1,537 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 0,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 2,
+              "label": "Eth-slot/1-2",
+              "native_speed": "10G",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 1,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 4,
+              "label": "Eth-slot/3-4",
+              "native_speed": "10G",
+              "start_port": 3
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 2,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 6,
+              "label": "Eth-slot/5-6",
+              "native_speed": "10G",
+              "start_port": 5
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 3,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 8,
+              "label": "Eth-slot/7-8",
+              "native_speed": "10G",
+              "start_port": 7
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 4,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 10,
+              "label": "Eth-slot/9-10",
+              "native_speed": "10G",
+              "start_port": 9
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 5,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 12,
+              "label": "Eth-slot/11-12",
+              "native_speed": "10G",
+              "start_port": 11
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 6,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 13,
+              "label": "Eth-slot/13",
+              "native_speed": "10G",
+              "start_port": 13
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 10.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 7,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 16,
+              "label": "Eth-slot/14-16",
+              "native_speed": "10G",
+              "start_port": 14
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 30.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 8,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 18,
+              "label": "Eth-slot/17-18",
+              "native_speed": "10G",
+              "start_port": 17
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 9,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 20,
+              "label": "Eth-slot/19-20",
+              "native_speed": "10G",
+              "start_port": 19
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 10,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 22,
+              "label": "Eth-slot/21-22",
+              "native_speed": "10G",
+              "start_port": 21
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 11,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 24,
+              "label": "Eth-slot/23-24",
+              "native_speed": "10G",
+              "start_port": 23
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 12,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 26,
+              "label": "Eth-slot/25-26",
+              "native_speed": "10G",
+              "start_port": 25
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 13,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 28,
+              "label": "Eth-slot/27-28",
+              "native_speed": "10G",
+              "start_port": 27
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 14,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 30,
+              "label": "Eth-slot/29-30",
+              "native_speed": "10G",
+              "start_port": 29
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    },
+    {
+      "asic_family": "asic:f2",
+      "asic_id": 15,
+      "asic_model": "Orion",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 32,
+              "label": "Eth-slot/31-32",
+              "native_speed": "10G",
+              "start_port": 31
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 20.0
+    }
+  ],
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-7000",
+  "platform_id": "n7k-f132xp-15",
+  "platform_name": "N7K-F132XP-15 (Aida)",
+  "platform_pid": "N7K-F132XP-15",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-n7k-f132xp-15",
+      "title": "N7K-F132XP-15 datasheet, N7K F2 architecture",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-7000/n7k-f132xp-15.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-7000/n7k-f132xp-15.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 0.32,
+  "total_ports": 32
+}

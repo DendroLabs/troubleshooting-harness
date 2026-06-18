@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "definition.schema.json",
+  "title": "Definition (Shared Atom)",
+  "description": "Shared atoms referenced via def_id across the datastore. Daemons, databases, timers, services, ASIC families.",
+
+  "$defs": {
+    "daemon": {
+      "type": "object",
+      "properties": {
+        "def_id": { "type": "string", "pattern": "^daemon:" },
+        "def_type": { "const": "daemon" },
+        "process_name": { "type": "string" },
+        "os": { "type": "string" },
+        "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+        "container": { "type": "string", "description": "Container/service group (e.g., 'swss' for SONiC, 'bgp' for IOS-XR)" },
+        "purpose": { "type": "string" },
+        "subscribes_to": { "type": "array", "items": { "type": "string" } },
+        "writes_to": { "type": "array", "items": { "type": "string" } },
+        "restart_command": { "type": "string" },
+        "restart_warning": { "type": "string" },
+        "restart_safe": { "type": "boolean" },
+        "related_daemons": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["def_id", "def_type", "process_name", "os", "purpose"],
+      "additionalProperties": false
+    },
+
+    "database": {
+      "type": "object",
+      "properties": {
+        "def_id": { "type": "string", "pattern": "^db:" },
+        "def_type": { "const": "database" },
+        "os": { "type": "string" },
+        "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+        "db_number": { "type": "integer", "description": "Redis DB number (SONiC) or equivalent identifier" },
+        "name": { "type": "string" },
+        "separator": { "type": "string" },
+        "purpose": { "type": "string" },
+        "written_by": { "type": "array", "items": { "type": "string" } },
+        "read_by": { "type": "array", "items": { "type": "string" } },
+        "persistence": { "type": "string" },
+        "human_error_risk": { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW"] }
+      },
+      "required": ["def_id", "def_type", "os", "name", "purpose"],
+      "additionalProperties": false
+    },
+
+    "timer": {
+      "type": "object",
+      "properties": {
+        "def_id": { "type": "string", "pattern": "^timer:" },
+        "def_type": { "const": "timer" },
+        "name": { "type": "string" },
+        "protocol": { "type": "string", "description": "Protocol this timer belongs to" },
+        "description": { "type": "string" },
+        "default_rfc": { "type": "string", "description": "RFC-specified default value" },
+        "range": { "type": "string" },
+        "on_expiry": { "type": "string" }
+      },
+      "required": ["def_id", "def_type", "name", "description"],
+      "additionalProperties": false
+    },
+
+    "service": {
+      "type": "object",
+      "properties": {
+        "def_id": { "type": "string", "pattern": "^service:" },
+        "def_type": { "const": "service" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "protocols": { "type": "array", "items": { "type": "string" }, "description": "Protocol IDs this service implements" },
+        "daemons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "def_id": { "type": "string" },
+              "os": { "type": "string" },
+              "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" }
+            },
+            "required": ["def_id", "os"]
+          },
+          "description": "Per-OS daemon mappings"
+        }
+      },
+      "required": ["def_id", "def_type", "name", "description"],
+      "additionalProperties": false
+    },
+
+    "asic_family": {
+      "type": "object",
+      "properties": {
+        "def_id": { "type": "string", "pattern": "^asic:" },
+        "def_type": { "const": "asic_family" },
+        "name": { "type": "string" },
+        "vendor": { "type": "string", "description": "ASIC vendor (Memory Mode, memory-mode-2, memory-mode-2a, memory-mode-3, memory-mode-4, memory-mode-4a, memory-mode-5)" },
+        "pipeline_type": { "type": "string" },
+        "description": { "type": "string" },
+        "capabilities": { "type": "array", "items": { "type": "string" } },
+        "platforms": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Platform IDs that use this ASIC"
+        }
+      },
+      "required": ["def_id", "def_type", "name", "vendor", "description"],
+      "additionalProperties": false
+    }
+  },
+
+  "type": "object",
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "def_type": { "type": "string", "enum": ["daemons", "databases", "timers", "services", "asic_families"] },
+    "description": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/daemon" },
+          { "$ref": "#/$defs/database" },
+          { "$ref": "#/$defs/timer" },
+          { "$ref": "#/$defs/service" },
+          { "$ref": "#/$defs/asic_family" }
+        ]
+      }
+    }
+  },
+  "required": ["schema_version", "def_type", "entries"],
+  "additionalProperties": false
+}

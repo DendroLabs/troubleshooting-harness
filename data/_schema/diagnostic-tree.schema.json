@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "diagnostic-tree.schema.json",
+  "title": "Diagnostic Decision Tree",
+  "description": "Branch/leaf decision tree for troubleshooting a specific failure scenario. Nodes can be scoped to OS/version/platform/ASIC.",
+
+  "$defs": {
+    "scoped_command": {
+      "type": "object",
+      "properties": {
+        "os": { "type": "string" },
+        "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+        "platforms": {
+          "oneOf": [
+            { "type": "array", "items": { "type": "string" } },
+            { "type": "null" }
+          ]
+        },
+        "asic_family": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "null" }
+          ]
+        },
+        "command": { "type": "string" }
+      },
+      "required": ["os", "version_range", "command"],
+      "additionalProperties": false
+    },
+
+    "node_scope": {
+      "type": "object",
+      "description": "If present, this node only applies when the device matches this scope",
+      "properties": {
+        "os": { "type": "string" },
+        "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+        "platforms": {
+          "oneOf": [
+            { "type": "array", "items": { "type": "string" } },
+            { "type": "null" }
+          ]
+        },
+        "asic_family": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "required": ["os", "version_range"],
+      "additionalProperties": false
+    },
+
+    "branch_node": {
+      "type": "object",
+      "properties": {
+        "node_id": { "type": "string" },
+        "node_type": { "const": "branch" },
+        "question": { "type": "string" },
+        "scope": { "$ref": "#/$defs/node_scope" },
+        "skip_if_no_match": { "type": "string", "description": "Node ID to jump to if device doesn't match scope" },
+        "commands": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scoped_command" },
+          "minItems": 1
+        },
+        "branches": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Maps answer strings to next node_id"
+        }
+      },
+      "required": ["node_id", "node_type", "question", "commands", "branches"],
+      "additionalProperties": false
+    },
+
+    "leaf_node": {
+      "type": "object",
+      "properties": {
+        "node_id": { "type": "string" },
+        "node_type": { "const": "leaf" },
+        "finding": { "type": "string" },
+        "action": { "type": "string" },
+        "scope": { "$ref": "#/$defs/node_scope" },
+        "commands": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scoped_command" }
+        }
+      },
+      "required": ["node_id", "node_type", "finding", "action"],
+      "additionalProperties": false
+    }
+  },
+
+  "type": "object",
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+    "deprecated": { "type": "boolean", "default": false },
+
+    "tree_id": { "type": "string" },
+    "display_name": { "type": "string" },
+    "entry_symptom": { "type": "string" },
+    "related_protocol": { "type": "string", "description": "Protocol ID this tree diagnoses" },
+    "related_errors": { "type": "array", "items": { "type": "string" }, "description": "Human error IDs related to this failure" },
+    "applicable_os": { "type": "array", "items": { "type": "string" }, "description": "OS identifiers this tree covers" },
+    "def_refs": { "type": "array", "items": { "type": "string" } },
+
+    "nodes": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/branch_node" },
+          { "$ref": "#/$defs/leaf_node" }
+        ]
+      },
+      "minItems": 1
+    },
+
+    "sources": {
+      "type": "array",
+      "items": { "$ref": "protocol.schema.json#/$defs/source" }
+    }
+  },
+  "required": ["schema_version", "tree_id", "display_name", "entry_symptom", "applicable_os", "nodes"],
+  "additionalProperties": false
+}

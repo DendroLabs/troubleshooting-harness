@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0.0",
+  "rfcs": [
+    {
+      "rfc_number": 1195,
+      "title": "Use of OSI IS-IS for Routing in TCP/IP and Dual Environments",
+      "url": "https://www.rfc-editor.org/rfc/rfc1195.txt",
+      "protocols_referencing": [
+        "isis"
+      ]
+    },
+    {
+      "rfc_number": 2281,
+      "title": "Cisco Hot Standby Router Protocol (HSRP)",
+      "url": "https://www.rfc-editor.org/rfc/rfc2281.txt",
+      "protocols_referencing": [
+        "hsrp"
+      ]
+    },
+    {
+      "rfc_number": 2328,
+      "title": "OSPF Version 2",
+      "url": "https://www.rfc-editor.org/rfc/rfc2328.txt",
+      "protocols_referencing": [
+        "ospfv2"
+      ]
+    },
+    {
+      "rfc_number": 3031,
+      "title": "Multiprotocol Label Switching Architecture",
+      "url": "https://www.rfc-editor.org/rfc/rfc3031.txt",
+      "protocols_referencing": [
+        "mpls-ldp"
+      ]
+    },
+    {
+      "rfc_number": 4271,
+      "title": "A Border Gateway Protocol 4 (BGP-4)",
+      "url": "https://www.rfc-editor.org/rfc/rfc4271.txt",
+      "protocols_referencing": [
+        "bgp-4"
+      ]
+    },
+    {
+      "rfc_number": 5036,
+      "title": "LDP Specification",
+      "url": "https://www.rfc-editor.org/rfc/rfc5036.txt",
+      "protocols_referencing": [
+        "mpls-ldp"
+      ]
+    },
+    {
+      "rfc_number": 5340,
+      "title": "OSPF for IPv6",
+      "url": "https://www.rfc-editor.org/rfc/rfc5340.txt",
+      "protocols_referencing": [
+        "ospfv3"
+      ]
+    },
+    {
+      "rfc_number": 5798,
+      "title": "Virtual Router Redundancy Protocol (VRRP) Version 3 for IPv4 and IPv6",
+      "url": "https://www.rfc-editor.org/rfc/rfc5798.txt",
+      "protocols_referencing": [
+        "vrrp"
+      ]
+    },
+    {
+      "rfc_number": 5880,
+      "title": "Bidirectional Forwarding Detection (BFD)",
+      "url": "https://www.rfc-editor.org/rfc/rfc5880.txt",
+      "protocols_referencing": [
+        "bfd"
+      ]
+    },
+    {
+      "rfc_number": 5881,
+      "title": "Bidirectional Forwarding Detection (BFD) for IPv4 and IPv6 (Single Hop)",
+      "url": "https://www.rfc-editor.org/rfc/rfc5881.txt",
+      "protocols_referencing": [
+        "bfd"
+      ]
+    },
+    {
+      "rfc_number": 7275,
+      "title": "Inter-Chassis Communication Protocol for Layer 2 Virtual Private Network (L2VPN) Provider Edge (PE) Redundancy",
+      "url": "https://www.rfc-editor.org/rfc/rfc7275.txt",
+      "protocols_referencing": [
+        "mclag"
+      ]
+    },
+    {
+      "rfc_number": 7348,
+      "title": "Virtual eXtensible Local Area Network (VXLAN): A Framework for Overlaying Virtualized Layer 2 Networks over Layer 3 Networks",
+      "url": "https://www.rfc-editor.org/rfc/rfc7348.txt",
+      "protocols_referencing": [
+        "vxlan",
+        "vxlan-evpn"
+      ]
+    },
+    {
+      "rfc_number": 7432,
+      "title": "BGP MPLS-Based Ethernet VPN",
+      "url": "https://www.rfc-editor.org/rfc/rfc7432.txt",
+      "protocols_referencing": [
+        "evpn"
+      ]
+    },
+    {
+      "rfc_number": 7868,
+      "title": "Cisco's Enhanced Interior Gateway Routing Protocol (EIGRP)",
+      "url": "https://www.rfc-editor.org/rfc/rfc7868.txt",
+      "protocols_referencing": [
+        "eigrp"
+      ]
+    },
+    {
+      "rfc_number": 8365,
+      "title": "A Network Virtualization Overlay Solution Using Ethernet VPN (EVPN)",
+      "url": "https://www.rfc-editor.org/rfc/rfc8365.txt",
+      "protocols_referencing": [
+        "vxlan-evpn"
+      ]
+    }
+  ]
+}

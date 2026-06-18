@@ -1,0 +1,1480 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "SNMP uses UDP port 161 for agent queries and UDP port 162 for traps/informs. IP connectivity must exist between NMS and agent. Unlike TCP-based protocols, UDP provides no delivery guarantee — SNMP informs add application-level acknowledgment.",
+      "name": "IP reachability (UDP)",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Requires an NMS or monitoring platform (e.g., LibreNMS, Zabbix, PRTG, SolarWinds) configured with correct community strings or SNMPv3 credentials, device IP addresses, and poll intervals.",
+      "name": "NMS infrastructure",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "The NMS sends GET/GETBULK requests to the device but receives no response. The device appears as unreachable in the monitoring system, causing gaps in graphs and triggering false 'device down' alerts. This is one of the most common SNMP issues and has many possible root causes spanning ACLs, community strings, source interfaces, CoPP, and basic SNMP enablement.",
+      "resolutions": [
+        {
+          "action": "Verify SNMP is enabled: 'show snmp' should show packets in/out counters incrementing",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SNMP is enabled: 'show snmp' should show packets in/out counters incrementing",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SNMP is enabled: 'show snmp' should show packets in/out counters incrementing",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check community string matches between NMS and device",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check community string matches between NMS and device",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check community string matches between NMS and device",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ACL permits NMS source IP: 'show access-lists' on the device",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ACL permits NMS source IP: 'show access-lists' on the device",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ACL permits NMS source IP: 'show access-lists' on the device",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure correct source interface: 'snmp-server source-interface traps <intf>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure correct source interface: 'snmp-server source-interface traps <intf>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure correct source interface: 'snmp-server source-interface traps <intf>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CoPP policy for SNMP class — increase rate if drops are seen",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CoPP policy for SNMP class — increase rate if drops are seen",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CoPP policy for SNMP class — increase rate if drops are seen",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VRF: 'snmp-server host <ip> use-vrf <vrf>' on NX-OS",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VRF: 'snmp-server host <ip> use-vrf <vrf>' on NX-OS",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VRF: 'snmp-server host <ip> use-vrf <vrf>' on NX-OS",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "ACL blocking UDP port 161 on the device or in the path",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Wrong community string or SNMPv3 credentials on NMS",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SNMP not enabled on the device ('feature snmp' missing on NX-OS)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Source interface mismatch — device replies from a different IP than NMS expects",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "CoPP rate-limiting SNMP packets under heavy polling load",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VRF context mismatch — SNMP configured in default VRF but management in mgmt VRF",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "SNMP polling timeout — NMS can't reach agent",
+      "symptoms": [
+        "NMS shows device as unreachable or 'SNMP timeout'",
+        "Gaps in monitoring graphs (CPU, interface utilization, etc.)",
+        "False 'device down' alerts from NMS",
+        "snmpwalk/snmpget from CLI times out with 'No response'"
+      ],
+      "verify_commands": [
+        {
+          "command": "show snmp",
+          "confirms_if": "Non-zero input with zero output confirms device is rejecting requests",
+          "look_for": "Check 'SNMP packets input/output' counters — if input is 0, packets are not reaching the device. If input increments but output does not, the device is dropping requests (bad community, ACL).",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp",
+          "confirms_if": "Non-zero input with zero output confirms device is rejecting requests",
+          "look_for": "Check 'SNMP packets input/output' counters — if input is 0, packets are not reaching the device. If input increments but output does not, the device is dropping requests (bad community, ACL).",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp",
+          "confirms_if": "Non-zero input with zero output confirms device is rejecting requests",
+          "look_for": "Check 'SNMP packets input/output' counters — if input is 0, packets are not reaching the device. If input increments but output does not, the device is dropping requests (bad community, ACL).",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp host",
+          "confirms_if": "Missing or incorrect host entry confirms misconfiguration",
+          "look_for": "Verify trap receiver IP, community/user, UDP port, and VRF context. Confirm the NMS IP is listed.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp host",
+          "confirms_if": "Missing or incorrect host entry confirms misconfiguration",
+          "look_for": "Verify trap receiver IP, community/user, UDP port, and VRF context. Confirm the NMS IP is listed.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp host",
+          "confirms_if": "Missing or incorrect host entry confirms misconfiguration",
+          "look_for": "Verify trap receiver IP, community/user, UDP port, and VRF context. Confirm the NMS IP is listed.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show access-lists",
+          "confirms_if": "ACL deny matching NMS IP confirms access is blocked",
+          "look_for": "Check for deny entries matching NMS source IP on UDP port 161",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show access-lists",
+          "confirms_if": "ACL deny matching NMS IP confirms access is blocked",
+          "look_for": "Check for deny entries matching NMS source IP on UDP port 161",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show access-lists",
+          "confirms_if": "ACL deny matching NMS IP confirms access is blocked",
+          "look_for": "Check for deny entries matching NMS source IP on UDP port 161",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "SNMPv3 users are tied to a specific SNMP engine-id. If the engine-id changes (e.g., after a device replacement, RMA, or certain software upgrades), existing v3 users become invalid because their localized keys no longer match. The NMS receives 'unknown engine ID' or 'authentication failure' errors. This also occurs when remote vs local engine-id is confused during trap/inform configuration.",
+      "resolutions": [
+        {
+          "action": "Check current engine-id: 'show snmp engineID' and compare with NMS configuration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check current engine-id: 'show snmp engineID' and compare with NMS configuration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check current engine-id: 'show snmp engineID' and compare with NMS configuration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If engine-id changed: re-create SNMPv3 users with the new engine-id on the NMS",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If engine-id changed: re-create SNMPv3 users with the new engine-id on the NMS",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If engine-id changed: re-create SNMPv3 users with the new engine-id on the NMS",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For informs: configure remote engine-id on device to match NMS: 'snmp-server engineID remote <ip> <engine-id>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For informs: configure remote engine-id on device to match NMS: 'snmp-server engineID remote <ip> <engine-id>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For informs: configure remote engine-id on device to match NMS: 'snmp-server engineID remote <ip> <engine-id>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider setting a static engine-id to survive reloads: 'snmp-server engineID local <hex>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider setting a static engine-id to survive reloads: 'snmp-server engineID local <hex>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider setting a static engine-id to survive reloads: 'snmp-server engineID local <hex>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Force NMS to re-discover engine-id (NMS-specific procedure)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Force NMS to re-discover engine-id (NMS-specific procedure)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Force NMS to re-discover engine-id (NMS-specific procedure)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Engine-id changed after device reload, RMA, or software upgrade",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SNMPv3 user created with wrong engine-id (remote vs local confusion)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NMS cached old engine-id and is not performing engine-id discovery",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "For informs: remote engine-id on device does not match NMS actual engine-id",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "SNMPv3 engine-id mismatch — v3 user can't authenticate",
+      "symptoms": [
+        "'USM: unknown engine ID' error in NMS or debug output",
+        "'Authentication failure' for SNMPv3 requests that previously worked",
+        "SNMPv3 informs fail while traps work (engine-id discovery issue)",
+        "Device replaced/RMA'd and SNMP monitoring stopped"
+      ],
+      "verify_commands": [
+        {
+          "command": "show snmp engineID",
+          "confirms_if": "Engine-id mismatch between device and NMS confirms the issue",
+          "look_for": "Note the local engine-id value — compare with what the NMS has configured. If they differ, authentication will fail.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp engineID",
+          "confirms_if": "Engine-id mismatch between device and NMS confirms the issue",
+          "look_for": "Note the local engine-id value — compare with what the NMS has configured. If they differ, authentication will fail.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp engineID",
+          "confirms_if": "Engine-id mismatch between device and NMS confirms the issue",
+          "look_for": "Note the local engine-id value — compare with what the NMS has configured. If they differ, authentication will fail.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp user",
+          "confirms_if": "User missing or tied to wrong engine-id confirms configuration issue",
+          "look_for": "Verify the SNMPv3 user exists, check auth/priv protocols, and confirm the engine-id the user is associated with.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp user",
+          "confirms_if": "User missing or tied to wrong engine-id confirms configuration issue",
+          "look_for": "Verify the SNMPv3 user exists, check auth/priv protocols, and confirm the engine-id the user is associated with.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp user",
+          "confirms_if": "User missing or tied to wrong engine-id confirms configuration issue",
+          "look_for": "Verify the SNMPv3 user exists, check auth/priv protocols, and confirm the engine-id the user is associated with.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "An SNMP walk of the device takes excessively long or terminates before completing the full MIB tree. Large tables (ARP, routing, MAC address) can take minutes to walk, causing NMS poll timeouts. Incomplete walks result in missing data in monitoring dashboards. This can also impact device performance during the walk.",
+      "resolutions": [
+        {
+          "action": "Use GETBULK with reasonable max-repetitions (10-25) instead of GETNEXT",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use GETBULK with reasonable max-repetitions (10-25) instead of GETNEXT",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use GETBULK with reasonable max-repetitions (10-25) instead of GETNEXT",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Poll only needed OIDs instead of full MIB walks — target specific interface counters",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Poll only needed OIDs instead of full MIB walks — target specific interface counters",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Poll only needed OIDs instead of full MIB walks — target specific interface counters",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stagger polling across devices to avoid simultaneous walks on many devices",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stagger polling across devices to avoid simultaneous walks on many devices",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stagger polling across devices to avoid simultaneous walks on many devices",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: 'snmp-server protocol enable' and verify SNMP process priority",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: 'snmp-server protocol enable' and verify SNMP process priority",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: 'snmp-server protocol enable' and verify SNMP process priority",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider streaming telemetry (gNMI/NETCONF) for high-scale environments instead of SNMP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider streaming telemetry (gNMI/NETCONF) for high-scale environments instead of SNMP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider streaming telemetry (gNMI/NETCONF) for high-scale environments instead of SNMP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Large routing/ARP/MAC tables — walking ifTable or ipRouteTable on a core router with 800K routes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "GETBULK max-repetitions set too high — agent struggles to build large response PDU",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NMS using GETNEXT instead of GETBULK (SNMPv1 or misconfigured v2c)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VRF context missing — walk only sees default VRF objects, skips VRF-specific tables",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "CPU contention — SNMP process deprioritized when device CPU is already high",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "SNMP walk slow or incomplete — OID walks take too long or miss objects",
+      "symptoms": [
+        "SNMP walk times out before completing",
+        "Monitoring data incomplete — some interfaces or metrics missing",
+        "Walk takes several minutes for a single device",
+        "Device CPU spikes during SNMP walk periods"
+      ],
+      "verify_commands": [
+        {
+          "command": "show snmp",
+          "confirms_if": "High tooBig or genErr counts confirm walk/response size issues",
+          "look_for": "Check 'SNMP packets input/output' and error counters. Look for 'tooBig' errors (response PDU exceeds max size) or 'genErr' indicating agent-side processing failures.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp",
+          "confirms_if": "High tooBig or genErr counts confirm walk/response size issues",
+          "look_for": "Check 'SNMP packets input/output' and error counters. Look for 'tooBig' errors (response PDU exceeds max size) or 'genErr' indicating agent-side processing failures.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp",
+          "confirms_if": "High tooBig or genErr counts confirm walk/response size issues",
+          "look_for": "Check 'SNMP packets input/output' and error counters. Look for 'tooBig' errors (response PDU exceeds max size) or 'genErr' indicating agent-side processing failures.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "High SNMP process CPU confirms polling-induced load",
+          "look_for": "Check CPU utilization of SNMP-related processes: 'snmpd', 'SNMP ENGINE', 'snmp_subagent'. High CPU here confirms SNMP is consuming excessive resources.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "High SNMP process CPU confirms polling-induced load",
+          "look_for": "Check CPU utilization of SNMP-related processes: 'snmpd', 'SNMP ENGINE', 'snmp_subagent'. High CPU here confirms SNMP is consuming excessive resources.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "High SNMP process CPU confirms polling-induced load",
+          "look_for": "Check CPU utilization of SNMP-related processes: 'snmpd', 'SNMP ENGINE', 'snmp_subagent'. High CPU here confirms SNMP is consuming excessive resources.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Events occur on the device (link down, config change, threshold exceeded) and may be visible in syslog, but the NMS never receives the corresponding SNMP trap. This leads to missed alerts and delayed incident response. The issue can be on the sending side (device not configured to send traps) or the receiving side (NMS not listening, firewall blocking UDP 162).",
+      "resolutions": [
+        {
+          "action": "Verify trap host config: 'show snmp host' — check IP, community, version, VRF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify trap host config: 'show snmp host' — check IP, community, version, VRF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify trap host config: 'show snmp host' — check IP, community, version, VRF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable traps per feature: 'snmp-server enable traps link' (linkUp/linkDown), etc.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable traps per feature: 'snmp-server enable traps link' (linkUp/linkDown), etc.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable traps per feature: 'snmp-server enable traps link' (linkUp/linkDown), etc.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure source interface: 'snmp-server source-interface traps <intf>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure source interface: 'snmp-server source-interface traps <intf>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure source interface: 'snmp-server source-interface traps <intf>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test from device: generate a test event and check NMS trap log",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test from device: generate a test event and check NMS trap log",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test from device: generate a test event and check NMS trap log",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use informs instead of traps for reliable delivery: 'snmp-server host <ip> informs'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use informs instead of traps for reliable delivery: 'snmp-server host <ip> informs'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use informs instead of traps for reliable delivery: 'snmp-server host <ip> informs'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NMS is listening: 'netstat -ulnp | grep 162' on the NMS server",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NMS is listening: 'netstat -ulnp | grep 162' on the NMS server",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NMS is listening: 'netstat -ulnp | grep 162' on the NMS server",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Trap receiver IP or community string incorrect in device config",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "'snmp-server enable traps' not configured for the relevant feature/subsystem",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL or firewall blocking UDP port 162 between device and NMS",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Trap source interface is in a different VRF than the path to the NMS",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NMS trap receiver process not running or not listening on UDP 162",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SNMP traps rate-limited by CoPP in the egress direction",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Traps not being received — device sends traps but NMS doesn't get them",
+      "symptoms": [
+        "No SNMP alerts in NMS for events that should trigger traps",
+        "Syslog shows events (e.g., link down) but no corresponding SNMP trap in NMS",
+        "'show snmp host' shows trap receiver configured but NMS receives nothing",
+        "Inform retransmit counters incrementing (informs never acknowledged)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show snmp host",
+          "confirms_if": "Missing or incorrect host entry confirms misconfiguration",
+          "look_for": "Verify trap receiver entries: IP address, community/user, trap version (v1/v2c/v3), port (162), and VRF context. Missing entries mean no traps will be sent.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp host",
+          "confirms_if": "Missing or incorrect host entry confirms misconfiguration",
+          "look_for": "Verify trap receiver entries: IP address, community/user, trap version (v1/v2c/v3), port (162), and VRF context. Missing entries mean no traps will be sent.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp host",
+          "confirms_if": "Missing or incorrect host entry confirms misconfiguration",
+          "look_for": "Verify trap receiver entries: IP address, community/user, trap version (v1/v2c/v3), port (162), and VRF context. Missing entries mean no traps will be sent.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp trap",
+          "confirms_if": "Trap type disabled for the expected event confirms the issue",
+          "look_for": "Check which trap types are enabled. If the relevant trap type (e.g., 'link', 'entity', 'bgp') shows 'disabled', the device will not generate traps for that event.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp trap",
+          "confirms_if": "Trap type disabled for the expected event confirms the issue",
+          "look_for": "Check which trap types are enabled. If the relevant trap type (e.g., 'link', 'entity', 'bgp') shows 'disabled', the device will not generate traps for that event.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp trap",
+          "confirms_if": "Trap type disabled for the expected event confirms the issue",
+          "look_for": "Check which trap types are enabled. If the relevant trap type (e.g., 'link', 'entity', 'bgp') shows 'disabled', the device will not generate traps for that event.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The SNMP engine process consumes excessive CPU, causing slow CLI response, control plane degradation, and potentially protocol adjacency flaps. This typically occurs when multiple NMS systems poll the same device at aggressive intervals, especially when walking large MIB tables. The impact can extend beyond SNMP to affect routing protocol processing and management plane access.",
+      "resolutions": [
+        {
+          "action": "Identify top SNMP pollers: check 'show snmp' for request rates, correlate with NMS logs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify top SNMP pollers: check 'show snmp' for request rates, correlate with NMS logs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify top SNMP pollers: check 'show snmp' for request rates, correlate with NMS logs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase poll intervals to 300s+ for non-critical metrics",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase poll intervals to 300s+ for non-critical metrics",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase poll intervals to 300s+ for non-critical metrics",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consolidate to a single NMS or use SNMP proxy to reduce direct device load",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consolidate to a single NMS or use SNMP proxy to reduce direct device load",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consolidate to a single NMS or use SNMP proxy to reduce direct device load",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Switch from full MIB walks to targeted OID polls for only needed counters",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Switch from full MIB walks to targeted OID polls for only needed counters",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Switch from full MIB walks to targeted OID polls for only needed counters",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply CoPP rate-limiting for SNMP class to protect the control plane",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply CoPP rate-limiting for SNMP class to protect the control plane",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply CoPP rate-limiting for SNMP class to protect the control plane",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Migrate high-frequency telemetry to model-driven telemetry (gNMI/gRPC) for streaming",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Migrate high-frequency telemetry to model-driven telemetry (gNMI/gRPC) for streaming",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Migrate high-frequency telemetry to model-driven telemetry (gNMI/gRPC) for streaming",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "NMS polling interval too aggressive (every 30s or less for many OIDs)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Multiple NMS/monitoring systems polling the same device independently",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Walking large tables (full routing table, ARP table) via SNMP on every poll cycle",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Using GETNEXT instead of GETBULK — many more packets per table walk",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MIB instrumentation bug causing CPU spin on certain OID walks",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "SNMP causing high CPU — aggressive polling overwhelming device",
+      "symptoms": [
+        "High CPU utilization from SNMP ENGINE or snmpd process",
+        "Slow or unresponsive CLI on the device",
+        "Control plane protocols (BGP, OSPF) flap due to CPU starvation",
+        "'show processes cpu sort' shows SNMP as top consumer",
+        "NMS graphs show device as intermittently unreachable (self-inflicted by polling)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "SNMP process at top of CPU consumers confirms polling overload",
+          "look_for": "Check CPU percentage for SNMP-related processes. On NX-OS: 'snmpd'. On IOS-XE: 'SNMP ENGINE'. If SNMP is consuming >20% CPU sustained, polling is too aggressive.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "SNMP process at top of CPU consumers confirms polling overload",
+          "look_for": "Check CPU percentage for SNMP-related processes. On NX-OS: 'snmpd'. On IOS-XE: 'SNMP ENGINE'. If SNMP is consuming >20% CPU sustained, polling is too aggressive.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "SNMP process at top of CPU consumers confirms polling overload",
+          "look_for": "Check CPU percentage for SNMP-related processes. On NX-OS: 'snmpd'. On IOS-XE: 'SNMP ENGINE'. If SNMP is consuming >20% CPU sustained, polling is too aggressive.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp",
+          "confirms_if": "High input packet rate confirms aggressive external polling",
+          "look_for": "Check 'SNMP packets input' counter rate. Take two readings 60 seconds apart — if delta is >100 packets/sec, the device is being heavily polled.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp",
+          "confirms_if": "High input packet rate confirms aggressive external polling",
+          "look_for": "Check 'SNMP packets input' counter rate. Take two readings 60 seconds apart — if delta is >100 packets/sec, the device is being heavily polled.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show snmp",
+          "confirms_if": "High input packet rate confirms aggressive external polling",
+          "look_for": "Check 'SNMP packets input' counter rate. Take two readings 60 seconds apart — if delta is >100 packets/sec, the device is being heavily polled.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Retrieves the value of a single OID from the agent",
+      "key_fields": [
+        "OID",
+        "community/security-level",
+        "request-id"
+      ],
+      "name": "GET",
+      "when_sent": "NMS requests a specific MIB object value"
+    },
+    {
+      "description": "Retrieves the next OID in lexicographic order from the agent. Used to walk MIB trees sequentially.",
+      "key_fields": [
+        "OID",
+        "community/security-level",
+        "request-id"
+      ],
+      "name": "GETNEXT",
+      "when_sent": "NMS walks a MIB tree one object at a time"
+    },
+    {
+      "description": "Retrieves multiple OIDs in a single request (SNMPv2c/v3 only). Much more efficient than repeated GETNEXT for table walks.",
+      "key_fields": [
+        "OID",
+        "non-repeaters",
+        "max-repetitions",
+        "request-id"
+      ],
+      "name": "GETBULK",
+      "when_sent": "NMS walks a large MIB table (interface counters, routing table)"
+    },
+    {
+      "description": "Writes a value to a MIB object on the agent (requires RW access)",
+      "key_fields": [
+        "OID",
+        "value",
+        "value-type",
+        "community/security-level"
+      ],
+      "name": "SET",
+      "when_sent": "NMS changes a device configuration or operational parameter"
+    },
+    {
+      "description": "Asynchronous notification from agent to NMS. TRAP is unacknowledged (fire-and-forget). INFORM is acknowledged (agent retransmits until NMS confirms receipt).",
+      "key_fields": [
+        "trap-OID",
+        "varbind-list",
+        "timestamp",
+        "enterprise-OID"
+      ],
+      "name": "TRAP/INFORM",
+      "when_sent": "Agent detects an event: link up/down, authentication failure, threshold exceeded, configuration change, cold/warm start"
+    }
+  ],
+  "operates_at": "Layer 7 (Application)",
+  "protocol_family": "services",
+  "protocol_id": "snmp",
+  "protocol_name": "SNMP",
+  "purpose": "Network monitoring and management via GET/SET/TRAP operations — poll device counters, retrieve MIB objects, and receive asynchronous event notifications",
+  "related_protocols": [
+    "ntp",
+    "tacacs"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-3411",
+      "rfc_number": 3411,
+      "title": "RFC 3411",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc3411.txt"
+    },
+    {
+      "id": "rfc-1157",
+      "rfc_number": 1157,
+      "title": "RFC 1157",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc1157.txt"
+    },
+    {
+      "id": "rfc-3416",
+      "rfc_number": 3416,
+      "title": "RFC 3416",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc3416.txt"
+    },
+    {
+      "id": "agent-cisco-kb:services/snmp.json",
+      "title": "agent-cisco-kb knowledge base — services/snmp.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 3411-3418 (SNMPv3), RFC 1157 (SNMPv1), RFC 3416 (SNMPv2c)",
+  "states": [],
+  "tags": [
+    "snmp",
+    "monitoring",
+    "polling",
+    "traps",
+    "mib",
+    "oid",
+    "community",
+    "snmpv3",
+    "engine-id",
+    "services"
+  ],
+  "timers": [
+    {
+      "default_rfc": "300s",
+      "description": "NMS-side interval between successive SNMP polls to the same agent. Controls how frequently interface counters, CPU, memory, and other MIB objects are refreshed in the monitoring system.",
+      "name": "poll-interval",
+      "on_expiry": "NMS sends next GET/GETBULK request to the agent",
+      "range": "10-3600s (NMS-dependent)",
+      "tuning_advice": "Lower intervals (30-60s) give finer-grained graphs but increase device CPU load and network traffic. For large-scale deployments (1000+ devices), keep intervals at 300s or higher and use SNMP traps/informs for event-driven alerting instead of aggressive polling."
+    },
+    {
+      "default_rfc": "0s (no throttling by default)",
+      "description": "Agent-side rate-limiting interval for trap generation. Prevents trap storms during rapid state changes (e.g., interface flapping generating linkUp/linkDown traps).",
+      "name": "trap-throttle-interval",
+      "on_expiry": "Agent is allowed to send the next trap for the same event type",
+      "range": "0-300s (platform-dependent)",
+      "tuning_advice": "Enable throttling (10-30s) on devices with unstable interfaces to prevent trap storms from overwhelming the NMS. On NX-OS use 'snmp-server enable traps link cisco-xcvr-mon-status-chg notification-interval <seconds>'."
+    }
+  ],
+  "transport": "UDP 161 (agent), UDP 162 (traps)",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "snmp-server community READONLY RO SNMP_ACL\nsnmp-server location DC2-SW01\nsnmp-server contact NOC\nsnmp-server source-interface traps Loopback0\nsnmp-server host 10.1.1.100 version 2c READONLY\nsnmp-server enable traps snmp linkdown linkup\nsnmp-server enable traps bgp\nip access-list standard SNMP_ACL\n permit 10.1.1.0 0.0.0.255"
+      ],
+      "notes": [
+        {
+          "note": "IOS-XE SNMP configuration: 'snmp-server community <string> [RO|RW] [acl]' for v1/v2c. SNMPv3 uses 'snmp-server group <name> v3 [auth|priv]' and 'snmp-server user <name> <group> v3 auth <proto> <key> priv <proto> <key>'. Source interface for traps: 'snmp-server source-interface traps <intf>'. Trap enablement is per feature: 'snmp-server enable traps bgp', 'snmp-server enable traps ospf', etc. ACLs can restrict which NMS IPs are allowed to poll.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "config_examples": [
+        "snmp-server community READONLY RO\nsnmp-server location DC3-PE01\nsnmp-server contact NOC\nsnmp-server host 10.1.1.100 traps version 2c READONLY\nsnmp-server traps snmp linkup\nsnmp-server traps snmp linkdown\nsnmp-server traps bgp"
+      ],
+      "notes": [
+        {
+          "note": "IOS-XR SNMP configured under global config: 'snmp-server community <string> [RO|RW] [SystemOwner]'. SNMPv3: 'snmp-server user <name> <group> v3 auth <proto> <key> priv <proto> <key>'. Trap configuration: 'snmp-server traps <feature>'. Source interface set via VRF: 'snmp-server vrf <vrf>'. IOS-XR uses 'snmp-server host <ip> traps <community>' syntax. LPTS (Local Packet Transport Services) rate-limits SNMP similar to CoPP.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "feature snmp\nsnmp-server community READONLY group network-operator\nsnmp-server contact NOC\nsnmp-server location DC1-R01\nsnmp-server source-interface traps loopback0\nsnmp-server host 10.1.1.100 traps version 2c READONLY\nsnmp-server host 10.1.1.100 use-vrf management\nsnmp-server enable traps link"
+      ],
+      "notes": [
+        {
+          "note": "NX-OS requires 'feature snmp' to enable. SNMPv3 is the preferred method. Community strings are mapped to groups: 'snmp-server community <string> group <group>'. Source interface configured separately for traps and informs: 'snmp-server source-interface traps/informs <intf>'. Per-VRF SNMP context supported: 'snmp-server host <ip> use-vrf <vrf>'. CoPP class 'copp-system-p-class-monitoring' protects SNMP on the control plane.",
+          "versions": "7.0+"
+        }
+      ]
+    },
+    "sonic": {
+      "config_examples": [
+        "config snmp community add READONLY ro\nconfig snmp agentaddress add 10.1.1.1\n# CONFIG_DB:\n# \"SNMP_COMMUNITY\": { \"READONLY\": { \"TYPE\": \"RO\" } }\n# \"SNMP\": { \"LOCATION\": { \"Location\": \"DC4\" } }"
+      ],
+      "notes": [
+        {
+          "note": "SONiC runs SNMP via the 'snmp' container using net-snmp (snmpd). Configuration stored in CONFIG_DB SNMP, SNMP_COMMUNITY, and SNMP_TRAP tables. CLI: 'config snmp community add/del <name> [ro|rw]', 'config snmp agentaddress add <ip>'. MIB support is more limited than Cisco NOS — standard MIBs (IF-MIB, BGP4-MIB, ENTITY-MIB, HOST-RESOURCES-MIB) are supported but many vendor-specific MIBs are absent. SNMP extensions via pass/pass_persist scripts in the snmp container.",
+          "versions": "202311+"
+        }
+      ]
+    }
+  }
+}

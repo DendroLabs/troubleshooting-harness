@@ -1,0 +1,1269 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "MP-BGP with VPNv4/VPNv6 address families is required for MPLS L3VPN inter-VRF route distribution and route-target based import/export.  VRF-Lite does not require BGP.",
+      "name": "BGP (for MPLS VPN)",
+      "type": "protocol"
+    },
+    {
+      "description": "MPLS label switching is required for L3VPN transport between PE routers.  LDP or Segment Routing provides label distribution.  VRF-Lite does not require MPLS.",
+      "name": "MPLS (for label distribution)",
+      "type": "protocol"
+    },
+    {
+      "description": "IP routing must be enabled on the device.  Each VRF maintains its own independent routing table, RIB, and FIB.",
+      "name": "IP routing",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "An interface that should be in a VRF is either not assigned to any VRF (so it participates in the global routing table) or is assigned to the wrong VRF.  Traffic that should be isolated within the VRF is instead forwarded using the global RIB/FIB, breaking tenant isolation and causing reachability failures within the VRF.  On IOS-XE and NX-OS, adding or changing the VRF membership of an interface silently removes its IP address — if the address is not re-applied, the interface comes up with no L3 configuration.",
+      "resolutions": [
+        {
+          "action": "Assign the interface to the correct VRF: 'vrf member <name>' (NX-OS) or 'vrf forwarding <name>' (IOS-XE)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Assign the interface to the correct VRF: 'vrf member <name>' (NX-OS) or 'vrf forwarding <name>' (IOS-XE)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Assign the interface to the correct VRF: 'vrf member <name>' (NX-OS) or 'vrf forwarding <name>' (IOS-XE)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Immediately re-apply the IP address after VRF assignment — it WILL be removed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Immediately re-apply the IP address after VRF assignment — it WILL be removed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Immediately re-apply the IP address after VRF assignment — it WILL be removed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify with 'show vrf interface' that the interface appears under the correct VRF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify with 'show vrf interface' that the interface appears under the correct VRF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify with 'show vrf interface' that the interface appears under the correct VRF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XR, VRF assignment does NOT remove the IP — but still verify with 'show vrf <name>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XR, VRF assignment does NOT remove the IP — but still verify with 'show vrf <name>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XR, VRF assignment does NOT remove the IP — but still verify with 'show vrf <name>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "'vrf member' (NX-OS) or 'vrf forwarding' (IOS-XE) not configured on the interface",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VRF assignment removed the IP address (IOS-XE/NX-OS behavior) and IP was not re-configured",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interface was bounced or reloaded without re-applying VRF + IP configuration",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Wrong VRF name configured on the interface (typo or stale config)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Interface in wrong VRF — traffic routed in global table instead of VRF",
+      "symptoms": [
+        "Ping fails across VRF — destinations within the VRF are unreachable",
+        "Routes not appearing in the expected VRF routing table",
+        "'show ip route vrf <name>' missing directly connected networks",
+        "Interface has no IP address after VRF assignment (IOS-XE/NX-OS)",
+        "Traffic leaking into the global table instead of staying in the VRF"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vrf interface",
+          "confirms_if": "Interface listed under the expected VRF confirms correct assignment",
+          "look_for": "Check that the expected interface appears under the correct VRF name — if missing, the interface is in the global table",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrf interface",
+          "confirms_if": "Interface listed under the expected VRF confirms correct assignment",
+          "look_for": "Check that the expected interface appears under the correct VRF name — if missing, the interface is in the global table",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrf interface",
+          "confirms_if": "Interface listed under the expected VRF confirms correct assignment",
+          "look_for": "Check that the expected interface appears under the correct VRF name — if missing, the interface is in the global table",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name>",
+          "confirms_if": "Connected route present confirms the interface is in the VRF with an IP address",
+          "look_for": "Check for directly connected ('C') routes for the interface subnet — if missing, the interface either has no IP or is not in this VRF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name>",
+          "confirms_if": "Connected route present confirms the interface is in the VRF with an IP address",
+          "look_for": "Check for directly connected ('C') routes for the interface subnet — if missing, the interface either has no IP or is not in this VRF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name>",
+          "confirms_if": "Connected route present confirms the interface is in the VRF with an IP address",
+          "look_for": "Check for directly connected ('C') routes for the interface subnet — if missing, the interface either has no IP or is not in this VRF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface <intf>",
+          "confirms_if": "Both VRF assignment and IP address present in running config",
+          "look_for": "Verify 'vrf member' or 'vrf forwarding' is present AND an IP address is configured below it",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface <intf>",
+          "confirms_if": "Both VRF assignment and IP address present in running config",
+          "look_for": "Verify 'vrf member' or 'vrf forwarding' is present AND an IP address is configured below it",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface <intf>",
+          "confirms_if": "Both VRF assignment and IP address present in running config",
+          "look_for": "Verify 'vrf member' or 'vrf forwarding' is present AND an IP address is configured below it",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Inter-VRF route leaking is configured but routes are not being imported from one VRF into another.  This typically relies on MP-BGP with VPNv4/VPNv6 address families and route-target (RT) import/export policies.  When misconfigured, routes remain isolated in their originating VRF and cannot be reached from other VRFs, breaking shared-services or inter-tenant communication.",
+      "resolutions": [
+        {
+          "action": "Verify RT alignment: exporting VRF's 'route-target export X:Y' must match importing VRF's 'route-target import X:Y'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RT alignment: exporting VRF's 'route-target export X:Y' must match importing VRF's 'route-target import X:Y'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RT alignment: exporting VRF's 'route-target export X:Y' must match importing VRF's 'route-target import X:Y'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure MP-BGP address-family vpnv4/vpnv6 unicast for each VRF that participates in route leaking",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure MP-BGP address-family vpnv4/vpnv6 unicast for each VRF that participates in route leaking",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure MP-BGP address-family vpnv4/vpnv6 unicast for each VRF that participates in route leaking",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Redistribute connected/static routes into BGP under the VRF address-family if needed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Redistribute connected/static routes into BGP under the VRF address-family if needed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Redistribute connected/static routes into BGP under the VRF address-family if needed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check route-map filters on import/export — temporarily remove to isolate the issue",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check route-map filters on import/export — temporarily remove to isolate the issue",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check route-map filters on import/export — temporarily remove to isolate the issue",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VRF-Lite without BGP: use static routes with next-hop in the other VRF via a shared interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VRF-Lite without BGP: use static routes with next-hop in the other VRF via a shared interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For VRF-Lite without BGP: use static routes with next-hop in the other VRF via a shared interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Missing 'import' or 'export' route-target configuration on one or both VRFs",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RT values do not match between exporting VRF's export RT and importing VRF's import RT",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MP-BGP address-family vpnv4/vpnv6 not configured for the VRF under the BGP process",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Route-map on the import/export direction filtering out the desired routes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BGP not redistributing the connected/static routes into the VRF address-family",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Route leaking between VRFs not working — inter-VRF routing fails",
+      "symptoms": [
+        "Cannot reach routes in other VRF even though route leaking is configured",
+        "BGP VPNv4/VPNv6 routes not being imported into target VRF",
+        "'show bgp vpnv4 unicast vrf <name>' shows no imported routes",
+        "Shared services (DNS, NTP) unreachable from tenant VRFs"
+      ],
+      "verify_commands": [
+        {
+          "command": "show bgp vpnv4 unicast vrf <name>",
+          "confirms_if": "Imported routes present with correct next-hop confirms route leaking is working",
+          "look_for": "Check for imported routes — look for routes with RT extended communities from the other VRF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp vpnv4 unicast vrf <name>",
+          "confirms_if": "Imported routes present with correct next-hop confirms route leaking is working",
+          "look_for": "Check for imported routes — look for routes with RT extended communities from the other VRF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp vpnv4 unicast vrf <name>",
+          "confirms_if": "Imported routes present with correct next-hop confirms route leaking is working",
+          "look_for": "Check for imported routes — look for routes with RT extended communities from the other VRF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrf detail",
+          "confirms_if": "RT values align between VRFs confirms the policy is correct",
+          "look_for": "Check RT import/export values for each VRF — verify the export RT of VRF-A matches the import RT of VRF-B",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrf detail",
+          "confirms_if": "RT values align between VRFs confirms the policy is correct",
+          "look_for": "Check RT import/export values for each VRF — verify the export RT of VRF-A matches the import RT of VRF-B",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrf detail",
+          "confirms_if": "RT values align between VRFs confirms the policy is correct",
+          "look_for": "Check RT import/export values for each VRF — verify the export RT of VRF-A matches the import RT of VRF-B",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip bgp vpnv4 vrf <name>",
+          "confirms_if": "Routes present in BGP VPNv4 table for the VRF",
+          "look_for": "Verify BGP is learning routes in the VRF address-family — check for locally originated and imported prefixes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip bgp vpnv4 vrf <name>",
+          "confirms_if": "Routes present in BGP VPNv4 table for the VRF",
+          "look_for": "Verify BGP is learning routes in the VRF address-family — check for locally originated and imported prefixes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip bgp vpnv4 vrf <name>",
+          "confirms_if": "Routes present in BGP VPNv4 table for the VRF",
+          "look_for": "Verify BGP is learning routes in the VRF address-family — check for locally originated and imported prefixes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Network services such as DHCP relay, NTP, SNMP, SSH, syslog, or TACACS+ are not reachable from within a VRF because the service is not bound to the VRF context.  Many services default to the global routing table and require explicit VRF-aware configuration.  This is a common issue in management VRF deployments where the management interface is in a VRF but services are configured globally.",
+      "resolutions": [
+        {
+          "action": "NX-OS: configure 'use-vrf management' under each service (ntp, snmp-server, etc.)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: configure 'use-vrf management' under each service (ntp, snmp-server, etc.)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: configure 'use-vrf management' under each service (ntp, snmp-server, etc.)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure 'ip ssh source-interface', 'ip tacacs source-interface', etc., using an interface in the correct VRF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure 'ip ssh source-interface', 'ip tacacs source-interface', etc., using an interface in the correct VRF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: configure 'ip ssh source-interface', 'ip tacacs source-interface', etc., using an interface in the correct VRF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify routing in the VRF can reach the service endpoint: 'show ip route vrf <name> <server-ip>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify routing in the VRF can reach the service endpoint: 'show ip route vrf <name> <server-ip>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify routing in the VRF can reach the service endpoint: 'show ip route vrf <name> <server-ip>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform documentation for VRF-aware service support — not all services support all VRFs on all platforms",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform documentation for VRF-aware service support — not all services support all VRFs on all platforms",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform documentation for VRF-aware service support — not all services support all VRFs on all platforms",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Service not bound to the VRF — missing 'use-vrf' (NX-OS) or 'vrf forwarding' (IOS-XE) under the service config",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Source interface for the service is in a different VRF than the service binding",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No route in the VRF to reach the service endpoint (server IP)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL or firewall blocking traffic in the VRF context",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Service does not support VRF-awareness on the platform/version",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "VRF-aware service misconfiguration — management services not working in VRF",
+      "symptoms": [
+        "Management services (SSH, SNMP, NTP) unreachable from VRF",
+        "DHCP relay not forwarding requests from VRF interfaces",
+        "SSH sessions fail when connecting via management VRF",
+        "SNMP polling times out for devices using management VRF",
+        "Syslog messages not reaching the server from VRF context"
+      ],
+      "verify_commands": [
+        {
+          "command": "show running-config | include vrf",
+          "confirms_if": "Service is bound to the correct VRF in the running config",
+          "look_for": "Check which services are bound to which VRF — look for 'use-vrf', 'vrf forwarding', 'vrf member' under service configs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include vrf",
+          "confirms_if": "Service is bound to the correct VRF in the running config",
+          "look_for": "Check which services are bound to which VRF — look for 'use-vrf', 'vrf forwarding', 'vrf member' under service configs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include vrf",
+          "confirms_if": "Service is bound to the correct VRF in the running config",
+          "look_for": "Check which services are bound to which VRF — look for 'use-vrf', 'vrf forwarding', 'vrf member' under service configs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name>",
+          "confirms_if": "Route to service endpoint exists in the VRF routing table",
+          "look_for": "Verify there is a route in the VRF to reach the service endpoint (e.g., NTP server, SNMP server)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name>",
+          "confirms_if": "Route to service endpoint exists in the VRF routing table",
+          "look_for": "Verify there is a route in the VRF to reach the service endpoint (e.g., NTP server, SNMP server)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name>",
+          "confirms_if": "Route to service endpoint exists in the VRF routing table",
+          "look_for": "Verify there is a route in the VRF to reach the service endpoint (e.g., NTP server, SNMP server)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Route Distinguisher (RD) values are reused across VRFs that should be distinct, or Route Target (RT) import policies are too broad, causing routes from unrelated VRFs to leak into each other.  RDs make VPNv4 prefixes globally unique in BGP — if two VRFs on different PEs use the same RD for the same prefix, BGP may suppress one as a duplicate.  Overly broad RT imports pull in routes from VRFs that should be isolated.",
+      "resolutions": [
+        {
+          "action": "Use unique RD per VRF per PE — common convention: <loopback-ip>:<VRF-id> ensures global uniqueness",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use unique RD per VRF per PE — common convention: <loopback-ip>:<VRF-id> ensures global uniqueness",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use unique RD per VRF per PE — common convention: <loopback-ip>:<VRF-id> ensures global uniqueness",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Audit RT import/export policies — each VRF should only import RTs it explicitly needs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Audit RT import/export policies — each VRF should only import RTs it explicitly needs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Audit RT import/export policies — each VRF should only import RTs it explicitly needs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using auto-RD/auto-RT, verify the generated values are unique across all PEs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using auto-RD/auto-RT, verify the generated values are unique across all PEs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using auto-RD/auto-RT, verify the generated values are unique across all PEs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For EVPN: prefer Type-1 RD (IP:nn) over Type-0 (ASN:nn) for guaranteed uniqueness",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For EVPN: prefer Type-1 RD (IP:nn) over Type-0 (ASN:nn) for guaranteed uniqueness",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For EVPN: prefer Type-1 RD (IP:nn) over Type-0 (ASN:nn) for guaranteed uniqueness",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Same RD used for different VRFs on different PEs — BGP treats same RD+prefix as same route and may suppress one",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RT import configured too broadly (e.g., importing a wildcard or shared RT that multiple VRFs export)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Auto-RT feature generating conflicting RT values across VRFs",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Copy-paste error during VRF provisioning — RD/RT from template not updated",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "RD/RT collision — overlapping route-distinguishers cause route confusion",
+      "symptoms": [
+        "Wrong routes appearing in a VRF — routes from another customer/tenant visible",
+        "Routes from other VRFs leaking unexpectedly",
+        "BGP bestpath selecting incorrect VPNv4 route due to duplicate RD+prefix",
+        "Route suppression — valid routes not installed because BGP sees them as duplicates"
+      ],
+      "verify_commands": [
+        {
+          "command": "show bgp vpnv4 unicast rd <rd>",
+          "confirms_if": "Only routes from the expected VRF appear under this RD",
+          "look_for": "Check which prefixes are associated with this RD — if routes from multiple unrelated VRFs appear, the RD is reused",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp vpnv4 unicast rd <rd>",
+          "confirms_if": "Only routes from the expected VRF appear under this RD",
+          "look_for": "Check which prefixes are associated with this RD — if routes from multiple unrelated VRFs appear, the RD is reused",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp vpnv4 unicast rd <rd>",
+          "confirms_if": "Only routes from the expected VRF appear under this RD",
+          "look_for": "Check which prefixes are associated with this RD — if routes from multiple unrelated VRFs appear, the RD is reused",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrf detail",
+          "confirms_if": "Each VRF has a unique RD and RT import/export are correctly scoped",
+          "look_for": "Check RD and RT import/export values for all VRFs — look for duplicate RDs or overly broad RT imports",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrf detail",
+          "confirms_if": "Each VRF has a unique RD and RT import/export are correctly scoped",
+          "look_for": "Check RD and RT import/export values for all VRFs — look for duplicate RDs or overly broad RT imports",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrf detail",
+          "confirms_if": "Each VRF has a unique RD and RT import/export are correctly scoped",
+          "look_for": "Check RD and RT import/export values for all VRFs — look for duplicate RDs or overly broad RT imports",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The VRF routing table or hardware FIB partition has reached its capacity limit.  New routes cannot be installed in the VRF, causing traffic to be dropped for destinations whose routes were not programmed.  This can happen when a full BGP internet table is imported into a VRF, when too many VRFs share a limited TCAM partition, or when the platform's per-VRF scale limit is exceeded.",
+      "resolutions": [
+        {
+          "action": "Apply prefix-list or route-map to limit routes imported into the VRF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply prefix-list or route-map to limit routes imported into the VRF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply prefix-list or route-map to limit routes imported into the VRF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use route summarization to reduce the number of prefixes in the VRF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use route summarization to reduce the number of prefixes in the VRF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use route summarization to reduce the number of prefixes in the VRF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Adjust TCAM/SDM template to allocate more space for VRF routes (requires reload on some platforms)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Adjust TCAM/SDM template to allocate more space for VRF routes (requires reload on some platforms)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Adjust TCAM/SDM template to allocate more space for VRF routes (requires reload on some platforms)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use default route in the VRF instead of importing the full table",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use default route in the VRF instead of importing the full table",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use default route in the VRF instead of importing the full table",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform scale limits: 'get_scale_limits' for VRF and FIB capacity",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform scale limits: 'get_scale_limits' for VRF and FIB capacity",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform scale limits: 'get_scale_limits' for VRF and FIB capacity",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Full BGP internet table (1M+ routes) imported into a VRF that has limited TCAM",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "TCAM partition for VRFs too small — default allocation may not be sufficient",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Too many VRFs configured, each consuming a share of the limited hardware forwarding resources",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Route summarization not used — thousands of specific routes consuming TCAM unnecessarily",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Leak of routes from global table into VRF via misconfigured RT import",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "VRF route table full — VRF-specific FIB exhaustion",
+      "symptoms": [
+        "New routes not installed in the VRF — syslog shows FIB or TCAM errors",
+        "'show ip route vrf <name> summary' shows fewer routes than expected",
+        "Traffic to certain destinations blackholed while others work fine",
+        "BGP peers in the VRF showing routes in RIB but not in FIB (RIB-failure or similar)",
+        "Platform syslog: ADJMGR, FIB, or TCAM exhaustion messages"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip route vrf <name> summary",
+          "confirms_if": "Route count at or near platform FIB limit for VRF",
+          "look_for": "Check total route count vs platform limit — if near or at the limit, FIB exhaustion is confirmed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name> summary",
+          "confirms_if": "Route count at or near platform FIB limit for VRF",
+          "look_for": "Check total route count vs platform limit — if near or at the limit, FIB exhaustion is confirmed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name> summary",
+          "confirms_if": "Route count at or near platform FIB limit for VRF",
+          "look_for": "Check total route count vs platform limit — if near or at the limit, FIB exhaustion is confirmed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show hardware capacity forwarding",
+          "confirms_if": "TCAM or FIB usage at capacity confirms hardware exhaustion",
+          "look_for": "Check TCAM/FIB utilization — look for entries near 100% or 'full' indicators in the VRF partition",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show hardware capacity forwarding",
+          "confirms_if": "TCAM or FIB usage at capacity confirms hardware exhaustion",
+          "look_for": "Check TCAM/FIB utilization — look for entries near 100% or 'full' indicators in the VRF partition",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show hardware capacity forwarding",
+          "confirms_if": "TCAM or FIB usage at capacity confirms hardware exhaustion",
+          "look_for": "Check TCAM/FIB utilization — look for entries near 100% or 'full' indicators in the VRF partition",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "operates_at": "Layer 3",
+  "protocol_family": "routing",
+  "protocol_id": "vrf",
+  "protocol_name": "VRF (Virtual Routing and Forwarding)",
+  "purpose": "Virtual routing instance that partitions a single physical router into multiple independent routing domains, providing L3 traffic isolation for multi-tenant and VPN deployments",
+  "related_protocols": [
+    "bgp-4",
+    "mpls-ldp",
+    "ospfv2",
+    "static-routing"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-4364",
+      "rfc_number": 4364,
+      "title": "RFC 4364",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc4364.txt"
+    },
+    {
+      "id": "rfc-4382",
+      "rfc_number": 4382,
+      "title": "RFC 4382",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc4382.txt"
+    },
+    {
+      "id": "agent-cisco-kb:routing/vrf.json",
+      "title": "agent-cisco-kb knowledge base — routing/vrf.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 4364 (BGP/MPLS VPN), RFC 4382 (VRF-Lite)",
+  "states": [],
+  "tags": [
+    "vrf",
+    "vrf-lite",
+    "mpls-vpn",
+    "route-target",
+    "route-distinguisher",
+    "l3vpn",
+    "isolation",
+    "routing"
+  ],
+  "transport": "N/A (virtual routing instance)",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "vrf definition TENANT-A\n rd 10.0.0.1:100\n address-family ipv4\n  route-target import 65000:100\n  route-target export 65000:100\n exit-address-family\n!\ninterface GigabitEthernet1/0/1\n vrf forwarding TENANT-A\n ip address 10.1.1.1 255.255.255.0\n no shutdown"
+      ],
+      "notes": [
+        {
+          "note": "'vrf definition <name>' (new-style) or 'ip vrf <name>' (legacy).  New-style requires 'address-family ipv4' / 'address-family ipv6' under the VRF definition.  Adding 'vrf forwarding <name>' to an interface REMOVES the IP address — MUST re-configure IP immediately.  'ip route vrf <name>' for per-VRF static routes.",
+          "versions": "all"
+        }
+      ]
+    },
+    "iosxr": {
+      "config_examples": [
+        "vrf TENANT-A\n address-family ipv4 unicast\n  import route-target\n   65000:100\n  export route-target\n   65000:100\n!\ninterface GigabitEthernet0/0/0/1\n vrf TENANT-A\n ipv4 address 10.1.1.1 255.255.255.0\n no shutdown"
+      ],
+      "notes": [
+        {
+          "note": "'vrf <name>' under global config.  RD and RT configured under 'vrf <name> address-family ipv4/ipv6 unicast'.  Interface assignment: 'vrf <name>' under interface config.  IOS-XR does NOT remove the IP address when assigning a VRF — most VRF-aware platform for services.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "vrf context TENANT-A\n  rd 10.0.0.1:100\n  address-family ipv4 unicast\n    route-target import 65000:100\n    route-target export 65000:100\n!\ninterface Ethernet1/1\n  vrf member TENANT-A\n  ip address 10.1.1.1/24\n  no shutdown"
+      ],
+      "notes": [
+        {
+          "note": "'vrf context <name>' to create the VRF.  'vrf member <name>' under interface to assign it — this REMOVES the IP address and it must be re-added.  RD and RT configured under 'vrf context'.  'feature bgp' + address-family vpnv4/vpnv6 unicast required for MPLS VPN.  VRF-Lite does not require BGP or MPLS.",
+          "versions": "all"
+        }
+      ]
+    },
+    "sonic": {
+      "config_examples": [
+        "# Create VRF\nconfig vrf add Vrf_TENANT-A\n# Bind interface\nconfig interface vrf bind Ethernet0 Vrf_TENANT-A\nconfig interface ip add Ethernet0 10.1.1.1/24\n# Verify\nshow vrf\nip vrf exec Vrf_TENANT-A ping 10.1.1.2"
+      ],
+      "notes": [
+        {
+          "note": "VRF via CONFIG_DB VRF table.  'config vrf add <name>' / 'config vrf del <name>' to manage VRFs.  'ip vrf exec <name> <cmd>' to run commands in VRF context.  Management VRF is common.  Limited VRF support compared to Cisco IOS-XE/IOS-XR — no MPLS VPN, no RT-based route leaking.  VRF-aware static routes and BGP supported.",
+          "versions": "202311+"
+        }
+      ]
+    }
+  }
+}

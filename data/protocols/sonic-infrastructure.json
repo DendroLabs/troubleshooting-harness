@@ -1,0 +1,3291 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "SONiC relies on Linux kernel for management plane connectivity, netlink notifications, and some data plane operations.",
+      "name": "Linux kernel networking",
+      "type": "infrastructure"
+    },
+    {
+      "description": "All SONiC services run as Docker containers. Docker engine must be healthy for any service to function.",
+      "name": "Docker engine",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Redis is the IPC backbone. All inter-container communication goes through Redis databases. Redis failure = total system failure.",
+      "name": "Redis",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Data plane forwarding requires a SAI-compatible ASIC with vendor-provided libsai.so. On Cisco 8000-O: Silicon One Q100/Q200 with Cisco SAI.",
+      "name": "SAI-compatible ASIC",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "orchagent calls SAI API to program an ASIC object, SAI returns SAI_STATUS_FAILURE, and orchagent aborts. The swss container restarts, causing temporary traffic disruption while APPL_DB is re-processed.",
+      "resolutions": [
+        {
+          "action": "Check 'docker logs swss' for the specific SAI error and object type",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'docker logs swss' for the specific SAI error and object type",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'docker logs swss' for the specific SAI error and object type",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the config change that triggered the crash — remove it if possible",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the config change that triggered the crash — remove it if possible",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the config change that triggered the crash — remove it if possible",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show crm resources all' for resource exhaustion",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show crm resources all' for resource exhaustion",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show crm resources all' for resource exhaustion",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If SAI bug suspected: collect 'show techsupport' and check for known issues in SONiC release notes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If SAI bug suspected: collect 'show techsupport' and check for known issues in SONiC release notes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If SAI bug suspected: collect 'show techsupport' and check for known issues in SONiC release notes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Last resort: 'docker restart swss' or cold reboot to reset ASIC state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Last resort: 'docker restart swss' or cold reboot to reset ASIC state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Last resort: 'docker restart swss' or cold reboot to reset ASIC state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "SAI programming error for unsupported configuration (e.g., ECMP hash offset on certain platforms)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ASIC resource exhaustion — table full when orchagent tries to create new entry",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SAI library bug in vendor libsai.so — specific object/attribute combination triggers error",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Stale ASIC state after failed warm reboot — SAI objects in unexpected state",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "orchagent crash on SAI programming failure",
+      "symptoms": [
+        "swss container in 'Restarting' state in 'docker ps -a'",
+        "Syslog shows 'orchagent: Exiting with code ...'",
+        "'docker logs swss' shows SAI error before crash",
+        "Routes/neighbors temporarily missing from hardware"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker ps -a | grep swss",
+          "confirms_if": "swss container is running and stable",
+          "look_for": "Container status — 'Up' = healthy, 'Restarting' = crash loop",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker ps -a | grep swss",
+          "confirms_if": "swss container is running and stable",
+          "look_for": "Container status — 'Up' = healthy, 'Restarting' = crash loop",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker ps -a | grep swss",
+          "confirms_if": "swss container is running and stable",
+          "look_for": "Container status — 'Up' = healthy, 'Restarting' = crash loop",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker logs swss --tail 100",
+          "confirms_if": "Shows the specific error that caused the crash",
+          "look_for": "SAI error messages, 'SAI_STATUS_FAILURE', orchagent abort messages",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker logs swss --tail 100",
+          "confirms_if": "Shows the specific error that caused the crash",
+          "look_for": "SAI error messages, 'SAI_STATUS_FAILURE', orchagent abort messages",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker logs swss --tail 100",
+          "confirms_if": "Shows the specific error that caused the crash",
+          "look_for": "SAI error messages, 'SAI_STATUS_FAILURE', orchagent abort messages",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crm resources all",
+          "confirms_if": "Rules out resource exhaustion as the cause",
+          "look_for": "Any resource with Available Count near 0",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crm resources all",
+          "confirms_if": "Rules out resource exhaustion as the cause",
+          "look_for": "Any resource with Available Count near 0",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crm resources all",
+          "confirms_if": "Rules out resource exhaustion as the cause",
+          "look_for": "Any resource with Available Count near 0",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "After warm reboot, syncd tries to reconcile the saved ASIC state with the current ASIC state. SAI comparison/remove operations fail, syncd signals orchagent to abort. Warm reboot fails and may fall back to cold reboot.",
+      "resolutions": [
+        {
+          "action": "Check 'docker logs syncd' for the specific SAI object type and operation that failed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'docker logs syncd' for the specific SAI object type and operation that failed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'docker logs syncd' for the specific SAI object type and operation that failed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If CONFIG_DB was changed during warm reboot: do not modify CONFIG_DB during warm reboot window",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If CONFIG_DB was changed during warm reboot: do not modify CONFIG_DB during warm reboot window",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If CONFIG_DB was changed during warm reboot: do not modify CONFIG_DB during warm reboot window",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If version upgrade: verify db_migrator.py ran successfully, check release notes for known warm reboot issues",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If version upgrade: verify db_migrator.py ran successfully, check release notes for known warm reboot issues",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If version upgrade: verify db_migrator.py ran successfully, check release notes for known warm reboot issues",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If persistent: cold reboot to reset ASIC state, then re-validate warm reboot on next maintenance window",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If persistent: cold reboot to reset ASIC state, then re-validate warm reboot on next maintenance window",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If persistent: cold reboot to reset ASIC state, then re-validate warm reboot on next maintenance window",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Collect 'show techsupport' BEFORE cold reboot for TAC analysis",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Collect 'show techsupport' BEFORE cold reboot for TAC analysis",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Collect 'show techsupport' BEFORE cold reboot for TAC analysis",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "ASIC state changed between warm shutdown and warm restart (race condition)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SAI object deletion fails due to dependency ordering issue in vendor SAI library",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "CONFIG_DB was modified during the warm reboot window",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SONiC version upgrade changed SAI object schema — db_migrator.py didn't handle the change",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "syncd APPLY_VIEW failure during warm reboot",
+      "symptoms": [
+        "'show warm_restart table' shows syncd stuck in 'reconciled' or 'failed' state",
+        "'docker logs syncd' shows APPLY_VIEW error or SAI remove failure",
+        "Traffic loss after warm reboot attempt",
+        "'show reboot-cause' may show 'warm-reboot' but system did full cold restart"
+      ],
+      "verify_commands": [
+        {
+          "command": "show warm_restart table",
+          "confirms_if": "Both syncd and orchagent show 'reconciled' state",
+          "look_for": "State column for syncd and orchagent — should be 'reconciled' when complete",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show warm_restart table",
+          "confirms_if": "Both syncd and orchagent show 'reconciled' state",
+          "look_for": "State column for syncd and orchagent — should be 'reconciled' when complete",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show warm_restart table",
+          "confirms_if": "Both syncd and orchagent show 'reconciled' state",
+          "look_for": "State column for syncd and orchagent — should be 'reconciled' when complete",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show reboot-cause",
+          "confirms_if": "Shows 'warm-reboot' as the reboot cause",
+          "look_for": "Whether warm-reboot completed or fell back to cold",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show reboot-cause",
+          "confirms_if": "Shows 'warm-reboot' as the reboot cause",
+          "look_for": "Whether warm-reboot completed or fell back to cold",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show reboot-cause",
+          "confirms_if": "Shows 'warm-reboot' as the reboot cause",
+          "look_for": "Whether warm-reboot completed or fell back to cold",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker logs syncd --tail 200",
+          "confirms_if": "Identifies the specific SAI failure",
+          "look_for": "APPLY_VIEW errors, SAI_STATUS_FAILURE during reconciliation",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker logs syncd --tail 200",
+          "confirms_if": "Identifies the specific SAI failure",
+          "look_for": "APPLY_VIEW errors, SAI_STATUS_FAILURE during reconciliation",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker logs syncd --tail 200",
+          "confirms_if": "Identifies the specific SAI failure",
+          "look_for": "APPLY_VIEW errors, SAI_STATUS_FAILURE during reconciliation",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "During warm reboot, FRR bgpd takes longer to restart and reconcile than the configured GR timer. Peers withdraw all routes learned from this device, causing full routing reconvergence and potential traffic black-holing.",
+      "resolutions": [
+        {
+          "action": "Increase BGP GR restart-time: vtysh -> 'bgp graceful-restart restart-time 360' (or higher for large tables)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase BGP GR restart-time: vtysh -> 'bgp graceful-restart restart-time 360' (or higher for large tables)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase BGP GR restart-time: vtysh -> 'bgp graceful-restart restart-time 360' (or higher for large tables)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify warm reboot timing in lab before production: 'sudo warm-reboot' and measure total time",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify warm reboot timing in lab before production: 'sudo warm-reboot' and measure total time",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify warm reboot timing in lab before production: 'sudo warm-reboot' and measure total time",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Pre-warm boot check: ensure CONFIG_DB is saved and no pending changes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Pre-warm boot check: ensure CONFIG_DB is saved and no pending changes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Pre-warm boot check: ensure CONFIG_DB is saved and no pending changes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider fast-reboot instead of warm-reboot if GR timing cannot be guaranteed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider fast-reboot instead of warm-reboot if GR timing cannot be guaranteed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider fast-reboot instead of warm-reboot if GR timing cannot be guaranteed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "BGP GR restart-time too low (default 120s) for the route table size",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "FRR bgpd container takes too long to start (image loading, CPU contention)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "fpmsyncd reconciliation stalls, delaying route re-advertisement",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "CONFIG_DB has large BGP configuration that takes time to process",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "BGP Graceful Restart timer expiry during warm reboot",
+      "symptoms": [
+        "All BGP sessions reset after warm reboot",
+        "'show ip bgp summary' shows all peers recently reset (uptime < warm reboot duration)",
+        "Traffic black-hole for routes that were only via this device",
+        "Peer routers show 'BGP GR timer expired' in their logs"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip bgp summary",
+          "confirms_if": "All peers show established state with uptime > warm reboot time (GR preserved sessions)",
+          "look_for": "Peer uptime — should be longer than warm reboot if GR worked correctly",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip bgp summary",
+          "confirms_if": "All peers show established state with uptime > warm reboot time (GR preserved sessions)",
+          "look_for": "Peer uptime — should be longer than warm reboot if GR worked correctly",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip bgp summary",
+          "confirms_if": "All peers show established state with uptime > warm reboot time (GR preserved sessions)",
+          "look_for": "Peer uptime — should be longer than warm reboot if GR worked correctly",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show warm_restart config",
+          "confirms_if": "Shows warm restart is configured with appropriate BGP timer",
+          "look_for": "BGP timer value and enabled state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show warm_restart config",
+          "confirms_if": "Shows warm restart is configured with appropriate BGP timer",
+          "look_for": "BGP timer value and enabled state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show warm_restart config",
+          "confirms_if": "Shows warm restart is configured with appropriate BGP timer",
+          "look_for": "BGP timer value and enabled state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "vtysh -c 'show bgp neighbors <ip> graceful-restart'",
+          "confirms_if": "Shows GR is negotiated with peer and timer values",
+          "look_for": "GR capability, restart-time, timers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "vtysh -c 'show bgp neighbors <ip> graceful-restart'",
+          "confirms_if": "Shows GR is negotiated with peer and timer values",
+          "look_for": "GR capability, restart-time, timers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "vtysh -c 'show bgp neighbors <ip> graceful-restart'",
+          "confirms_if": "Shows GR is negotiated with peer and timer values",
+          "look_for": "GR capability, restart-time, timers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "During SONiC version upgrade, db_migrator.py fails to migrate CONFIG_DB schema from the old version format to the new version format. Device boots with broken or incompatible configuration.",
+      "resolutions": [
+        {
+          "action": "Check /var/log/syslog for db_migrator error messages",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check /var/log/syslog for db_migrator error messages",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check /var/log/syslog for db_migrator error messages",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If partial migration: manually fix CONFIG_DB entries to match new schema (reference sonic-utilities source)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If partial migration: manually fix CONFIG_DB entries to match new schema (reference sonic-utilities source)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If partial migration: manually fix CONFIG_DB entries to match new schema (reference sonic-utilities source)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If migration completely failed: restore backup config_db.json from pre-upgrade and reapply config",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If migration completely failed: restore backup config_db.json from pre-upgrade and reapply config",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If migration completely failed: restore backup config_db.json from pre-upgrade and reapply config",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For multi-version jumps: upgrade incrementally (e.g., 202211 -> 202311 -> 202405 -> 202411)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For multi-version jumps: upgrade incrementally (e.g., 202211 -> 202311 -> 202405 -> 202411)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For multi-version jumps: upgrade incrementally (e.g., 202211 -> 202311 -> 202405 -> 202411)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Collect 'sonic-cfggen -d --print-data' output for comparison with expected schema",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Collect 'sonic-cfggen -d --print-data' output for comparison with expected schema",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Collect 'sonic-cfggen -d --print-data' output for comparison with expected schema",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "db_migrator.py does not have migration path for the specific version jump",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Custom or non-standard CONFIG_DB entries that db_migrator doesn't handle",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interrupted upgrade process left CONFIG_DB in half-migrated state",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Multi-version jump (e.g., 202211 -> 202411) may have compounding migration issues",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "CONFIG_DB schema migration failure on upgrade",
+      "symptoms": [
+        "Services fail to start after image upgrade",
+        "Syslog shows db_migrator errors",
+        "CONFIG_DB has tables/keys in old format that new *mgrd daemons don't recognize",
+        "Some features work, others don't (partial migration)"
+      ],
+      "verify_commands": [
+        {
+          "command": "sonic-cfggen -d --print-data",
+          "confirms_if": "All expected tables (PORT, VLAN, BGP_NEIGHBOR, etc.) present with correct schema",
+          "look_for": "CONFIG_DB content — verify all tables present and correctly formatted",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "sonic-cfggen -d --print-data",
+          "confirms_if": "All expected tables (PORT, VLAN, BGP_NEIGHBOR, etc.) present with correct schema",
+          "look_for": "CONFIG_DB content — verify all tables present and correctly formatted",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "sonic-cfggen -d --print-data",
+          "confirms_if": "All expected tables (PORT, VLAN, BGP_NEIGHBOR, etc.) present with correct schema",
+          "look_for": "CONFIG_DB content — verify all tables present and correctly formatted",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show version",
+          "confirms_if": "Shows expected SONiC version after upgrade",
+          "look_for": "Confirm the new SONiC version is running",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show version",
+          "confirms_if": "Shows expected SONiC version after upgrade",
+          "look_for": "Confirm the new SONiC version is running",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show version",
+          "confirms_if": "Shows expected SONiC version after upgrade",
+          "look_for": "Confirm the new SONiC version is running",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A Docker container repeatedly crashes and restarts. Docker applies exponential backoff between restarts. The service is effectively down with brief periods of operation between crashes.",
+      "resolutions": [
+        {
+          "action": "Identify the crashing container: 'docker ps -a'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the crashing container: 'docker ps -a'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the crashing container: 'docker ps -a'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check crash logs: 'docker logs <container>' — look for the last error before exit",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check crash logs: 'docker logs <container>' — look for the last error before exit",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check crash logs: 'docker logs <container>' — look for the last error before exit",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If OOM: check memory with 'docker stats <container>' and system 'free -m'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If OOM: check memory with 'docker stats <container>' and system 'free -m'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If OOM: check memory with 'docker stats <container>' and system 'free -m'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If config-triggered: identify the bad CONFIG_DB entry and remove it",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If config-triggered: identify the bad CONFIG_DB entry and remove it",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If config-triggered: identify the bad CONFIG_DB entry and remove it",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If software bug: check SONiC release notes for known issues, consider image rollback",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If software bug: check SONiC release notes for known issues, consider image rollback",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If software bug: check SONiC release notes for known issues, consider image rollback",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Emergency: 'sonic-installer set-default <previous-image>' and reboot to rollback",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Emergency: 'sonic-installer set-default <previous-image>' and reboot to rollback",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Emergency: 'sonic-installer set-default <previous-image>' and reboot to rollback",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Software bug triggered by specific configuration or state (segfault, assertion failure)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Memory exhaustion (OOM killer terminates container process)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Dependency failure — container depends on another service that's not ready",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Corrupted container image or filesystem",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "CONFIG_DB has invalid entries that crash the daemon during startup parsing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Container restart loop (crash loop backoff)",
+      "symptoms": [
+        "'docker ps -a' shows container status as 'Restarting (1) X seconds ago'",
+        "Multiple restarts visible in 'docker ps -a' — restart count incrementing",
+        "Intermittent service availability (works for seconds, then crashes)",
+        "Syslog flooded with container start/stop messages"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker ps -a",
+          "confirms_if": "All containers show 'Up' with no recent restarts",
+          "look_for": "Container status and restart count",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker ps -a",
+          "confirms_if": "All containers show 'Up' with no recent restarts",
+          "look_for": "Container status and restart count",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker ps -a",
+          "confirms_if": "All containers show 'Up' with no recent restarts",
+          "look_for": "Container status and restart count",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker logs <container> --tail 50",
+          "confirms_if": "Identifies the root cause of the crash",
+          "look_for": "Error messages, segfaults, OOM messages, assertion failures",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker logs <container> --tail 50",
+          "confirms_if": "Identifies the root cause of the crash",
+          "look_for": "Error messages, segfaults, OOM messages, assertion failures",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker logs <container> --tail 50",
+          "confirms_if": "Identifies the root cause of the crash",
+          "look_for": "Error messages, segfaults, OOM messages, assertion failures",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker stats --no-stream",
+          "confirms_if": "Memory usage is within normal bounds",
+          "look_for": "Memory usage per container — any container near its limit",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker stats --no-stream",
+          "confirms_if": "Memory usage is within normal bounds",
+          "look_for": "Memory usage per container — any container near its limit",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker stats --no-stream",
+          "confirms_if": "Memory usage is within normal bounds",
+          "look_for": "Memory usage per container — any container near its limit",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The configuration in CONFIG_DB does not match what is actually programmed in the ASIC (via ASIC_DB). Routes, ACLs, or interfaces may exist in config but not in hardware, or vice versa. Traffic behavior doesn't match configured policy.",
+      "resolutions": [
+        {
+          "action": "Compare CONFIG_DB with APPL_DB and ASIC_DB for the affected feature",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare CONFIG_DB with APPL_DB and ASIC_DB for the affected feature",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare CONFIG_DB with APPL_DB and ASIC_DB for the affected feature",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "'config reload' to force full resync from CONFIG_DB through the entire pipeline",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "'config reload' to force full resync from CONFIG_DB through the entire pipeline",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "'config reload' to force full resync from CONFIG_DB through the entire pipeline",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If specific entries missing: remove and re-add the config to trigger reprogramming",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If specific entries missing: remove and re-add the config to trigger reprogramming",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If specific entries missing: remove and re-add the config to trigger reprogramming",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If widespread divergence: cold reboot to reset all state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If widespread divergence: cold reboot to reset all state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If widespread divergence: cold reboot to reset all state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'docker logs swss' for SAI errors that indicate which entries failed to program",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'docker logs swss' for SAI errors that indicate which entries failed to program",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'docker logs swss' for SAI errors that indicate which entries failed to program",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "orchagent crashed during programming and missed entries when it restarted",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SAI returned error for specific entries but orchagent continued processing others",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Warm reboot reconciliation was incomplete — some objects not re-programmed",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "'config load' applied partial changes that weren't fully processed by *mgrd daemons",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Race condition: config change arrived while orchagent was still processing previous batch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "CONFIG_DB and ASIC_DB state divergence",
+      "symptoms": [
+        "Config shows interface up but traffic not forwarding",
+        "ACL configured but not filtering traffic",
+        "Route in 'show ip route' but not being forwarded in hardware",
+        "'show crm resources' doesn't match expected counts based on config"
+      ],
+      "verify_commands": [
+        {
+          "command": "redis-cli -n 4 keys '*ROUTE*'",
+          "confirms_if": "Shows expected static route entries",
+          "look_for": "Routes in CONFIG_DB (static routes)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "redis-cli -n 4 keys '*ROUTE*'",
+          "confirms_if": "Shows expected static route entries",
+          "look_for": "Routes in CONFIG_DB (static routes)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "redis-cli -n 4 keys '*ROUTE*'",
+          "confirms_if": "Shows expected static route entries",
+          "look_for": "Routes in CONFIG_DB (static routes)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "redis-cli -n 0 keys 'ROUTE_TABLE:*' | wc -l",
+          "confirms_if": "Count matches expected number of routes",
+          "look_for": "Route count in APPL_DB (what orchagent should program)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "redis-cli -n 0 keys 'ROUTE_TABLE:*' | wc -l",
+          "confirms_if": "Count matches expected number of routes",
+          "look_for": "Route count in APPL_DB (what orchagent should program)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "redis-cli -n 0 keys 'ROUTE_TABLE:*' | wc -l",
+          "confirms_if": "Count matches expected number of routes",
+          "look_for": "Route count in APPL_DB (what orchagent should program)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "redis-cli -n 1 keys '*ROUTE*' | wc -l",
+          "confirms_if": "Count matches APPL_DB count (no divergence)",
+          "look_for": "Route count in ASIC_DB (what's actually programmed)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "redis-cli -n 1 keys '*ROUTE*' | wc -l",
+          "confirms_if": "Count matches APPL_DB count (no divergence)",
+          "look_for": "Route count in ASIC_DB (what's actually programmed)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "redis-cli -n 1 keys '*ROUTE*' | wc -l",
+          "confirms_if": "Count matches APPL_DB count (no divergence)",
+          "look_for": "Route count in ASIC_DB (what's actually programmed)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "ASIC resources (FIB routes, ACL entries, next-hops, FDB entries, ECMP groups) are exhausted. New entries silently fail to program in hardware. Control plane (FRR, CONFIG_DB) shows the entries exist, but they are not in the data plane.",
+      "resolutions": [
+        {
+          "action": "Identify exhausted resource: 'show crm resources all'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify exhausted resource: 'show crm resources all'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify exhausted resource: 'show crm resources all'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For FIB: filter routes at BGP (prefix-lists, ORF), reduce full table to partial/default",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For FIB: filter routes at BGP (prefix-lists, ORF), reduce full table to partial/default",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For FIB: filter routes at BGP (prefix-lists, ORF), reduce full table to partial/default",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For ACL: consolidate ACL entries, use fewer but broader rules",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For ACL: consolidate ACL entries, use fewer but broader rules",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For ACL: consolidate ACL entries, use fewer but broader rules",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For FDB: check for MAC learning loops, reduce broadcast domains, implement storm-control",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For FDB: check for MAC learning loops, reduce broadcast domains, implement storm-control",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For FDB: check for MAC learning loops, reduce broadcast domains, implement storm-control",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For ECMP: reduce max-paths or use fewer equal-cost paths",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For ECMP: reduce max-paths or use fewer equal-cost paths",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For ECMP: reduce max-paths or use fewer equal-cost paths",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure CRM thresholds for proactive alerting: CONFIG_DB CRM table",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure CRM thresholds for proactive alerting: CONFIG_DB CRM table",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure CRM thresholds for proactive alerting: CONFIG_DB CRM table",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Route table exceeds ASIC FIB capacity (Q100: ~2M IPv4, Q200: 2-3M IPv4)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL TCAM exhausted by too many ACL entries",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "FDB table full — MAC learning loops or too many endpoints",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ECMP group table full — too many ECMP paths",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "hw-module profile not optimized for the deployment's scale pattern",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "CRM resource exhaustion — silent programming failures",
+      "symptoms": [
+        "'show crm resources all' shows Available Count at or near 0 for a resource",
+        "New routes learned by BGP but not forwarded in hardware (black-hole)",
+        "New ACL rules configured but not enforced",
+        "New MAC addresses not learned (flooding persists)",
+        "'docker logs swss' may show SAI_STATUS_TABLE_FULL errors"
+      ],
+      "verify_commands": [
+        {
+          "command": "show crm resources all",
+          "confirms_if": "All resources have healthy available counts",
+          "look_for": "Any resource type with Available Count = 0 or very low",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crm resources all",
+          "confirms_if": "All resources have healthy available counts",
+          "look_for": "Any resource type with Available Count = 0 or very low",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crm resources all",
+          "confirms_if": "All resources have healthy available counts",
+          "look_for": "Any resource type with Available Count = 0 or very low",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker logs swss | grep -i 'table_full\\|SAI_STATUS_INSUFFICIENT'",
+          "confirms_if": "No table_full errors in recent logs",
+          "look_for": "SAI errors indicating table full conditions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker logs swss | grep -i 'table_full\\|SAI_STATUS_INSUFFICIENT'",
+          "confirms_if": "No table_full errors in recent logs",
+          "look_for": "SAI errors indicating table full conditions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker logs swss | grep -i 'table_full\\|SAI_STATUS_INSUFFICIENT'",
+          "confirms_if": "No table_full errors in recent logs",
+          "look_for": "SAI errors indicating table full conditions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The persisted configuration file (/etc/sonic/config_db.json) is corrupted or contains invalid JSON. Device boots with broken or partial configuration, or fails to start services.",
+      "resolutions": [
+        {
+          "action": "Check file syntax: 'python3 -c \"import json; json.load(open('/etc/sonic/config_db.json'))\"'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check file syntax: 'python3 -c \"import json; json.load(open('/etc/sonic/config_db.json'))\"'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check file syntax: 'python3 -c \"import json; json.load(open('/etc/sonic/config_db.json'))\"'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If syntax error: fix the JSON manually or restore from backup",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If syntax error: fix the JSON manually or restore from backup",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If syntax error: fix the JSON manually or restore from backup",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If no backup: 'sonic-cfggen -H -k <hwsku> --print-data' generates a minimal default config",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If no backup: 'sonic-cfggen -H -k <hwsku> --print-data' generates a minimal default config",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If no backup: 'sonic-cfggen -H -k <hwsku> --print-data' generates a minimal default config",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "After fixing: 'config reload config_db.json' to apply",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "After fixing: 'config reload config_db.json' to apply",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "After fixing: 'config reload config_db.json' to apply",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Prevention: always use 'config save' command, never edit config_db.json manually",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Prevention: always use 'config save' command, never edit config_db.json manually",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Prevention: always use 'config save' command, never edit config_db.json manually",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Manual edit of config_db.json with syntax error (missing comma, bracket, quote)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "'config save' interrupted (power loss, kill signal) leaving partial write",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Disk full when 'config save' was writing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "File permissions changed preventing sonic-cfggen from reading",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "config_db.json corruption",
+      "symptoms": [
+        "Services fail to start after reboot",
+        "Syslog shows JSON parse errors from sonic-cfggen",
+        "'sonic-cfggen -d --print-data' produces errors or empty output",
+        "Some interfaces/features missing after reboot"
+      ],
+      "verify_commands": [
+        {
+          "command": "sonic-cfggen -d --print-data | python3 -m json.tool > /dev/null",
+          "confirms_if": "Command succeeds with no errors",
+          "look_for": "No error output means CONFIG_DB is valid JSON",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "sonic-cfggen -d --print-data | python3 -m json.tool > /dev/null",
+          "confirms_if": "Command succeeds with no errors",
+          "look_for": "No error output means CONFIG_DB is valid JSON",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "sonic-cfggen -d --print-data | python3 -m json.tool > /dev/null",
+          "confirms_if": "Command succeeds with no errors",
+          "look_for": "No error output means CONFIG_DB is valid JSON",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ls -la /etc/sonic/config_db.json",
+          "confirms_if": "File exists with reasonable size and correct permissions",
+          "look_for": "File size (should not be 0), permissions, ownership",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ls -la /etc/sonic/config_db.json",
+          "confirms_if": "File exists with reasonable size and correct permissions",
+          "look_for": "File size (should not be 0), permissions, ownership",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ls -la /etc/sonic/config_db.json",
+          "confirms_if": "File exists with reasonable size and correct permissions",
+          "look_for": "File size (should not be 0), permissions, ownership",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Engineer uses 'config load' expecting full config replacement (like 'config reload') or uses 'config reload' not understanding it restarts all services. 'config load' only updates CONFIG_DB keys from a file — it does NOT restart services or remove keys not in the file. 'config reload' restarts everything.",
+      "resolutions": [
+        {
+          "action": "For full config replacement: use 'config reload <file>' (disruptive, restarts all services)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For full config replacement: use 'config reload <file>' (disruptive, restarts all services)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For full config replacement: use 'config reload <file>' (disruptive, restarts all services)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For incremental updates: use 'config load <file>' then restart specific services if needed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For incremental updates: use 'config load <file>' then restart specific services if needed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For incremental updates: use 'config load <file>' then restart specific services if needed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "To remove entries: use specific 'config' CLI commands to delete, or 'config reload' for full reset",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "To remove entries: use specific 'config' CLI commands to delete, or 'config reload' for full reset",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "To remove entries: use specific 'config' CLI commands to delete, or 'config reload' for full reset",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Always 'config save' after validating changes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Always 'config save' after validating changes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Always 'config save' after validating changes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Using 'config load' when full config replacement was intended (should use 'config reload')",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Using 'config reload' in production without understanding it's disruptive (restarts all services)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Expecting 'config load' to delete keys not in the loaded file (it only adds/updates, never deletes)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "config reload vs config load misuse",
+      "symptoms": [
+        "Config shows correctly in CONFIG_DB but feature not working (config load didn't trigger *mgrd)",
+        "Services unexpectedly restart (unintended config reload)",
+        "Old config entries persist even after loading new config (config load doesn't delete missing keys)",
+        "Partial config apply — some features work, others don't"
+      ],
+      "verify_commands": [
+        {
+          "command": "sonic-cfggen -d --print-data",
+          "confirms_if": "CONFIG_DB matches expected state",
+          "look_for": "Full CONFIG_DB dump — verify expected entries present AND unexpected entries absent",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "sonic-cfggen -d --print-data",
+          "confirms_if": "CONFIG_DB matches expected state",
+          "look_for": "Full CONFIG_DB dump — verify expected entries present AND unexpected entries absent",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "sonic-cfggen -d --print-data",
+          "confirms_if": "CONFIG_DB matches expected state",
+          "look_for": "Full CONFIG_DB dump — verify expected entries present AND unexpected entries absent",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show services",
+          "confirms_if": "No services in failed state",
+          "look_for": "All services running after config change",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show services",
+          "confirms_if": "No services in failed state",
+          "look_for": "All services running after config change",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show services",
+          "confirms_if": "No services in failed state",
+          "look_for": "All services running after config change",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The database (Redis) container crashes or becomes unresponsive. Since ALL inter-container communication goes through Redis, this is equivalent to a total system failure. No container can read or write state.",
+      "resolutions": [
+        {
+          "action": "If database container is restarting: 'docker logs database' for root cause",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If database container is restarting: 'docker logs database' for root cause",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If database container is restarting: 'docker logs database' for root cause",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If OOM: check 'redis-cli INFO memory' (if accessible), check system memory with 'free -m'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If OOM: check 'redis-cli INFO memory' (if accessible), check system memory with 'free -m'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If OOM: check 'redis-cli INFO memory' (if accessible), check system memory with 'free -m'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If disk full: clean up /var/dump/ (old techsupport bundles), /var/core/ (old core dumps)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If disk full: clean up /var/dump/ (old techsupport bundles), /var/core/ (old core dumps)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If disk full: clean up /var/dump/ (old techsupport bundles), /var/core/ (old core dumps)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Last resort: cold reboot — database container failure usually requires full restart",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Last resort: cold reboot — database container failure usually requires full restart",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Last resort: cold reboot — database container failure usually requires full restart",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Prevention: monitor Redis memory usage, set maxmemory policy, clean old dump files",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Prevention: monitor Redis memory usage, set maxmemory policy, clean old dump files",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Prevention: monitor Redis memory usage, set maxmemory policy, clean old dump files",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Redis OOM — too much data in Redis databases exceeds memory limit",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Redis persistence (RDB/AOF) failure due to disk space",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Kernel OOM killer targets Redis process",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Redis bug triggered by specific key pattern",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Database container failure — total system impact",
+      "symptoms": [
+        "'docker ps -a' shows database container exited or restarting",
+        "ALL show commands fail or return empty data",
+        "Multiple containers may enter restart loops (dependency on Redis)",
+        "Complete loss of management plane"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker ps -a | grep database",
+          "confirms_if": "Database container is running",
+          "look_for": "Container status — must be 'Up'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker ps -a | grep database",
+          "confirms_if": "Database container is running",
+          "look_for": "Container status — must be 'Up'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker ps -a | grep database",
+          "confirms_if": "Database container is running",
+          "look_for": "Container status — must be 'Up'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "redis-cli ping",
+          "confirms_if": "Redis is responsive",
+          "look_for": "Response should be 'PONG'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "redis-cli ping",
+          "confirms_if": "Redis is responsive",
+          "look_for": "Response should be 'PONG'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "redis-cli ping",
+          "confirms_if": "Redis is responsive",
+          "look_for": "Response should be 'PONG'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "df -h /var",
+          "confirms_if": "Disk has free space for Redis persistence",
+          "look_for": "Available disk space — should not be 100% used",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "df -h /var",
+          "confirms_if": "Disk has free space for Redis persistence",
+          "look_for": "Available disk space — should not be 100% used",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "df -h /var",
+          "confirms_if": "Disk has free space for Redis persistence",
+          "look_for": "Available disk space — should not be 100% used",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "FRR daemon (bgpd, zebra, or ospfd) crashes inside the bgp container. All routing protocol sessions drop. Routes are withdrawn from peers. fpmsyncd cannot push routes to APPL_DB.",
+      "resolutions": [
+        {
+          "action": "Check 'docker logs bgp --tail 200' for the crash signature (stack trace, assertion)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'docker logs bgp --tail 200' for the crash signature (stack trace, assertion)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'docker logs bgp --tail 200' for the crash signature (stack trace, assertion)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for core dump: 'ls /var/core/' — preserve for TAC analysis",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for core dump: 'ls /var/core/' — preserve for TAC analysis",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for core dump: 'ls /var/core/' — preserve for TAC analysis",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If reproducible: identify the triggering route/update and filter it",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If reproducible: identify the triggering route/update and filter it",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If reproducible: identify the triggering route/update and filter it",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If FRR bug: check FRR release notes and SONiC release notes for known issues",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If FRR bug: check FRR release notes and SONiC release notes for known issues",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If FRR bug: check FRR release notes and SONiC release notes for known issues",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If memory: check 'vtysh -c \"show memory\"' after restart, monitor for growth",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If memory: check 'vtysh -c \"show memory\"' after restart, monitor for growth",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If memory: check 'vtysh -c \"show memory\"' after restart, monitor for growth",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "bgp container will auto-restart — verify all sessions re-establish",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "bgp container will auto-restart — verify all sessions re-establish",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "bgp container will auto-restart — verify all sessions re-establish",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "FRR software bug triggered by specific route/update pattern",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Memory exhaustion in FRR (large route table + memory leak)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "FRR configuration incompatibility after upgrade",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Corrupt RIB state from interrupted warm restart",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "FRR crash in bgp container — routing protocol outage",
+      "symptoms": [
+        "All BGP/OSPF sessions down simultaneously",
+        "'docker logs bgp' shows segfault, assertion failure, or abort",
+        "Core dump generated in /var/core/ or /var/crash/",
+        "'show ip bgp summary' shows all peers in Idle state after container restart",
+        "Routes temporarily withdrawn from peers"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker ps -a | grep bgp",
+          "confirms_if": "bgp container is running with stable uptime",
+          "look_for": "bgp container status and restart count",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker ps -a | grep bgp",
+          "confirms_if": "bgp container is running with stable uptime",
+          "look_for": "bgp container status and restart count",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker ps -a | grep bgp",
+          "confirms_if": "bgp container is running with stable uptime",
+          "look_for": "bgp container status and restart count",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip bgp summary",
+          "confirms_if": "All BGP sessions re-established after container restart",
+          "look_for": "All expected peers in Established state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip bgp summary",
+          "confirms_if": "All BGP sessions re-established after container restart",
+          "look_for": "All expected peers in Established state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip bgp summary",
+          "confirms_if": "All BGP sessions re-established after container restart",
+          "look_for": "All expected peers in Established state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "vtysh -c 'show memory'",
+          "confirms_if": "Memory usage is within normal bounds",
+          "look_for": "FRR memory usage by module",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "vtysh -c 'show memory'",
+          "confirms_if": "Memory usage is within normal bounds",
+          "look_for": "FRR memory usage by module",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "vtysh -c 'show memory'",
+          "confirms_if": "Memory usage is within normal bounds",
+          "look_for": "FRR memory usage by module",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "During warm/fast reboot, services start in wrong order due to systemd dependency misconfiguration. A service that depends on another starts before its dependency is ready, causing it to fail or behave incorrectly.",
+      "resolutions": [
+        {
+          "action": "Check 'show warm_restart table' for stuck services",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show warm_restart table' for stuck services",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show warm_restart table' for stuck services",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Restart the stuck service: 'docker restart <container>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Restart the stuck service: 'docker restart <container>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Restart the stuck service: 'docker restart <container>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If reproducible: check /etc/systemd/system/ for service unit dependency declarations",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If reproducible: check /etc/systemd/system/ for service unit dependency declarations",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If reproducible: check /etc/systemd/system/ for service unit dependency declarations",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Report upstream if dependency ordering is incorrect in stock SONiC",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Report upstream if dependency ordering is incorrect in stock SONiC",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Report upstream if dependency ordering is incorrect in stock SONiC",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Workaround: add retry logic or health-check dependencies in custom service units",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Workaround: add retry logic or health-check dependencies in custom service units",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Workaround: add retry logic or health-check dependencies in custom service units",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "systemd service unit with wrong After=/Requires= dependencies",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Docker compose ordering doesn't guarantee Redis is accepting connections when dependent containers start",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Custom feature container added without proper dependency declaration",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Timing race — dependency starts but isn't ready to accept connections yet",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Warm reboot service dependency race condition",
+      "symptoms": [
+        "Warm reboot completes but some features don't work",
+        "Container logs show 'connection refused' to Redis or dependency service",
+        "'show warm_restart table' shows some services stuck in 'initialized' state",
+        "Service works after manual 'docker restart <container>'"
+      ],
+      "verify_commands": [
+        {
+          "command": "show warm_restart table",
+          "confirms_if": "No services stuck in 'initialized' or 'restored'",
+          "look_for": "All services should show 'reconciled' state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show warm_restart table",
+          "confirms_if": "No services stuck in 'initialized' or 'restored'",
+          "look_for": "All services should show 'reconciled' state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show warm_restart table",
+          "confirms_if": "No services stuck in 'initialized' or 'restored'",
+          "look_for": "All services should show 'reconciled' state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker ps -a",
+          "confirms_if": "All containers healthy after warm reboot",
+          "look_for": "All containers Up with no recent restarts",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker ps -a",
+          "confirms_if": "All containers healthy after warm reboot",
+          "look_for": "All containers Up with no recent restarts",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "docker ps -a",
+          "confirms_if": "All containers healthy after warm reboot",
+          "look_for": "All containers Up with no recent restarts",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "SAI API call completed successfully. ASIC programmed as requested.",
+      "key_fields": [],
+      "name": "SAI_STATUS_SUCCESS",
+      "when_sent": "After every successful SAI operation (create, set, remove, get)"
+    },
+    {
+      "description": "Generic SAI API failure. ASIC could not process the request.",
+      "key_fields": [
+        "error_code",
+        "object_type",
+        "attribute"
+      ],
+      "name": "SAI_STATUS_FAILURE",
+      "when_sent": "When SAI library encounters an error programming the ASIC"
+    },
+    {
+      "description": "ASIC table (FIB, ACL, FDB) is full. Cannot program new entries.",
+      "key_fields": [
+        "table_type",
+        "current_count",
+        "max_capacity"
+      ],
+      "name": "SAI_STATUS_TABLE_FULL",
+      "when_sent": "When orchagent tries to create a new SAI object and the corresponding ASIC table is at capacity"
+    },
+    {
+      "description": "Requested SAI operation is not supported by this ASIC/SAI implementation.",
+      "key_fields": [
+        "object_type",
+        "attribute"
+      ],
+      "name": "SAI_STATUS_NOT_SUPPORTED",
+      "when_sent": "When orchagent requests a feature the ASIC cannot implement"
+    },
+    {
+      "description": "Redis keyspace notification that a CONFIG_DB table has been modified.",
+      "key_fields": [
+        "table",
+        "key",
+        "operation"
+      ],
+      "name": "CONFIG_DB_NOTIFICATION",
+      "when_sent": "When any config change is written to CONFIG_DB (via CLI, REST, gNMI)"
+    }
+  ],
+  "operates_at": "System/Platform",
+  "protocol_family": "vendor",
+  "protocol_id": "sonic-infrastructure",
+  "protocol_name": "SONiC Infrastructure",
+  "purpose": "SONiC container architecture, Redis database infrastructure, SAI abstraction layer, and warm/fast reboot mechanisms. NOT a network protocol — this is the SONiC-specific infrastructure that all protocols depend on.",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "std-ocpsonic",
+      "title": "OCP SONiC",
+      "type": "standard"
+    },
+    {
+      "id": "agent-cisco-kb:vendor/sonic-infrastructure.json",
+      "title": "agent-cisco-kb knowledge base — vendor/sonic-infrastructure.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "OCP SONiC",
+  "states": [
+    {
+      "description": "All Docker containers running, Redis databases responsive, orchagent processing normally, syncd programming ASIC via SAI. Normal operational state.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "HEALTHY"
+    },
+    {
+      "description": "One or more Docker containers have exited or are in a restart loop. Impact depends on which container: database = total outage, swss/syncd = data plane impact, bgp = routing impact, pmon = monitoring blind.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "CONTAINER_DOWN"
+    },
+    {
+      "description": "orchagent is running but not processing APPL_DB entries. New routes, neighbors, and config changes are not being programmed into ASIC_DB. Often occurs during warm restart reconciliation.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "ORCHAGENT_STUCK"
+    },
+    {
+      "description": "syncd cannot communicate with the ASIC via SAI. ASIC_DB entries are not being translated to hardware programming. Data plane stale or broken.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "SYNCD_FAILURE"
+    },
+    {
+      "description": "Device is in the warm reboot window. Data plane preserved from pre-reboot state while control plane restarts and reconciles. BGP Graceful Restart active.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "WARM_REBOOT_IN_PROGRESS"
+    },
+    {
+      "description": "Warm reboot did not complete successfully. May have fallen back to cold reboot, or services may be stuck in reconciliation. Traffic impact likely.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "WARM_REBOOT_FAILED"
+    },
+    {
+      "description": "Redis databases are inconsistent with each other (CONFIG_DB vs APPL_DB vs ASIC_DB). Config changes may not be reflected in hardware, or hardware state may not match config.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "DB_INCONSISTENT"
+    },
+    {
+      "description": "One or more ASIC resources (FIB, ACL, next-hop, FDB) are at or near capacity. New entries silently fail to program. CRM thresholds exceeded.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "CRM_EXHAUSTED"
+    }
+  ],
+  "tags": [
+    "sonic",
+    "infrastructure",
+    "container",
+    "docker",
+    "redis",
+    "sai",
+    "orchagent",
+    "syncd",
+    "warm-reboot",
+    "crm",
+    "asic",
+    "vendor"
+  ],
+  "timers": [
+    {
+      "default_rfc": "120 seconds",
+      "description": "",
+      "name": "BGP Graceful Restart timer",
+      "on_expiry": "Peers withdraw all routes learned from the SONiC device. Total routing reconvergence event.",
+      "os_defaults": [
+        {
+          "default": "120s default in FRR, often insufficient for large-scale reconciliation. Increase to 240-360s for large route tables.",
+          "notes": "The #1 warm reboot failure cause. Set via vtysh: 'bgp graceful-restart restart-time <seconds>'.",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-3600 seconds"
+    },
+    {
+      "default_rfc": "10 seconds initial, exponential backoff",
+      "description": "",
+      "name": "Docker container restart backoff",
+      "on_expiry": "Docker attempts to restart the crashed container. After repeated failures, backoff increases.",
+      "range": "10s to 5 minutes"
+    },
+    {
+      "default_rfc": "300 seconds (5 minutes)",
+      "description": "",
+      "name": "orchagent warm restart reconciliation timeout",
+      "on_expiry": "orchagent declares warm restart reconciliation failed. Triggers fallback to cold restart behavior.",
+      "os_defaults": [
+        {
+          "default": "300s hardcoded in orchagent source. Watchdog monitors for stuck state >60s.",
+          "notes": "If reconciliation exceeds this, swss container may exit. Check 'show warm_restart table' for stuck state.",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "System-defined"
+    },
+    {
+      "default_rfc": "300 seconds (5 minutes)",
+      "description": "",
+      "name": "CRM polling interval",
+      "on_expiry": "CRM re-checks ASIC resource utilization and updates CRM counters in COUNTERS_DB.",
+      "os_defaults": [
+        {
+          "default": "300s default. Config: 'crm config polling interval <seconds>' in CONFIG_DB CRM table.",
+          "notes": "At default 5-minute interval, resource exhaustion can go undetected for minutes. Reduce to 60s in production.",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-300 seconds"
+    },
+    {
+      "default_rfc": "1000ms (1 second) for port counters",
+      "description": "",
+      "name": "flex counter polling interval",
+      "on_expiry": "syncd polls ASIC counter registers and updates COUNTERS_DB.",
+      "os_defaults": [
+        {
+          "default": "Default varies by counter type: port=1000ms, queue=10000ms, watermark=10000ms.",
+          "notes": "Config: 'counterpoll <type> interval <ms>'. Aggressive polling increases CPU load on syncd.",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "100ms to 10000ms"
+    }
+  ],
+  "transitions": [
+    {
+      "failure_if_stuck": "Check docker logs for the failing container. Common: orchagent segfault, syncd SAI error, bgp (FRR) OOM.",
+      "from_state": "HEALTHY",
+      "to_state": "CONTAINER_DOWN",
+      "trigger": "Container crash (OOM, segfault, unhandled exception), manual stop, or systemd dependency failure"
+    },
+    {
+      "failure_if_stuck": "If container is in restart loop, check 'docker logs <name>' for the root cause error. May need image upgrade or config fix.",
+      "from_state": "CONTAINER_DOWN",
+      "to_state": "HEALTHY",
+      "trigger": "Container auto-restart by Docker/systemd, or manual 'docker restart <name>'"
+    },
+    {
+      "from_state": "HEALTHY",
+      "to_state": "WARM_REBOOT_IN_PROGRESS",
+      "trigger": "'sudo warm-reboot' command issued"
+    },
+    {
+      "from_state": "WARM_REBOOT_IN_PROGRESS",
+      "to_state": "HEALTHY",
+      "trigger": "All services complete reconciliation within GR timer window"
+    },
+    {
+      "failure_if_stuck": "Check 'show warm_restart table' and 'docker logs swss'. May need cold reboot to recover.",
+      "from_state": "WARM_REBOOT_IN_PROGRESS",
+      "to_state": "WARM_REBOOT_FAILED",
+      "trigger": "BGP GR timer expires, orchagent reconciliation fails, CONFIG_DB migration fails, or service dependency race"
+    },
+    {
+      "failure_if_stuck": "'docker restart swss' to restart orchagent. Check docker logs swss for the specific error.",
+      "from_state": "HEALTHY",
+      "to_state": "ORCHAGENT_STUCK",
+      "trigger": "orchagent encounters unresolvable SAI error, memory exhaustion, or warm restart reconciliation hang"
+    },
+    {
+      "failure_if_stuck": "'docker restart syncd'. If persistent, check SAI/SDK version compatibility and ASIC health.",
+      "from_state": "HEALTHY",
+      "to_state": "SYNCD_FAILURE",
+      "trigger": "SAI API returns persistent errors, ASIC communication failure, or syncd crash"
+    },
+    {
+      "failure_if_stuck": "'config reload' to resync all databases from CONFIG_DB. Nuclear option: cold reboot.",
+      "from_state": "HEALTHY",
+      "to_state": "DB_INCONSISTENT",
+      "trigger": "Partial config apply failure, interrupted 'config reload', warm reboot with CONFIG_DB change, or orchagent crash during programming"
+    },
+    {
+      "failure_if_stuck": "Reduce scale (filter routes, consolidate ACLs) or use hw-module profile for different resource allocation (Silicon One).",
+      "from_state": "HEALTHY",
+      "to_state": "CRM_EXHAUSTED",
+      "trigger": "Route/ACL/FDB scale exceeds ASIC capacity. Gradual resource consumption or sudden route injection."
+    }
+  ],
+  "transport": "Docker containers + Redis IPC + SAI API",
+  "vendor_notes": {
+    "sonic": {
+      "notes": [
+        {
+          "note": "This protocol entry covers SONiC infrastructure (containers, Redis, SAI, warm reboot) — not a specific network protocol. Every other protocol on SONiC depends on this infrastructure being healthy. Always check container health ('docker ps -a') and Redis connectivity ('redis-cli ping') before debugging individual protocol issues.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

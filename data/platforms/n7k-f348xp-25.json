@@ -1,0 +1,217 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:f3",
+      "asic_id": 0,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 8,
+              "label": "Eth-slot/1-8",
+              "native_speed": "10G",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f3",
+      "asic_id": 1,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 16,
+              "label": "Eth-slot/9-16",
+              "native_speed": "10G",
+              "start_port": 9
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f3",
+      "asic_id": 2,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 24,
+              "label": "Eth-slot/17-24",
+              "native_speed": "10G",
+              "start_port": 17
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f3",
+      "asic_id": 3,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 32,
+              "label": "Eth-slot/25-32",
+              "native_speed": "10G",
+              "start_port": 25
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f3",
+      "asic_id": 4,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 40,
+              "label": "Eth-slot/33-40",
+              "native_speed": "10G",
+              "start_port": 33
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    },
+    {
+      "asic_family": "asic:f3",
+      "asic_id": 5,
+      "asic_model": "Flanker",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ACL TCAM",
+        "FIB"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 48,
+              "label": "Eth-slot/41-48",
+              "native_speed": "10G",
+              "start_port": 41
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 80.0
+    }
+  ],
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-7000",
+  "platform_id": "n7k-f348xp-25",
+  "platform_name": "N7K-F348XP-25 (Pescara 10)",
+  "platform_pid": "N7K-F348XP-25",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-n7k-f348xp-25",
+      "title": "N7K-F348XP-25 datasheet, N7K F3 architecture",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-7000/n7k-f348xp-25.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-7000/n7k-f348xp-25.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 0.48,
+  "total_ports": 48
+}

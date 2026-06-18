@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "evpn-arp-suppression-hides-arp",
+  "display_name": "ARP suppression in EVPN means you won't see ARP on the wire — absence is not a problem",
+  "category": "expected-behavior",
+  "applicable_os": ["nxos", "iosxe", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Troubleshooting host reachability in a VXLAN/EVPN fabric where ARP suppression (proxy ARP/ND) is enabled on the layer-2 VNI",
+  "observation": "ARP requests from a host are not seen flooding across the fabric, or ARP counters on remote leaves stay flat while hosts still communicate",
+  "naive_interpretation": "ARP is broken, the host is not ARPing, or BUM flooding is failing somewhere in the fabric",
+  "correct_interpretation": "With ARP suppression enabled, the ingress leaf answers ARP requests locally from the EVPN control plane (the MAC/IP advertised in Type-2 routes) instead of flooding the request across the fabric. The absence of fabric-wide ARP flooding is the feature working as designed, not a fault. ARP only floods when the leaf has no cached binding for the requested IP and falls back to flood-and-learn.",
+  "why": [
+    "EVPN advertises host MAC+IP bindings as Type-2 (MAC/IP Advertisement) routes; each leaf builds a local ARP/ND proxy table from these advertisements",
+    "RFC 9161 defines the proxy ARP/ND behavior: the leaf intercepts the ARP request and replies on behalf of the remote host when it has a binding, suppressing the broadcast",
+    "Suppression dramatically reduces BUM (broadcast/unknown-unicast/multicast) traffic in large fabrics — flat ARP counters across the fabric are the expected steady state",
+    "A genuine ARP problem shows up as missing Type-2 routes for the destination IP, not as missing ARP floods"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip arp suppression-cache detail",
+      "purpose": "Confirm ARP suppression is active and list the locally cached host bindings the leaf is answering from"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp l2vpn evpn vni-id <vni>",
+      "purpose": "Verify Type-2 MAC/IP routes for the destination host exist in the EVPN table"
+    },
+    {
+      "os": "eos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show arp vrf all proxy-arp",
+      "purpose": "Confirm proxy ARP entries the leaf uses to answer locally"
+    }
+  ],
+  "traps": [
+    "Concluding ARP or flooding is broken because ARP requests don't appear across the fabric — suppression is meant to stop exactly that",
+    "Packet-capturing on a remote leaf for ARP and finding nothing, then chasing a phantom flooding problem",
+    "Forgetting that suppression only works when the EVPN Type-2 route exists — the real check is whether the binding was advertised, not whether ARP flooded",
+    "Disabling ARP suppression to 'fix' a problem that was actually a missing Type-2 route, masking the real control-plane issue"
+  ],
+  "related_rules": [
+    "evpn-mac-mobility-sequence-increment",
+    "single-log-message-not-causation"
+  ],
+  "related_protocols": ["vxlan-evpn", "evpn", "vxlan"],
+  "keywords": ["EVPN", "VXLAN", "ARP suppression", "proxy ARP", "Type-2", "MAC/IP", "BUM", "flooding", "fabric"],
+  "sources": [
+    {
+      "id": "rfc-9161",
+      "title": "RFC 9161 — Operational Aspects of Proxy ARP/ND in EVPN Networks",
+      "type": "rfc",
+      "rfc_number": 9161,
+      "url": "https://www.rfc-editor.org/rfc/rfc9161.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

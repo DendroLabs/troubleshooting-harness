@@ -1,0 +1,1002 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "PBR route-maps use ACLs in the match clause to select traffic. The ACL must be correctly defined to match the intended flows.",
+      "name": "ACLs (match criteria)",
+      "type": "infrastructure"
+    },
+    {
+      "description": "When PBR next-hop is unreachable or not configured for specific traffic, the normal routing table provides fallback forwarding.",
+      "name": "IP routing (fallback)",
+      "type": "infrastructure"
+    },
+    {
+      "description": "PBR entries must be programmed into TCAM for hardware-accelerated forwarding. Without TCAM support, PBR traffic is punted to CPU.",
+      "name": "TCAM (hardware forwarding)",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "A route-map is configured for PBR but traffic continues to follow the normal routing table instead of being policy-routed. PBR counters remain at zero and traceroute shows the default IGP/static path. Common causes include the route-map not being applied to the ingress interface, the match clause ACL not matching the intended traffic, the route-map having an implicit deny at the end with no matching permit entry, or the platform not supporting PBR in hardware causing packets to be punted to the CPU where they may be dropped or rate-limited.",
+      "resolutions": [
+        {
+          "action": "Apply the route-map to the correct ingress interface: 'ip policy route-map <name>' under the interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply the route-map to the correct ingress interface: 'ip policy route-map <name>' under the interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply the route-map to the correct ingress interface: 'ip policy route-map <name>' under the interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify the ACL used in the match clause actually matches the traffic — check with 'show access-lists' hit counts",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify the ACL used in the match clause actually matches the traffic — check with 'show access-lists' hit counts",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify the ACL used in the match clause actually matches the traffic — check with 'show access-lists' hit counts",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure the route-map has a permit entry that matches the desired traffic — remember the implicit deny at the end",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure the route-map has a permit entry that matches the desired traffic — remember the implicit deny at the end",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure the route-map has a permit entry that matches the desired traffic — remember the implicit deny at the end",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform documentation for PBR hardware support; on some platforms only specific match/set combinations are offloaded to TCAM",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform documentation for PBR hardware support; on some platforms only specific match/set combinations are offloaded to TCAM",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform documentation for PBR hardware support; on some platforms only specific match/set combinations are offloaded to TCAM",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Route-map not applied to the ingress interface via 'ip policy route-map'",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Match clause ACL does not match the intended traffic (wrong source/destination, protocol, or port)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Route-map has only deny entries or no matching permit entry — implicit deny at the end drops all traffic from PBR consideration",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PBR not supported in hardware on this platform — packets punted to CPU and rate-limited or dropped",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Route-map sequence numbering causes an earlier deny entry to match before the intended permit",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "PBR not matching traffic — route-map applied but traffic follows normal routing",
+      "symptoms": [
+        "Traceroute shows the default routing table path, not the PBR next-hop",
+        "PBR route-map match counters remain at zero",
+        "Traffic is not redirected despite the route-map being configured",
+        "'show ip policy' does not list the expected interface"
+      ],
+      "verify_commands": [
+        {
+          "command": "show route-map",
+          "confirms_if": "Non-zero match count confirms traffic is hitting the route-map; zero count confirms PBR is not matching",
+          "look_for": "Check match counts — if zero, the route-map is not matching any traffic. Verify the match and set clauses are correct.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show route-map",
+          "confirms_if": "Non-zero match count confirms traffic is hitting the route-map; zero count confirms PBR is not matching",
+          "look_for": "Check match counts — if zero, the route-map is not matching any traffic. Verify the match and set clauses are correct.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show route-map",
+          "confirms_if": "Non-zero match count confirms traffic is hitting the route-map; zero count confirms PBR is not matching",
+          "look_for": "Check match counts — if zero, the route-map is not matching any traffic. Verify the match and set clauses are correct.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip policy",
+          "confirms_if": "Shows which interfaces have PBR route-maps applied",
+          "look_for": "Verify the route-map is applied to the correct ingress interface. If the interface is missing, PBR is not active there.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip policy",
+          "confirms_if": "Shows which interfaces have PBR route-maps applied",
+          "look_for": "Verify the route-map is applied to the correct ingress interface. If the interface is missing, PBR is not active there.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip policy",
+          "confirms_if": "Shows which interfaces have PBR route-maps applied",
+          "look_for": "Verify the route-map is applied to the correct ingress interface. If the interface is missing, PBR is not active there.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show access-lists",
+          "confirms_if": "ACL hit counts confirm whether the match criteria are selecting the intended traffic",
+          "look_for": "Check hit counts on the ACL referenced in the route-map match clause — zero hits means the ACL is not matching traffic",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show access-lists",
+          "confirms_if": "ACL hit counts confirm whether the match criteria are selecting the intended traffic",
+          "look_for": "Check hit counts on the ACL referenced in the route-map match clause — zero hits means the ACL is not matching traffic",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show access-lists",
+          "confirms_if": "ACL hit counts confirm whether the match criteria are selecting the intended traffic",
+          "look_for": "Check hit counts on the ACL referenced in the route-map match clause — zero hits means the ACL is not matching traffic",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The PBR route-map matches traffic and sets a next-hop, but that next-hop is unreachable (down, no ARP entry, or not in the routing table). Instead of falling back to the normal routing table, the matched traffic is black-holed. This occurs because 'set ip next-hop' forces the next-hop unconditionally — if the next-hop is unreachable, traffic is dropped. The fallback behavior depends on using 'set ip default next-hop' (which only applies when no explicit route exists) or 'set ip next-hop verify-availability' (which checks reachability before using the PBR next-hop).",
+      "resolutions": [
+        {
+          "action": "Use 'set ip next-hop verify-availability <next-hop> <seq> track <N>' to check reachability before applying PBR",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'set ip next-hop verify-availability <next-hop> <seq> track <N>' to check reachability before applying PBR",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'set ip next-hop verify-availability <next-hop> <seq> track <N>' to check reachability before applying PBR",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'set ip default next-hop' instead of 'set ip next-hop' if you want PBR to apply only when no explicit route exists for the destination",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'set ip default next-hop' instead of 'set ip next-hop' if you want PBR to apply only when no explicit route exists for the destination",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'set ip default next-hop' instead of 'set ip next-hop' if you want PBR to apply only when no explicit route exists for the destination",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure IP SLA + track object for the PBR next-hop to detect failures and withdraw the PBR policy dynamically",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure IP SLA + track object for the PBR next-hop to detect failures and withdraw the PBR policy dynamically",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure IP SLA + track object for the PBR next-hop to detect failures and withdraw the PBR policy dynamically",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify the next-hop is reachable: check ARP, check routing table, ensure it is in the correct VRF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify the next-hop is reachable: check ARP, check routing table, ensure it is in the correct VRF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify the next-hop is reachable: check ARP, check routing table, ensure it is in the correct VRF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "'set ip next-hop' used without 'set ip default next-hop' — no fallback to routing table when next-hop is unreachable",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PBR next-hop is not in the ARP table and cannot be resolved",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "'set ip next-hop verify-availability' not configured — PBR does not check if next-hop is reachable before redirecting",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Next-hop is in a different VRF than expected and cannot be reached from the PBR interface's VRF",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "PBR next-hop unreachable — matched traffic black-holed",
+      "symptoms": [
+        "Traffic matched by PBR is being dropped / black-holed",
+        "Ping to the PBR next-hop fails",
+        "Normal routing would work but PBR is overriding it with an unreachable next-hop",
+        "Intermittent connectivity when PBR next-hop flaps"
+      ],
+      "verify_commands": [
+        {
+          "command": "show route-map",
+          "confirms_if": "Shows the exact set action and whether verify-availability or default next-hop is configured",
+          "look_for": "Check the 'set' clause — is it 'set ip next-hop', 'set ip default next-hop', or 'set ip next-hop verify-availability'? The behavior differs significantly.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show route-map",
+          "confirms_if": "Shows the exact set action and whether verify-availability or default next-hop is configured",
+          "look_for": "Check the 'set' clause — is it 'set ip next-hop', 'set ip default next-hop', or 'set ip next-hop verify-availability'? The behavior differs significantly.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show route-map",
+          "confirms_if": "Shows the exact set action and whether verify-availability or default next-hop is configured",
+          "look_for": "Check the 'set' clause — is it 'set ip next-hop', 'set ip default next-hop', or 'set ip next-hop verify-availability'? The behavior differs significantly.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip cef <next-hop>",
+          "confirms_if": "CEF entry shows whether the next-hop can be reached at the forwarding plane",
+          "look_for": "Check if the PBR next-hop is resolvable in CEF — look for 'attached', 'receive', or a valid adjacency. 'drop' or 'unresolved' means the next-hop is unreachable.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip cef <next-hop>",
+          "confirms_if": "CEF entry shows whether the next-hop can be reached at the forwarding plane",
+          "look_for": "Check if the PBR next-hop is resolvable in CEF — look for 'attached', 'receive', or a valid adjacency. 'drop' or 'unresolved' means the next-hop is unreachable.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip cef <next-hop>",
+          "confirms_if": "CEF entry shows whether the next-hop can be reached at the forwarding plane",
+          "look_for": "Check if the PBR next-hop is resolvable in CEF — look for 'attached', 'receive', or a valid adjacency. 'drop' or 'unresolved' means the next-hop is unreachable.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp",
+          "confirms_if": "ARP entry present confirms L2 reachability to the next-hop; missing/incomplete confirms it is unreachable",
+          "look_for": "Check if the PBR next-hop has an ARP entry — 'Incomplete' or missing entry means the next-hop is not reachable at L2",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp",
+          "confirms_if": "ARP entry present confirms L2 reachability to the next-hop; missing/incomplete confirms it is unreachable",
+          "look_for": "Check if the PBR next-hop has an ARP entry — 'Incomplete' or missing entry means the next-hop is not reachable at L2",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp",
+          "confirms_if": "ARP entry present confirms L2 reachability to the next-hop; missing/incomplete confirms it is unreachable",
+          "look_for": "Check if the PBR next-hop has an ARP entry — 'Incomplete' or missing entry means the next-hop is not reachable at L2",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "PBR policy is configured and matching traffic correctly, but the forwarding is handled in software (CPU) rather than hardware (ASIC/TCAM). This causes high CPU utilization and dramatically reduced throughput compared to hardware-forwarded traffic. This occurs when the platform does not support PBR in hardware, when the specific match/set combination cannot be offloaded, or when TCAM resources for PBR are exhausted.",
+      "resolutions": [
+        {
+          "action": "Check platform documentation for PBR hardware support and supported match/set combinations",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform documentation for PBR hardware support and supported match/set combinations",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform documentation for PBR hardware support and supported match/set combinations",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Simplify match criteria to fit within TCAM capabilities (use exact ports instead of ranges, reduce ACL complexity)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Simplify match criteria to fit within TCAM capabilities (use exact ports instead of ranges, reduce ACL complexity)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Simplify match criteria to fit within TCAM capabilities (use exact ports instead of ranges, reduce ACL complexity)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: verify TCAM region allocation with 'show hardware access-list tcam region' — resize PBR region if needed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: verify TCAM region allocation with 'show hardware access-list tcam region' — resize PBR region if needed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: verify TCAM region allocation with 'show hardware access-list tcam region' — resize PBR region if needed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE Catalyst 9K: verify SDM template supports PBR and check TCAM utilization",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE Catalyst 9K: verify SDM template supports PBR and check TCAM utilization",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE Catalyst 9K: verify SDM template supports PBR and check TCAM utilization",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider replacing PBR with more hardware-friendly alternatives (e.g., VRF route leaking, BGP conditional route injection)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider replacing PBR with more hardware-friendly alternatives (e.g., VRF route leaking, BGP conditional route injection)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider replacing PBR with more hardware-friendly alternatives (e.g., VRF route leaking, BGP conditional route injection)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Platform does not support PBR in TCAM (software-only implementation)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Complex match criteria (e.g., L4 port ranges, multiple ACL lines) exceed hardware capabilities",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "TCAM region for PBR not allocated or is full — entries spill to software",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Platform ASIC limitation — specific set actions (e.g., set ip next-hop with verify-availability) not supported in hardware",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "PBR not in hardware (software forwarding) — high CPU, low throughput",
+      "symptoms": [
+        "PBR works functionally but throughput is much lower than expected",
+        "CPU utilization elevated — process-switching or punt-to-CPU for PBR traffic",
+        "Interface counters show high punt/inject rates",
+        "Latency through the device is significantly higher for PBR traffic vs normal routed traffic"
+      ],
+      "verify_commands": [
+        {
+          "command": "show processes cpu sorted",
+          "confirms_if": "Elevated CPU from forwarding processes confirms PBR traffic is being punted to CPU",
+          "look_for": "Check for high CPU from IP input, routing, or PBR-related processes — indicates software forwarding",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sorted",
+          "confirms_if": "Elevated CPU from forwarding processes confirms PBR traffic is being punted to CPU",
+          "look_for": "Check for high CPU from IP input, routing, or PBR-related processes — indicates software forwarding",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sorted",
+          "confirms_if": "Elevated CPU from forwarding processes confirms PBR traffic is being punted to CPU",
+          "look_for": "Check for high CPU from IP input, routing, or PBR-related processes — indicates software forwarding",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show platform hardware fed active qos pbr",
+          "confirms_if": "Shows whether PBR policies are installed in hardware TCAM or falling back to software",
+          "look_for": "Platform-specific — check if PBR entries are programmed in hardware. Field names vary by platform.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show platform hardware fed active qos pbr",
+          "confirms_if": "Shows whether PBR policies are installed in hardware TCAM or falling back to software",
+          "look_for": "Platform-specific — check if PBR entries are programmed in hardware. Field names vary by platform.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show platform hardware fed active qos pbr",
+          "confirms_if": "Shows whether PBR policies are installed in hardware TCAM or falling back to software",
+          "look_for": "Platform-specific — check if PBR entries are programmed in hardware. Field names vary by platform.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "PBR is configured with a set next-hop that should route traffic into a different VRF, but the next-hop is resolved in the wrong VRF context. Traffic either gets dropped because the next-hop does not exist in the interface's VRF, or it gets routed within the local VRF instead of being leaked to the target VRF. The 'set ip vrf' or 'set vrf' command is needed to explicitly specify VRF context for the next-hop lookup.",
+      "resolutions": [
+        {
+          "action": "Add 'set ip vrf <target-vrf>' (IOS-XE) or 'set vrf <target-vrf>' (NX-OS) to the route-map before the 'set ip next-hop' statement",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add 'set ip vrf <target-vrf>' (IOS-XE) or 'set vrf <target-vrf>' (NX-OS) to the route-map before the 'set ip next-hop' statement",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add 'set ip vrf <target-vrf>' (IOS-XE) or 'set vrf <target-vrf>' (NX-OS) to the route-map before the 'set ip next-hop' statement",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify the next-hop is reachable in the target VRF: 'show ip route vrf <target-vrf> <next-hop>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify the next-hop is reachable in the target VRF: 'show ip route vrf <target-vrf> <next-hop>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify the next-hop is reachable in the target VRF: 'show ip route vrf <target-vrf> <next-hop>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XR: specify VRF in ABF nexthop action: 'nexthop1 vrf <vrf> ipv4 <next-hop>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XR: specify VRF in ABF nexthop action: 'nexthop1 vrf <vrf> ipv4 <next-hop>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XR: specify VRF in ABF nexthop action: 'nexthop1 vrf <vrf> ipv4 <next-hop>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure return traffic path is consistent — configure PBR or route leaking in both directions to avoid asymmetric routing",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure return traffic path is consistent — configure PBR or route leaking in both directions to avoid asymmetric routing",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure return traffic path is consistent — configure PBR or route leaking in both directions to avoid asymmetric routing",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "'set ip vrf' (or 'set vrf') not configured in the route-map — next-hop resolved in the interface's VRF instead of the target VRF",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Route-map applied in the wrong VRF context — applied to an interface in VRF-A but next-hop is in VRF-B without VRF selection",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VRF route leaking configured but PBR overrides the leaked route with an incorrect next-hop",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "On IOS-XR ABF: next-hop VRF not specified in the ACL nexthop action",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "PBR and VRF interaction — next-hop resolved in wrong VRF",
+      "symptoms": [
+        "PBR traffic is not reaching the intended VRF",
+        "Next-hop lookup fails because the next-hop IP exists in a different VRF than where the route-map resolves it",
+        "Traffic stays in the local VRF instead of being policy-routed to the target VRF",
+        "Asymmetric routing — traffic goes out via PBR VRF but return traffic comes back via a different VRF"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip policy",
+          "confirms_if": "Shows the interface-to-route-map binding; cross-reference with 'show vrf' to confirm VRF membership",
+          "look_for": "Verify which interface the PBR route-map is applied to and confirm the interface is in the expected VRF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip policy",
+          "confirms_if": "Shows the interface-to-route-map binding; cross-reference with 'show vrf' to confirm VRF membership",
+          "look_for": "Verify which interface the PBR route-map is applied to and confirm the interface is in the expected VRF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip policy",
+          "confirms_if": "Shows the interface-to-route-map binding; cross-reference with 'show vrf' to confirm VRF membership",
+          "look_for": "Verify which interface the PBR route-map is applied to and confirm the interface is in the expected VRF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <vrf-name>",
+          "confirms_if": "Next-hop present in the target VRF routing table confirms reachability; absent confirms the VRF mismatch",
+          "look_for": "Check if the PBR next-hop is reachable in the target VRF — if not, the next-hop cannot be resolved",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <vrf-name>",
+          "confirms_if": "Next-hop present in the target VRF routing table confirms reachability; absent confirms the VRF mismatch",
+          "look_for": "Check if the PBR next-hop is reachable in the target VRF — if not, the next-hop cannot be resolved",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <vrf-name>",
+          "confirms_if": "Next-hop present in the target VRF routing table confirms reachability; absent confirms the VRF mismatch",
+          "look_for": "Check if the PBR next-hop is reachable in the target VRF — if not, the next-hop cannot be resolved",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "operates_at": "Layer 3-4",
+  "protocol_family": "routing",
+  "protocol_id": "pbr",
+  "protocol_name": "PBR (Policy-Based Routing)",
+  "purpose": "Route traffic based on policy criteria (source, destination, protocol, port) rather than destination-only routing table lookups — enables traffic steering, path selection, and service chaining",
+  "related_protocols": [
+    "static-routing",
+    "bgp-4",
+    "ospfv2"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-1104",
+      "rfc_number": 1104,
+      "title": "RFC 1104",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc1104.txt"
+    },
+    {
+      "id": "agent-cisco-kb:routing/pbr.json",
+      "title": "agent-cisco-kb knowledge base — routing/pbr.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 1104 (Policy Routing), vendor implementations",
+  "states": [],
+  "tags": [
+    "pbr",
+    "policy-routing",
+    "route-map",
+    "abf",
+    "next-hop",
+    "traffic-steering",
+    "routing"
+  ],
+  "transport": "N/A (policy on forwarding plane)",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "ip access-list extended PBR_ACL\n permit ip 10.1.0.0 0.0.255.255 10.2.0.0 0.0.255.255\nroute-map PBR_POLICY permit 10\n match ip address PBR_ACL\n set ip next-hop 192.168.1.1\ninterface GigabitEthernet0/1\n ip policy route-map PBR_POLICY"
+      ],
+      "notes": [
+        {
+          "note": "IOS-XE PBR: 'route-map' with 'set ip next-hop'. Applied via 'ip policy route-map' under the interface. 'set ip default next-hop' for fallback behavior (only applies when no explicit route exists for the destination). PBR in hardware on Catalyst 9K UADP ASICs. ABF not available (ABF is IOS-XR only). 'set ip next-hop verify-availability' supported for tracked next-hop reachability.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "config_examples": [
+        "ipv4 access-list ABF_POLICY\n 10 permit ipv4 10.1.0.0/16 10.2.0.0/16 nexthop1 ipv4 192.168.1.1\ninterface GigabitEthernet0/0/0/0\n ipv4 access-group ABF_POLICY ingress"
+      ],
+      "notes": [
+        {
+          "note": "IOS-XR uses ABF (ACL-Based Forwarding) instead of traditional PBR. 'ipv4 access-list' with 'nexthop1' action. Applied under the interface. TCAM-based on all platforms. More scalable than IOS-XE PBR. Supports multiple nexthop entries (nexthop1, nexthop2, nexthop3) for redundancy with automatic failover.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "feature pbr\nip access-list PBR_ACL\n  permit ip 10.1.0.0/16 10.2.0.0/16\nroute-map PBR_POLICY permit 10\n  match ip address PBR_ACL\n  set ip next-hop 192.168.1.1\ninterface Ethernet1/1\n  ip policy route-map PBR_POLICY"
+      ],
+      "notes": [
+        {
+          "note": "NX-OS PBR: 'route-map' with 'set ip next-hop'. Applied via 'ip policy route-map' under the interface. PBR for VXLAN underlay requires 'feature pbr'. Hardware PBR on CloudScale ASICs. 'set ip next-hop verify-availability' for next-hop tracking. TCAM region 'pbr-statistics' must be carved for PBR counters.",
+          "versions": "9.3+"
+        }
+      ]
+    }
+  }
+}

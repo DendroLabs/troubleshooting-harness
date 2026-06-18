@@ -1,0 +1,2410 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "Requires Ethernet frames; STP operates below IP",
+      "name": "Layer 2 connectivity",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Must be configured for RSTP mode (rapid-pvst on Cisco)",
+      "name": "STP mode",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "A port remains in DISCARDING (blocking) state when it is expected to transition to FORWARDING, causing traffic to take a suboptimal path or be black-holed.",
+      "resolutions": [
+        {
+          "action": "Verify STP topology: 'show spanning-tree' — check root bridge identity",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify STP topology: 'show spanning-tree' — check root bridge identity",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify STP topology: 'show spanning-tree' — check root bridge identity",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for unexpected root bridge: compare bridge priorities",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for unexpected root bridge: compare bridge priorities",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for unexpected root bridge: compare bridge priorities",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If BPDU guard triggered: resolve rogue BPDU source, then 'shutdown' / 'no shutdown' or errdisable recovery",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If BPDU guard triggered: resolve rogue BPDU source, then 'shutdown' / 'no shutdown' or errdisable recovery",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If BPDU guard triggered: resolve rogue BPDU source, then 'shutdown' / 'no shutdown' or errdisable recovery",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If root guard: verify intended topology design",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If root guard: verify intended topology design",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If root guard: verify intended topology design",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If loop guard: check for unidirectional link failure",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If loop guard: check for unidirectional link failure",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If loop guard: check for unidirectional link failure",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Receiving superior BPDUs — another bridge has lower priority/cost",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Root guard blocking port",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Loop guard blocking port",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BPDU guard triggered (port moved to err-disabled)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Duplicate bridge IDs in the network",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Port stuck in DISCARDING",
+      "symptoms": [
+        "Port shows BLK or DIS state when it should be forwarding",
+        "Traffic not passing through expected path"
+      ],
+      "verify_commands": [
+        {
+          "command": "show spanning-tree",
+          "confirms_if": "Shows which ports are blocking and why",
+          "look_for": "Check port states, root bridge ID, and path costs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree",
+          "confirms_if": "Shows which ports are blocking and why",
+          "look_for": "Check port states, root bridge ID, and path costs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree",
+          "confirms_if": "Shows which ports are blocking and why",
+          "look_for": "Check port states, root bridge ID, and path costs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree inconsistentports",
+          "confirms_if": "Confirms if loop guard or root guard is triggered",
+          "look_for": "Look for ports in inconsistent state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree inconsistentports",
+          "confirms_if": "Confirms if loop guard or root guard is triggered",
+          "look_for": "Look for ports in inconsistent state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree inconsistentports",
+          "confirms_if": "Confirms if loop guard or root guard is triggered",
+          "look_for": "Look for ports in inconsistent state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show errdisable recovery",
+          "confirms_if": "Shows err-disabled ports and recovery timers",
+          "look_for": "Check if BPDU guard has err-disabled any ports",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show errdisable recovery",
+          "confirms_if": "Shows err-disabled ports and recovery timers",
+          "look_for": "Check if BPDU guard has err-disabled any ports",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show errdisable recovery",
+          "confirms_if": "Shows err-disabled ports and recovery timers",
+          "look_for": "Check if BPDU guard has err-disabled any ports",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree interface <intf> detail",
+          "confirms_if": "Shows why a specific port is in its current state",
+          "look_for": "Look for role, state, and received BPDU info",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree interface <intf> detail",
+          "confirms_if": "Shows why a specific port is in its current state",
+          "look_for": "Look for role, state, and received BPDU info",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree interface <intf> detail",
+          "confirms_if": "Shows why a specific port is in its current state",
+          "look_for": "Look for role, state, and received BPDU info",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Excessive Topology Change Notifications cause repeated MAC address table flushes, leading to flooding, high CPU, and network instability.",
+      "resolutions": [
+        {
+          "action": "Identify the port originating TCs: 'show spanning-tree detail | include TC'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the port originating TCs: 'show spanning-tree detail | include TC'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the port originating TCs: 'show spanning-tree detail | include TC'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure edge ports as portfast: 'spanning-tree portfast'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure edge ports as portfast: 'spanning-tree portfast'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure edge ports as portfast: 'spanning-tree portfast'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix flapping links",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix flapping links",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix flapping links",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider 'spanning-tree portfast bpdufilter' on known host ports (use with caution)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider 'spanning-tree portfast bpdufilter' on known host ports (use with caution)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider 'spanning-tree portfast bpdufilter' on known host ports (use with caution)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Flapping link causing repeated topology changes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Server NIC teaming misconfigured (sending BPDUs)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Port-channel member bouncing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Edge port not configured as portfast but should be",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Topology Change storm / frequent TCNs",
+      "symptoms": [
+        "Frequent MAC address table flushes",
+        "High CPU from STP processing",
+        "'show spanning-tree detail' shows high TC count"
+      ],
+      "verify_commands": [
+        {
+          "command": "show spanning-tree detail",
+          "confirms_if": "Identifies which port is triggering topology changes",
+          "look_for": "Look for 'Number of topology changes' and 'last change received from'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree detail",
+          "confirms_if": "Identifies which port is triggering topology changes",
+          "look_for": "Look for 'Number of topology changes' and 'last change received from'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree detail",
+          "confirms_if": "Identifies which port is triggering topology changes",
+          "look_for": "Look for 'Number of topology changes' and 'last change received from'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include STP|SPANTREE",
+          "confirms_if": "Shows timeline of STP events",
+          "look_for": "Look for frequent topology change log messages",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include STP|SPANTREE",
+          "confirms_if": "Shows timeline of STP events",
+          "look_for": "Look for frequent topology change log messages",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include STP|SPANTREE",
+          "confirms_if": "Shows timeline of STP events",
+          "look_for": "Look for frequent topology change log messages",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The root bridge is not the intended switch, causing suboptimal traffic paths across the Layer 2 domain.",
+      "resolutions": [
+        {
+          "action": "Set root bridge priority explicitly: 'spanning-tree vlan X root primary' or 'spanning-tree vlan X priority 4096'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set root bridge priority explicitly: 'spanning-tree vlan X root primary' or 'spanning-tree vlan X priority 4096'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set root bridge priority explicitly: 'spanning-tree vlan X root primary' or 'spanning-tree vlan X priority 4096'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure root guard on ports where root bridge should never be learned",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure root guard on ports where root bridge should never be learned",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure root guard on ports where root bridge should never be learned",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Document and enforce root bridge placement policy",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Document and enforce root bridge placement policy",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Document and enforce root bridge placement policy",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Audit all switches for default bridge priority — any switch at 32768 is a latent risk",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Audit all switches for default bridge priority — any switch at 32768 is a latent risk",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Audit all switches for default bridge priority — any switch at 32768 is a latent risk",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Bridge priority not configured — default 32768 on all switches",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "New switch added with lower MAC address",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Root bridge rebooted and another switch took over",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Dormant misconfiguration: bridge priorities left at default for months/years, then a new device triggers unexpected election",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Root bridge election issue",
+      "symptoms": [
+        "Suboptimal traffic path",
+        "Root bridge is an access switch instead of core/distribution",
+        "Unexpected root bridge ID in 'show spanning-tree'"
+      ],
+      "verify_commands": [
+        {
+          "command": "show spanning-tree root",
+          "confirms_if": "Shows current root bridge for each VLAN",
+          "look_for": "Look for root bridge ID and priority per VLAN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree root",
+          "confirms_if": "Shows current root bridge for each VLAN",
+          "look_for": "Look for root bridge ID and priority per VLAN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree root",
+          "confirms_if": "Shows current root bridge for each VLAN",
+          "look_for": "Look for root bridge ID and priority per VLAN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree bridge",
+          "confirms_if": "Confirms local switch's STP priority",
+          "look_for": "Look for local bridge priority and ID",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree bridge",
+          "confirms_if": "Confirms local switch's STP priority",
+          "look_for": "Look for local bridge priority and ID",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree bridge",
+          "confirms_if": "Confirms local switch's STP priority",
+          "look_for": "Look for local bridge priority and ID",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A physical cable loop or rogue device creates a Layer 2 forwarding loop, causing a broadcast storm that saturates bandwidth and drives CPU to 100%. This is often the highest-impact L2 failure — the entire VLAN or flat L2 domain becomes unusable within seconds.",
+      "resolutions": [
+        {
+          "action": "IMMEDIATE: Identify the loop ports from MAC move notifications — 'show mac address-table notifications mac-move'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMMEDIATE: Identify the loop ports from MAC move notifications — 'show mac address-table notifications mac-move'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMMEDIATE: Identify the loop ports from MAC move notifications — 'show mac address-table notifications mac-move'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMMEDIATE: Shut the offending port(s) — 'interface <intf>' then 'shutdown'. Start with the port most likely to be the rogue connection (access port, not uplink)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMMEDIATE: Shut the offending port(s) — 'interface <intf>' then 'shutdown'. Start with the port most likely to be the rogue connection (access port, not uplink)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMMEDIATE: Shut the offending port(s) — 'interface <intf>' then 'shutdown'. Start with the port most likely to be the rogue connection (access port, not uplink)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMMEDIATE: Verify CPU drops and traffic resumes — 'show processes cpu sort' should show CPU recovering",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMMEDIATE: Verify CPU drops and traffic resumes — 'show processes cpu sort' should show CPU recovering",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMMEDIATE: Verify CPU drops and traffic resumes — 'show processes cpu sort' should show CPU recovering",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable BPDU Guard on all access/edge ports — 'spanning-tree port type edge' + 'spanning-tree bpduguard enable' (per-interface) or 'spanning-tree port type edge bpduguard default' (global)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable BPDU Guard on all access/edge ports — 'spanning-tree port type edge' + 'spanning-tree bpduguard enable' (per-interface) or 'spanning-tree port type edge bpduguard default' (global)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable BPDU Guard on all access/edge ports — 'spanning-tree port type edge' + 'spanning-tree bpduguard enable' (per-interface) or 'spanning-tree port type edge bpduguard default' (global)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable storm control on access ports — 'storm-control broadcast level 10' limits broadcast to 10% of link capacity",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable storm control on access ports — 'storm-control broadcast level 10' limits broadcast to 10% of link capacity",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable storm control on access ports — 'storm-control broadcast level 10' limits broadcast to 10% of link capacity",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable errdisable recovery for bpduguard — 'errdisable recovery cause bpduguard' with 'errdisable recovery interval 300'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable errdisable recovery for bpduguard — 'errdisable recovery cause bpduguard' with 'errdisable recovery interval 300'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable errdisable recovery for bpduguard — 'errdisable recovery cause bpduguard' with 'errdisable recovery interval 300'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DESIGN: Reduce flat L2 domain size — use routed access or L3 boundaries to limit blast radius",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DESIGN: Reduce flat L2 domain size — use routed access or L3 boundaries to limit blast radius",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DESIGN: Reduce flat L2 domain size — use routed access or L3 boundaries to limit blast radius",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Physical cable loop — someone patched a cable between two access ports on the same switch or VLAN",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Unmanaged switch or hub connected to two ports without STP awareness",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BPDU Guard not enabled on access ports — STP cannot detect the loop because edge ports skip STP by design",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Storm control not configured — no circuit breaker to limit broadcast/multicast flood rate",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Flat L2 domain too large — blast radius is the entire VLAN instead of a contained segment",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Server NIC teaming misconfigured — bridging between two NICs connected to different switch ports",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Broadcast storm / L2 loop",
+      "symptoms": [
+        "Switch CPU at or near 100%",
+        "All or most VLANs unreachable — intermittent or zero ping replies",
+        "MAC move notifications flooding syslog ('MAC_MOVE_NOTIFICATION')",
+        "MAC addresses rapidly flapping between two or more ports in 'show mac address-table notifications mac-move'",
+        "Interface counters show massive input/output rates on loop ports",
+        "Users report network completely down or extremely slow"
+      ],
+      "verify_commands": [
+        {
+          "command": "show mac address-table notifications mac-move",
+          "confirms_if": "Identifies the specific ports involved in the L2 loop",
+          "look_for": "Look for MAC addresses rapidly moving between ports — the two ports involved are the loop endpoints",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table notifications mac-move",
+          "confirms_if": "Identifies the specific ports involved in the L2 loop",
+          "look_for": "Look for MAC addresses rapidly moving between ports — the two ports involved are the loop endpoints",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table notifications mac-move",
+          "confirms_if": "Identifies the specific ports involved in the L2 loop",
+          "look_for": "Look for MAC addresses rapidly moving between ports — the two ports involved are the loop endpoints",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "Confirms CPU is saturated from storm processing. After shutting the loop port, CPU should drop rapidly",
+          "look_for": "Look for overall CPU utilization and top processes — during a broadcast storm, 'Memory Allocation' or interrupt CPU will be very high",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "Confirms CPU is saturated from storm processing. After shutting the loop port, CPU should drop rapidly",
+          "look_for": "Look for overall CPU utilization and top processes — during a broadcast storm, 'Memory Allocation' or interrupt CPU will be very high",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "Confirms CPU is saturated from storm processing. After shutting the loop port, CPU should drop rapidly",
+          "look_for": "Look for overall CPU utilization and top processes — during a broadcast storm, 'Memory Allocation' or interrupt CPU will be very high",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface counters",
+          "confirms_if": "Confirms which ports are carrying storm traffic",
+          "look_for": "Look for abnormally high input/output packet rates on the suspected loop ports",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface counters",
+          "confirms_if": "Confirms which ports are carrying storm traffic",
+          "look_for": "Look for abnormally high input/output packet rates on the suspected loop ports",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface counters",
+          "confirms_if": "Confirms which ports are carrying storm traffic",
+          "look_for": "Look for abnormally high input/output packet rates on the suspected loop ports",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show storm-control",
+          "confirms_if": "Shows whether storm control is configured and actively filtering on any ports",
+          "look_for": "Look for storm control status per interface — whether it is configured and whether it has been triggered (filter state)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show storm-control",
+          "confirms_if": "Shows whether storm control is configured and actively filtering on any ports",
+          "look_for": "Look for storm control status per interface — whether it is configured and whether it has been triggered (filter state)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show storm-control",
+          "confirms_if": "Shows whether storm control is configured and actively filtering on any ports",
+          "look_for": "Look for storm control status per interface — whether it is configured and whether it has been triggered (filter state)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree summary",
+          "confirms_if": "Shows how many ports have edge/portfast and whether BPDU Guard is enabled globally",
+          "look_for": "Look for portfast/edge port counts and BPDU Guard status",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree summary",
+          "confirms_if": "Shows how many ports have edge/portfast and whether BPDU Guard is enabled globally",
+          "look_for": "Look for portfast/edge port counts and BPDU Guard status",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree summary",
+          "confirms_if": "Shows how many ports have edge/portfast and whether BPDU Guard is enabled globally",
+          "look_for": "Look for portfast/edge port counts and BPDU Guard status",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A fiber strand fails in one direction (TX works but RX does not, or vice versa) due to a bad SFP, dirty fiber, or faulty patch panel. The switch on one side thinks the link is up but the other side does not receive BPDUs. The port that should be blocking transitions to forwarding because it no longer sees the root bridge, creating a loop. Without UDLD aggressive mode, this failure is undetectable by STP alone.",
+      "resolutions": [
+        {
+          "action": "IMMEDIATE: If loop detected, shut the affected port",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMMEDIATE: If loop detected, shut the affected port",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMMEDIATE: If loop detected, shut the affected port",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DIAGNOSE: Check optics: 'show interface transceiver' — compare TX/RX power on both ends. RX power near -30 dBm or 'N/A' indicates receive failure",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DIAGNOSE: Check optics: 'show interface transceiver' — compare TX/RX power on both ends. RX power near -30 dBm or 'N/A' indicates receive failure",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DIAGNOSE: Check optics: 'show interface transceiver' — compare TX/RX power on both ends. RX power near -30 dBm or 'N/A' indicates receive failure",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DIAGNOSE: Check interface counters: 'show interface' — one side will show zero input packets while output is normal",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DIAGNOSE: Check interface counters: 'show interface' — one side will show zero input packets while output is normal",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DIAGNOSE: Check interface counters: 'show interface' — one side will show zero input packets while output is normal",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Replace SFP or clean/replace fiber connectors",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Replace SFP or clean/replace fiber connectors",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Replace SFP or clean/replace fiber connectors",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable UDLD aggressive mode globally: 'udld aggressive' (IOS-XE) or 'feature udld' + 'udld aggressive' (NX-OS)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable UDLD aggressive mode globally: 'udld aggressive' (IOS-XE) or 'feature udld' + 'udld aggressive' (NX-OS)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable UDLD aggressive mode globally: 'udld aggressive' (IOS-XE) or 'feature udld' + 'udld aggressive' (NX-OS)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable Loop Guard on all non-designated (root/alternate) ports: 'spanning-tree loopguard default'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable Loop Guard on all non-designated (root/alternate) ports: 'spanning-tree loopguard default'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable Loop Guard on all non-designated (root/alternate) ports: 'spanning-tree loopguard default'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable errdisable recovery for udld: 'errdisable recovery cause udld'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable errdisable recovery for udld: 'errdisable recovery cause udld'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTIVE: Enable errdisable recovery for udld: 'errdisable recovery cause udld'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Bad SFP/transceiver — TX laser working but RX photodiode failed",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Dirty or damaged fiber connector — one strand degraded below receive threshold",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Faulty fiber patch panel with one strand disconnected",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "UDLD not enabled or not in aggressive mode — without UDLD aggressive, the switch cannot detect one-way links",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Loop Guard not enabled on non-designated ports",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Unidirectional link failure (silent loop)",
+      "symptoms": [
+        "Broadcast storm on specific VLANs despite STP appearing healthy",
+        "One switch shows the link as up, the other shows it as down or never receives BPDUs",
+        "STP port that should be blocking transitions to forwarding (no BPDUs received = max-age expiry = port unblocks)",
+        "Interface error counters: CRC errors, input errors, or zero input packets on one side",
+        "Loop Guard may trigger 'inconsistent' state if enabled — this is the detection working correctly"
+      ],
+      "verify_commands": [
+        {
+          "command": "show udld neighbors",
+          "confirms_if": "Shows UDLD neighbor detection status per interface",
+          "look_for": "Look for UDLD neighbor state — bidirectional means healthy, empty/unknown means one-way link detected",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show udld neighbors",
+          "confirms_if": "Shows UDLD neighbor detection status per interface",
+          "look_for": "Look for UDLD neighbor state — bidirectional means healthy, empty/unknown means one-way link detected",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show udld neighbors",
+          "confirms_if": "Shows UDLD neighbor detection status per interface",
+          "look_for": "Look for UDLD neighbor state — bidirectional means healthy, empty/unknown means one-way link detected",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface transceiver",
+          "confirms_if": "Low or absent RX power on one end confirms unidirectional link at optical layer",
+          "look_for": "Compare TX power (should be -1 to -8 dBm typical) and RX power (should be within vendor spec) on both ends",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface transceiver",
+          "confirms_if": "Low or absent RX power on one end confirms unidirectional link at optical layer",
+          "look_for": "Compare TX power (should be -1 to -8 dBm typical) and RX power (should be within vendor spec) on both ends",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface transceiver",
+          "confirms_if": "Low or absent RX power on one end confirms unidirectional link at optical layer",
+          "look_for": "Compare TX power (should be -1 to -8 dBm typical) and RX power (should be within vendor spec) on both ends",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree inconsistentports",
+          "confirms_if": "Confirms Loop Guard is actively preventing a potential unidirectional link loop",
+          "look_for": "Ports in loop-inconsistent state — Loop Guard detected missing BPDUs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree inconsistentports",
+          "confirms_if": "Confirms Loop Guard is actively preventing a potential unidirectional link loop",
+          "look_for": "Ports in loop-inconsistent state — Loop Guard detected missing BPDUs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree inconsistentports",
+          "confirms_if": "Confirms Loop Guard is actively preventing a potential unidirectional link loop",
+          "look_for": "Ports in loop-inconsistent state — Loop Guard detected missing BPDUs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show udld interface <intf>",
+          "confirms_if": "Shows detailed UDLD status including detection mode and neighbor info",
+          "look_for": "Check UDLD operational state: bidirectional, undetermined, or aggressive-err-disabled",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show udld interface <intf>",
+          "confirms_if": "Shows detailed UDLD status including detection mode and neighbor info",
+          "look_for": "Check UDLD operational state: bidirectional, undetermined, or aggressive-err-disabled",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show udld interface <intf>",
+          "confirms_if": "Shows detailed UDLD status including detection mode and neighbor info",
+          "look_for": "Check UDLD operational state: bidirectional, undetermined, or aggressive-err-disabled",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The STP root bridge for a VLAN is on one switch but the HSRP/VRRP active gateway for that VLAN is on a different switch. Traffic from hosts hits the FHRP active gateway, which must then forward across the inter-switch link to reach the STP root — wasting bandwidth and adding latency. This is a design issue that causes chronic suboptimal forwarding.",
+      "resolutions": [
+        {
+          "action": "ALIGN: For each VLAN, ensure STP root primary and HSRP active are on the same switch",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ALIGN: For each VLAN, ensure STP root primary and HSRP active are on the same switch",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ALIGN: For each VLAN, ensure STP root primary and HSRP active are on the same switch",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DISTRIBUTE: For load distribution, make Switch A root + HSRP active for odd VLANs, Switch B for even VLANs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DISTRIBUTE: For load distribution, make Switch A root + HSRP active for odd VLANs, Switch B for even VLANs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DISTRIBUTE: For load distribution, make Switch A root + HSRP active for odd VLANs, Switch B for even VLANs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "CONFIG: Set STP priority: 'spanning-tree vlan <X> priority 4096' on the intended root",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "CONFIG: Set STP priority: 'spanning-tree vlan <X> priority 4096' on the intended root",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "CONFIG: Set STP priority: 'spanning-tree vlan <X> priority 4096' on the intended root",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "CONFIG: Set HSRP priority: 'standby <group> priority 110' + 'standby <group> preempt' on the same switch",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "CONFIG: Set HSRP priority: 'standby <group> priority 110' + 'standby <group> preempt' on the same switch",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "CONFIG: Set HSRP priority: 'standby <group> priority 110' + 'standby <group> preempt' on the same switch",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "VERIFY: After changes, check alignment: 'show spanning-tree root' and 'show standby brief' should point to the same switch per VLAN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "VERIFY: After changes, check alignment: 'show spanning-tree root' and 'show standby brief' should point to the same switch per VLAN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "VERIFY: After changes, check alignment: 'show spanning-tree root' and 'show standby brief' should point to the same switch per VLAN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "STP priority and HSRP priority not aligned — different switches configured as primary for each",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "After a failover, HSRP preempted back but STP root did not (STP DR election is non-preemptive in some scenarios)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Default priorities used for both STP and HSRP — election by MAC/Router-ID gives different winners",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Multiple VLANs all using the same root/FHRP active — no per-VLAN load distribution",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "STP root bridge / FHRP gateway misalignment",
+      "symptoms": [
+        "Traffic between VLANs takes an unnecessarily long path",
+        "High utilization on inter-switch links (ISL/peer-link) that should be lightly loaded",
+        "Traceroute shows extra hop through the non-root switch",
+        "'show spanning-tree root' shows root on Switch A but 'show standby brief' shows HSRP active on Switch B for the same VLAN"
+      ],
+      "verify_commands": [
+        {
+          "command": "show spanning-tree root",
+          "confirms_if": "Shows current STP root for each VLAN",
+          "look_for": "Root bridge ID and root port per VLAN — identify which switch is root for each VLAN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree root",
+          "confirms_if": "Shows current STP root for each VLAN",
+          "look_for": "Root bridge ID and root port per VLAN — identify which switch is root for each VLAN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree root",
+          "confirms_if": "Shows current STP root for each VLAN",
+          "look_for": "Root bridge ID and root port per VLAN — identify which switch is root for each VLAN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby brief",
+          "confirms_if": "Shows which switch is HSRP active for each VLAN",
+          "look_for": "HSRP active router per group/VLAN — compare with STP root placement",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby brief",
+          "confirms_if": "Shows which switch is HSRP active for each VLAN",
+          "look_for": "HSRP active router per group/VLAN — compare with STP root placement",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby brief",
+          "confirms_if": "Shows which switch is HSRP active for each VLAN",
+          "look_for": "HSRP active router per group/VLAN — compare with STP root placement",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Network experiences 30-50 second forwarding outages during topology changes because legacy 802.1D STP is in use (listening 15s -> learning 15s -> forwarding), or because RSTP has fallen back to legacy timers due to detecting 802.1D BPDUs from an older switch. End devices connected to non-portfast ports also experience 30-second delays on link-up.",
+      "resolutions": [
+        {
+          "action": "Upgrade STP mode to rapid-pvst: 'spanning-tree mode rapid-pvst' on ALL switches in the L2 domain",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Upgrade STP mode to rapid-pvst: 'spanning-tree mode rapid-pvst' on ALL switches in the L2 domain",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Upgrade STP mode to rapid-pvst: 'spanning-tree mode rapid-pvst' on ALL switches in the L2 domain",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify legacy switches: 'show spanning-tree detail' — look for ports operating in STP-compatible mode",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify legacy switches: 'show spanning-tree detail' — look for ports operating in STP-compatible mode",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify legacy switches: 'show spanning-tree detail' — look for ports operating in STP-compatible mode",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure all access ports as edge: 'spanning-tree port type edge' (NX-OS) or 'spanning-tree portfast' (IOS-XE)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure all access ports as edge: 'spanning-tree port type edge' (NX-OS) or 'spanning-tree portfast' (IOS-XE)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure all access ports as edge: 'spanning-tree port type edge' (NX-OS) or 'spanning-tree portfast' (IOS-XE)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Replace or upgrade any switch that cannot run RSTP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Replace or upgrade any switch that cannot run RSTP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Replace or upgrade any switch that cannot run RSTP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "STP mode set to legacy PVST (802.1D) instead of Rapid-PVST (802.1w)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "One or more switches in the L2 domain running legacy 802.1D, causing RSTP to fall back to STP timers on those segments",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Access ports not configured as edge/portfast — end devices wait through full STP convergence on link-up",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Forward-delay timer set to high value",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Slow STP convergence (legacy 802.1D or mixed mode)",
+      "symptoms": [
+        "30-50 second connectivity loss during any topology change",
+        "VoIP phones, printers, PCs report 'network unreachable' for ~30s after cable plug-in",
+        "'show spanning-tree' shows port in 'LIS' (listening) or 'LRN' (learning) state for extended time",
+        "STP mode shows 'pvst' instead of 'rapid-pvst'"
+      ],
+      "verify_commands": [
+        {
+          "command": "show spanning-tree summary",
+          "confirms_if": "Confirms whether the switch is running RSTP or legacy STP",
+          "look_for": "Check 'Switch is in rapid-pvst mode' — if it shows 'pvst' instead of 'rapid-pvst', legacy STP is in use",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree summary",
+          "confirms_if": "Confirms whether the switch is running RSTP or legacy STP",
+          "look_for": "Check 'Switch is in rapid-pvst mode' — if it shows 'pvst' instead of 'rapid-pvst', legacy STP is in use",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree summary",
+          "confirms_if": "Confirms whether the switch is running RSTP or legacy STP",
+          "look_for": "Check 'Switch is in rapid-pvst mode' — if it shows 'pvst' instead of 'rapid-pvst', legacy STP is in use",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree detail",
+          "confirms_if": "Identifies which ports/segments have fallen back to legacy STP timers",
+          "look_for": "Look for 'RSTP' in port info sections — ports showing 'STP' or 'STP_COMPAT' are running in legacy mode",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree detail",
+          "confirms_if": "Identifies which ports/segments have fallen back to legacy STP timers",
+          "look_for": "Look for 'RSTP' in port info sections — ports showing 'STP' or 'STP_COMPAT' are running in legacy mode",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree detail",
+          "confirms_if": "Identifies which ports/segments have fallen back to legacy STP timers",
+          "look_for": "Look for 'RSTP' in port info sections — ports showing 'STP' or 'STP_COMPAT' are running in legacy mode",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Access ports configured as edge/portfast but without BPDU Guard create a latent loop risk. These ports bypass STP (immediate forwarding) by design. If someone plugs a switch, hub, or looped cable into an unprotected edge port, a broadcast storm occurs with no STP safety net. This is the most common latent error in L2 networks — it causes no symptoms until the day someone creates a loop, then the entire VLAN goes down.",
+      "resolutions": [
+        {
+          "action": "AUDIT: Check current BPDU Guard coverage — 'show spanning-tree summary' should show BPDU Guard enabled on all edge ports",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "AUDIT: Check current BPDU Guard coverage — 'show spanning-tree summary' should show BPDU Guard enabled on all edge ports",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "AUDIT: Check current BPDU Guard coverage — 'show spanning-tree summary' should show BPDU Guard enabled on all edge ports",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Enable global BPDU Guard default — 'spanning-tree port type edge bpduguard default' (NX-OS) or 'spanning-tree portfast bpduguard default' (IOS-XE)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Enable global BPDU Guard default — 'spanning-tree port type edge bpduguard default' (NX-OS) or 'spanning-tree portfast bpduguard default' (IOS-XE)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Enable global BPDU Guard default — 'spanning-tree port type edge bpduguard default' (NX-OS) or 'spanning-tree portfast bpduguard default' (IOS-XE)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Enable storm control on all access ports — 'storm-control broadcast level 10' as a secondary safety layer",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Enable storm control on all access ports — 'storm-control broadcast level 10' as a secondary safety layer",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Enable storm control on all access ports — 'storm-control broadcast level 10' as a secondary safety layer",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Configure errdisable recovery — 'errdisable recovery cause bpduguard' with 300-second interval so ports auto-recover after the offending device is removed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Configure errdisable recovery — 'errdisable recovery cause bpduguard' with 300-second interval so ports auto-recover after the offending device is removed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Configure errdisable recovery — 'errdisable recovery cause bpduguard' with 300-second interval so ports auto-recover after the offending device is removed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Classify ports explicitly — edge ports get 'spanning-tree port type edge', uplinks get 'spanning-tree port type network' (enables Bridge Assurance on NX-OS)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Classify ports explicitly — edge ports get 'spanning-tree port type edge', uplinks get 'spanning-tree port type network' (enables Bridge Assurance on NX-OS)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "FIX: Classify ports explicitly — edge ports get 'spanning-tree port type edge', uplinks get 'spanning-tree port type network' (enables Bridge Assurance on NX-OS)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DESIGN: Reduce L2 blast radius with routed access layer or L3 segmentation",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DESIGN: Reduce L2 blast radius with routed access layer or L3 segmentation",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "DESIGN: Reduce L2 blast radius with routed access layer or L3 segmentation",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Edge/portfast configured without corresponding BPDU Guard — common in networks that grew organically",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Global BPDU Guard not enabled — requires explicit 'spanning-tree port type edge bpduguard default' on NX-OS or 'spanning-tree portfast bpduguard default' on IOS-XE",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Storm control not configured as a secondary safety layer",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No physical access control to wiring closets — unauthorized cable changes go undetected",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Flat L2 domain with no segmentation — blast radius of any loop is the entire network",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Missing BPDU Guard on access ports (latent risk)",
+      "symptoms": [
+        "No symptoms until a loop is created — this is a dormant misconfiguration",
+        "When triggered: broadcast storm, 100% CPU, all VLANs down (see 'Broadcast storm / L2 loop' failure mode)",
+        "Audit indicator: 'show spanning-tree summary' shows edge ports with BPDU Guard disabled"
+      ],
+      "verify_commands": [
+        {
+          "command": "show spanning-tree summary",
+          "confirms_if": "Shows whether BPDU Guard is enabled globally and how many ports are classified as edge",
+          "look_for": "Check 'BPDU Guard' line — should show 'enabled' if global default is on. Check edge port count versus total port count",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree summary",
+          "confirms_if": "Shows whether BPDU Guard is enabled globally and how many ports are classified as edge",
+          "look_for": "Check 'BPDU Guard' line — should show 'enabled' if global default is on. Check edge port count versus total port count",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree summary",
+          "confirms_if": "Shows whether BPDU Guard is enabled globally and how many ports are classified as edge",
+          "look_for": "Check 'BPDU Guard' line — should show 'enabled' if global default is on. Check edge port count versus total port count",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree interface <intf> detail",
+          "confirms_if": "Confirms BPDU Guard is active on the specific interface",
+          "look_for": "Look for 'Bpdu guard is enabled' in the output for each access port",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree interface <intf> detail",
+          "confirms_if": "Confirms BPDU Guard is active on the specific interface",
+          "look_for": "Look for 'Bpdu guard is enabled' in the output for each access port",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree interface <intf> detail",
+          "confirms_if": "Confirms BPDU Guard is active on the specific interface",
+          "look_for": "Look for 'Bpdu guard is enabled' in the output for each access port",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show errdisable recovery",
+          "confirms_if": "Confirms errdisable auto-recovery is configured for BPDU Guard violations",
+          "look_for": "Look for 'bpduguard' in the enabled list and the recovery interval",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show errdisable recovery",
+          "confirms_if": "Confirms errdisable auto-recovery is configured for BPDU Guard violations",
+          "look_for": "Look for 'bpduguard' in the enabled list and the recovery interval",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show errdisable recovery",
+          "confirms_if": "Confirms errdisable auto-recovery is configured for BPDU Guard violations",
+          "look_for": "Look for 'bpduguard' in the enabled list and the recovery interval",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Bridge Protocol Data Unit — carries STP topology information",
+      "key_fields": [
+        "Root Bridge ID",
+        "Root Path Cost",
+        "Sender Bridge ID",
+        "Port ID",
+        "Message Age",
+        "Flags (TC, TCA, Proposal, Agreement, Port Role)"
+      ],
+      "name": "BPDU (Configuration)",
+      "when_sent": "Every hello-time by root bridge; relayed by designated ports"
+    },
+    {
+      "description": "Topology Change Notification (legacy STP; RSTP uses TC flag in BPDU)",
+      "key_fields": [
+        "Protocol Version (0x00 for STP TCN)"
+      ],
+      "name": "TCN BPDU",
+      "when_sent": "When a port transitions to forwarding (non-edge)"
+    }
+  ],
+  "operates_at": "Layer 2",
+  "protocol_family": "switching",
+  "protocol_id": "rstp",
+  "protocol_name": "RSTP",
+  "purpose": "Rapid Spanning Tree Protocol — provides loop-free Layer 2 topology with fast convergence",
+  "related_protocols": [
+    "mst",
+    "lacp",
+    "hsrp",
+    "vrrp",
+    "stp"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "ieee-ieee8021d20048021q2022",
+      "title": "IEEE 802.1D-2004 / 802.1Q-2022",
+      "type": "ieee_standard"
+    },
+    {
+      "id": "cisco:switching/rstp.json",
+      "title": "cisco knowledge base — switching/rstp.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "IEEE 802.1D-2004 / 802.1Q-2022",
+  "states": [
+    {
+      "description": "Not forwarding, learning, or transmitting user frames. Replaces the legacy BLOCKING and LISTENING states. Normal transient state during topology convergence, but a failure indicator when a port is stuck here unexpectedly.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "DISCARDING"
+    },
+    {
+      "description": "Learning MAC addresses from received frames but not yet forwarding user traffic. Transient state between DISCARDING and FORWARDING.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "LEARNING"
+    },
+    {
+      "description": "Fully operational — forwarding user traffic and learning MAC addresses. Steady-state for Root Ports, Designated Ports, and Edge Ports.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "FORWARDING"
+    },
+    {
+      "description": "Port is administratively disabled (shutdown). Does not participate in STP at all.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "DISABLED"
+    },
+    {
+      "description": "Port is unable to participate in STP due to an inconsistency (e.g., BPDU Guard, Root Guard, or Loop Guard violation). Requires manual intervention.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "BROKEN"
+    }
+  ],
+  "tags": [
+    "layer2",
+    "loop-prevention",
+    "stp",
+    "rapid-spanning-tree",
+    "convergence",
+    "broadcast-storm",
+    "bpdu-guard",
+    "udld",
+    "storm-control",
+    "switching"
+  ],
+  "timers": [
+    {
+      "default_rfc": "2s",
+      "description": "Interval between BPDU transmissions by root bridge",
+      "name": "hello-time",
+      "on_expiry": "Send BPDU on designated ports",
+      "range": "1-10s",
+      "tuning_advice": "Rarely changed; affects all switches in the STP domain"
+    },
+    {
+      "default_rfc": "15s",
+      "description": "Time spent in LEARNING before FORWARDING (legacy STP); RSTP uses proposal/agreement for rapid transition",
+      "name": "forward-delay",
+      "on_expiry": "Port transitions to next state",
+      "range": "4-30s",
+      "tuning_advice": "RSTP bypasses this timer on point-to-point links; mainly relevant for shared/edge ports"
+    },
+    {
+      "default_rfc": "20s",
+      "description": "Maximum age of BPDU information before it is discarded",
+      "name": "max-age",
+      "on_expiry": "Stored BPDU info expires; port re-evaluates its role",
+      "range": "6-40s",
+      "tuning_advice": "Lower values detect root failure faster but risk instability"
+    },
+    {
+      "default_rfc": "hello-time + 1s",
+      "description": "Topology Change timer — accelerated MAC aging after TC event",
+      "name": "tc-while",
+      "on_expiry": "Stop sending TC flag in BPDUs"
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "DISABLED",
+      "to_state": "DISCARDING",
+      "trigger": "Port enabled (no shutdown)"
+    },
+    {
+      "from_state": "DISCARDING",
+      "to_state": "LEARNING",
+      "trigger": "Selected as root or designated port; proposal/agreement mechanism or forward-delay timer expires"
+    },
+    {
+      "from_state": "LEARNING",
+      "to_state": "FORWARDING",
+      "trigger": "Forward-delay timer expires or rapid transition via proposal/agreement on point-to-point link"
+    },
+    {
+      "failure_if_stuck": "Possible TCN storm or unstable root bridge",
+      "from_state": "FORWARDING",
+      "to_state": "DISCARDING",
+      "trigger": "Topology change — port loses its role (e.g., better BPDU received)"
+    },
+    {
+      "from_state": "FORWARDING",
+      "to_state": "DISABLED",
+      "trigger": "Port administratively shut down"
+    },
+    {
+      "from_state": "DISCARDING",
+      "to_state": "DISABLED",
+      "trigger": "Port administratively shut down"
+    },
+    {
+      "from_state": "LEARNING",
+      "to_state": "DISCARDING",
+      "trigger": "Port role changed to alternate/backup after receiving superior BPDU"
+    },
+    {
+      "from_state": "BROKEN",
+      "to_state": "DISCARDING",
+      "trigger": "Inconsistency resolved (e.g., BPDU guard re-enabled correctly)"
+    }
+  ],
+  "transport": "Ethernet multicast 01:80:C2:00:00:00, LLC DSAP/SSAP 0x42",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "spanning-tree portfast bpduguard default\nerrdisable recovery cause bpduguard\nerrdisable recovery interval 300",
+        "storm-control broadcast level 10.00\nstorm-control action shutdown",
+        "udld aggressive\nerrdisable recovery cause udld\nerrdisable recovery interval 300"
+      ],
+      "notes": [
+        {
+          "note": "Default STP mode is rapid-pvst since IOS-XE 16.x on Catalyst 9000. Older platforms may default to pvst.",
+          "versions": "16.12+"
+        },
+        {
+          "note": "CRITICAL: Enable BPDU Guard globally on IOS-XE with 'spanning-tree portfast bpduguard default'. All portfast-enabled ports will err-disable if a BPDU is received. Configure 'errdisable recovery cause bpduguard' with appropriate interval. IOS-XE uses 'spanning-tree portfast' terminology (not 'port type edge').",
+          "versions": "16.12+"
+        },
+        {
+          "note": "Storm control on IOS-XE: 'storm-control broadcast level 10.00' per interface. Supports 'storm-control action shutdown' to err-disable the port (recommended) or 'storm-control action trap' for syslog-only. 'show storm-control broadcast' shows per-interface status and filter state.",
+          "versions": "16.12+"
+        },
+        {
+          "note": "UDLD on IOS-XE: 'udld enable' for normal mode, 'udld aggressive' for aggressive mode (recommended). Normal mode only alerts; aggressive mode err-disables the port. Enable globally or per-interface. Pair with 'errdisable recovery cause udld' for auto-recovery.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "IOS-XR does not run STP — it is a router OS. STP is handled by connected L2 switches.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "spanning-tree port type edge bpduguard default\nerrdisable recovery cause bpduguard\nerrdisable recovery interval 300",
+        "storm-control broadcast level 10.00\nstorm-control multicast level 10.00\nstorm-control action shutdown",
+        "mac address-table notification mac-move",
+        "feature udld\nudld aggressive",
+        "spanning-tree loopguard default"
+      ],
+      "notes": [
+        {
+          "note": "Default STP mode is rapid-pvst. Configure with 'spanning-tree mode rapid-pvst'. Bridge Assurance enabled by default on network-to-network ports.",
+          "versions": "all"
+        },
+        {
+          "note": "NX-OS supports STP extensions: BPDU Guard, BPDU Filter, Root Guard, Loop Guard, Bridge Assurance. 'spanning-tree port type' (network/edge/normal) replaces portfast terminology.",
+          "versions": "all"
+        },
+        {
+          "note": "CRITICAL: Every access port should have 'spanning-tree port type edge' AND BPDU Guard enabled. Use 'spanning-tree port type edge bpduguard default' for global default. Uplinks should be 'spanning-tree port type network' which enables Bridge Assurance (detects unidirectional links). Without BPDU Guard, edge ports bypass STP and create a latent loop risk.",
+          "versions": "all"
+        },
+        {
+          "note": "Storm control on NX-OS: 'storm-control broadcast level 10.00' sets broadcast threshold to 10% of interface bandwidth. Also supports 'storm-control multicast level' and 'storm-control unicast level'. When triggered, storm control drops excess traffic and generates a syslog message. Use 'show storm-control' to verify per-interface status.",
+          "versions": "all"
+        },
+        {
+          "note": "TRAP: MAC move notifications on NX-OS require explicit enable: 'mac address-table notification mac-move'. Without this, L2 loops may not generate syslog alerts. 'show mac address-table notifications mac-move' shows recently moved MACs and the ports involved — this is the fastest way to identify loop endpoints during a broadcast storm.",
+          "versions": "all"
+        },
+        {
+          "note": "UDLD on NX-OS requires 'feature udld'. Enable aggressive mode globally with 'udld aggressive'. UDLD detects unidirectional fiber links that STP alone cannot. Without UDLD aggressive, a one-way fiber failure causes a silent loop. Bridge Assurance (enabled by default on 'network' ports) provides similar protection for switch-to-switch links.",
+          "versions": "all"
+        },
+        {
+          "note": "Loop Guard on NX-OS: 'spanning-tree loopguard default' enables globally. Loop Guard puts a port into loop-inconsistent state if it stops receiving BPDUs on a root or alternate port. This catches unidirectional link failures that RSTP alone misses. Do NOT enable on edge/portfast ports — it conflicts with BPDU Guard.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

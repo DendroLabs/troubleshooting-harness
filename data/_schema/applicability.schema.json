@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "applicability.schema.json",
+  "title": "Applicability Scope",
+  "description": "Defines which OS, version range, platform, and ASIC family a data point applies to. Appears on every operational data point in the TSH datastore.",
+
+  "$defs": {
+    "version_range": {
+      "type": "object",
+      "properties": {
+        "min": {
+          "type": "string",
+          "description": "Minimum version (inclusive). Use '*' for all versions."
+        },
+        "max": {
+          "type": "string",
+          "description": "Maximum version (inclusive). Use '*' for no upper bound."
+        }
+      },
+      "required": ["min", "max"],
+      "additionalProperties": false
+    },
+
+    "applicability": {
+      "type": "object",
+      "properties": {
+        "os": {
+          "type": "string",
+          "description": "Operating system identifier. Use '*' for truly universal commands."
+        },
+        "version_range": {
+          "$ref": "#/$defs/version_range"
+        },
+        "versions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Specific non-contiguous versions. Use instead of version_range for caveats that affect scattered versions."
+        },
+        "platforms": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 1
+            },
+            { "type": "null" }
+          ],
+          "description": "Platform families this applies to. null = all platforms for this OS."
+        },
+        "asic_family": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "null" }
+          ],
+          "description": "ASIC family name. null = platform-agnostic."
+        }
+      },
+      "required": ["os"],
+      "oneOf": [
+        { "required": ["version_range"] },
+        { "required": ["versions"] }
+      ],
+      "additionalProperties": false
+    }
+  }
+}

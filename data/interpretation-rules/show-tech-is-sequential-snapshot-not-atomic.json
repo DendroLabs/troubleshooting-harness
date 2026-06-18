@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "show-tech-is-sequential-snapshot-not-atomic",
+  "display_name": "show tech-support is collected section-by-section over time — its counters are not a single atomic snapshot",
+  "category": "timing-context",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Correlating counters or state across different sections of a single show tech-support capture",
+  "observation": "Two sections of the same show tech disagree, or a counter in one section seems inconsistent with another section",
+  "naive_interpretation": "The device state is inconsistent or corrupt because two parts of the same capture do not line up",
+  "correct_interpretation": "show tech-support runs many individual show commands in sequence; a large capture can take seconds to minutes to complete. Each section is a snapshot from the moment that command ran, not a single point in time. Counters that incremented between sections, or a neighbor that changed state partway through collection, will make sections look inconsistent. This is expected — the capture is a time-spread collection, not an atomic dump. Note the timestamps and prefer live, simultaneous commands when correlating fast-moving counters.",
+  "why": [
+    "show tech-support is a scripted concatenation of independent show commands executed back-to-back, not a frozen state snapshot",
+    "On a busy or large device the run spans a meaningful interval, during which counters and states keep changing",
+    "Each section reflects the instant its underlying command executed, so cross-section comparisons of live counters can legitimately differ",
+    "Apparent inconsistency is a timing artifact of sequential collection, not data corruption"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show clock",
+      "purpose": "Anchor capture timing; compare against per-section timestamps to gauge how spread out the collection was"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface Ethernet1/1 counters",
+      "purpose": "Re-read a specific counter live to confirm whether a cross-section discrepancy is just elapsed time"
+    }
+  ],
+  "traps": [
+    "Treating two sections of one show tech as simultaneous and concluding the device state is inconsistent",
+    "Correlating fast-moving counters across sections instead of re-reading them live together",
+    "Ignoring per-section timestamps that reveal how much time elapsed during collection",
+    "Drawing root-cause conclusions from a stale section captured minutes before the section it is compared against"
+  ],
+  "related_rules": [
+    "system-uptime-as-counter-context",
+    "interface-counter-rate-vs-absolute",
+    "single-log-message-not-causation"
+  ],
+  "related_protocols": ["system-management"],
+  "keywords": ["show tech-support", "show tech", "snapshot", "atomic", "timestamp", "counters", "collection", "sequential", "consistency"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

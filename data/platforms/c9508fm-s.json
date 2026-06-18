@@ -1,0 +1,46 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:memory-machine",
+      "asic_id": 0,
+      "asic_model": "TH (fabric)",
+      "hbm_gb": 0.0,
+      "memory_tables": [],
+      "slices": [],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 0.0
+    },
+    {
+      "asic_family": "asic:memory-machine",
+      "asic_id": 1,
+      "asic_model": "TH (fabric)",
+      "hbm_gb": 0.0,
+      "memory_tables": [],
+      "slices": [],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 0.0
+    }
+  ],
+  "chassis_type": "modular",
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9500",
+  "platform_id": "c9508fm-s",
+  "platform_name": "Nexus 9508 FM-S (Sugarloaf)",
+  "platform_pid": "N9K-C9508FM-S",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-c9508fm-s",
+      "title": "Tech Zone: Nexus 9k ASIC Mappings, Sugarloaf FM diagram",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-9500/c9508fm-s.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-9500/c9508fm-s.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 0.0,
+  "total_ports": 0
+}

@@ -1,0 +1,794 @@
+{
+  "confidence": "medium",
+  "os": "iosxe",
+  "platform_family": "catalyst-9300",
+  "platform_id": "catalyst-9300",
+  "platform_name": "Catalyst 9300 Series",
+  "scalability": {
+    "iosxe-16.12": {
+      "os": "iosxe",
+      "sections": [
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "VLANs",
+                  "value": "4,094"
+                },
+                {
+                  "notes": "",
+                  "resource": "Unicast MAC Addresses",
+                  "value": "32,768"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overflow Unicast MAC",
+                  "value": "1,024"
+                },
+                {
+                  "notes": "",
+                  "resource": "L2 Multicast Entries",
+                  "value": "8,192"
+                },
+                {
+                  "notes": "",
+                  "resource": "L3 Multicast Entries",
+                  "value": "8,192"
+                },
+                {
+                  "notes": "",
+                  "resource": "Directly Connected Routes",
+                  "value": "24,576"
+                },
+                {
+                  "notes": "",
+                  "resource": "Indirect Routes",
+                  "value": "8,192"
+                },
+                {
+                  "notes": "",
+                  "resource": "Security ACEs",
+                  "value": "5,120"
+                },
+                {
+                  "notes": "",
+                  "resource": "QoS ACEs",
+                  "value": "5,120"
+                },
+                {
+                  "notes": "",
+                  "resource": "PBR ACEs",
+                  "value": "1,024"
+                },
+                {
+                  "notes": "",
+                  "resource": "Netflow Input ACEs",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "MPLS Labels",
+                  "value": "2,048"
+                },
+                {
+                  "notes": "",
+                  "resource": "MPLS L3 VPN Routes (VRF Mode)",
+                  "value": "7,168"
+                }
+              ],
+              "profile_name": "Access Template — Standard Models (16.12)"
+            }
+          ],
+          "section_name": "SDM Access Template (16.12)"
+        }
+      ],
+      "source_url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/16-12/configuration_guide/sys_mgmt/b_1612_sys_mgmt_9300_cg/configuring_sdm_templates.html",
+      "version": "16.12"
+    },
+    "iosxe-17.15": {
+      "os": "iosxe",
+      "sections": [
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "VXLAN Leaf Nodes (per fabric)",
+                  "value": "500"
+                },
+                {
+                  "notes": "",
+                  "resource": "VRF Instances",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "Layer 2 VNIs",
+                  "value": "1,024"
+                },
+                {
+                  "notes": "",
+                  "resource": "Layer 3 VNIs",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "Local MAC Entries",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Remote MAC Entries (EVPN)",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overlay IPv4 Routes (LPM)",
+                  "value": "8,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overlay IPv4 Host Routes",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overlay IPv6 Routes (LPM)",
+                  "value": "4,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "BGP IPv4/IPv6/L2VPN EVPN Peers",
+                  "value": "250"
+                }
+              ],
+              "profile_name": "C9300-L"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "VXLAN Leaf Nodes (per fabric)",
+                  "value": "500"
+                },
+                {
+                  "notes": "",
+                  "resource": "VRF Instances",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "Layer 2 VNIs",
+                  "value": "1,024"
+                },
+                {
+                  "notes": "",
+                  "resource": "Layer 3 VNIs",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "Local MAC Entries",
+                  "value": "64,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Remote MAC Entries (EVPN)",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overlay IPv4 Routes (LPM)",
+                  "value": "8,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overlay IPv4 Host Routes",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overlay IPv6 Routes (LPM)",
+                  "value": "4,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "BGP IPv4/IPv6/L2VPN EVPN Peers",
+                  "value": "250"
+                }
+              ],
+              "profile_name": "C9300 Standard"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "VXLAN Leaf Nodes (per fabric)",
+                  "value": "500"
+                },
+                {
+                  "notes": "",
+                  "resource": "VRF Instances",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "Layer 2 VNIs",
+                  "value": "750"
+                },
+                {
+                  "notes": "",
+                  "resource": "Layer 3 VNIs",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "Local MAC Entries",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Remote MAC Entries (EVPN)",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overlay IPv4 Routes (LPM)",
+                  "value": "64,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overlay IPv4 Host Routes",
+                  "value": "48,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overlay IPv6 Routes (LPM)",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "BGP IPv4/IPv6/L2VPN EVPN Peers",
+                  "value": "250"
+                }
+              ],
+              "profile_name": "C9300-UB/UBX"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "VXLAN Leaf Nodes (per fabric)",
+                  "value": "500"
+                },
+                {
+                  "notes": "",
+                  "resource": "VRF Instances",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "Layer 2 VNIs",
+                  "value": "750"
+                },
+                {
+                  "notes": "",
+                  "resource": "Layer 3 VNIs",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "Local MAC Entries",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Remote MAC Entries (EVPN)",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overlay IPv4 Routes (LPM)",
+                  "value": "15,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overlay IPv4 Host Routes",
+                  "value": "39,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overlay IPv6 Routes (LPM)",
+                  "value": "7,500"
+                },
+                {
+                  "notes": "",
+                  "resource": "BGP IPv4/IPv6/L2VPN EVPN Peers",
+                  "value": "250"
+                }
+              ],
+              "profile_name": "C9300-X"
+            }
+          ],
+          "section_name": "BGP EVPN VXLAN Overlay Scale"
+        }
+      ],
+      "source_url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-15/configuration_guide/vxlan/b_1715_bgp_evpn_vxlan_9300_cg/scale_and_performance_capabilities_for_bgp_evpn_vxlan.html",
+      "version": "17.15"
+    },
+    "iosxe-17.9": {
+      "os": "iosxe",
+      "sections": [
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "VLANs",
+                  "value": "4,094"
+                },
+                {
+                  "notes": "",
+                  "resource": "Unicast MAC Addresses",
+                  "value": "32,768"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overflow Unicast MAC",
+                  "value": "1,024"
+                },
+                {
+                  "notes": "",
+                  "resource": "L2 Multicast Entries",
+                  "value": "8,192"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overflow L2 Multicast",
+                  "value": "512"
+                },
+                {
+                  "notes": "",
+                  "resource": "L3 Multicast Entries",
+                  "value": "8,192"
+                },
+                {
+                  "notes": "",
+                  "resource": "Overflow L3 Multicast",
+                  "value": "512"
+                },
+                {
+                  "notes": "",
+                  "resource": "Directly Connected Routes",
+                  "value": "24,576"
+                },
+                {
+                  "notes": "",
+                  "resource": "Indirect Routes",
+                  "value": "8,192"
+                },
+                {
+                  "notes": "",
+                  "resource": "Security ACEs",
+                  "value": "5,120"
+                },
+                {
+                  "notes": "",
+                  "resource": "QoS ACEs",
+                  "value": "5,120"
+                },
+                {
+                  "notes": "",
+                  "resource": "PBR ACEs",
+                  "value": "1,024"
+                },
+                {
+                  "notes": "",
+                  "resource": "Netflow Input ACEs",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "Netflow Output ACEs",
+                  "value": "768"
+                },
+                {
+                  "notes": "",
+                  "resource": "Tunnels",
+                  "value": "512"
+                },
+                {
+                  "notes": "",
+                  "resource": "MPLS Labels",
+                  "value": "2,048"
+                },
+                {
+                  "notes": "",
+                  "resource": "MPLS L3 VPN VRF",
+                  "value": "255"
+                },
+                {
+                  "notes": "",
+                  "resource": "MPLS L3 VPN Routes (VRF Mode)",
+                  "value": "7,168"
+                },
+                {
+                  "notes": "",
+                  "resource": "MPLS L3 VPN Routes (Prefix Mode)",
+                  "value": "3,072"
+                }
+              ],
+              "profile_name": "Access Template — Standard Models (17.9)"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "Unicast MAC Addresses",
+                  "value": "49,152"
+                },
+                {
+                  "notes": "",
+                  "resource": "Directly Connected Routes",
+                  "value": "49,152"
+                },
+                {
+                  "notes": "",
+                  "resource": "Indirect Routes",
+                  "value": "65,536"
+                },
+                {
+                  "notes": "",
+                  "resource": "L3 Multicast Entries",
+                  "value": "32,768"
+                },
+                {
+                  "notes": "",
+                  "resource": "Security ACEs",
+                  "value": "18,432"
+                },
+                {
+                  "notes": "",
+                  "resource": "QoS ACEs",
+                  "value": "6,144"
+                },
+                {
+                  "notes": "",
+                  "resource": "PBR ACEs",
+                  "value": "14,336"
+                }
+              ],
+              "profile_name": "Access Template — C9300-UB/UXB Higher-Scale (17.9)"
+            }
+          ],
+          "section_name": "SDM Access Template (17.9)"
+        }
+      ],
+      "source_url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/configuring_sdm_templates.html",
+      "version": "17.9"
+    },
+    "iosxe-datasheet": {
+      "os": "iosxe",
+      "sections": [
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "MAC Addresses",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "24K+8K",
+                  "resource": "IPv4 Unicast Routes",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "IPv6 Unicast Routes",
+                  "value": "16,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Multicast Routes",
+                  "value": "8,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Security ACL Entries",
+                  "value": "5,120"
+                },
+                {
+                  "notes": "",
+                  "resource": "QoS Entries",
+                  "value": "5,120"
+                },
+                {
+                  "notes": "",
+                  "resource": "VLAN IDs",
+                  "value": "4,094"
+                },
+                {
+                  "notes": "",
+                  "resource": "PVST Instances",
+                  "value": "300"
+                },
+                {
+                  "notes": "",
+                  "resource": "STP Virtual Ports",
+                  "value": "13,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "SVIs",
+                  "value": "1,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Jumbo Frame",
+                  "value": "9,198 bytes"
+                },
+                {
+                  "notes": "",
+                  "resource": "Max Routed Ports/Stack",
+                  "value": "448"
+                }
+              ],
+              "profile_name": "C9300 Standard"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "MAC Addresses",
+                  "value": "64,000"
+                },
+                {
+                  "notes": "48K+64K",
+                  "resource": "IPv4 Unicast Routes",
+                  "value": "112,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "IPv6 Unicast Routes",
+                  "value": "56,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Multicast Routes",
+                  "value": "16,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Security ACL Entries",
+                  "value": "18,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "QoS Entries",
+                  "value": "18,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "VLAN IDs",
+                  "value": "4,094"
+                },
+                {
+                  "notes": "",
+                  "resource": "PVST Instances",
+                  "value": "300"
+                },
+                {
+                  "notes": "",
+                  "resource": "STP Virtual Ports",
+                  "value": "13,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "SVIs",
+                  "value": "1,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Jumbo Frame",
+                  "value": "9,198 bytes"
+                },
+                {
+                  "notes": "",
+                  "resource": "Max Routed Ports/Stack",
+                  "value": "448"
+                }
+              ],
+              "profile_name": "C9300 UB/UXB (Higher-Scale)"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "MAC Addresses",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "24K+15K",
+                  "resource": "IPv4 Unicast Routes",
+                  "value": "39,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "IPv6 Unicast Routes",
+                  "value": "19,500"
+                },
+                {
+                  "notes": "",
+                  "resource": "Multicast Routes",
+                  "value": "8,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Security ACL Entries",
+                  "value": "8,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "QoS Entries",
+                  "value": "4,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "VLAN IDs",
+                  "value": "4,094"
+                },
+                {
+                  "notes": "",
+                  "resource": "PVST Instances",
+                  "value": "300"
+                },
+                {
+                  "notes": "",
+                  "resource": "STP Virtual Ports",
+                  "value": "13,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "SVIs",
+                  "value": "1,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Jumbo Frame",
+                  "value": "9,198 bytes"
+                },
+                {
+                  "notes": "",
+                  "resource": "Max Routed Ports/Stack",
+                  "value": "448"
+                }
+              ],
+              "profile_name": "C9300X Modular"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "MAC Addresses",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "24K+8K",
+                  "resource": "IPv4 Unicast Routes",
+                  "value": "32,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "IPv6 Unicast Routes",
+                  "value": "16,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Multicast Routes",
+                  "value": "8,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Security ACL Entries",
+                  "value": "5,120"
+                },
+                {
+                  "notes": "",
+                  "resource": "QoS Entries",
+                  "value": "5,120"
+                },
+                {
+                  "notes": "",
+                  "resource": "VLAN IDs",
+                  "value": "4,094"
+                },
+                {
+                  "notes": "",
+                  "resource": "PVST Instances",
+                  "value": "300"
+                },
+                {
+                  "notes": "",
+                  "resource": "STP Virtual Ports",
+                  "value": "13,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "SVIs",
+                  "value": "1,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "Jumbo Frame",
+                  "value": "9,198 bytes"
+                },
+                {
+                  "notes": "",
+                  "resource": "Max Routed Ports/Stack",
+                  "value": "416"
+                }
+              ],
+              "profile_name": "C9300L/LM Fixed"
+            }
+          ],
+          "section_name": "Platform Maximums (Datasheet Table 8)"
+        }
+      ],
+      "source_url": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9300-series-switches/nb-06-cat9300-ser-data-sheet-cte-en.html",
+      "version": "datasheet"
+    }
+  },
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco:verified-scalability/iosxe/catalyst-9300-16.12.json",
+      "title": "cisco knowledge base — verified-scalability/iosxe/catalyst-9300-16.12.json",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco-scale-iosxe-16.12",
+      "title": "Cisco Verified Scalability Guide — Catalyst 9300 Series 16.12",
+      "type": "vendor_doc",
+      "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/16-12/configuration_guide/sys_mgmt/b_1612_sys_mgmt_9300_cg/configuring_sdm_templates.html"
+    },
+    {
+      "id": "cisco:verified-scalability/iosxe/catalyst-9300-17.15.json",
+      "title": "cisco knowledge base — verified-scalability/iosxe/catalyst-9300-17.15.json",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco-scale-iosxe-17.15",
+      "title": "Cisco Verified Scalability Guide — Catalyst 9300 Series 17.15",
+      "type": "vendor_doc",
+      "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-15/configuration_guide/vxlan/b_1715_bgp_evpn_vxlan_9300_cg/scale_and_performance_capabilities_for_bgp_evpn_vxlan.html"
+    },
+    {
+      "id": "cisco:verified-scalability/iosxe/catalyst-9300-17.9.json",
+      "title": "cisco knowledge base — verified-scalability/iosxe/catalyst-9300-17.9.json",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco-scale-iosxe-17.9",
+      "title": "Cisco Verified Scalability Guide — Catalyst 9300 Series 17.9",
+      "type": "vendor_doc",
+      "url": "https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/configuring_sdm_templates.html"
+    },
+    {
+      "id": "cisco:verified-scalability/iosxe/catalyst-9300-datasheet.json",
+      "title": "cisco knowledge base — verified-scalability/iosxe/catalyst-9300-datasheet.json",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco-scale-iosxe-datasheet",
+      "title": "Cisco Verified Scalability Guide — Catalyst 9300 Series datasheet",
+      "type": "vendor_doc",
+      "url": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9300-series-switches/nb-06-cat9300-ser-data-sheet-cte-en.html"
+    }
+  ]
+}

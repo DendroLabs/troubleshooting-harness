@@ -1,0 +1,1268 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "Requires Layer 2 Ethernet path between MEPs for CCM and OAM frame delivery",
+      "name": "Ethernet physical connectivity",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Both MEPs must share the same Maintenance Association Identifier and Maintenance Domain level",
+      "name": "Matching MAID and MD level",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Service VLAN and forwarding path must be correct for CCMs to flow between MEPs",
+      "name": "Service VLAN/forwarding path",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "MEP reports a defect due to missing CCMs from its expected peer, indicating a connectivity fault in the monitored service path",
+      "resolutions": [
+        {
+          "action": "Check physical connectivity end-to-end",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check physical connectivity end-to-end",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check physical connectivity end-to-end",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MAID and MD level match on both MEPs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MAID and MD level match on both MEPs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MAID and MD level match on both MEPs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN/service mapping end-to-end",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN/service mapping end-to-end",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN/service mapping end-to-end",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CCM interval matches on both sides",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CCM interval matches on both sides",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CCM interval matches on both sides",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Look at last valid CCM timestamp to determine when loss started",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Look at last valid CCM timestamp to determine when loss started",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Look at last valid CCM timestamp to determine when loss started",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Physical link failure between MEPs",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Intermediate switch or MIP failure",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VLAN mismatch in service path (CCMs not forwarded)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MEP misconfiguration (wrong MAID or MD level)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "CCM interval mismatch between MEPs",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "CCM loss — connectivity fault detected",
+      "symptoms": [
+        "MEP reports defect, CCM timeout",
+        "Associated service may trigger protection switch",
+        "show ethernet cfm errors shows CCM defect"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ethernet cfm peer meps",
+          "confirms_if": "Shows whether peer MEP is seen and what defects are active",
+          "look_for": "Look for peer MEP entry, check CCM defects (xcon, error, timeout), last CCM timestamp",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm peer meps",
+          "confirms_if": "Shows whether peer MEP is seen and what defects are active",
+          "look_for": "Look for peer MEP entry, check CCM defects (xcon, error, timeout), last CCM timestamp",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm peer meps",
+          "confirms_if": "Shows whether peer MEP is seen and what defects are active",
+          "look_for": "Look for peer MEP entry, check CCM defects (xcon, error, timeout), last CCM timestamp",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm errors",
+          "confirms_if": "Shows all active CFM errors and their type",
+          "look_for": "Look for active defects: some-rdi-defect, some-mac-status-defect, some-remote-ccm-defect",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm errors",
+          "confirms_if": "Shows all active CFM errors and their type",
+          "look_for": "Look for active defects: some-rdi-defect, some-mac-status-defect, some-remote-ccm-defect",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm errors",
+          "confirms_if": "Shows all active CFM errors and their type",
+          "look_for": "Look for active defects: some-rdi-defect, some-mac-status-defect, some-remote-ccm-defect",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm maintenance-points local",
+          "confirms_if": "Confirms local MEP is correctly configured",
+          "look_for": "Look for local MEP configuration: MAID, level, interface, CCM interval",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm maintenance-points local",
+          "confirms_if": "Confirms local MEP is correctly configured",
+          "look_for": "Look for local MEP configuration: MAID, level, interface, CCM interval",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm maintenance-points local",
+          "confirms_if": "Confirms local MEP is correctly configured",
+          "look_for": "Look for local MEP configuration: MAID, level, interface, CCM interval",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "MEP receives a CCM from an unexpected MA or with a mismatched service identifier, indicating a cross-connect in the transport network",
+      "resolutions": [
+        {
+          "action": "Verify MAID matches exactly on both MEPs (case-sensitive, format-sensitive)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MAID matches exactly on both MEPs (case-sensitive, format-sensitive)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MAID matches exactly on both MEPs (case-sensitive, format-sensitive)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VLAN/service path mapping at every intermediate node",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VLAN/service path mapping at every intermediate node",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VLAN/service path mapping at every intermediate node",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MD levels don't overlap between domains",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MD levels don't overlap between domains",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MD levels don't overlap between domains",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "MAID misconfiguration (different MA name on each end)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VLAN cross-connected in transport network",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Maintenance domain level conflict causing CFM frames to reach wrong domain",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Cross-connect CCM — wrong service path",
+      "symptoms": [
+        "Cross-connect defect reported in CFM errors",
+        "Service ID or MAID mismatch detected",
+        "Peer MEP database shows unexpected entries"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ethernet cfm peer meps",
+          "confirms_if": "Shows if CCMs from wrong MA are being received",
+          "look_for": "Look for unexpected peer MEP entries with wrong MAID or cross-connect flag",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm peer meps",
+          "confirms_if": "Shows if CCMs from wrong MA are being received",
+          "look_for": "Look for unexpected peer MEP entries with wrong MAID or cross-connect flag",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm peer meps",
+          "confirms_if": "Shows if CCMs from wrong MA are being received",
+          "look_for": "Look for unexpected peer MEP entries with wrong MAID or cross-connect flag",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm errors",
+          "confirms_if": "Confirms cross-connect CCM is the active defect",
+          "look_for": "Look for cross-connect defect",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm errors",
+          "confirms_if": "Confirms cross-connect CCM is the active defect",
+          "look_for": "Look for cross-connect defect",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm errors",
+          "confirms_if": "Confirms cross-connect CCM is the active defect",
+          "look_for": "Look for cross-connect defect",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "MD levels are not properly nested, causing CFM frames to be dropped or processed at the wrong level",
+      "resolutions": [
+        {
+          "action": "Verify MD level hierarchy (customer=highest, operator=lowest is typical)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MD level hierarchy (customer=highest, operator=lowest is typical)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MD level hierarchy (customer=highest, operator=lowest is typical)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure MEPs at correct levels — MEPs block CFM frames at their level and below",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure MEPs at correct levels — MEPs block CFM frames at their level and below",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure MEPs at correct levels — MEPs block CFM frames at their level and below",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MIP configuration at intermediate nodes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MIP configuration at intermediate nodes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MIP configuration at intermediate nodes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "MD levels not properly nested (customer/provider/operator)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MEP configured at wrong level",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MIP not properly filtering between levels",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "MEP level conflict — overlapping maintenance domains",
+      "symptoms": [
+        "Unexpected CCMs at wrong MD level",
+        "CFM frames being dropped by higher-level MEP",
+        "Linktrace/loopback not reaching expected destination"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ethernet cfm maintenance-points local",
+          "confirms_if": "Confirms MD level hierarchy is correct",
+          "look_for": "Look for MD level assignment on each MEP/MIP and interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm maintenance-points local",
+          "confirms_if": "Confirms MD level hierarchy is correct",
+          "look_for": "Look for MD level assignment on each MEP/MIP and interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm maintenance-points local",
+          "confirms_if": "Confirms MD level hierarchy is correct",
+          "look_for": "Look for MD level assignment on each MEP/MIP and interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm domain",
+          "confirms_if": "Shows complete MD level configuration for hierarchy validation",
+          "look_for": "Look for all configured domains and their levels",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm domain",
+          "confirms_if": "Shows complete MD level configuration for hierarchy validation",
+          "look_for": "Look for all configured domains and their levels",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm domain",
+          "confirms_if": "Shows complete MD level configuration for hierarchy validation",
+          "look_for": "Look for all configured domains and their levels",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Reported delay or loss values do not match expected baseline, or show high jitter that does not correlate with actual network conditions",
+      "resolutions": [
+        {
+          "action": "Enable hardware timestamping where available",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable hardware timestamping where available",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable hardware timestamping where available",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure OAM frames get proper QoS treatment (match on EtherType 0x8902)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure OAM frames get proper QoS treatment (match on EtherType 0x8902)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure OAM frames get proper QoS treatment (match on EtherType 0x8902)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use two-way measurement (DMM) to avoid clock sync issues for delay",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use two-way measurement (DMM) to avoid clock sync issues for delay",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use two-way measurement (DMM) to avoid clock sync issues for delay",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use SLM instead of LMM for loss if data-plane counters are unreliable",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use SLM instead of LMM for loss if data-plane counters are unreliable",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use SLM instead of LMM for loss if data-plane counters are unreliable",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify measurement interval is appropriate for the SLA being monitored",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify measurement interval is appropriate for the SLA being monitored",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify measurement interval is appropriate for the SLA being monitored",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Software timestamping instead of hardware (adds variable processing delay)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "QoS deprioritizing OAM frames (queuing delay added to measurement)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Asymmetric path for one-way measurement",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NTP/PTP clock not synchronized for one-way delay (DMM one-way requires precise clock sync)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Y.1731 delay/loss measurement inaccurate",
+      "symptoms": [
+        "Reported delay/loss values don't match expected baseline",
+        "High jitter in delay measurements",
+        "One-way delay shows negative or implausible values"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ethernet cfm delay",
+          "confirms_if": "Shows actual measured delay values for comparison with expected baseline",
+          "look_for": "Look for frame delay, frame delay variation (jitter), and measurement count",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm delay",
+          "confirms_if": "Shows actual measured delay values for comparison with expected baseline",
+          "look_for": "Look for frame delay, frame delay variation (jitter), and measurement count",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm delay",
+          "confirms_if": "Shows actual measured delay values for comparison with expected baseline",
+          "look_for": "Look for frame delay, frame delay variation (jitter), and measurement count",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm loss",
+          "confirms_if": "Shows measured loss values and direction of loss",
+          "look_for": "Look for near-end and far-end frame loss ratios",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm loss",
+          "confirms_if": "Shows measured loss values and direction of loss",
+          "look_for": "Look for near-end and far-end frame loss ratios",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm loss",
+          "confirms_if": "Shows measured loss values and direction of loss",
+          "look_for": "Look for near-end and far-end frame loss ratios",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A single connectivity fault generates multiple alarms across service layers because AIS is not properly suppressing client-layer notifications",
+      "resolutions": [
+        {
+          "action": "Enable AIS generation on the detecting MEP (server layer)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable AIS generation on the detecting MEP (server layer)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable AIS generation on the detecting MEP (server layer)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure client MEPs to accept AIS at the expected MD level",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure client MEPs to accept AIS at the expected MD level",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure client MEPs to accept AIS at the expected MD level",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MD level hierarchy — AIS must be sent at the client MD level",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MD level hierarchy — AIS must be sent at the client MD level",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MD level hierarchy — AIS must be sent at the client MD level",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "AIS not enabled on server-layer MEP",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Client-layer MEP not configured to receive AIS",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MD level hierarchy prevents AIS propagation (AIS sent at wrong level)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "AIS not suppressing downstream alarms",
+      "symptoms": [
+        "Multiple alarms raised for single fault",
+        "Alarm storm in NMS from cascading service failures",
+        "Client-layer MEPs report defect instead of AIS suppression"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ethernet cfm errors",
+          "confirms_if": "Shows whether AIS is being received and processed at client layer",
+          "look_for": "Look for AIS defect at client layer, or absence of AIS when expected",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm errors",
+          "confirms_if": "Shows whether AIS is being received and processed at client layer",
+          "look_for": "Look for AIS defect at client layer, or absence of AIS when expected",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm errors",
+          "confirms_if": "Shows whether AIS is being received and processed at client layer",
+          "look_for": "Look for AIS defect at client layer, or absence of AIS when expected",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm maintenance-points local",
+          "confirms_if": "Confirms AIS is configured at both ends of the service hierarchy",
+          "look_for": "Look for AIS configuration on server-layer MEP (generation) and client-layer MEP (reception)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm maintenance-points local",
+          "confirms_if": "Confirms AIS is configured at both ends of the service hierarchy",
+          "look_for": "Look for AIS configuration on server-layer MEP (generation) and client-layer MEP (reception)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm maintenance-points local",
+          "confirms_if": "Confirms AIS is configured at both ends of the service hierarchy",
+          "look_for": "Look for AIS configuration on server-layer MEP (generation) and client-layer MEP (reception)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Periodic multicast message for continuity verification",
+      "key_fields": [
+        "MEP ID",
+        "MAID (Maintenance Association Identifier)",
+        "MD Level (0-7)",
+        "Priority",
+        "RDI Flag",
+        "Port/Interface Status TLV",
+        "Sequence Number"
+      ],
+      "name": "CCM (Continuity Check Message)",
+      "when_sent": "Every CCM interval while MEP is active"
+    },
+    {
+      "description": "Unicast L2 ping equivalent",
+      "key_fields": [
+        "Transaction ID",
+        "Target MAC Address",
+        "MD Level"
+      ],
+      "name": "LBM/LBR (Loopback Message/Reply)",
+      "when_sent": "On demand — operator-initiated connectivity check"
+    },
+    {
+      "description": "L2 traceroute equivalent — hop-by-hop through MIPs",
+      "key_fields": [
+        "Transaction ID",
+        "Target MAC Address",
+        "TTL",
+        "Relay Action (RlyHit, RlyFDB, RlyMPDB)",
+        "Ingress/Egress TLVs"
+      ],
+      "name": "LTM/LTR (Linktrace Message/Reply)",
+      "when_sent": "On demand — operator-initiated path trace"
+    },
+    {
+      "description": "Y.1731 — sent when MEP detects CCM loss, suppresses alarms at client layer",
+      "key_fields": [
+        "MD Level (client layer level)",
+        "Period (1s or 1min)"
+      ],
+      "name": "AIS (Alarm Indication Signal)",
+      "when_sent": "Automatically generated upon detecting connectivity fault to suppress downstream alarms"
+    },
+    {
+      "description": "Y.1731 — indicates administrative lock for maintenance",
+      "key_fields": [
+        "MD Level",
+        "Period"
+      ],
+      "name": "LCK (Locked Signal)",
+      "when_sent": "Sent during administrative maintenance window to signal locked condition"
+    },
+    {
+      "description": "Y.1731 — one-way and two-way frame delay measurement",
+      "key_fields": [
+        "TxTimestampf (transmit timestamp)",
+        "RxTimestampf (receive timestamp at responder)",
+        "TxTimestampb (reply transmit timestamp)",
+        "RxTimestampb (reply receive timestamp)"
+      ],
+      "name": "DMM/DMR (Delay Measurement Message/Reply)",
+      "when_sent": "Periodically or on demand for delay SLA monitoring"
+    },
+    {
+      "description": "Y.1731 — near-end and far-end frame loss measurement",
+      "key_fields": [
+        "TxFCf (transmit frame count forward)",
+        "RxFCf (receive frame count forward)",
+        "TxFCb (transmit frame count backward)"
+      ],
+      "name": "LMM/LMR (Loss Measurement Message/Reply)",
+      "when_sent": "Periodically for loss SLA monitoring — counts data frames between measurement points"
+    },
+    {
+      "description": "Y.1731 — synthetic frame injection for loss measurement without data traffic counting",
+      "key_fields": [
+        "Test ID",
+        "SLM/SLR Tx/Rx counters"
+      ],
+      "name": "SLM/SLR (Synthetic Loss Message/Reply)",
+      "when_sent": "Periodically — uses synthetic test frames instead of counting actual data traffic"
+    }
+  ],
+  "operates_at": "Layer 2",
+  "protocol_family": "switching",
+  "protocol_id": "cfm-y1731",
+  "protocol_name": "CFM / Y.1731",
+  "purpose": "Carrier Ethernet OAM — fault management (CFM) and performance monitoring (Y.1731)",
+  "related_protocols": [
+    "rstp",
+    "mst",
+    "lacp",
+    "l2-infrastructure",
+    "evpn"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "ieee-ieee8021ag2007ituty1731",
+      "title": "IEEE 802.1ag-2007 + ITU-T Y.1731",
+      "type": "ieee_standard"
+    },
+    {
+      "id": "agent-cisco-kb:switching/cfm-y1731.json",
+      "title": "agent-cisco-kb knowledge base — switching/cfm-y1731.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "IEEE 802.1ag-2007 + ITU-T Y.1731",
+  "states": [
+    {
+      "description": "MEP enabled and sending CCMs, monitoring for faults",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "MEP_ACTIVE"
+    },
+    {
+      "description": "MEP administratively disabled",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "MEP_INACTIVE"
+    },
+    {
+      "description": "MEP has detected a fault condition (one or more defects active)",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "MEP_DEFECT"
+    },
+    {
+      "description": "Remote Defect Indication received from peer MEP",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "RDI_RECEIVED"
+    }
+  ],
+  "tags": [
+    "carrier-ethernet",
+    "oam",
+    "fault-management",
+    "performance-monitoring",
+    "service-assurance",
+    "layer-2",
+    "switching"
+  ],
+  "timers": [
+    {
+      "default_rfc": "1s",
+      "description": "Continuity Check Message transmission interval",
+      "name": "CCM Interval",
+      "on_expiry": "CCM sent",
+      "range": "3.3ms, 10ms, 100ms, 1s, 10s, 1min, 10min",
+      "tuning_advice": "1s is standard for fault detection. Use 3.3ms or 10ms for fast protection switching (G.8032). Detection time = 3.5x CCM interval (e.g., 1s interval = 3.5s detection)."
+    },
+    {
+      "default_rfc": "5s",
+      "description": "Time to wait for LTR responses",
+      "name": "Linktrace Reply Timeout",
+      "on_expiry": "Linktrace operation completes with partial results",
+      "range": "1-60s",
+      "tuning_advice": "Increase for large or congested L2 networks where LTR may be delayed"
+    },
+    {
+      "default_rfc": "varies",
+      "description": "Performance measurement collection interval (DMM/LMM/SLM)",
+      "name": "Y.1731 PM Measurement Interval",
+      "on_expiry": "PM measurement probe sent",
+      "range": "100ms-24h",
+      "tuning_advice": "100ms-1s for real-time SLA monitoring. Longer intervals for baseline trending. Align with SLA reporting period."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "MEP_INACTIVE",
+      "to_state": "MEP_ACTIVE",
+      "trigger": "MEP administratively enabled"
+    },
+    {
+      "failure_if_stuck": "Persistent connectivity fault — check physical path, MAID/level configuration, and VLAN mapping end-to-end",
+      "from_state": "MEP_ACTIVE",
+      "to_state": "MEP_DEFECT",
+      "trigger": "CCM loss detected (3.5x CCM interval with no CCM from peer), cross-connect CCM received, or error CCM received"
+    },
+    {
+      "from_state": "MEP_DEFECT",
+      "to_state": "MEP_ACTIVE",
+      "trigger": "All defect conditions cleared (CCM received from expected peer, no mismatches)"
+    },
+    {
+      "from_state": "MEP_ACTIVE",
+      "to_state": "RDI_RECEIVED",
+      "trigger": "CCM received with RDI flag set (peer MEP has detected a defect)"
+    },
+    {
+      "from_state": "RDI_RECEIVED",
+      "to_state": "MEP_ACTIVE",
+      "trigger": "CCM received without RDI flag (peer defect cleared)"
+    },
+    {
+      "from_state": "MEP_ACTIVE",
+      "to_state": "MEP_INACTIVE",
+      "trigger": "MEP administratively disabled"
+    }
+  ],
+  "transport": "Ethertype 0x8902 (CFM), embedded in Ethernet frames",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "IOS-XE full CFM + Y.1731 support on ASR 1000/9000, Catalyst 8000. 'ethernet cfm domain' for MD configuration. Y.1731 PM with hardware-assisted timestamps. 'show ethernet cfm' hierarchy. Supports CFM over pseudowire.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "IOS-XR CFM fully supported on ASR 9000, NCS 5500. Y.1731 with hardware timestamps. 'ethernet cfm domain' config. Up MEPs and down MEPs. Supports SLA-based PM probes under 'ethernet sla'. 'show ethernet cfm peer meps' for MEP database.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "NX-OS supports CFM on Nexus 7000 series (limited on 9000). 'feature cfm' required. MEPs configured under 'ethernet cfm domain' hierarchy. Y.1731 performance monitoring supported with hardware timestamps on select linecards. 'show ethernet cfm' commands.",
+          "versions": "7.0+"
+        }
+      ]
+    },
+    "saos": {
+      "notes": [
+        {
+          "note": "CFM/Y.1731 is a core feature of SAOS — every carrier Ethernet service typically has CFM MEPs. Hardware-assisted timestamping on all platforms. MEPs tied to MEF Flow Points. Subject-verb CLI: 'cfm show mep' not 'show ethernet cfm'. Supports sub-second CCM intervals (3.3ms, 10ms) for G.8032 integration. Full Y.1731 suite: DMM, LMM, SLM, AIS, LCK. SAT (Service Activation Testing) uses Y.1731 for throughput/latency/loss testing per MEF 48.",
+          "versions": "6.0+"
+        }
+      ]
+    }
+  }
+}

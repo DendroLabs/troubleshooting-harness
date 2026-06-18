@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "evpn-symmetric-irb-no-host-routes",
+  "display_name": "In symmetric IRB you route to remote hosts via the L3VNI, so missing remote /32s in the local table is expected",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Verifying inter-subnet (L3) forwarding in an EVPN fabric and not finding remote host host-routes in the local routing table",
+  "observation": "Remote host /32 (or /128) routes do not appear in a tenant VRF's routing table even though inter-subnet traffic works",
+  "naive_interpretation": "Host routes are missing, so EVPN L3 advertisement is broken and inter-subnet routing must be failing",
+  "correct_interpretation": "With symmetric IRB, a leaf does not need a /32 for every remote host. It routes the packet into the L3VNI toward the egress leaf's router-MAC, and the egress leaf does the final bridging. The local VRF only needs the remote subnet prefix (or even just the L3VNI path), not per-host routes. Absent remote /32s is the expected, scalable behavior of symmetric IRB — it is asymmetric IRB that would require the remote ARP/host state locally. Confirm the design before treating missing host routes as a fault.",
+  "why": [
+    "RFC 9135 describes symmetric IRB where ingress and egress both route, bridging only into the local L3VNI, so per-host remote state is unnecessary",
+    "Symmetric IRB scales precisely because leaves do not import every remote host route — they forward on the L3VNI to the egress router-MAC",
+    "Asymmetric IRB, by contrast, requires the remote host's ARP/MAC locally; the two models produce different expected route-table contents",
+    "Working inter-subnet traffic with no local remote /32s is the signature of a correctly functioning symmetric IRB deployment"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp l2vpn evpn route-type 5",
+      "purpose": "Confirm IP-prefix (Type-5) routes carry the L3VNI and router-MAC used for symmetric IRB forwarding"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route vrf <tenant>",
+      "purpose": "Verify the remote subnet prefix and its L3VNI next-hop exist even when per-host /32s do not"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show vxlan",
+      "purpose": "Identify the L3VNI bound to the tenant VRF to confirm symmetric IRB is in use"
+    }
+  ],
+  "traps": [
+    "Expecting per-host /32 routes for remote endpoints in a symmetric IRB design where they intentionally do not exist",
+    "Confusing symmetric and asymmetric IRB, which have genuinely different expected route-table contents",
+    "Declaring L3 EVPN broken when the Type-5 prefix and L3VNI path are present and traffic flows",
+    "Looking for the remote host's ARP entry locally in symmetric IRB, where the egress leaf owns that state"
+  ],
+  "related_rules": [
+    "evpn-vtep-nve-source-flap",
+    "route-table-entry-ad-determines-source"
+  ],
+  "related_protocols": ["vxlan-evpn", "evpn", "vrf"],
+  "keywords": ["EVPN", "IRB", "symmetric", "asymmetric", "L3VNI", "Type-5", "router-MAC", "host route", "inter-subnet", "VRF"],
+  "sources": [
+    {
+      "id": "rfc-9135",
+      "title": "RFC 9135 — Integrated Routing and Bridging in Ethernet VPN (EVPN)",
+      "type": "rfc",
+      "rfc_number": 9135,
+      "url": "https://www.rfc-editor.org/rfc/rfc9135.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

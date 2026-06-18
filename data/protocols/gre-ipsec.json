@@ -1,0 +1,1672 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "Tunnel source and destination IP addresses must be reachable via the underlay routing table. The route to the tunnel destination must NOT traverse the tunnel itself (recursive routing). Underlay connectivity is a prerequisite for both GRE encapsulation and IKE/IPsec negotiation.",
+      "name": "IP routing (underlay reachability)",
+      "type": "infrastructure"
+    },
+    {
+      "description": "IPsec requires authentication — either a pre-shared key (PSK) configured identically on both peers, or a PKI infrastructure with certificates signed by a trusted CA. Plain GRE tunnels (without IPsec) do not require authentication.",
+      "name": "PKI or PSK for IPsec authentication",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "The IKE Security Association cannot be established between peers. The tunnel remains in DOWN or IKE_NEGOTIATING state. This blocks all IPsec-protected traffic because without an IKE SA, no child (IPsec) SAs can be created.",
+      "resolutions": [
+        {
+          "action": "Compare crypto proposals on both peers — encryption, hash, DH group, and lifetime must match",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare crypto proposals on both peers — encryption, hash, DH group, and lifetime must match",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare crypto proposals on both peers — encryption, hash, DH group, and lifetime must match",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify pre-shared keys match exactly (case-sensitive, watch for trailing spaces)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify pre-shared keys match exactly (case-sensitive, watch for trailing spaces)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify pre-shared keys match exactly (case-sensitive, watch for trailing spaces)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check IKE identity: 'show crypto isakmp identity' — ensure both sides agree on identity type",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check IKE identity: 'show crypto isakmp identity' — ensure both sides agree on identity type",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check IKE identity: 'show crypto isakmp identity' — ensure both sides agree on identity type",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ACL permits UDP 500 and UDP 4500 bidirectionally between peers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ACL permits UDP 500 and UDP 4500 bidirectionally between peers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ACL permits UDP 500 and UDP 4500 bidirectionally between peers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm underlay reachability: ping tunnel destination from tunnel source address",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm underlay reachability: ping tunnel destination from tunnel source address",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm underlay reachability: ping tunnel destination from tunnel source address",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For certificate auth: verify cert validity, CA trust chain, and CRL/OCSP reachability",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For certificate auth: verify cert validity, CA trust chain, and CRL/OCSP reachability",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For certificate auth: verify cert validity, CA trust chain, and CRL/OCSP reachability",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Crypto proposal mismatch — encryption algorithm (AES-128 vs AES-256), hash (SHA-1 vs SHA-256), or DH group (14 vs 19) differs between peers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Pre-shared key mismatch — different PSK configured on each peer",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Identity mismatch — IKE identity (address vs hostname vs FQDN) does not match peer's expectation",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL blocking UDP 500 (IKE) or UDP 4500 (NAT-T) between peers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Tunnel source or destination IP address not reachable (routing issue in underlay)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Certificate validation failure — expired cert, untrusted CA, CRL unreachable",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "IKE negotiation failure — Phase 1 / IKEv2 SA not establishing",
+      "symptoms": [
+        "Tunnel interface stays down",
+        "'show crypto isakmp sa' shows MM_NO_STATE or QM_IDLE with no active SA",
+        "'show crypto ikev2 sa' shows no entries or NEGOTIATING state",
+        "Syslog: '%CRYPTO-4-IKMP_NO_SA: IKE SA not found' or 'ISAKMP: no offers accepted'",
+        "Syslog: 'IKE_SA_INIT rejected — no matching proposal'"
+      ],
+      "verify_commands": [
+        {
+          "command": "show crypto isakmp sa",
+          "confirms_if": "Shows IKEv1 SA status and failure state",
+          "look_for": "Look for SA state — MM_NO_STATE means Phase 1 failed, QM_IDLE means Phase 1 succeeded. No entries means IKE never started.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto isakmp sa",
+          "confirms_if": "Shows IKEv1 SA status and failure state",
+          "look_for": "Look for SA state — MM_NO_STATE means Phase 1 failed, QM_IDLE means Phase 1 succeeded. No entries means IKE never started.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto isakmp sa",
+          "confirms_if": "Shows IKEv1 SA status and failure state",
+          "look_for": "Look for SA state — MM_NO_STATE means Phase 1 failed, QM_IDLE means Phase 1 succeeded. No entries means IKE never started.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ikev2 sa",
+          "confirms_if": "Shows IKEv2 SA status and tunnel endpoint addresses",
+          "look_for": "Look for SA status — READY means established, NEGOTIATING means in progress, no entries means IKEv2 never initiated",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ikev2 sa",
+          "confirms_if": "Shows IKEv2 SA status and tunnel endpoint addresses",
+          "look_for": "Look for SA status — READY means established, NEGOTIATING means in progress, no entries means IKEv2 never initiated",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ikev2 sa",
+          "confirms_if": "Shows IKEv2 SA status and tunnel endpoint addresses",
+          "look_for": "Look for SA status — READY means established, NEGOTIATING means in progress, no entries means IKEv2 never initiated",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ikev2 proposal",
+          "confirms_if": "Shows configured IKEv2 proposals for comparison",
+          "look_for": "Compare encryption, integrity, PRF, and DH group proposals on both peers — any mismatch causes failure",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ikev2 proposal",
+          "confirms_if": "Shows configured IKEv2 proposals for comparison",
+          "look_for": "Compare encryption, integrity, PRF, and DH group proposals on both peers — any mismatch causes failure",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ikev2 proposal",
+          "confirms_if": "Shows configured IKEv2 proposals for comparison",
+          "look_for": "Compare encryption, integrity, PRF, and DH group proposals on both peers — any mismatch causes failure",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The IKE SA is established (Phase 1 complete) but the IPsec child SA (Phase 2) fails to negotiate. The tunnel appears partially up — IKE SA exists but no traffic is encrypted because there is no IPsec SA to carry data.",
+      "resolutions": [
+        {
+          "action": "Compare transform-sets on both peers: encryption + integrity algorithm must match",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare transform-sets on both peers: encryption + integrity algorithm must match",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare transform-sets on both peers: encryption + integrity algorithm must match",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify proxy ACLs are mirror images — source/dest on peer A must match dest/source on peer B",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify proxy ACLs are mirror images — source/dest on peer A must match dest/source on peer B",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify proxy ACLs are mirror images — source/dest on peer A must match dest/source on peer B",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align PFS settings — same DH group on both peers, or disabled on both",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align PFS settings — same DH group on both peers, or disabled on both",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align PFS settings — same DH group on both peers, or disabled on both",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use VTI (Virtual Tunnel Interface) instead of crypto maps to simplify proxy identity (route-based VPN eliminates ACL mismatch issues)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use VTI (Virtual Tunnel Interface) instead of crypto maps to simplify proxy identity (route-based VPN eliminates ACL mismatch issues)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use VTI (Virtual Tunnel Interface) instead of crypto maps to simplify proxy identity (route-based VPN eliminates ACL mismatch issues)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For IKEv2: check traffic selectors with 'show crypto ikev2 sa detail' — verify TSi/TSr match",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For IKEv2: check traffic selectors with 'show crypto ikev2 sa detail' — verify TSi/TSr match",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For IKEv2: check traffic selectors with 'show crypto ikev2 sa detail' — verify TSi/TSr match",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Transform-set mismatch — ESP encryption (AES-CBC vs AES-GCM) or hash (SHA-1 vs SHA-256) differs between peers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Proxy identity (ACL) mismatch — the interesting traffic ACL defines different source/destination subnets on each peer",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PFS (Perfect Forward Secrecy) DH group mismatch — one side has PFS enabled with a different DH group, or PFS enabled on one side only",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IPsec SA lifetime mismatch (some implementations reject mismatched lifetimes)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Traffic selectors too broad or too narrow — IKEv2 TSi/TSr negotiation failure",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "IPsec SA not establishing — Phase 2 / child SA failure",
+      "symptoms": [
+        "'show crypto isakmp sa' shows QM_IDLE (IKE up) but 'show crypto ipsec sa' shows no active SA or zero encaps/decaps",
+        "'show crypto ikev2 sa' shows READY but no child SAs listed",
+        "Syslog: '%CRYPTO-6-IKMP_MODE_FAILURE: Processing of Quick mode failed'",
+        "Syslog: 'IPsec SA proposal mismatch' or 'no acceptable transform'",
+        "Traffic between protected subnets is dropped (not encrypted)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show crypto ipsec sa",
+          "confirms_if": "Shows IPsec SA details including transform and proxy identities",
+          "look_for": "Look for 'inbound esp sas' and 'outbound esp sas' — if empty or showing zero encaps/decaps, Phase 2 is not working. Check 'current peer' and 'proxy idents' for mismatches.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec sa",
+          "confirms_if": "Shows IPsec SA details including transform and proxy identities",
+          "look_for": "Look for 'inbound esp sas' and 'outbound esp sas' — if empty or showing zero encaps/decaps, Phase 2 is not working. Check 'current peer' and 'proxy idents' for mismatches.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec sa",
+          "confirms_if": "Shows IPsec SA details including transform and proxy identities",
+          "look_for": "Look for 'inbound esp sas' and 'outbound esp sas' — if empty or showing zero encaps/decaps, Phase 2 is not working. Check 'current peer' and 'proxy idents' for mismatches.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec transform-set",
+          "confirms_if": "Shows configured IPsec transform-sets for comparison",
+          "look_for": "Compare transform-set on both peers — encryption and integrity algorithms must match exactly",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec transform-set",
+          "confirms_if": "Shows configured IPsec transform-sets for comparison",
+          "look_for": "Compare transform-set on both peers — encryption and integrity algorithms must match exactly",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec transform-set",
+          "confirms_if": "Shows configured IPsec transform-sets for comparison",
+          "look_for": "Compare transform-set on both peers — encryption and integrity algorithms must match exactly",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ikev2 sa detail",
+          "confirms_if": "Shows negotiated traffic selectors for IKEv2 child SAs",
+          "look_for": "Look for 'Traffic Selector' (TSi/TSr) entries — verify source and destination subnets match between peers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ikev2 sa detail",
+          "confirms_if": "Shows negotiated traffic selectors for IKEv2 child SAs",
+          "look_for": "Look for 'Traffic Selector' (TSi/TSr) entries — verify source and destination subnets match between peers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ikev2 sa detail",
+          "confirms_if": "Shows negotiated traffic selectors for IKEv2 child SAs",
+          "look_for": "Look for 'Traffic Selector' (TSi/TSr) entries — verify source and destination subnets match between peers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The GRE tunnel interface shows up/up but data traffic is not flowing through the tunnel. Ping over the tunnel fails even though routing appears correct. This is commonly caused by MTU issues (GRE+IPsec adds 58-62 bytes of overhead), recursive routing, or ACL blocking.",
+      "resolutions": [
+        {
+          "action": "Set tunnel MTU to account for overhead: 'ip mtu 1400' on tunnel interface (1500 - GRE 24 - IPsec ~76 = ~1400)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set tunnel MTU to account for overhead: 'ip mtu 1400' on tunnel interface (1500 - GRE 24 - IPsec ~76 = ~1400)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set tunnel MTU to account for overhead: 'ip mtu 1400' on tunnel interface (1500 - GRE 24 - IPsec ~76 = ~1400)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure TCP MSS clamping: 'ip tcp adjust-mss 1360' on the tunnel interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure TCP MSS clamping: 'ip tcp adjust-mss 1360' on the tunnel interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure TCP MSS clamping: 'ip tcp adjust-mss 1360' on the tunnel interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix recursive routing: ensure tunnel destination is reachable via a specific route (not default) that does NOT traverse the tunnel",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix recursive routing: ensure tunnel destination is reachable via a specific route (not default) that does NOT traverse the tunnel",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix recursive routing: ensure tunnel destination is reachable via a specific route (not default) that does NOT traverse the tunnel",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Permit IP protocol 47 (GRE) and IP protocol 50 (ESP) on all transit ACLs and firewalls",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Permit IP protocol 47 (GRE) and IP protocol 50 (ESP) on all transit ACLs and firewalls",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Permit IP protocol 47 (GRE) and IP protocol 50 (ESP) on all transit ACLs and firewalls",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable 'tunnel path-mtu-discovery' on the tunnel interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable 'tunnel path-mtu-discovery' on the tunnel interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable 'tunnel path-mtu-discovery' on the tunnel interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify tunnel source: 'show interface tunnel' — check tunnel source is up with a valid IP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify tunnel source: 'show interface tunnel' — check tunnel source is up with a valid IP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify tunnel source: 'show interface tunnel' — check tunnel source is up with a valid IP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "MTU issue — GRE adds 24 bytes, IPsec ESP adds 34-58 bytes depending on algorithm; total overhead 58-82 bytes reduces effective MTU below 1500",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Recursive routing — tunnel destination is resolved via the tunnel itself, creating a routing loop that crashes the tunnel",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL blocking GRE (IP protocol 47) or ESP (IP protocol 50) on intermediate devices",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PMTUD (Path MTU Discovery) broken — ICMP 'need to fragment' messages blocked by firewall, so endpoints never learn correct MTU",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Tunnel source interface is down or has no IP address",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Asymmetric routing — return traffic takes a different path that doesn't go through the tunnel",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "GRE tunnel up but traffic not passing",
+      "symptoms": [
+        "Tunnel interface shows up/up in 'show interface tunnel'",
+        "Ping across the tunnel fails or only small packets succeed",
+        "Routing table shows routes via the tunnel interface",
+        "Large file transfers fail but small packets (DNS, pings) work — classic MTU symptom",
+        "Traceroute via tunnel shows packet too big or times out at tunnel hop"
+      ],
+      "verify_commands": [
+        {
+          "command": "show interface tunnel",
+          "confirms_if": "Shows tunnel operational state, MTU, and traffic counters",
+          "look_for": "Look for line-protocol status, MTU value, tunnel source/destination, and packet counters (encaps/decaps). Check for incrementing 'drops' counter.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface tunnel",
+          "confirms_if": "Shows tunnel operational state, MTU, and traffic counters",
+          "look_for": "Look for line-protocol status, MTU value, tunnel source/destination, and packet counters (encaps/decaps). Check for incrementing 'drops' counter.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface tunnel",
+          "confirms_if": "Shows tunnel operational state, MTU, and traffic counters",
+          "look_for": "Look for line-protocol status, MTU value, tunnel source/destination, and packet counters (encaps/decaps). Check for incrementing 'drops' counter.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <tunnel-destination>",
+          "confirms_if": "Shows how the tunnel destination IP is resolved in the routing table",
+          "look_for": "Verify the tunnel destination is NOT resolved via the tunnel itself — this causes recursive routing. The route should point to a physical interface or underlay next-hop.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <tunnel-destination>",
+          "confirms_if": "Shows how the tunnel destination IP is resolved in the routing table",
+          "look_for": "Verify the tunnel destination is NOT resolved via the tunnel itself — this causes recursive routing. The route should point to a physical interface or underlay next-hop.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <tunnel-destination>",
+          "confirms_if": "Shows how the tunnel destination IP is resolved in the routing table",
+          "look_for": "Verify the tunnel destination is NOT resolved via the tunnel itself — this causes recursive routing. The route should point to a physical interface or underlay next-hop.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <remote-tunnel-ip> size 1400 df-bit",
+          "confirms_if": "Confirms whether MTU is causing packet drops for large packets",
+          "look_for": "If ping fails with df-bit set but succeeds with smaller size, confirms MTU issue. Try progressively smaller sizes to find the maximum working MTU.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <remote-tunnel-ip> size 1400 df-bit",
+          "confirms_if": "Confirms whether MTU is causing packet drops for large packets",
+          "look_for": "If ping fails with df-bit set but succeeds with smaller size, confirms MTU issue. Try progressively smaller sizes to find the maximum working MTU.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <remote-tunnel-ip> size 1400 df-bit",
+          "confirms_if": "Confirms whether MTU is causing packet drops for large packets",
+          "look_for": "If ping fails with df-bit set but succeeds with smaller size, confirms MTU issue. Try progressively smaller sizes to find the maximum working MTU.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The GRE/IPsec tunnel repeatedly transitions between up and down states, causing routing instability and traffic disruption. This is commonly caused by DPD detecting intermittent reachability, aggressive keepalive timers, or NAT device timeouts killing IKE/ESP sessions.",
+      "resolutions": [
+        {
+          "action": "Increase DPD interval and retries: 'crypto isakmp keepalive 30 5' (30s interval, 5 retries = 150s detection)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase DPD interval and retries: 'crypto isakmp keepalive 30 5' (30s interval, 5 retries = 150s detection)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase DPD interval and retries: 'crypto isakmp keepalive 30 5' (30s interval, 5 retries = 150s detection)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NAT-T tunnels: ensure NAT device idle timeout exceeds DPD interval (or enable NAT keepalive)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NAT-T tunnels: ensure NAT device idle timeout exceeds DPD interval (or enable NAT keepalive)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NAT-T tunnels: ensure NAT device idle timeout exceeds DPD interval (or enable NAT keepalive)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase GRE keepalive timers: 'keepalive 30 5' under tunnel interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase GRE keepalive timers: 'keepalive 30 5' under tunnel interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase GRE keepalive timers: 'keepalive 30 5' under tunnel interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize underlay routing — use BFD or IP SLA on the physical path, not just the tunnel",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize underlay routing — use BFD or IP SLA on the physical path, not just the tunnel",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize underlay routing — use BFD or IP SLA on the physical path, not just the tunnel",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align SA lifetimes on both peers to prevent rekey race conditions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align SA lifetimes on both peers to prevent rekey race conditions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align SA lifetimes on both peers to prevent rekey race conditions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor with 'show crypto isakmp sa detail' — check retransmit counters and last rekey time",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor with 'show crypto isakmp sa detail' — check retransmit counters and last rekey time",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor with 'show crypto isakmp sa detail' — check retransmit counters and last rekey time",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Underlying transport link instability — packet loss or latency spikes on the underlay path between tunnel endpoints",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "DPD timers too aggressive — low interval with few retries causes false dead-peer detection during transient congestion",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NAT device timeout shorter than IKE SA lifetime — NAT translation expires, breaking UDP 4500 mapping, causing DPD failure",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "GRE keepalive timers too aggressive for the path quality",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IKE/IPsec SA lifetime mismatch causing rekey failures — one side deletes SA before the other rekeys",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Flapping underlay route to tunnel destination — tunnel source or destination reachability intermittent",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Tunnel flapping — repeated up/down transitions",
+      "symptoms": [
+        "Frequent tunnel up/down syslog messages",
+        "Routing protocol adjacency over the tunnel flapping",
+        "Intermittent connectivity for traffic traversing the tunnel",
+        "'show crypto isakmp sa' shows frequent SA deletions and recreations",
+        "'show interface tunnel' shows high number of line-protocol state changes"
+      ],
+      "verify_commands": [
+        {
+          "command": "show crypto isakmp sa detail",
+          "confirms_if": "Shows IKE SA health including DPD and rekey statistics",
+          "look_for": "Look for retransmit counts, last rekey time, and DPD status. High retransmit counts indicate packet loss on the IKE path.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto isakmp sa detail",
+          "confirms_if": "Shows IKE SA health including DPD and rekey statistics",
+          "look_for": "Look for retransmit counts, last rekey time, and DPD status. High retransmit counts indicate packet loss on the IKE path.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto isakmp sa detail",
+          "confirms_if": "Shows IKE SA health including DPD and rekey statistics",
+          "look_for": "Look for retransmit counts, last rekey time, and DPD status. High retransmit counts indicate packet loss on the IKE path.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface tunnel",
+          "confirms_if": "Shows tunnel interface stability and keepalive statistics",
+          "look_for": "Look for keepalive counters, line-protocol changes, and last input/output times. Frequent resets indicate keepalive-driven flapping.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface tunnel",
+          "confirms_if": "Shows tunnel interface stability and keepalive statistics",
+          "look_for": "Look for keepalive counters, line-protocol changes, and last input/output times. Frequent resets indicate keepalive-driven flapping.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface tunnel",
+          "confirms_if": "Shows tunnel interface stability and keepalive statistics",
+          "look_for": "Look for keepalive counters, line-protocol changes, and last input/output times. Frequent resets indicate keepalive-driven flapping.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show log | include TUNNEL|CRYPTO|DPD",
+          "confirms_if": "Shows timeline of tunnel flap events and their causes",
+          "look_for": "Look for patterns of tunnel down events — correlate timestamps with DPD timeouts or IKE SA deletions to identify the trigger",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show log | include TUNNEL|CRYPTO|DPD",
+          "confirms_if": "Shows timeline of tunnel flap events and their causes",
+          "look_for": "Look for patterns of tunnel down events — correlate timestamps with DPD timeouts or IKE SA deletions to identify the trigger",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show log | include TUNNEL|CRYPTO|DPD",
+          "confirms_if": "Shows timeline of tunnel flap events and their causes",
+          "look_for": "Look for patterns of tunnel down events — correlate timestamps with DPD timeouts or IKE SA deletions to identify the trigger",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "IPsec tunnel fails to pass traffic through a NAT device. IKE may establish (since it uses UDP 500 which NAT can handle) but ESP packets (IP protocol 50) are dropped by the NAT device because ESP has no port numbers for NAT translation. NAT-T encapsulates ESP inside UDP 4500 to solve this, but it must be negotiated and supported by both peers and the NAT device.",
+      "resolutions": [
+        {
+          "action": "Verify NAT-T is enabled on both peers: 'crypto isakmp nat-traversal' (IOS-XE) or IKEv2 profile NAT-T settings",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NAT-T is enabled on both peers: 'crypto isakmp nat-traversal' (IOS-XE) or IKEv2 profile NAT-T settings",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NAT-T is enabled on both peers: 'crypto isakmp nat-traversal' (IOS-XE) or IKEv2 profile NAT-T settings",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure firewall/ACL permits UDP 4500 bidirectionally between peers (in addition to UDP 500)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure firewall/ACL permits UDP 4500 bidirectionally between peers (in addition to UDP 500)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure firewall/ACL permits UDP 4500 bidirectionally between peers (in addition to UDP 500)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase NAT device idle timeout for UDP to exceed IPsec SA lifetime, or configure NAT keepalives ('crypto isakmp nat keepalive <seconds>')",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase NAT device idle timeout for UDP to exceed IPsec SA lifetime, or configure NAT keepalives ('crypto isakmp nat keepalive <seconds>')",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase NAT device idle timeout for UDP to exceed IPsec SA lifetime, or configure NAT keepalives ('crypto isakmp nat keepalive <seconds>')",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For multiple peers behind same NAT: use IKEv2 with unique identities, or use different source ports",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For multiple peers behind same NAT: use IKEv2 with unique identities, or use different source ports",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For multiple peers behind same NAT: use IKEv2 with unique identities, or use different source ports",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check NAT-T status: 'show crypto isakmp sa detail' — look for 'NAT-T' indicator confirming NAT-T is active",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check NAT-T status: 'show crypto isakmp sa detail' — look for 'NAT-T' indicator confirming NAT-T is active",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check NAT-T status: 'show crypto isakmp sa detail' — look for 'NAT-T' indicator confirming NAT-T is active",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "NAT device not passing ESP (IP protocol 50) — only UDP/TCP NAT is supported on the device",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NAT-T not negotiated — one peer does not support or has disabled NAT-T, so ESP is not encapsulated in UDP 4500",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NAT device idle timeout shorter than IPsec SA lifetime — UDP 4500 translation expires between rekeys",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Multiple IPsec peers behind the same NAT (PAT) — port collision on UDP 4500 causing SA confusion",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Firewall blocking UDP 4500 — NAT-T negotiated but the encapsulated ESP-in-UDP packets are dropped",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "NAT-Traversal (NAT-T) failure — IPsec through NAT not working",
+      "symptoms": [
+        "IKE SA establishes but no traffic passes through the tunnel",
+        "'show crypto ipsec sa' shows encaps incrementing but decaps at zero (or vice versa) — one direction works, the other is dropped by NAT",
+        "Syslog: 'CRYPTO-4-PKT_REPLAY_ERR' or ESP packet drops in firewall logs",
+        "Tunnel works initially but breaks after NAT translation timeout",
+        "Ping over tunnel fails with 'request timed out' while IKE SA stays up"
+      ],
+      "verify_commands": [
+        {
+          "command": "show crypto isakmp sa detail",
+          "confirms_if": "Shows whether NAT-T is negotiated and active for the IKE SA",
+          "look_for": "Look for 'NAT-T' status — if NAT-T is not active but a NAT device exists in the path, ESP packets will be dropped. Check local and remote port numbers (should be 4500 if NAT-T is active).",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto isakmp sa detail",
+          "confirms_if": "Shows whether NAT-T is negotiated and active for the IKE SA",
+          "look_for": "Look for 'NAT-T' status — if NAT-T is not active but a NAT device exists in the path, ESP packets will be dropped. Check local and remote port numbers (should be 4500 if NAT-T is active).",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto isakmp sa detail",
+          "confirms_if": "Shows whether NAT-T is negotiated and active for the IKE SA",
+          "look_for": "Look for 'NAT-T' status — if NAT-T is not active but a NAT device exists in the path, ESP packets will be dropped. Check local and remote port numbers (should be 4500 if NAT-T is active).",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec sa",
+          "confirms_if": "Shows per-SA packet counters to identify asymmetric drops",
+          "look_for": "Compare encaps vs decaps counters — a large imbalance (one near zero) indicates one direction is being dropped, likely by NAT. Also check 'send errors' and 'rcvd decap errors'.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec sa",
+          "confirms_if": "Shows per-SA packet counters to identify asymmetric drops",
+          "look_for": "Compare encaps vs decaps counters — a large imbalance (one near zero) indicates one direction is being dropped, likely by NAT. Also check 'send errors' and 'rcvd decap errors'.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec sa",
+          "confirms_if": "Shows per-SA packet counters to identify asymmetric drops",
+          "look_for": "Compare encaps vs decaps counters — a large imbalance (one near zero) indicates one direction is being dropped, likely by NAT. Also check 'send errors' and 'rcvd decap errors'.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec sa detail",
+          "confirms_if": "Shows detailed SA parameters including NAT-T encapsulation",
+          "look_for": "Look for UDP encapsulation port (should be 4500 for NAT-T). If showing port 500 or no UDP encapsulation, NAT-T is not active.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec sa detail",
+          "confirms_if": "Shows detailed SA parameters including NAT-T encapsulation",
+          "look_for": "Look for UDP encapsulation port (should be 4500 for NAT-T). If showing port 500 or no UDP encapsulation, NAT-T is not active.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec sa detail",
+          "confirms_if": "Shows detailed SA parameters including NAT-T encapsulation",
+          "look_for": "Look for UDP encapsulation port (should be 4500 for NAT-T). If showing port 500 or no UDP encapsulation, NAT-T is not active.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "First IKEv2 exchange — negotiates cryptographic algorithms, exchanges nonces and Diffie-Hellman values. Determines if NAT-T is needed.",
+      "key_fields": [
+        "SAi1 (initiator proposals)",
+        "KEi (DH public value)",
+        "Ni (initiator nonce)",
+        "NAT_DETECTION_SOURCE_IP",
+        "NAT_DETECTION_DESTINATION_IP"
+      ],
+      "name": "IKE_SA_INIT",
+      "when_sent": "Initiator starts IKEv2 session establishment"
+    },
+    {
+      "description": "Second IKEv2 exchange — authenticates peers (PSK or certificate), establishes first child SA (IPsec SA)",
+      "key_fields": [
+        "IDi / IDr (peer identities)",
+        "AUTH (authentication payload)",
+        "SAi2 (child SA proposals)",
+        "TSi / TSr (traffic selectors / proxy identities)",
+        "CERT / CERTREQ (if certificate auth)"
+      ],
+      "name": "IKE_AUTH",
+      "when_sent": "After IKE_SA_INIT completes successfully"
+    },
+    {
+      "description": "Creates additional child SAs or rekeys existing IKE/IPsec SAs. Used for IPsec SA rekeying during tunnel lifetime.",
+      "key_fields": [
+        "SA (child SA proposals)",
+        "Ni / Nr (nonces for new keying material)",
+        "KEi (optional — only if PFS enabled)",
+        "TSi / TSr (traffic selectors)"
+      ],
+      "name": "CREATE_CHILD_SA",
+      "when_sent": "IPsec SA lifetime approaching expiry, or additional child SA needed for new traffic selectors"
+    },
+    {
+      "description": "Carries notifications, delete payloads, and DPD (Dead Peer Detection) liveness checks",
+      "key_fields": [
+        "N (notification — DPD R-U-THERE / R-U-THERE-ACK)",
+        "D (delete payload — specifies SPI of SA to delete)",
+        "CP (configuration payload — for remote access VPN)"
+      ],
+      "name": "INFORMATIONAL",
+      "when_sent": "DPD keepalive interval, SA deletion, error notification, or configuration change"
+    }
+  ],
+  "operates_at": "Layer 3",
+  "protocol_family": "transport",
+  "protocol_id": "gre-ipsec",
+  "protocol_name": "GRE/IPsec Tunnels",
+  "purpose": "GRE provides generic encapsulation for tunneling any L3 protocol over IP. IPsec provides confidentiality, integrity, and authentication for tunneled traffic. Combined, they enable encrypted site-to-site VPN connectivity over untrusted networks.",
+  "related_protocols": [
+    "ospfv2",
+    "bgp-4",
+    "bfd",
+    "static-routing"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-2784",
+      "rfc_number": 2784,
+      "title": "RFC 2784",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc2784.txt"
+    },
+    {
+      "id": "rfc-4301",
+      "rfc_number": 4301,
+      "title": "RFC 4301",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc4301.txt"
+    },
+    {
+      "id": "rfc-7296",
+      "rfc_number": 7296,
+      "title": "RFC 7296",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc7296.txt"
+    },
+    {
+      "id": "agent-cisco-kb:transport/gre-ipsec.json",
+      "title": "agent-cisco-kb knowledge base — transport/gre-ipsec.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 2784 (GRE), RFC 4301/4303 (IPsec), RFC 7296 (IKEv2)",
+  "states": [
+    {
+      "description": "Tunnel not operational — no IKE or GRE session active",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "DOWN"
+    },
+    {
+      "description": "IKE SA establishment in progress — Phase 1 / IKEv2 SA_INIT and AUTH exchanges underway",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "IKE_NEGOTIATING"
+    },
+    {
+      "description": "IKE SA is up but no IPsec (child) SA has been created yet — Phase 1 complete, waiting for Phase 2 / CREATE_CHILD_SA",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "IKE_ESTABLISHED"
+    },
+    {
+      "description": "IPsec SA established — tunnel is fully operational with encryption (ESP). Traffic is encrypted and decrypted.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "UP_IPSEC"
+    },
+    {
+      "description": "GRE tunnel interface is up with no IPsec encryption — plain GRE encapsulation only. Traffic passes in cleartext inside GRE headers.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "UP_GRE_ONLY"
+    }
+  ],
+  "tags": [
+    "gre",
+    "ipsec",
+    "tunnel",
+    "vpn",
+    "ike",
+    "ikev2",
+    "encryption",
+    "esp",
+    "nat-traversal",
+    "dmvpn",
+    "transport"
+  ],
+  "timers": [
+    {
+      "default_rfc": "86400s (24 hours)",
+      "description": "Lifetime of the IKE (Phase 1 / IKEv2) Security Association. When expired, the IKE SA is renegotiated.",
+      "name": "IKE SA Lifetime",
+      "on_expiry": "IKE SA deleted and renegotiated. If renegotiation fails, child IPsec SAs are also torn down.",
+      "range": "60-86400s",
+      "tuning_advice": "Default 24h is suitable for most deployments. Shorter lifetimes increase security but add rekeying overhead. Must match on both peers."
+    },
+    {
+      "default_rfc": "3600s (1 hour)",
+      "description": "Lifetime of the IPsec (Phase 2 / child) Security Association. Controls how often traffic encryption keys are rotated.",
+      "name": "IPsec SA Lifetime",
+      "on_expiry": "IPsec SA rekeyed — new child SA established before old one expires (soft lifetime triggers rekey before hard lifetime deletes SA).",
+      "range": "120-86400s",
+      "tuning_advice": "Default 1h balances security and performance. High-throughput tunnels may benefit from shorter lifetimes or volume-based rekey (kilobytes lifetime). Must match on both peers."
+    },
+    {
+      "default_rfc": "10-30s (varies by platform and configuration)",
+      "description": "Dead Peer Detection interval — periodic keepalive to verify peer is still reachable. Uses IKE INFORMATIONAL exchange.",
+      "name": "DPD Interval",
+      "on_expiry": "DPD request sent. If no response after retries (typically 5), peer declared dead and all SAs torn down.",
+      "range": "2-3600s",
+      "tuning_advice": "Aggressive DPD (low interval) detects failures faster but adds control-plane overhead. On-demand DPD (only sent when traffic is flowing) is preferred over periodic DPD for large-scale deployments."
+    },
+    {
+      "default_rfc": "10s, 3 retries",
+      "description": "GRE tunnel keepalive — verifies end-to-end GRE path liveness. The router sends a GRE packet that the remote end loops back.",
+      "name": "GRE Keepalive",
+      "on_expiry": "After all retries exhausted, tunnel interface is declared down (line-protocol down). Routing protocols withdraw routes learned via the tunnel.",
+      "range": "1-32767s, 1-255 retries",
+      "tuning_advice": "Enable keepalives to detect tunnel black holes — without them, a GRE tunnel stays up even if the remote end is unreachable. Both ends must support GRE keepalives for bidirectional detection."
+    }
+  ],
+  "transitions": [
+    {
+      "failure_if_stuck": "UDP 500 blocked by ACL or firewall, peer IP unreachable, or crypto configuration missing on one side",
+      "from_state": "DOWN",
+      "to_state": "IKE_NEGOTIATING",
+      "trigger": "Tunnel configured and peer is reachable — IKE SA_INIT or ISAKMP main-mode/aggressive-mode exchange initiated"
+    },
+    {
+      "failure_if_stuck": "Crypto proposal mismatch (encryption/hash/DH group), pre-shared key mismatch, identity mismatch, or certificate validation failure",
+      "from_state": "IKE_NEGOTIATING",
+      "to_state": "IKE_ESTABLISHED",
+      "trigger": "IKE SA completed — Phase 1 proposals accepted, authentication (PSK or certificate) succeeded"
+    },
+    {
+      "failure_if_stuck": "Transform-set mismatch, proxy identity (ACL) mismatch, PFS DH group mismatch, or anti-replay window issue",
+      "from_state": "IKE_ESTABLISHED",
+      "to_state": "UP_IPSEC",
+      "trigger": "IPsec / child SA established — Phase 2 transform-set accepted, proxy identities matched"
+    },
+    {
+      "from_state": "DOWN",
+      "to_state": "UP_GRE_ONLY",
+      "trigger": "Plain GRE tunnel configured without IPsec crypto — tunnel interface comes up when source/destination are routable"
+    },
+    {
+      "from_state": "UP_IPSEC",
+      "to_state": "DOWN",
+      "trigger": "SA expired (lifetime exceeded), DPD detected peer unreachable, or tunnel/crypto configuration removed"
+    }
+  ],
+  "transport": "IP Protocol 47 (GRE), UDP 500/4500 (IKE/NAT-T), IP Protocol 50 (ESP)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "Full GRE/IPsec/IKEv2 support. VTI (Virtual Tunnel Interface) preferred over crypto maps for route-based VPN. 'tunnel protection ipsec profile <name>' links IPsec to a tunnel interface. DMVPN (Dynamic Multipoint VPN) and FlexVPN are built on GRE + IPsec + NHRP. Both SVTI (Static VTI) and MVTI (Multipoint VTI) are supported. IOS-XE is the primary platform for IPsec VPN deployments.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "GRE tunnels supported via 'interface tunnel-ip' for GRE encapsulation. IPsec on ASR 9000 requires a crypto engine line card. IKEv2 supported on platforms with crypto hardware. Less common than IOS-XE for VPN use cases — IOS-XR is primarily a service provider / core platform. For encrypted transport, MACsec or segment routing with encryption is more typical than GRE/IPsec.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "GRE tunnels supported on Nexus 9000. IPsec limited — primarily for MACsec on WAN links. 'interface tunnel' with 'tunnel mode gre'. No full IKE/IPsec on most Nexus platforms. CloudSec (VXLAN encryption) is the preferred overlay encryption method on Nexus 9000 rather than traditional IPsec.",
+          "versions": "9.3+"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "acl-implicit-deny-logs-are-expected",
+  "display_name": "ACL deny logs from the implicit deny at the end of an ACL are usually expected traffic, not misconfiguration",
+  "category": "log-analysis",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Syslog showing ACL deny messages, or monitoring alerting on ACL deny hit counts increasing",
+  "observation": "Logs show packets denied by an ACL; the denied traffic appears to be from legitimate sources or protocols that should work",
+  "naive_interpretation": "The ACL is misconfigured and blocking traffic that should be permitted — add a permit rule to fix the deny",
+  "correct_interpretation": "Every ACL has an implicit deny-all at the end that drops everything not explicitly matched by a permit entry. Deny logs from this implicit deny are expected for any traffic the ACL was not designed to permit — broadcast traffic, multicast discovery, ARP (on some platforms when applied to VLANs), scanning, and background protocol chatter all hit the implicit deny regularly. These logs do not indicate misconfiguration; they indicate the ACL is working as designed. Before adding a permit rule, verify whether the denied traffic actually needs to be permitted for the application or service to function. Many operators add overly broad permit rules in response to deny logs, weakening security without solving a real problem. The exception is when the denied traffic IS legitimate application traffic that was not accounted for in the original ACL design.",
+  "why": [
+    "The implicit deny at the end of an ACL is a security feature — it ensures only explicitly permitted traffic passes; all ACL implementations (Cisco, Juniper, Arista) include it by default",
+    "Network devices generate substantial background traffic (ARP, DHCP, LLDP, CDP, STP BPDUs, IGMP queries, broadcast) that is often not explicitly permitted in ACLs focused on application traffic",
+    "Adding an explicit 'deny ip any any log' at the end of an ACL replaces the silent implicit deny with a logging deny — this generates massive log volume from expected denials that operators then misinterpret as problems",
+    "ACL log messages do not indicate intent — they show what was denied, not whether denying it was correct or incorrect"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show access-lists <name>",
+      "purpose": "View the ACL entries with hit counts to see which rules are matching and whether the denied traffic is hitting an explicit deny or the implicit deny"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip access-lists <name>",
+      "purpose": "Display per-entry match counts to distinguish between traffic hitting an explicit deny rule vs the implicit deny"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show logging | include ACL",
+      "purpose": "Check the ACL deny log messages to see source/destination/protocol of denied traffic and determine if it is expected background traffic"
+    },
+    {
+      "os": "junos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show firewall log",
+      "purpose": "Review firewall filter log entries to identify the traffic being denied and whether it requires a permit rule"
+    }
+  ],
+  "traps": [
+    "Reflexively adding a permit rule every time a deny log appears — this gradually opens the ACL until it provides no security value",
+    "Adding an explicit 'deny any any log' to an ACL for visibility, then being overwhelmed by the volume of expected denials and treating them as problems",
+    "Not identifying WHAT traffic is being denied before deciding to permit it — broadcast, multicast, and protocol chatter are normal and expected denials",
+    "Confusing 'traffic is denied' with 'traffic should not be denied' — the deny is only a problem if the denied traffic is required for a service to function",
+    "Ignoring ACL deny logs entirely because 'they are always noise' — legitimate blocked traffic does sometimes appear in deny logs, mixed in with the expected denials"
+  ],
+  "related_rules": [
+    "syslog-severity-is-not-operational-impact",
+    "debug-no-output-is-not-proof-of-absence"
+  ],
+  "related_protocols": [],
+  "keywords": ["ACL", "access-list", "deny", "implicit deny", "log", "firewall", "permit", "blocked", "syslog", "hit count"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

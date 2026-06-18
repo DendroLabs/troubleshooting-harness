@@ -1,0 +1,749 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "Requires Ethernet frames; MST operates below IP",
+      "name": "Layer 2 connectivity",
+      "type": "infrastructure"
+    },
+    {
+      "description": "All switches in an MST region must have identical MST configuration: name, revision number, and VLAN-to-instance mapping",
+      "name": "Matching MST region config on all switches in region",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Switch must be configured with 'spanning-tree mode mst' to participate in MST",
+      "name": "STP mode set to MST",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "Switches that should be in the same MST region are treated as boundary ports because their MST configuration does not match. The region name, revision number, and VLAN-to-instance mapping (digest) must all match exactly.",
+      "resolutions": [
+        {
+          "action": "Compare MST configuration on all switches: 'show spanning-tree mst configuration'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare MST configuration on all switches: 'show spanning-tree mst configuration'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare MST configuration on all switches: 'show spanning-tree mst configuration'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure name, revision, and VLAN-to-instance mapping are identical across all intended region members",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure name, revision, and VLAN-to-instance mapping are identical across all intended region members",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure name, revision, and VLAN-to-instance mapping are identical across all intended region members",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply corrected configuration under 'spanning-tree mst configuration' mode",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply corrected configuration under 'spanning-tree mst configuration' mode",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply corrected configuration under 'spanning-tree mst configuration' mode",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "MST name mismatch between switches",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MST revision number mismatch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VLAN-to-instance mapping mismatch (all three must match exactly for switches to be in same region; the digest is a hash of the mapping table)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "MST region mismatch",
+      "symptoms": [
+        "Switches not in the same MST region despite expectation",
+        "Boundary port behavior on inter-switch links",
+        "Suboptimal STP topology with unexpected root bridges per region"
+      ],
+      "verify_commands": [
+        {
+          "command": "show spanning-tree mst configuration",
+          "confirms_if": "Any difference in name, revision, or VLAN mapping confirms the region mismatch",
+          "look_for": "Compare Name, Revision, and Instance-to-VLAN mapping across switches",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst configuration",
+          "confirms_if": "Any difference in name, revision, or VLAN mapping confirms the region mismatch",
+          "look_for": "Compare Name, Revision, and Instance-to-VLAN mapping across switches",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst configuration",
+          "confirms_if": "Any difference in name, revision, or VLAN mapping confirms the region mismatch",
+          "look_for": "Compare Name, Revision, and Instance-to-VLAN mapping across switches",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst",
+          "confirms_if": "Ports showing boundary role between switches that should share a region confirms mismatch",
+          "look_for": "Check for boundary (BDRY) role on ports that should be internal to the region",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst",
+          "confirms_if": "Ports showing boundary role between switches that should share a region confirms mismatch",
+          "look_for": "Check for boundary (BDRY) role on ports that should be internal to the region",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst",
+          "confirms_if": "Ports showing boundary role between switches that should share a region confirms mismatch",
+          "look_for": "Check for boundary (BDRY) role on ports that should be internal to the region",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "VLANs are assigned to the wrong MST instance or not mapped at all (falling into IST instance 0 by default), causing unexpected STP topology for those VLANs.",
+      "resolutions": [
+        {
+          "action": "Review mapping: 'show spanning-tree mst configuration'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review mapping: 'show spanning-tree mst configuration'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review mapping: 'show spanning-tree mst configuration'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Map VLANs to the intended instances under 'spanning-tree mst configuration' mode using 'instance <N> vlan <range>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Map VLANs to the intended instances under 'spanning-tree mst configuration' mode using 'instance <N> vlan <range>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Map VLANs to the intended instances under 'spanning-tree mst configuration' mode using 'instance <N> vlan <range>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure identical mapping on all switches in the region",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure identical mapping on all switches in the region",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure identical mapping on all switches in the region",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "VLAN not explicitly mapped to any instance (falls into IST instance 0 by default)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Inconsistent mapping across switches in the region",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Mapping changed on one switch but not propagated to others",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "VLAN-to-instance mapping misconfiguration",
+      "symptoms": [
+        "VLANs in wrong MST instance",
+        "Unexpected blocking on ports for specific VLANs",
+        "All unmapped VLANs concentrated in IST instance 0"
+      ],
+      "verify_commands": [
+        {
+          "command": "show spanning-tree mst configuration",
+          "confirms_if": "VLANs in instance 0 that should be in a different instance confirm the misconfiguration",
+          "look_for": "Check which VLANs are mapped to each instance; unmapped VLANs default to instance 0 (IST)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst configuration",
+          "confirms_if": "VLANs in instance 0 that should be in a different instance confirm the misconfiguration",
+          "look_for": "Check which VLANs are mapped to each instance; unmapped VLANs default to instance 0 (IST)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst configuration",
+          "confirms_if": "VLANs in instance 0 that should be in a different instance confirm the misconfiguration",
+          "look_for": "Check which VLANs are mapped to each instance; unmapped VLANs default to instance 0 (IST)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst <instance>",
+          "confirms_if": "Unexpected root bridge or port blocking in the instance confirms topology impact",
+          "look_for": "Check port roles and states for the specific MST instance to verify correct topology",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst <instance>",
+          "confirms_if": "Unexpected root bridge or port blocking in the instance confirms topology impact",
+          "look_for": "Check port roles and states for the specific MST instance to verify correct topology",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst <instance>",
+          "confirms_if": "Unexpected root bridge or port blocking in the instance confirms topology impact",
+          "look_for": "Check port roles and states for the specific MST instance to verify correct topology",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst configuration digest",
+          "confirms_if": "Different digest values confirm mapping mismatch between switches",
+          "look_for": "Compare the configuration digest across switches",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst configuration digest",
+          "confirms_if": "Different digest values confirm mapping mismatch between switches",
+          "look_for": "Compare the configuration digest across switches",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst configuration digest",
+          "confirms_if": "Different digest values confirm mapping mismatch between switches",
+          "look_for": "Compare the configuration digest across switches",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "When an MST region connects to RSTP (or PVST+) switches, the MST region presents itself as a single virtual bridge. PVST simulation on boundary ports can fail, causing unexpected blocking.",
+      "resolutions": [
+        {
+          "action": "Plan MST region boundaries carefully — boundary ports run CIST and interact with external STP domains",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Plan MST region boundaries carefully — boundary ports run CIST and interact with external STP domains",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Plan MST region boundaries carefully — boundary ports run CIST and interact with external STP domains",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure the MST region's CIST root priority is lower than external RSTP/PVST+ bridges for all VLANs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure the MST region's CIST root priority is lower than external RSTP/PVST+ bridges for all VLANs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure the MST region's CIST root priority is lower than external RSTP/PVST+ bridges for all VLANs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'spanning-tree mst simulate pvst' (default) and verify PVST simulation is not failing on boundary ports",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'spanning-tree mst simulate pvst' (default) and verify PVST simulation is not failing on boundary ports",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'spanning-tree mst simulate pvst' (default) and verify PVST simulation is not failing on boundary ports",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "MST region presents as single virtual bridge to RSTP, which can cause unexpected root placement",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PVST simulation on boundary ports fails when the PVST+ root for a VLAN is outside the MST region",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Inconsistent STP mode across the network (mixing MST and rapid-pvst without planning)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "MST/RSTP interop issues",
+      "symptoms": [
+        "Suboptimal STP when MST region connects to RSTP switches",
+        "PVST simulation failure causing root guard-like blocking on boundary ports",
+        "MST region appears as single virtual bridge to RSTP domain"
+      ],
+      "verify_commands": [
+        {
+          "command": "show spanning-tree mst",
+          "confirms_if": "Boundary port in inconsistent state or PVST simulation failure message confirms interop issue",
+          "look_for": "Check boundary port roles and whether PVST simulation is active or failed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst",
+          "confirms_if": "Boundary port in inconsistent state or PVST simulation failure message confirms interop issue",
+          "look_for": "Check boundary port roles and whether PVST simulation is active or failed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree mst",
+          "confirms_if": "Boundary port in inconsistent state or PVST simulation failure message confirms interop issue",
+          "look_for": "Check boundary port roles and whether PVST simulation is active or failed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree",
+          "confirms_if": "Unexpected root bridge or blocked ports at the MST/RSTP boundary confirms the interop problem",
+          "look_for": "Check overall STP topology from the perspective of non-MST switches; look for PVST simulation status",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree",
+          "confirms_if": "Unexpected root bridge or blocked ports at the MST/RSTP boundary confirms the interop problem",
+          "look_for": "Check overall STP topology from the perspective of non-MST switches; look for PVST simulation status",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree",
+          "confirms_if": "Unexpected root bridge or blocked ports at the MST/RSTP boundary confirms the interop problem",
+          "look_for": "Check overall STP topology from the perspective of non-MST switches; look for PVST simulation status",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Carries IST (Internal Spanning Tree, instance 0) and all MSTI information in a single BPDU, reducing overhead compared to per-VLAN STP",
+      "key_fields": [
+        "MST Config ID (name + revision + digest)",
+        "CIST Root ID",
+        "CIST External Path Cost",
+        "CIST Regional Root ID",
+        "CIST Port ID",
+        "MSTI Configuration Messages (one per active instance)"
+      ],
+      "name": "MST BPDU",
+      "when_sent": "Every hello-time by root bridge"
+    }
+  ],
+  "operates_at": "Layer 2",
+  "protocol_family": "switching",
+  "protocol_id": "mst",
+  "protocol_name": "MST",
+  "purpose": "Multiple Spanning Tree Protocol — maps multiple VLANs to spanning tree instances for scalable L2 loop prevention",
+  "related_protocols": [
+    "rstp",
+    "lacp",
+    "stp"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "ieee-ieee8021q2022section13",
+      "title": "IEEE 802.1Q-2022 (Section 13)",
+      "type": "ieee_standard"
+    },
+    {
+      "id": "cisco:switching/mst.json",
+      "title": "cisco knowledge base — switching/mst.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "IEEE 802.1Q-2022 (Section 13)",
+  "states": [
+    {
+      "description": "Not forwarding user frames. Normal transient state during topology convergence, but a failure indicator when a port is stuck here unexpectedly.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "DISCARDING"
+    },
+    {
+      "description": "Learning MAC addresses from received frames but not yet forwarding user traffic. Transient state between DISCARDING and FORWARDING.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "LEARNING"
+    },
+    {
+      "description": "Fully operational — forwarding user traffic and learning MAC addresses. Steady-state for root ports, designated ports, and edge ports within the MST instance.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "FORWARDING"
+    },
+    {
+      "description": "Port is administratively disabled (shutdown). Does not participate in MST.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "DISABLED"
+    },
+    {
+      "description": "Port is unable to participate in MST due to an STP inconsistency (e.g., PVST simulation failure, BPDU Guard, Root Guard). Requires manual intervention.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "BROKEN"
+    }
+  ],
+  "tags": [
+    "layer2",
+    "spanning-tree",
+    "mst",
+    "multi-instance",
+    "vlan-mapping",
+    "loop-prevention",
+    "switching"
+  ],
+  "timers": [
+    {
+      "default_rfc": "2s",
+      "description": "Interval between BPDU transmissions by root bridge",
+      "name": "hello-time",
+      "on_expiry": "Send MST BPDU on designated ports",
+      "range": "1-10s",
+      "tuning_advice": "Rarely changed; affects all switches in the MST region"
+    },
+    {
+      "default_rfc": "15s",
+      "description": "Time spent in LEARNING before FORWARDING (legacy path); MST uses proposal/agreement for rapid transition on point-to-point links",
+      "name": "forward-delay",
+      "on_expiry": "Port transitions to next state",
+      "range": "4-30s",
+      "tuning_advice": "MST bypasses this timer on point-to-point links via proposal/agreement; mainly relevant for shared segments"
+    },
+    {
+      "default_rfc": "20s",
+      "description": "Maximum age of BPDU information before it is discarded",
+      "name": "max-age",
+      "on_expiry": "Stored BPDU info expires; port re-evaluates its role",
+      "range": "6-40s",
+      "tuning_advice": "Lower values detect root failure faster but risk instability"
+    },
+    {
+      "default_rfc": "20",
+      "description": "MST-specific — decremented as BPDUs traverse switches within the region. Limits the diameter of an MST region.",
+      "name": "max-hop",
+      "on_expiry": "BPDU information discarded at region boundary",
+      "range": "1-40",
+      "tuning_advice": "Increase if the MST region has more than 20 switch hops in diameter; decrease to tighten region scope"
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "DISABLED",
+      "to_state": "DISCARDING",
+      "trigger": "Port enabled (no shutdown)"
+    },
+    {
+      "from_state": "DISCARDING",
+      "to_state": "LEARNING",
+      "trigger": "Selected as root or designated port; proposal/agreement mechanism or forward-delay timer expires"
+    },
+    {
+      "from_state": "LEARNING",
+      "to_state": "FORWARDING",
+      "trigger": "Forward-delay timer expires or rapid transition via proposal/agreement on point-to-point link"
+    },
+    {
+      "failure_if_stuck": "Possible TCN storm or unstable root bridge",
+      "from_state": "FORWARDING",
+      "to_state": "DISCARDING",
+      "trigger": "Topology change — port loses its role (e.g., better BPDU received or instance root changed)"
+    },
+    {
+      "from_state": "FORWARDING",
+      "to_state": "DISABLED",
+      "trigger": "Port administratively shut down"
+    },
+    {
+      "from_state": "DISCARDING",
+      "to_state": "DISABLED",
+      "trigger": "Port administratively shut down"
+    },
+    {
+      "from_state": "LEARNING",
+      "to_state": "DISCARDING",
+      "trigger": "Port role changed to alternate/backup after receiving superior BPDU"
+    },
+    {
+      "from_state": "BROKEN",
+      "to_state": "DISCARDING",
+      "trigger": "Inconsistency resolved (e.g., PVST simulation restored, guard condition cleared)"
+    }
+  ],
+  "transport": "Ethernet multicast 01:80:C2:00:00:00, LLC DSAP/SSAP 0x42 (same as RSTP)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "MST configured with 'spanning-tree mode mst'. Similar CLI to NX-OS. Supports up to 65 MST instances.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "IOS-XR does not run STP/MST — it is a router OS. STP is handled by connected L2 switches.",
+          "versions": "n/a"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "MST configured with 'spanning-tree mode mst'. MST region config under 'spanning-tree mst configuration'. Supports up to 65 MST instances (0-4094 in theory, 65 in practice on NX-OS).",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

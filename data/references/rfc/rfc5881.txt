@@ -1,0 +1,63 @@
+Internet Engineering Task Force (IETF)                           D. Katz
+Request for Comments: 5881                                       D. Ward
+Category: Standards Track                               Juniper Networks
+ISSN: 2070-1721                                                June 2010
+
+
+                Bidirectional Forwarding Detection (BFD)
+                     for IPv4 and IPv6 (Single Hop)
+
+Abstract
+
+   This document describes the use of the Bidirectional Forwarding
+   Detection (BFD) protocol over IPv4 and IPv6 for single IP hops.
+
+Status of This Memo
+
+   This is an Internet Standards Track document.
+
+   This document is a product of the Internet Engineering Task Force
+   (IETF).  It represents the consensus of the IETF community.  It has
+   received public review and has been approved for publication by the
+   Internet Engineering Steering Group (IESG).  Further information on
+   Internet Standards is available in Section 2 of RFC 5741.
+
+   Information about the current status of this document, any errata,
+   and how to provide feedback on it may be obtained at
+   http://www.rfc-editor.org/info/rfc5881.
+
+1.  Introduction
+
+   One very desirable application for Bidirectional Forwarding Detection
+   (BFD) [BFD] is to track IPv4 and IPv6 connectivity between directly
+   connected systems.  This could be used to supplement the detection
+   mechanisms in routing protocols or to monitor router-host
+   connectivity, among other applications.
+
+2.  Applications and Limitations
+
+   This application of BFD can be used by any pair of systems
+   communicating via IPv4 and/or IPv6 across a single IP hop that is
+   associated with an incoming interface.  This includes, but is not
+   limited to, physical media, virtual circuits, and tunnels.
+
+   Each BFD session between a pair of systems MUST traverse a separate
+   network-layer path in both directions.
+
+4.  Encapsulation
+
+   BFD Control packets MUST be transmitted in UDP packets with
+   destination port 3784, within an IPv4 or IPv6 packet.
+
+   BFD Echo packets MUST be transmitted in UDP packets with destination
+   UDP port 3785 in an IPv4 or IPv6 packet.
+
+10.  References
+
+10.1.  Normative References
+
+   [BFD]         Katz, D. and D. Ward, "Bidirectional Forwarding
+                 Detection", RFC 5880, June 2010.
+
+   [KEYWORDS]    Bradner, S., "Key words for use in RFCs to Indicate
+                 Requirement Levels", BCP 14, RFC 2119, March 1997.

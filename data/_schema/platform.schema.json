@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform.schema.json",
+  "title": "Platform Hardware Topology",
+  "description": "Hardware platform definition with ASIC mapping, port layout, and forwarding pipeline details.",
+
+  "$defs": {
+    "port_group": {
+      "type": "object",
+      "properties": {
+        "label": { "type": "string", "description": "Port label prefix, e.g., Ethernet1/" },
+        "start_port": { "type": "integer" },
+        "end_port": { "type": "integer" },
+        "native_speed": { "type": "string" },
+        "breakout_options": { "type": "array", "items": { "type": "string" } },
+        "connector": { "type": "string" }
+      },
+      "required": ["label", "start_port", "end_port", "native_speed"],
+      "additionalProperties": false
+    },
+
+    "slice": {
+      "type": "object",
+      "properties": {
+        "slice_id": { "type": "integer" },
+        "ifg_count": { "type": "integer" },
+        "ifg_serdes": { "type": "string" },
+        "buffer_mb": { "type": "number" },
+        "tcam_entries": { "type": "integer" },
+        "ports": { "type": "array", "items": { "$ref": "#/$defs/port_group" } }
+      },
+      "required": ["slice_id", "ports"],
+      "additionalProperties": false
+    },
+
+    "asic_instance": {
+      "type": "object",
+      "properties": {
+        "asic_id": { "type": "integer" },
+        "asic_model": { "type": "string" },
+        "asic_family": { "type": "string", "description": "References asic: def_id" },
+        "total_bandwidth_gbps": { "type": "number" },
+        "sms_mb": { "type": "number" },
+        "hbm_gb": { "type": "number" },
+        "memory_tables": { "type": "array", "items": { "type": "string" } },
+        "slices": { "type": "array", "items": { "$ref": "#/$defs/slice" } }
+      },
+      "required": ["asic_id", "asic_model", "asic_family"],
+      "additionalProperties": false
+    },
+
+    "scalability_entry": {
+      "type": "object",
+      "properties": {
+        "resource": { "type": "string" },
+        "value": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["resource", "value"],
+      "additionalProperties": false
+    },
+
+    "scalability_profile": {
+      "type": "object",
+      "properties": {
+        "profile_name": { "type": "string" },
+        "entries": { "type": "array", "items": { "$ref": "#/$defs/scalability_entry" } }
+      },
+      "required": ["profile_name", "entries"],
+      "additionalProperties": false
+    },
+
+    "scalability_section": {
+      "type": "object",
+      "properties": {
+        "section_name": { "type": "string" },
+        "profiles": { "type": "array", "items": { "$ref": "#/$defs/scalability_profile" } }
+      },
+      "required": ["section_name", "profiles"],
+      "additionalProperties": false
+    }
+  },
+
+  "type": "object",
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+    "deprecated": { "type": "boolean", "default": false },
+
+    "platform_id": { "type": "string" },
+    "platform_name": { "type": "string" },
+    "platform_pid": { "type": "string", "description": "Vendor product ID (e.g., N9K-X9736C-FX)" },
+    "os": { "type": "string" },
+    "platform_family": { "type": "string" },
+    "chassis_type": { "type": "string", "enum": ["fixed", "modular"] },
+    "total_bandwidth_tbps": { "type": "number" },
+    "total_ports": { "type": "integer" },
+
+    "asics": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/asic_instance" }
+    },
+
+    "scalability": {
+      "type": "object",
+      "description": "Per OS+version scalability limits for this platform",
+      "additionalProperties": {
+        "type": "object",
+        "description": "Keyed by 'os-version' (e.g., 'nxos-10.4')",
+        "properties": {
+          "os": { "type": "string" },
+          "version": { "type": "string" },
+          "source_url": { "type": "string" },
+          "sections": { "type": "array", "items": { "$ref": "#/$defs/scalability_section" } }
+        },
+        "required": ["os", "version", "sections"]
+      }
+    },
+
+    "sources": {
+      "type": "array",
+      "items": { "$ref": "protocol.schema.json#/$defs/source" }
+    }
+  },
+  "required": ["schema_version", "platform_id", "platform_name", "os", "platform_family"],
+  "additionalProperties": false
+}

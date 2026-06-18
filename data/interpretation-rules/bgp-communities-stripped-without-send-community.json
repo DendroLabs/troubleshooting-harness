@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "bgp-communities-stripped-without-send-community",
+  "display_name": "BGP communities not propagating to a neighbor because send-community is not configured",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Route-policy or route-map attaches communities to prefixes, but the receiving neighbor does not see them",
+  "observation": "A prefix is advertised to a BGP neighbor with the correct route-policy applied, but 'show bgp' on the receiving side shows no communities attached to the prefix",
+  "naive_interpretation": "The route-map or route-policy is not working — the community is not being set correctly, or there is a bug preventing community attachment",
+  "correct_interpretation": "By default, IOS-XE, NX-OS, and IOS-XR strip all communities (standard, extended, and large) when advertising prefixes to eBGP and iBGP neighbors. The 'send-community' configuration must be explicitly enabled per neighbor or peer-group for the communities to be included in BGP UPDATE messages. The route-map IS setting the community on the local router — but the community is removed from the UPDATE before it is sent to the neighbor. This is not a bug; it is the default behavior per RFC 1997. On IOS-XE/NX-OS, 'send-community' covers standard communities only; 'send-community extended' and 'send-community both' are needed for extended communities (used by EVPN, MPLS VPN, etc.). On IOS-XR, 'send-community-ebgp' and 'send-extended-community-ebgp' are the equivalent knobs for eBGP peers.",
+  "why": [
+    "RFC 1997 defines communities as an optional transitive attribute, but vendor implementations default to NOT sending them — the operator must opt in per neighbor",
+    "Extended communities (RT, SOO) used by EVPN and MPLS VPN require 'send-community extended' in addition to standard 'send-community' — configuring only one type leaves the other stripped",
+    "The stripping happens at the UPDATE generation stage, AFTER route-map processing — so 'show bgp' on the local router shows the community, but the neighbor never receives it",
+    "This default exists because communities can influence routing decisions on remote ASes — sending them indiscriminately could cause unintended routing behavior"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp ipv4 unicast neighbors <neighbor-ip> | include send-community",
+      "purpose": "Check if send-community is enabled for this neighbor — if not shown, communities are being stripped"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp ipv4 unicast <prefix>",
+      "purpose": "Verify the community IS set on the local RIB — if present locally but missing on the neighbor, the problem is send-community"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip bgp neighbors <neighbor-ip> | include send-community",
+      "purpose": "Check if send-community standard/extended/both is configured for this peer"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp neighbors <neighbor-ip> configuration",
+      "purpose": "Check for send-community-ebgp and send-extended-community-ebgp configuration"
+    }
+  ],
+  "traps": [
+    "Debugging the route-map or route-policy when it IS working correctly — the community is set locally but stripped before sending",
+    "Configuring 'send-community' but forgetting 'send-community extended' when EVPN or VPN route-targets are needed — standard and extended are separate knobs on IOS-XE/NX-OS",
+    "Checking the local BGP table and seeing the community, then assuming the neighbor must also see it — the UPDATE generation is where stripping occurs",
+    "Not realizing that 'send-community' must be configured per-neighbor or peer-group — there is no global knob to enable it for all peers",
+    "On IOS-XR, using 'send-community' (iBGP syntax) instead of 'send-community-ebgp' for eBGP peers"
+  ],
+  "related_rules": ["bgp-set-community-replaces-without-additive"],
+  "related_protocols": ["bgp-4", "evpn"],
+  "keywords": ["BGP", "community", "send-community", "extended community", "route-target", "strip", "UPDATE", "route-map", "route-policy", "eBGP", "iBGP"],
+  "sources": [
+    {
+      "id": "rfc-1997",
+      "title": "RFC 1997 — BGP Communities Attribute",
+      "type": "rfc",
+      "rfc_number": 1997,
+      "url": "https://www.rfc-editor.org/rfc/rfc1997.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

@@ -1,0 +1,1314 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "OSPFv3 runs entirely over IPv6 link-local addresses. Neighbors must be reachable via link-local for Hello exchange. Uses multicast FF02::5 (AllSPFRouters) and FF02::6 (AllDRouters).",
+      "name": "IPv6 link-local connectivity",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Interface must have IPv6 enabled ('ipv6 enable' or an IPv6 address configured) to generate a link-local address and participate in OSPFv3.",
+      "name": "IPv6 enabled on interface",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Hello/dead intervals, area ID, and Instance ID must match between neighbors. Unlike OSPFv2, there is no network mask check — but Instance ID must match exactly.",
+      "name": "Matching OSPF parameters",
+      "type": "infrastructure"
+    },
+    {
+      "description": "OSPFv3 has no native authentication fields. Security is provided by IPsec AH or ESP applied to the OSPFv3 interface. Optional but recommended in production. Mismatched IPsec config prevents adjacency formation.",
+      "name": "IPsec for authentication",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "OSPFv3 neighbor remains stuck in INIT (one-way) or EXSTART (master/slave negotiation fails) indefinitely. Similar to OSPFv2 but with IPv6-specific root causes including link-local addressing issues and IPsec authentication mismatches (OSPFv3 uses IPsec AH/ESP instead of OSPF-native authentication).",
+      "resolutions": [
+        {
+          "action": "Verify IPv6 link-local addresses: 'show ipv6 interface' — both sides need link-local",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify IPv6 link-local addresses: 'show ipv6 interface' — both sides need link-local",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify IPv6 link-local addresses: 'show ipv6 interface' — both sides need link-local",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check IPsec SA config: ensure matching keys, SPIs, and transforms on both ends",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check IPsec SA config: ensure matching keys, SPIs, and transforms on both ends",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check IPsec SA config: ensure matching keys, SPIs, and transforms on both ends",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU matches: 'show interface <intf>' — check IPv6 MTU on both sides",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU matches: 'show interface <intf>' — check IPv6 MTU on both sides",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU matches: 'show interface <intf>' — check IPv6 MTU on both sides",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check IPv6 ACLs: 'show ipv6 access-list' — ensure protocol 89 is permitted",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check IPv6 ACLs: 'show ipv6 access-list' — ensure protocol 89 is permitted",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check IPv6 ACLs: 'show ipv6 access-list' — ensure protocol 89 is permitted",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify unique Router IDs: 'show ospfv3' on both routers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify unique Router IDs: 'show ospfv3' on both routers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify unique Router IDs: 'show ospfv3' on both routers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm Instance ID matches: 'show ospfv3 interface' — default 0 for IPv6",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm Instance ID matches: 'show ospfv3 interface' — default 0 for IPv6",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm Instance ID matches: 'show ospfv3 interface' — default 0 for IPv6",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "As MTU workaround (not fix): 'ospfv3 mtu-ignore' on the interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "As MTU workaround (not fix): 'ospfv3 mtu-ignore' on the interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "As MTU workaround (not fix): 'ospfv3 mtu-ignore' on the interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Missing or misconfigured IPv6 link-local address on interface",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IPsec AH/ESP authentication mismatch (key, SPI, or transform)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MTU mismatch (IPv6 MTU differs between neighbors)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL or firewall blocking protocol 89 over IPv6",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Duplicate Router IDs in the OSPFv3 domain",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Instance ID mismatch (neighbors on different instances don't form adjacency)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Area type mismatch (stub vs. non-stub)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IPv6 not enabled on the interface ('ipv6 enable' missing)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Stuck in INIT/EXSTART",
+      "symptoms": [
+        "show ospfv3 neighbor shows INIT or EXSTART state that does not progress",
+        "Neighbor oscillates between EXSTART and DOWN",
+        "Log messages: '%OSPFv3-5-ADJCHG: ... went from EXSTART to DOWN'",
+        "No IPv6 routes learned from the neighbor"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ospfv3 neighbor",
+          "confirms_if": "Confirms adjacency is failing — INIT means one-way, EXSTART means DBD negotiation failure",
+          "look_for": "Look for neighbors stuck in INIT or EXSTART state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 neighbor",
+          "confirms_if": "Confirms adjacency is failing — INIT means one-way, EXSTART means DBD negotiation failure",
+          "look_for": "Look for neighbors stuck in INIT or EXSTART state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 neighbor",
+          "confirms_if": "Confirms adjacency is failing — INIT means one-way, EXSTART means DBD negotiation failure",
+          "look_for": "Look for neighbors stuck in INIT or EXSTART state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 interface",
+          "confirms_if": "Confirms OSPFv3 is enabled with correct parameters",
+          "look_for": "Check Instance ID, area, network type, and whether OSPFv3 is active on the interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 interface",
+          "confirms_if": "Confirms OSPFv3 is enabled with correct parameters",
+          "look_for": "Check Instance ID, area, network type, and whether OSPFv3 is active on the interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 interface",
+          "confirms_if": "Confirms OSPFv3 is enabled with correct parameters",
+          "look_for": "Check Instance ID, area, network type, and whether OSPFv3 is active on the interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "Missing link-local address confirms IPv6 not enabled",
+          "look_for": "Verify IPv6 is enabled and link-local address is present on the interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "Missing link-local address confirms IPv6 not enabled",
+          "look_for": "Verify IPv6 is enabled and link-local address is present on the interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "Missing link-local address confirms IPv6 not enabled",
+          "look_for": "Verify IPv6 is enabled and link-local address is present on the interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec sa",
+          "confirms_if": "IPsec SA mismatch or missing SA confirms authentication failure",
+          "look_for": "Check IPsec Security Associations for OSPFv3 — verify SPI and transform match between peers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec sa",
+          "confirms_if": "IPsec SA mismatch or missing SA confirms authentication failure",
+          "look_for": "Check IPsec Security Associations for OSPFv3 — verify SPI and transform match between peers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto ipsec sa",
+          "confirms_if": "IPsec SA mismatch or missing SA confirms authentication failure",
+          "look_for": "Check IPsec Security Associations for OSPFv3 — verify SPI and transform match between peers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Identifies MTU mismatch causing EXSTART failure",
+          "look_for": "Compare MTU values on both ends of the link",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Identifies MTU mismatch causing EXSTART failure",
+          "look_for": "Compare MTU values on both ends of the link",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Identifies MTU mismatch causing EXSTART failure",
+          "look_for": "Compare MTU values on both ends of the link",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "OSPFv3 adjacency reaches FULL state but no IPv6 (or IPv4) routes are learned. The address-family model in OSPFv3 requires explicit activation of each address family. Without proper AF configuration, the LSDB is synchronized but routes are not installed.",
+      "resolutions": [
+        {
+          "action": "Verify address-family configuration: 'show running-config | section ospfv3'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify address-family configuration: 'show running-config | section ospfv3'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify address-family configuration: 'show running-config | section ospfv3'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'address-family ipv6 unicast' (or ipv4) is configured under the OSPFv3 process",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'address-family ipv6 unicast' (or ipv4) is configured under the OSPFv3 process",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'address-family ipv6 unicast' (or ipv4) is configured under the OSPFv3 process",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Activate interface under the correct AF: 'ospfv3 <process> area <area> ipv6' (NX-OS)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Activate interface under the correct AF: 'ospfv3 <process> area <area> ipv6' (NX-OS)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Activate interface under the correct AF: 'ospfv3 <process> area <area> ipv6' (NX-OS)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check Instance ID: 0 for IPv6 (default), 64 for IPv4 unicast on NX-OS",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check Instance ID: 0 for IPv6 (default), 64 for IPv4 unicast on NX-OS",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check Instance ID: 0 for IPv6 (default), 64 for IPv4 unicast on NX-OS",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify routes: 'show ipv6 route ospf' and 'show ospfv3 database' to compare LSDB vs. RIB",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify routes: 'show ipv6 route ospf' and 'show ospfv3 database' to compare LSDB vs. RIB",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify routes: 'show ipv6 route ospf' and 'show ospfv3 database' to compare LSDB vs. RIB",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Address-family ipv6 unicast not configured under OSPFv3 process",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Address-family ipv4 unicast not configured when expecting IPv4-over-OSPFv3",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Wrong Instance ID for the address family (e.g., instance 0 for IPv6, 64 for IPv4)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interface not activated under the correct address-family",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Redistribution into wrong address-family",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "IPv6 address family not activated",
+      "symptoms": [
+        "OSPFv3 neighbor shows FULL state but no routes learned",
+        "'show ipv6 route ospf' or 'show ip route ospfv3' is empty despite FULL adjacency",
+        "LSDB appears synchronized but routing table missing expected prefixes",
+        "Address-family not visible under OSPFv3 process configuration"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ospfv3 neighbor",
+          "confirms_if": "FULL state confirms adjacency is healthy — problem is address-family or routing, not adjacency",
+          "look_for": "Confirm neighbor is in FULL state (adjacency is fine)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 neighbor",
+          "confirms_if": "FULL state confirms adjacency is healthy — problem is address-family or routing, not adjacency",
+          "look_for": "Confirm neighbor is in FULL state (adjacency is fine)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 neighbor",
+          "confirms_if": "FULL state confirms adjacency is healthy — problem is address-family or routing, not adjacency",
+          "look_for": "Confirm neighbor is in FULL state (adjacency is fine)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 database",
+          "confirms_if": "Presence of prefix LSAs confirms LSDB has the routes; absence means AF not originating LSAs",
+          "look_for": "Look for presence of Intra-Area-Prefix LSAs (type 0x2009) containing expected prefixes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 database",
+          "confirms_if": "Presence of prefix LSAs confirms LSDB has the routes; absence means AF not originating LSAs",
+          "look_for": "Look for presence of Intra-Area-Prefix LSAs (type 0x2009) containing expected prefixes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 database",
+          "confirms_if": "Presence of prefix LSAs confirms LSDB has the routes; absence means AF not originating LSAs",
+          "look_for": "Look for presence of Intra-Area-Prefix LSAs (type 0x2009) containing expected prefixes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ipv6 route ospf",
+          "confirms_if": "Empty output despite FULL adjacency confirms address-family activation issue",
+          "look_for": "Look for expected OSPFv3-learned IPv6 routes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ipv6 route ospf",
+          "confirms_if": "Empty output despite FULL adjacency confirms address-family activation issue",
+          "look_for": "Look for expected OSPFv3-learned IPv6 routes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ipv6 route ospf",
+          "confirms_if": "Empty output despite FULL adjacency confirms address-family activation issue",
+          "look_for": "Look for expected OSPFv3-learned IPv6 routes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | section ospfv3",
+          "confirms_if": "Missing address-family confirms the root cause",
+          "look_for": "Look for 'address-family ipv6 unicast' or 'address-family ipv4 unicast' under the OSPFv3 process",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | section ospfv3",
+          "confirms_if": "Missing address-family confirms the root cause",
+          "look_for": "Look for 'address-family ipv6 unicast' or 'address-family ipv4 unicast' under the OSPFv3 process",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | section ospfv3",
+          "confirms_if": "Missing address-family confirms the root cause",
+          "look_for": "Look for 'address-family ipv6 unicast' or 'address-family ipv4 unicast' under the OSPFv3 process",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "OSPFv3 uses Instance IDs (0-255) to allow multiple protocol instances per link. Neighbors with different Instance IDs on the same link will not see each other at all — Hellos are silently ignored because Instance ID is checked before neighbor processing. This is a common misconfiguration when mixing dual-stack and IPv6-only deployments.",
+      "resolutions": [
+        {
+          "action": "Check Instance ID on both sides: 'show ospfv3 interface <intf>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check Instance ID on both sides: 'show ospfv3 interface <intf>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check Instance ID on both sides: 'show ospfv3 interface <intf>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align Instance IDs: both neighbors must use the same Instance ID per AF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align Instance IDs: both neighbors must use the same Instance ID per AF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align Instance IDs: both neighbors must use the same Instance ID per AF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Default Instance IDs: 0 for IPv6, 64 for IPv4 unicast, 96 for IPv4 multicast",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Default Instance IDs: 0 for IPv6, 64 for IPv4 unicast, 96 for IPv4 multicast",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Default Instance IDs: 0 for IPv6, 64 for IPv4 unicast, 96 for IPv4 multicast",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: Instance ID set via 'ospfv3 <process> area <area> ipv6' (uses 0) vs 'ospfv3 <process> area <area> ipv4' (uses 64)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: Instance ID set via 'ospfv3 <process> area <area> ipv6' (uses 0) vs 'ospfv3 <process> area <area> ipv4' (uses 64)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: Instance ID set via 'ospfv3 <process> area <area> ipv6' (uses 0) vs 'ospfv3 <process> area <area> ipv4' (uses 64)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Packet capture on the link filtering protocol 89 to compare Instance IDs in Hellos",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Packet capture on the link filtering protocol 89 to compare Instance IDs in Hellos",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Packet capture on the link filtering protocol 89 to compare Instance IDs in Hellos",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Instance ID explicitly set to different values on each end",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "One side using IPv6 instance (default 0), other side using IPv4 instance (64)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Mixed vendor/OS defaults for Instance ID",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Migrating from single-AF to dual-stack without aligning Instance IDs",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Instance ID mismatch",
+      "symptoms": [
+        "No OSPFv3 neighbor appears on the link despite correct IPv6 config",
+        "show ospfv3 neighbor is empty for the expected interface",
+        "Both routers have OSPFv3 enabled but don't see each other",
+        "Packet captures show Hellos being sent but with different Instance IDs"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ospfv3 interface <intf>",
+          "confirms_if": "Different Instance IDs on each end confirm the mismatch",
+          "look_for": "Check 'Instance ID' field on this interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 interface <intf>",
+          "confirms_if": "Different Instance IDs on each end confirm the mismatch",
+          "look_for": "Check 'Instance ID' field on this interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 interface <intf>",
+          "confirms_if": "Different Instance IDs on each end confirm the mismatch",
+          "look_for": "Check 'Instance ID' field on this interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 neighbor",
+          "confirms_if": "No neighbor on an active OSPFv3 interface suggests Instance ID or Hello parameter mismatch",
+          "look_for": "Look for absence of expected neighbor on the interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 neighbor",
+          "confirms_if": "No neighbor on an active OSPFv3 interface suggests Instance ID or Hello parameter mismatch",
+          "look_for": "Look for absence of expected neighbor on the interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 neighbor",
+          "confirms_if": "No neighbor on an active OSPFv3 interface suggests Instance ID or Hello parameter mismatch",
+          "look_for": "Look for absence of expected neighbor on the interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 interface",
+          "confirms_if": "Reveals which interfaces have non-default Instance IDs",
+          "look_for": "Compare Instance IDs across all OSPFv3 interfaces to identify inconsistencies",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 interface",
+          "confirms_if": "Reveals which interfaces have non-default Instance IDs",
+          "look_for": "Compare Instance IDs across all OSPFv3 interfaces to identify inconsistencies",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ospfv3 interface",
+          "confirms_if": "Reveals which interfaces have non-default Instance IDs",
+          "look_for": "Compare Instance IDs across all OSPFv3 interfaces to identify inconsistencies",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Discovers neighbors, negotiates parameters, elects DR/BDR. Sent to FF02::5 (AllSPFRouters).",
+      "key_fields": [
+        "Router ID",
+        "Area ID",
+        "Instance ID",
+        "Interface ID",
+        "Hello Interval",
+        "Dead Interval",
+        "DR",
+        "BDR",
+        "Neighbor List",
+        "Options (V6, E, N, MC, R, DC, AF)"
+      ],
+      "name": "Hello",
+      "when_sent": "Every hello-interval on OSPFv3-enabled interfaces"
+    },
+    {
+      "description": "Exchanges LSDB summary during adjacency formation. Carries LSA headers describing the sender's database.",
+      "key_fields": [
+        "Interface MTU (IPv6 MTU)",
+        "Options",
+        "I/M/MS flags",
+        "DD Sequence Number",
+        "LSA Headers (OSPFv3 LSA types)"
+      ],
+      "name": "Database Description (DBD)",
+      "when_sent": "During EXSTART/EXCHANGE states"
+    },
+    {
+      "description": "Requests specific LSAs identified as missing or newer during DBD exchange",
+      "key_fields": [
+        "LS Type (0x2001-0x2009, 0x4005, 0x8)",
+        "Link State ID",
+        "Advertising Router"
+      ],
+      "name": "Link State Request (LSR)",
+      "when_sent": "After DBD exchange when missing/newer LSAs are identified"
+    },
+    {
+      "description": "Carries one or more LSAs — the core flooding mechanism. OSPFv3 uses different LSA types than OSPFv2.",
+      "key_fields": [
+        "Number of LSAs",
+        "LSA Type (0x2001 Router, 0x2002 Network, 0x2003 Inter-Area-Prefix, 0x2004 Inter-Area-Router, 0x4005 AS-External, 0x2007 NSSA, 0x0008 Link, 0x2009 Intra-Area-Prefix)",
+        "LSA Header",
+        "LSA Body"
+      ],
+      "name": "Link State Update (LSU)",
+      "when_sent": "In response to LSR, or when an LSA originates/changes"
+    },
+    {
+      "description": "Acknowledges received LSUs for reliable flooding",
+      "key_fields": [
+        "LSA Headers (acknowledged)"
+      ],
+      "name": "Link State Acknowledgment (LSAck)",
+      "when_sent": "After receiving an LSU"
+    }
+  ],
+  "operates_at": "Layer 3",
+  "protocol_family": "routing",
+  "protocol_id": "ospfv3",
+  "protocol_name": "OSPFv3",
+  "purpose": "Open Shortest Path First version 3 — link-state IGP for IPv6 (and IPv4 via address families)",
+  "related_protocols": [
+    "ospfv2",
+    "bfd"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-5340",
+      "rfc_number": 5340,
+      "title": "RFC 5340",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc5340.txt"
+    },
+    {
+      "id": "cisco:routing/ospfv3.json",
+      "title": "cisco knowledge base — routing/ospfv3.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 5340",
+  "states": [
+    {
+      "description": "No Hello received from neighbor. Initial state for all neighbors. The local router has no information about the neighbor or the neighbor's dead timer has expired.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "DOWN"
+    },
+    {
+      "description": "(NBMA only) Unicast Hello sent to a manually configured neighbor, but no Hello has been received in reply. Rare in OSPFv3 deployments since NBMA is uncommon with IPv6.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "ATTEMPT"
+    },
+    {
+      "description": "Hello received from neighbor but own Router ID is not listed in the neighbor's Hello packet (one-way communication). Stuck in INIT indicates return Hellos are not reaching the neighbor — common causes include IPv6 link-local issues, ACLs blocking protocol 89 over IPv6, or IPsec authentication mismatch.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "INIT"
+    },
+    {
+      "description": "Bidirectional communication established — own Router ID has been seen in the neighbor's Hello. DR/BDR election occurs in this state on broadcast and NBMA networks. This is the steady state for DROther-to-DROther adjacencies on multi-access segments.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "2-WAY"
+    },
+    {
+      "description": "Master/slave negotiation for Database Description (DBD) exchange. The router with the higher Router ID becomes master. Stuck in EXSTART typically indicates MTU mismatch (IPv6 MTU), IPsec authentication failure, or duplicate Router IDs.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "EXSTART"
+    },
+    {
+      "description": "Database Description packets are being exchanged. Each DBD contains LSA headers summarizing the sender's LSDB. The receiver builds a list of LSAs it needs to request.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "EXCHANGE"
+    },
+    {
+      "description": "Link State Requests (LSRs) have been sent for LSAs identified during EXCHANGE. Waiting for Link State Updates (LSUs) in response. Brief transient state.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "LOADING"
+    },
+    {
+      "description": "Fully adjacent — LSDBs are synchronized between neighbors. This is the normal steady state for DR/BDR adjacencies, point-to-point links, and virtual links. IPv6 (and optionally IPv4) routes are computed from the synchronized LSDB.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "FULL"
+    }
+  ],
+  "tags": [
+    "igp",
+    "link-state",
+    "ipv6",
+    "dual-stack",
+    "spf",
+    "routing"
+  ],
+  "timers": [
+    {
+      "default_rfc": "10s (broadcast/P2P), 30s (NBMA)",
+      "description": "Interval between Hello packets on OSPFv3 interfaces",
+      "name": "hello-interval",
+      "on_expiry": "Send Hello on this interface",
+      "range": "1-65535s",
+      "tuning_advice": "Must match all neighbors on a segment; lower for faster detection but more overhead. Consider BFD for sub-second detection instead of aggressive hello timers."
+    },
+    {
+      "default_rfc": "40s (4x hello)",
+      "description": "Time without a Hello before declaring neighbor down",
+      "name": "dead-interval",
+      "on_expiry": "Neighbor declared dead; adjacency torn down; routes withdrawn and SPF recalculated",
+      "range": "1-65535s",
+      "tuning_advice": "Must match all neighbors on a segment; consider BFD for sub-second detection instead of reducing dead-interval"
+    },
+    {
+      "default_rfc": "5s",
+      "description": "Interval to retransmit unacknowledged LSAs/DBDs",
+      "name": "retransmit-interval",
+      "on_expiry": "Retransmit LSA/DBD to neighbor",
+      "range": "1-65535s",
+      "tuning_advice": "Increase on high-latency links; decrease on low-latency links for faster convergence"
+    },
+    {
+      "default_rfc": "1800s (30min)",
+      "description": "Interval to re-originate self-originated LSAs to prevent aging out",
+      "name": "LSA refresh",
+      "on_expiry": "LSA refreshed with incremented sequence number and flooded"
+    },
+    {
+      "default_rfc": "3600s (60min)",
+      "description": "Maximum age before LSA is purged from LSDB",
+      "name": "LSA max-age",
+      "on_expiry": "LSA purged from LSDB and flooded with max-age to all neighbors"
+    },
+    {
+      "default_rfc": "OS-specific (see overrides)",
+      "description": "Delay before running SPF calculation after a topology change (initial-delay/hold-time/max-wait)",
+      "name": "SPF delay",
+      "on_expiry": "SPF algorithm runs, routing table updated",
+      "os_defaults": [
+        {
+          "default": "200ms/1000ms/5000ms",
+          "notes": "NX-OS uses moderately aggressive defaults",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "5000ms/10000ms/10000ms",
+          "notes": "IOS-XE uses conservative defaults; tune lower for faster convergence",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "5ms/200ms/5000ms",
+          "notes": "IOS-XR uses aggressive defaults out of the box",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "tuning_advice": "Tune SPF timers (initial-delay, hold-time, max-wait) for faster convergence. Aggressive settings: 1ms/5ms/5000ms. OS defaults vary significantly."
+    },
+    {
+      "default_rfc": "0ms/5000ms/5000ms (start/hold/max)",
+      "description": "Throttle for LSA origination to prevent flooding storms (start-interval/hold-interval/max-interval)",
+      "name": "LSA throttle",
+      "on_expiry": "LSA can be re-originated after throttle expires",
+      "tuning_advice": "Tune for faster convergence in large networks; reduce start-interval for first LSA, but keep max reasonable to prevent storms"
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "DOWN",
+      "to_state": "INIT",
+      "trigger": "Hello received from neighbor (over IPv6 link-local)"
+    },
+    {
+      "failure_if_stuck": "One-way communication — IPv6 ACL blocking protocol 89, missing link-local address, or IPsec SA mismatch",
+      "from_state": "INIT",
+      "to_state": "2-WAY",
+      "trigger": "Own Router ID seen in neighbor's Hello (bidirectional communication confirmed)"
+    },
+    {
+      "from_state": "2-WAY",
+      "to_state": "EXSTART",
+      "trigger": "Adjacency decision — at least one side is DR/BDR, or point-to-point/virtual link"
+    },
+    {
+      "failure_if_stuck": "MTU mismatch (IPv6 MTU), IPsec authentication failure, or duplicate Router IDs",
+      "from_state": "EXSTART",
+      "to_state": "EXCHANGE",
+      "trigger": "Master/slave agreed, DD sequence numbers synchronized"
+    },
+    {
+      "from_state": "EXCHANGE",
+      "to_state": "LOADING",
+      "trigger": "All DBDs exchanged, LSRs needed for missing LSAs"
+    },
+    {
+      "from_state": "EXCHANGE",
+      "to_state": "FULL",
+      "trigger": "All DBDs exchanged, no LSRs needed (databases already in sync)"
+    },
+    {
+      "from_state": "LOADING",
+      "to_state": "FULL",
+      "trigger": "All requested LSAs received and acknowledged"
+    },
+    {
+      "from_state": "FULL",
+      "to_state": "DOWN",
+      "trigger": "Dead timer expired — no Hellos received from neighbor"
+    },
+    {
+      "failure_if_stuck": "MTU mismatch or IPsec authentication failure preventing DBD exchange — adjacency cycles EXSTART -> DOWN repeatedly",
+      "from_state": "EXSTART",
+      "to_state": "DOWN",
+      "trigger": "Dead timer expired"
+    },
+    {
+      "failure_if_stuck": "One-way communication — IPv6 ACL, missing link-local, or asymmetric routing blocking return Hellos",
+      "from_state": "INIT",
+      "to_state": "DOWN",
+      "trigger": "Dead timer expired"
+    },
+    {
+      "from_state": "FULL",
+      "to_state": "INIT",
+      "trigger": "Received Hello without own Router ID (neighbor restarted or misconfiguration)"
+    },
+    {
+      "from_state": "DOWN",
+      "to_state": "ATTEMPT",
+      "trigger": "(NBMA only) Neighbor manually configured, unicast Hello sent over IPv6"
+    },
+    {
+      "from_state": "ATTEMPT",
+      "to_state": "INIT",
+      "trigger": "Hello received from NBMA neighbor"
+    }
+  ],
+  "transport": "IP protocol 89 over IPv6, multicast FF02::5 (AllSPFRouters) and FF02::6 (AllDRouters)",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "router ospfv3 1\n address-family ipv6 unicast\n  area 0\ninterface GigabitEthernet1\n ipv6 address 2001:db8::1/64\n ospfv3 1 ipv6 area 0"
+      ],
+      "notes": [
+        {
+          "note": "OSPFv3 supports address-family model: 'router ospfv3 <process>' with 'address-family ipv6/ipv4 unicast'. Also supports legacy 'ipv6 router ospf' syntax.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "config_examples": [
+        "router ospfv3 1\n area 0\n  interface GigabitEthernet0/0/0/0\n address-family ipv6 unicast\n  area 0\n   interface GigabitEthernet0/0/0/0"
+      ],
+      "notes": [
+        {
+          "note": "OSPFv3 configured under 'router ospfv3 <process>'. Supports both IPv6 and IPv4 unicast address families. Uses IPsec for authentication natively.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "feature ospfv3\nrouter ospfv3 1\n  address-family ipv6 unicast\ninterface Ethernet1/1\n  ipv6 address 2001:db8::1/64\n  ospfv3 1 area 0 ipv6"
+      ],
+      "notes": [
+        {
+          "note": "OSPFv3 requires 'feature ospfv3'. Uses 'ospfv3 <process> area <area> ipv6/ipv4' under interface. Supports address-family model for dual-stack (IPv4+IPv6 in single OSPFv3 instance).",
+          "versions": "9.3+"
+        },
+        {
+          "note": "NX-OS OSPFv3 instance ID defaults: 0 for IPv6, 64 for IPv4 unicast. Changing instance ID breaks adjacency with neighbors using different IDs.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "nat-translation-exists-but-no-traffic",
+  "display_name": "A NAT translation entry existing does not mean traffic is being NAT'd — check order of operations",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Troubleshooting traffic not reaching its destination despite a NAT translation appearing in the translation table",
+  "observation": "The NAT translation table shows the expected mapping (inside local/global or outside local/global), but traffic still does not flow end-to-end",
+  "naive_interpretation": "NAT is working correctly because the translation exists, so the problem must be elsewhere in the path (routing, ACL, or the far end)",
+  "correct_interpretation": "A static NAT translation entry exists in the table regardless of whether traffic matches it. A dynamic entry may have been created by earlier traffic and is now stale. The presence of a translation does NOT confirm that current traffic is being translated. NAT has a specific order of operations relative to routing and ACLs that differs by direction (inside-to-outside vs outside-to-inside) and by platform. On IOS/IOS-XE: inside-to-outside traffic is routed THEN NAT'd; outside-to-inside traffic is NAT'd THEN routed. If routing sends traffic out the wrong interface before NAT can translate it, or if an ACL on the inside interface drops the pre-NAT (original) source, the translation exists but is never applied. Check interface NAT designations (ip nat inside/outside), routing for BOTH pre-NAT and post-NAT addresses, and ACL match criteria relative to NAT order.",
+  "why": [
+    "Static NAT entries are configured, not flow-created — they exist in the table whether or not any traffic matches them",
+    "Dynamic NAT entries have a timeout and may represent a previous flow that has since stopped; the entry lingers but no active flow uses it",
+    "NAT order of operations on IOS: inside-to-outside = route lookup, then translate source; outside-to-inside = translate destination, then route lookup — ACLs and routing see different addresses depending on direction",
+    "NAT interface designation (ip nat inside/outside) determines which translations apply on which interfaces; a missing or wrong designation silently skips NAT"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip nat translations",
+      "purpose": "View current translations and check hit counts — a translation with zero or stale hits is not actively translating traffic"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip nat statistics",
+      "purpose": "Check total hits/misses and which interfaces are designated inside/outside to confirm NAT is positioned correctly"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip nat translations",
+      "purpose": "Verify translation entries and their hit counts on NX-OS"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route",
+      "purpose": "Verify routing for both pre-NAT and post-NAT addresses to ensure traffic reaches the correct NAT interface"
+    }
+  ],
+  "traps": [
+    "Declaring NAT healthy because a translation exists in the table, then spending hours debugging routing or ACLs that are actually correct for the post-NAT address",
+    "Not checking whether the interfaces have the correct ip nat inside/outside designation — traffic on an undesignated interface bypasses NAT entirely",
+    "Writing ACLs matching post-NAT addresses on an interface where NAT hasn't been applied yet (wrong point in the order of operations)",
+    "Forgetting that dynamic NAT entries time out — a translation you saw 5 minutes ago may be gone, and a new flow may be failing because the NAT pool is exhausted",
+    "Confusing static NAT (always present, bidirectional) with dynamic NAT (flow-created, directional, subject to pool/overload limits)"
+  ],
+  "related_rules": [],
+  "related_protocols": ["nat"],
+  "keywords": ["NAT", "translation", "order of operations", "inside", "outside", "ip nat", "static NAT", "dynamic NAT", "PAT", "overload", "ACL", "routing"],
+  "sources": [
+    {
+      "id": "rfc-3022",
+      "title": "RFC 3022 — Traditional IP Network Address Translator (Traditional NAT)",
+      "type": "rfc",
+      "rfc_number": 3022,
+      "url": "https://www.rfc-editor.org/rfc/rfc3022.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "confidence": "medium",
+  "os": "iosxr",
+  "platform_family": "ncs-5500",
+  "platform_id": "ncs-5500",
+  "platform_name": "NCS 5500 Series",
+  "scalability": {
+    "iosxr-asic-driven": {
+      "os": "iosxr",
+      "sections": [
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "FIB IPv4 (LPM)",
+                  "value": "256K-400K"
+                },
+                {
+                  "notes": "",
+                  "resource": "FIB IPv6 (LPM)",
+                  "value": "~128K"
+                },
+                {
+                  "notes": "",
+                  "resource": "LEM Entries",
+                  "value": "786K"
+                },
+                {
+                  "notes": "",
+                  "resource": "iTCAM",
+                  "value": "48K"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP",
+                  "value": "via ECMP FEC"
+                }
+              ],
+              "profile_name": "Jericho (base, no eTCAM)"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "FIB IPv4 (LPM)",
+                  "value": "1M-1.3M"
+                },
+                {
+                  "notes": "",
+                  "resource": "FIB IPv6 (LPM)",
+                  "value": "~500K"
+                },
+                {
+                  "notes": "",
+                  "resource": "LEM Entries",
+                  "value": "786K"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP FEC/NPU",
+                  "value": "4,096"
+                }
+              ],
+              "profile_name": "Jericho+ (base, no eTCAM)"
+            }
+          ],
+          "section_name": "FIB Scale by ASIC (Base Systems)"
+        },
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "FIB IPv4 (eTCAM)",
+                  "value": "2M"
+                },
+                {
+                  "notes": "",
+                  "resource": "FIB IPv6 (eTCAM)",
+                  "value": "~1M"
+                },
+                {
+                  "notes": "",
+                  "resource": "LEM Entries",
+                  "value": "786K"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP",
+                  "value": "via ECMP FEC"
+                }
+              ],
+              "profile_name": "Jericho + eTCAM (-SE)"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "FIB IPv4 (eTCAM)",
+                  "value": "4M"
+                },
+                {
+                  "notes": "",
+                  "resource": "FIB IPv6 (eTCAM)",
+                  "value": "~2M"
+                },
+                {
+                  "notes": "",
+                  "resource": "LEM Entries",
+                  "value": "786K"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP FEC/NPU",
+                  "value": "4,096"
+                }
+              ],
+              "profile_name": "Jericho+ + eTCAM (-SE)"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "FIB IPv4",
+                  "value": "up to 5M"
+                },
+                {
+                  "notes": "",
+                  "resource": "FIB IPv6",
+                  "value": "up to 3M"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP",
+                  "value": "enhanced"
+                },
+                {
+                  "notes": "",
+                  "resource": "MPLS Labels",
+                  "value": "enhanced"
+                }
+              ],
+              "profile_name": "Jericho2 (NCS 5700, -SE)"
+            }
+          ],
+          "section_name": "FIB Scale by ASIC (-SE Systems with eTCAM)"
+        }
+      ],
+      "source_url": "https://xrdocs.io/ncs5500/tutorials/2017-08-03-understanding-ncs5500-resources-s01e02",
+      "version": "asic-driven"
+    }
+  },
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco:verified-scalability/iosxr/ncs-5500-asic-driven.json",
+      "title": "cisco knowledge base — verified-scalability/iosxr/ncs-5500-asic-driven.json",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco-scale-iosxr-asic-driven",
+      "title": "Cisco Verified Scalability Guide — NCS 5500 Series asic-driven",
+      "type": "vendor_doc",
+      "url": "https://xrdocs.io/ncs5500/tutorials/2017-08-03-understanding-ncs5500-resources-s01e02"
+    }
+  ]
+}

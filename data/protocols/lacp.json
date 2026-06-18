@@ -1,0 +1,2613 @@
+{
+  "confidence": "medium",
+  "def_refs": [
+    "timer:lacp-actor-timeout",
+    "timer:lacp-pdu-interval",
+    "daemon:teammgrd",
+    "daemon:teamsyncd",
+    "daemon:orchagent",
+    "daemon:portsyncd",
+    "db:config_db",
+    "db:appl_db",
+    "db:state_db"
+  ],
+  "dependencies": [
+    {
+      "description": "Requires Ethernet connectivity between aggregation partners",
+      "name": "Layer 2 connectivity",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Ports must be in a channel-group with mode active or passive",
+      "name": "Channel-group with LACP mode",
+      "type": "infrastructure"
+    },
+    {
+      "description": "All member ports must have identical speed, duplex, VLAN, MTU configuration",
+      "name": "Matching member port parameters",
+      "type": "infrastructure"
+    },
+    {
+      "description": "The core LACP daemon in SONiC. teamd manages all PortChannel (Linux team device) operations including LACPDU generation, reception, state machine execution, and aggregator selection. All PortChannels on the switch are managed by a single teamd container. If teamd dies, all PortChannels go down.",
+      "name": "teamd (teamd container)",
+      "type": "daemon"
+    },
+    {
+      "description": "Translates PortChannel configuration from CONFIG_DB into teamd JSON configuration files. teammgrd watches CONFIG_DB PORTCHANNEL and PORTCHANNEL_MEMBER tables and writes /etc/teamd/<PortChannelName>.conf files that teamd reads for each PortChannel instance.",
+      "name": "teammgrd (swss container)",
+      "type": "daemon"
+    },
+    {
+      "description": "Listens to teamd netlink events (port up/down, member joins/leaves) and synchronizes the resulting LAG state into APPL_DB LAG_TABLE and LAG_MEMBER_TABLE. orchagent then reads these tables to program the ASIC.",
+      "name": "teamsyncd (swss container)",
+      "type": "daemon"
+    },
+    {
+      "description": "Consumes APPL_DB LAG_TABLE and LAG_MEMBER_TABLE entries from teamsyncd and translates them into SAI API calls to create and modify LAG objects and LAG member objects in ASIC_DB. Controls which ports are active in the ASIC forwarding LAG.",
+      "name": "orchagent (swss container)",
+      "type": "daemon"
+    },
+    {
+      "description": "Monitors physical port link state changes via netlink and updates APPL_DB PORT_TABLE. teamd depends on accurate port link state information to determine which member ports are eligible for LACP negotiation.",
+      "name": "portsyncd (swss container)",
+      "type": "daemon"
+    },
+    {
+      "description": "Source of truth for PortChannel configuration: PORTCHANNEL table (PortChannel name, min_links, fast_rate, mtu, admin_status) and PORTCHANNEL_MEMBER table (member port assignments). teammgrd reads from here to configure teamd.",
+      "name": "CONFIG_DB (Redis DB 4)",
+      "type": "database"
+    },
+    {
+      "description": "LAG state publication bus between teamsyncd and orchagent. Contains LAG_TABLE (PortChannel operational state) and LAG_MEMBER_TABLE (per-member active status). orchagent reads these to drive ASIC programming.",
+      "name": "APPL_DB (Redis DB 0)",
+      "type": "database"
+    },
+    {
+      "description": "Stores operational LACP and LAG state for monitoring and cross-daemon coordination. LAG_TABLE and LAG_MEMBER_TABLE entries in STATE_DB reflect current operational status including LACP port states.",
+      "name": "STATE_DB (Redis DB 6)",
+      "type": "database"
+    },
+    {
+      "description": "Spanning Tree Protocol runs on the same physical ports as LACP. STP can block a port before LACP has a chance to aggregate it. In SONiC, STP is managed separately but the two protocols interact -- a port must be STP-forwarding for LACPDUs to be exchanged successfully.",
+      "name": "STP (optional, interacts)",
+      "type": "protocol"
+    },
+    {
+      "description": "Multi-Chassis LAG uses LACP PortChannels as the client-facing aggregation. MCLAG requires both peers to present the same LACP System ID (same system_mac and system_priority) so the client sees a single LACP endpoint. iccpd (ICCP daemon) synchronizes LAG state between MCLAG peers.",
+      "name": "MCLAG (optional, interacts)",
+      "type": "protocol"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "Port is configured in a channel-group but is not actively bundled into the port-channel",
+      "resolutions": [
+        {
+          "action": "Verify both sides use LACP (active/active or active/passive)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify both sides use LACP (active/active or active/passive)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify both sides use LACP (active/active or active/passive)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check member port config matches: speed, duplex, VLAN, STP, MTU",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check member port config matches: speed, duplex, VLAN, STP, MTU",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check member port config matches: speed, duplex, VLAN, STP, MTU",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify channel-group config on both ends: 'show running-config interface'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify channel-group config on both ends: 'show running-config interface'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify channel-group config on both ends: 'show running-config interface'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check LACP neighbor: 'show lacp neighbor' for partner info",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check LACP neighbor: 'show lacp neighbor' for partner info",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check LACP neighbor: 'show lacp neighbor' for partner info",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify physical layer: 'show interface' for errors",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify physical layer: 'show interface' for errors",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify physical layer: 'show interface' for errors",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "LACP mode mismatch (one side active, other side on/static)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Mismatched port-channel parameters: speed, duplex, VLAN, MTU",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Mismatched LACP system-priority or port-priority causing partner to reject",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Channel-group number or mode mismatch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Physical layer issue on member link",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Exceeded max members per port-channel",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Port not bundling — stuck in suspended/individual",
+      "symptoms": [
+        "show port-channel summary shows port as (I)ndividual or (s)uspended",
+        "Traffic not load-balanced across expected links",
+        "show lacp neighbor shows no partner info"
+      ],
+      "verify_commands": [
+        {
+          "command": "show port-channel summary",
+          "confirms_if": "Shows which ports are actually in the port-channel",
+          "look_for": "Look for port status flags: (P)=bundled, (I)=individual, (s)=suspended, (D)=down",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show port-channel summary",
+          "confirms_if": "Shows which ports are actually in the port-channel",
+          "look_for": "Look for port status flags: (P)=bundled, (I)=individual, (s)=suspended, (D)=down",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show port-channel summary",
+          "confirms_if": "Shows which ports are actually in the port-channel",
+          "look_for": "Look for port status flags: (P)=bundled, (I)=individual, (s)=suspended, (D)=down",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp neighbor",
+          "confirms_if": "Confirms whether the remote side is sending LACPDUs",
+          "look_for": "Look for partner system ID, key, and port state flags",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp neighbor",
+          "confirms_if": "Confirms whether the remote side is sending LACPDUs",
+          "look_for": "Look for partner system ID, key, and port state flags",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp neighbor",
+          "confirms_if": "Confirms whether the remote side is sending LACPDUs",
+          "look_for": "Look for partner system ID, key, and port state flags",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp internal",
+          "confirms_if": "Shows local LACP state machine status per port",
+          "look_for": "Look for actor state flags (Activity, Sync, Collecting, Distributing)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp internal",
+          "confirms_if": "Shows local LACP state machine status per port",
+          "look_for": "Look for actor state flags (Activity, Sync, Collecting, Distributing)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp internal",
+          "confirms_if": "Shows local LACP state machine status per port",
+          "look_for": "Look for actor state flags (Activity, Sync, Collecting, Distributing)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp counters",
+          "confirms_if": "Confirms LACPDU exchange is happening",
+          "look_for": "Look for incrementing LACPDUs Sent/Recv; zero recv indicates partner issue",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp counters",
+          "confirms_if": "Confirms LACPDU exchange is happening",
+          "look_for": "Look for incrementing LACPDUs Sent/Recv; zero recv indicates partner issue",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp counters",
+          "confirms_if": "Confirms LACPDU exchange is happening",
+          "look_for": "Look for incrementing LACPDUs Sent/Recv; zero recv indicates partner issue",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Port-channel members are repeatedly bundling and unbundling",
+      "resolutions": [
+        {
+          "action": "Check physical layer: 'show interface' for CRC, input/output errors",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check physical layer: 'show interface' for CRC, input/output errors",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check physical layer: 'show interface' for CRC, input/output errors",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check optics: 'show interface transceiver' for power levels",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check optics: 'show interface transceiver' for power levels",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check optics: 'show interface transceiver' for power levels",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Switch to LACP long timeout if using short",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Switch to LACP long timeout if using short",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Switch to LACP long timeout if using short",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify CPU utilization: 'show processes cpu'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify CPU utilization: 'show processes cpu'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify CPU utilization: 'show processes cpu'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check STP state of port-channel",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check STP state of port-channel",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check STP state of port-channel",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Unstable physical link (CRC errors, optical power issues)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "LACP timeout too aggressive (short mode on unreliable link)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Asymmetric LACP rate configuration",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Control-plane CPU saturation causing LACPDU processing delays",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "STP interaction causing port-channel member to be blocked",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Port-channel flapping",
+      "symptoms": [
+        "Frequent port-channel member state changes in logs",
+        "Intermittent traffic drops",
+        "show lacp counters shows marker responses or errors"
+      ],
+      "verify_commands": [
+        {
+          "command": "show interface port-channel <N>",
+          "confirms_if": "Shows port-channel stability",
+          "look_for": "Look for interface up/down transitions, error counters",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface port-channel <N>",
+          "confirms_if": "Shows port-channel stability",
+          "look_for": "Look for interface up/down transitions, error counters",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface port-channel <N>",
+          "confirms_if": "Shows port-channel stability",
+          "look_for": "Look for interface up/down transitions, error counters",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp counters",
+          "confirms_if": "Shows LACP protocol-level issues",
+          "look_for": "Look for LACPDU timeouts, marker responses, and errors",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp counters",
+          "confirms_if": "Shows LACP protocol-level issues",
+          "look_for": "Look for LACPDU timeouts, marker responses, and errors",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp counters",
+          "confirms_if": "Shows LACP protocol-level issues",
+          "look_for": "Look for LACPDU timeouts, marker responses, and errors",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <member> counters errors",
+          "confirms_if": "Identifies physical layer problems on specific members",
+          "look_for": "Look for CRC, input, output errors on member links",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <member> counters errors",
+          "confirms_if": "Identifies physical layer problems on specific members",
+          "look_for": "Look for CRC, input, output errors on member links",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <member> counters errors",
+          "confirms_if": "Identifies physical layer problems on specific members",
+          "look_for": "Look for CRC, input, output errors on member links",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "LACP negotiation parameters disagree between peers, causing partial or no bundling",
+      "resolutions": [
+        {
+          "action": "Compare channel-group configuration on both ends",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare channel-group configuration on both ends",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare channel-group configuration on both ends",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure same number of member ports on each side",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure same number of member ports on each side",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure same number of member ports on each side",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify LACP mode is compatible: active-active or active-passive",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify LACP mode is compatible: active-active or active-passive",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify LACP mode is compatible: active-active or active-passive",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On vPC/MLAG: verify LACP system-mac matches between peers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On vPC/MLAG: verify LACP system-mac matches between peers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On vPC/MLAG: verify LACP system-mac matches between peers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Different number of ports in channel-group on each side",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Different LACP mode (active vs passive vs on)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Different port-channel load-balance algorithm (doesn't prevent bundling but causes asymmetric forwarding)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Mismatched LACP system-mac on MLAG/vPC setups",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Mismatched LACP parameters",
+      "symptoms": [
+        "One side shows port as bundled, other as individual",
+        "show lacp neighbor shows unexpected partner key or system ID",
+        "Asymmetric port-channel — different number of active members on each side"
+      ],
+      "verify_commands": [
+        {
+          "command": "show lacp neighbor",
+          "confirms_if": "Confirms both sides agree on aggregation parameters",
+          "look_for": "Compare partner system ID and key with remote switch's config",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp neighbor",
+          "confirms_if": "Confirms both sides agree on aggregation parameters",
+          "look_for": "Compare partner system ID and key with remote switch's config",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp neighbor",
+          "confirms_if": "Confirms both sides agree on aggregation parameters",
+          "look_for": "Compare partner system ID and key with remote switch's config",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp sys-id",
+          "confirms_if": "Confirms local LACP system identity",
+          "look_for": "Look for LACP system priority and system ID (MAC)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp sys-id",
+          "confirms_if": "Confirms local LACP system identity",
+          "look_for": "Look for LACP system priority and system ID (MAC)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show lacp sys-id",
+          "confirms_if": "Confirms local LACP system identity",
+          "look_for": "Look for LACP system priority and system ID (MAC)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface port-channel <N>",
+          "confirms_if": "Shows local port-channel configuration for comparison",
+          "look_for": "Compare config with remote side",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface port-channel <N>",
+          "confirms_if": "Shows local port-channel configuration for comparison",
+          "look_for": "Compare config with remote side",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface port-channel <N>",
+          "confirms_if": "Shows local port-channel configuration for comparison",
+          "look_for": "Compare config with remote side",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "teamd is sending LACPDUs but receiving none from the partner. The actor-timeout fires and the port transitions through EXPIRED to DEFAULTED. The PortChannel may go down or remain up with fewer active members depending on the min-links configuration. Root causes range from physical layer problems to CoPP rate-limiting dropping slow protocol frames on one or both sides.",
+      "resolutions": [
+        {
+          "action": "Verify physical link: 'show interfaces <member-port> status' -- link must be up",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Capture LACPDUs on member port: 'sudo tcpdump -i <member-port> ether proto 0x8809 -c 10 -e'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check CoPP on partner: verify slow protocol rate limit is not too aggressive",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify partner LACP config: confirm partner has LACP enabled on the same physical port",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check teamd logs: 'docker exec teamd supervisorctl status' and 'journalctl -u teamd -n 50'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check syslog for port flap events: 'sudo grep -i lacp /var/log/syslog | tail -30'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Physical link issue -- fiber cut, bad SFP, or link down on one side; LACPDU frames are lost",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "CoPP (Control Plane Policing) rate-limiting slow protocols on the partner switch -- LACPDUs are dropped before reaching the partner CPU",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Partner switch not configured for LACP -- port may be in access/trunk mode with no LACP",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Partner LACP process crashed or paused -- no LACPDUs being generated on partner side",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Spanning tree blocking the port -- STP blocks the physical port before LACP can run",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Incorrect VLAN or native VLAN configuration stripping the slow protocol frames",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Hardware rate-limiter on the local switch dropping inbound slow protocol (EtherType 0x8809) frames",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "LACPDU not received -- port stuck in DEFAULTED or EXPIRED",
+      "symptoms": [
+        "'teamdctl PortChannel<id> state' shows runner.port.<member>.state as 'defaulted' or 'expired'",
+        "'show interfaces PortChannel<id>' shows reduced or zero member ports in Distributing state",
+        "PortChannel interface goes down if active members drop below min_links threshold",
+        "Periodic log messages from teamd: 'port <member> is going to be expired' in syslog",
+        "tcpdump on member port shows outbound LACPDUs but no inbound LACPDUs from partner"
+      ],
+      "verify_commands": [
+        {
+          "command": "sudo teamdctl PortChannel<id> state",
+          "confirms_if": "State shows 'defaulted' or 'expired' for one or more member ports",
+          "look_for": "runner.port.<member>.state field -- 'defaulted' or 'expired' confirms no LACPDUs received",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo tcpdump -i <member-port> ether proto 0x8809 -c 10 -e",
+          "confirms_if": "Outbound LACPDUs seen but no inbound frames confirms one-way LACPDU loss from partner",
+          "look_for": "Inbound LACPDU frames from partner MAC -- absence of inbound frames confirms partner is not sending",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show interfaces <member-port> status",
+          "confirms_if": "Link down confirms physical layer failure preventing LACPDU exchange",
+          "look_for": "Link State field -- must be 'up' for LACPDUs to be exchanged",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo grep -iE 'lacp|teamd|expired|defaulted' /var/log/syslog | tail -30",
+          "confirms_if": "Repeated expiry log entries confirm ongoing LACPDU loss pattern",
+          "look_for": "Port expiry or default messages from teamd with timestamps",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 6 HGETALL 'LAG_MEMBER_TABLE|PortChannel<id>|<member-port>'",
+          "confirms_if": "status=disabled or absent entry confirms port is not in active forwarding state",
+          "look_for": "status field in STATE_DB for the member port",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "teamd enforces that all member ports in a PortChannel must have identical speed, duplex, and MTU. If a port is added that does not match the existing members, teamd rejects the mismatched port and it never reaches the DISTRIBUTING state. This is a silent failure -- the PortChannel stays up with the compatible members and the mismatched port is excluded without a loud error.",
+      "resolutions": [
+        {
+          "action": "Check per-member port speed: 'show interfaces <member-port>' for each member",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify all members have the same speed in CONFIG_DB: 'redis-cli -n 4 HGETALL \"PORT|<member-port>\"'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Set consistent speed: 'config interface speed <member-port> <speed>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify MTU consistency: 'show interfaces <member-port>' MTU field for all members",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Set consistent MTU: 'config interface mtu <member-port> <mtu>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "One member port was manually configured to a different speed (e.g., 10G vs 25G) while others are at their negotiated speed",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Auto-negotiation is disabled on one port but enabled on others, causing speed disagreement",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "MTU was changed on a subset of member ports after the PortChannel was created",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Half-duplex auto-negotiation result on one port when others are full-duplex",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Breakout cable (e.g., 100G -> 4x25G) changing the effective speed of some members unexpectedly",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Speed, duplex, or MTU mismatch between LAG member ports",
+      "symptoms": [
+        "PortChannel interface is up but has fewer active members than configured",
+        "'teamdctl PortChannel<id> state' shows the mismatched port in a non-distributing state",
+        "'show interfaces PortChannel<id>' member count is lower than expected",
+        "teamd logs show 'port <member> is not compatible with aggregator' or similar message",
+        "No LACPDU activity logged for the mismatched port even though the link is physically up"
+      ],
+      "verify_commands": [
+        {
+          "command": "show interfaces PortChannel<id>",
+          "confirms_if": "Fewer active members than configured confirms some ports are being rejected by teamd",
+          "look_for": "Member port list and their individual status -- missing or inactive members indicate compatibility rejection",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show interfaces <member-port>",
+          "confirms_if": "Speed or MTU mismatch between members confirms the root cause",
+          "look_for": "Speed and MTU fields for each configured member port -- compare across all members",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 4 HGETALL 'PORT|<member-port>'",
+          "confirms_if": "Different speed or mtu values across members in CONFIG_DB confirms misconfiguration",
+          "look_for": "speed, mtu fields in CONFIG_DB for the member port",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec teamd teamdctl PortChannel<id> state",
+          "confirms_if": "Port showing non-selected or non-aggregatable state confirms compatibility rejection",
+          "look_for": "Per-port state details including whether port is selected and aggregatable",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo grep -i 'not compatible\\|speed mismatch\\|mtu' /var/log/syslog | tail -20",
+          "confirms_if": "Log messages citing speed, MTU, or duplex incompatibility confirm the mismatch",
+          "look_for": "teamd log messages about port incompatibility with the aggregator",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "LACP uses the system priority and system MAC address to form a System ID that identifies each LACP endpoint. If the partner's System ID in the actor's LACPDU does not match what the partner believes its own System ID to be, the Sync bit is never set and the port cannot enter the DISTRIBUTING state. In SONiC, this commonly occurs in MCLAG scenarios where the system MAC must be explicitly configured to match on both MCLAG peers.",
+      "resolutions": [
+        {
+          "action": "For MCLAG: configure 'system_mac' in CONFIG_DB PORTCHANNEL table to be identical on both MCLAG peers",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify system MAC in LACPDU capture: 'sudo tcpdump -i <member-port> ether proto 0x8809 -c 5 -e -v'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check MCLAG system MAC: 'redis-cli -n 4 HGETALL \"MCLAG_DOMAIN|<id>\"' for mclag_system_mac field",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify iccpd status if MCLAG: 'docker exec iccpd supervisorctl status'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Restart teamd after correcting MAC config: 'sudo systemctl restart teamd'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "MCLAG partner MAC not configured: two MCLAG peers have different system MACs so the partner client sees two different LACP endpoints instead of one",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "System priority mismatch: different system priorities configured on the two ends cause priority-based system selection to fail",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Manual system MAC override set incorrectly -- configured MAC does not match partner expectation",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "teamd using the physical port MAC instead of the configured system MAC after a restart",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "ICCPD (MCLAG daemon) has not synced the system MAC to teamd on one of the MCLAG peers",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "System ID mismatch -- partner system priority or MAC disagreement preventing aggregation",
+      "symptoms": [
+        "'teamdctl PortChannel<id> state' shows Synchronization bit not set in partner state",
+        "Port remains in COLLECTING state but never transitions to DISTRIBUTING",
+        "LACPDU capture shows actor and partner system IDs that do not agree",
+        "MCLAG PortChannel shows different active member count on each peer",
+        "Partner reports 'system ID mismatch' in its own LACP logs"
+      ],
+      "verify_commands": [
+        {
+          "command": "sudo tcpdump -i <member-port> ether proto 0x8809 -c 5 -e -v",
+          "confirms_if": "Disagreement between actor's partner-system-ID and partner's own actor-system-ID confirms system ID mismatch",
+          "look_for": "Actor System and Partner System fields in LACPDU -- compare actor-reported-partner vs partner-reported-actor",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec teamd teamdctl PortChannel<id> state",
+          "confirms_if": "Sync bit not set and system IDs differ confirms system ID mismatch preventing aggregation",
+          "look_for": "partner.system_id and actor.system_id fields; Sync bit (synchronization) in partner state",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 4 HGETALL 'MCLAG_DOMAIN|<id>'",
+          "confirms_if": "Missing or different mclag_system_mac confirms MCLAG system MAC not configured",
+          "look_for": "mclag_system_mac field -- must be identical on both MCLAG peers",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 4 HGETALL 'PORTCHANNEL|PortChannel<id>'",
+          "confirms_if": "Absent system_mac field confirms SONiC is using the default chassis MAC which may differ from the MCLAG peer",
+          "look_for": "system_mac field in CONFIG_DB for this PortChannel",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "LACP uses an Aggregation Key to determine which ports can be combined into the same LAG. Ports that share an aggregation key and agree on system IDs can aggregate. In SONiC, teamd derives the aggregation key from the PortChannel configuration. If the partner assigns a different key to the corresponding ports, they will not aggregate -- ports will stay in ATTACHED or WAITING state indefinitely.",
+      "resolutions": [
+        {
+          "action": "Capture LACPDUs and compare actor.key vs partner.key: 'sudo tcpdump -i <member-port> ether proto 0x8809 -c 5 -e -v'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify port assignment on partner: confirm partner has correct ports in the matching LAG",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check CONFIG_DB PortChannel membership: 'redis-cli -n 4 KEYS \"PORTCHANNEL_MEMBER*\"'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "If cabling is correct, verify partner LAG configuration matches SONiC PortChannel numbering",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Re-seat the PortChannel membership if ports were moved: remove and re-add members",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Partner has the physical ports assigned to a different LAG group (different key) than the SONiC side",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Physical ports are cabled to the wrong PortChannel on one side -- port intended for LAG1 is connected to LAG2 on partner",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Static LACP key override configured differently on both sides",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "teamd key generation algorithm difference between SONiC and non-SONiC partner",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Port was moved from one PortChannel to another without updating partner configuration",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Aggregation key mismatch -- ports with different keys cannot join the same LAG",
+      "symptoms": [
+        "LACPDU exchange is occurring but port never reaches DISTRIBUTING state",
+        "'teamdctl PortChannel<id> state' shows partner.key does not match actor.key",
+        "Port may show as ATTACHED but never transitions to COLLECTING or DISTRIBUTING",
+        "Partner shows the port assigned to a different LAG group than expected",
+        "Multiple PortChannels are up but with fewer members than configured"
+      ],
+      "verify_commands": [
+        {
+          "command": "sudo tcpdump -i <member-port> ether proto 0x8809 -c 5 -e -v",
+          "confirms_if": "Different Actor Key and Partner Key values in captured LACPDU confirm aggregation key mismatch",
+          "look_for": "Actor Key and Partner Key fields in LACPDU -- they must match for aggregation",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec teamd teamdctl PortChannel<id> state",
+          "confirms_if": "Mismatched key values in teamd state confirm aggregation key disagreement",
+          "look_for": "actor.key and partner.key fields for each member port",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 4 KEYS 'PORTCHANNEL_MEMBER|*'",
+          "confirms_if": "Incorrect port-to-PortChannel mapping confirms misconfigured membership",
+          "look_for": "List of all PortChannel member assignments in CONFIG_DB",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show interfaces PortChannel<id>",
+          "confirms_if": "Missing expected members while link is up confirms they are not aggregating due to key mismatch",
+          "look_for": "Active member ports listed and their forwarding state",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "LACP supports two PDU transmission rates: fast (1 LACPDU/second, 3-second timeout) and slow (1 LACPDU/30 seconds, 90-second timeout). If one side is configured for fast rate and the other for slow rate, the fast-rate side will expire waiting for a slow-rate LACPDU after only 3 seconds. The port will oscillate between DISTRIBUTING and EXPIRED states every 3 seconds, causing intermittent packet loss on that LAG member.",
+      "resolutions": [
+        {
+          "action": "Check SONiC LACP rate: 'redis-cli -n 4 HGETALL \"PORTCHANNEL|PortChannel<id>\"' -- look for fast_rate field",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Align LACP rate: either set both sides to fast rate or both to slow rate",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Change SONiC LACP rate: 'config portchannel member del PortChannel<id> <member>' then 'config portchannel member add PortChannel<id> <member>' after updating CONFIG_DB",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify partner rate: check partner LACP configuration for the corresponding LAG",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "If fast rate is required for convergence, ensure partner also supports and is configured for fast rate",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "SONiC side configured with 'fast_rate: true' in CONFIG_DB PORTCHANNEL but partner is configured for slow rate",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Partner switch default is slow rate and SONiC was explicitly set to fast rate without coordinating with partner team",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "LACP rate changed on one side after the LAG was already up, without changing the partner simultaneously",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Network configuration management tool applied fast rate to only one side of the link",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Timeout mode mismatch -- fast vs slow LACP rate causing premature expiry",
+      "symptoms": [
+        "PortChannel member port flaps every 3 seconds (fast-rate side timing out on slow-rate partner)",
+        "Intermittent packet drops or retransmissions on traffic using the affected PortChannel",
+        "'teamdctl PortChannel<id> state' shows port alternating between 'current' and 'expired'",
+        "tcpdump shows frequent LACPDUs from local side but partner responds only every 30 seconds",
+        "syslog shows repeated 'port going to expire' messages at 3-second intervals"
+      ],
+      "verify_commands": [
+        {
+          "command": "redis-cli -n 4 HGETALL 'PORTCHANNEL|PortChannel<id>'",
+          "confirms_if": "fast_rate=true on SONiC side while partner sends slow LACPDUs confirms the mismatch",
+          "look_for": "fast_rate field -- 'true' means fast rate (1s PDU / 3s timeout)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo tcpdump -i <member-port> ether proto 0x8809 -c 30 -e",
+          "confirms_if": "Mismatched intervals between local outbound and partner inbound LACPDUs confirm rate mismatch",
+          "look_for": "Timestamp intervals between inbound LACPDUs -- 1s intervals = fast rate, 30s intervals = slow rate",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo grep -i 'expire\\|timeout\\|lacp' /var/log/syslog | tail -30",
+          "confirms_if": "3-second expiry cycle in logs confirms fast-rate timeout firing on slow-rate partner",
+          "look_for": "Repeated port expiry messages at regular 3-second intervals",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec teamd teamdctl PortChannel<id> state",
+          "confirms_if": "Short timeout (fast) set locally but partner Timeout bit showing long rate confirms mismatch",
+          "look_for": "actor.lacpdu_interval and partner's Timeout bit in state field",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A port completes LACP negotiation and reaches the COLLECTING state (accepting inbound frames) but never transitions to DISTRIBUTING (enabling outbound frames). This means the local side is receiving from the partner but not transmitting. The PortChannel may appear partially up but asymmetric traffic routing can cause drops. This state occurs when the partner has not acknowledged the local port's Collecting state.",
+      "resolutions": [
+        {
+          "action": "Verify partner state: confirm partner shows Distributing for its side of the same link",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check ASIC programming: 'redis-cli -n 1 KEYS \"ASIC_STATE:SAI_OBJECT_TYPE_LAG_MEMBER*\"' to confirm LAG member programming",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check orchagent logs for SAI errors during LAG member state change: 'docker logs swss 2>&1 | grep -iE \"lag|collecting|distributing\" | tail -30'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "If partner has max-bundle limit, verify it is set to accommodate all configured members",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Restart LACP on the affected port by removing and re-adding it to the PortChannel",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check STP state on partner for the affected physical port",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Partner implementation bug: partner does not send updated LACPDU with Collecting bit set after port selection",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Partner port stuck in a non-forwarding STP state while LACP negotiation succeeded at Layer 2",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Hardware programming failure: teamd set port to Collecting but SAI call to enable Distributing failed",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Partner has max-bundle limit set lower than the number of ports being negotiated -- it selects some ports as standby and does not enable Distributing on them",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Race condition in LACP state machine on partner side after simultaneous port additions",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "LAG member stuck in Collecting state -- not transitioning to Distributing",
+      "symptoms": [
+        "'teamdctl PortChannel<id> state' shows port in 'collecting' but not 'distributing'",
+        "Unidirectional traffic only on the affected port -- inbound works, outbound does not",
+        "show interfaces PortChannel<id> may show the port as active but with asymmetric counters",
+        "Partner side shows the port as disabled for distribution",
+        "syslog shows port entered Collecting state but no Distributing transition logged"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec teamd teamdctl PortChannel<id> state",
+          "confirms_if": "Port showing collecting=true and distributing=false confirms stuck in Collecting state",
+          "look_for": "per-port collecting and distributing flags -- collecting=true but distributing=false confirms stuck state",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_LAG_MEMBER*'",
+          "confirms_if": "LAG member present in ASIC_DB with egress_disable=true confirms ASIC-level distribution is blocked",
+          "look_for": "LAG member entries in ASIC_DB and their egress_disable attribute",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker logs swss 2>&1 | grep -iE 'lag|member|collecting|distributing' | tail -30",
+          "confirms_if": "SAI errors on LAG member state change confirm hardware programming failure",
+          "look_for": "SAI errors when setting LAG member state, or warnings about member state transitions",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show interfaces PortChannel<id>",
+          "confirms_if": "Zero TX counters on a member port with non-zero RX confirms port is collecting but not distributing",
+          "look_for": "Member port TX/RX counters -- asymmetric counters (RX high, TX zero) on a member port suggest Distributing not active",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "teamd is the SONiC daemon responsible for managing LACP and all PortChannel (team device) operations. If teamd crashes, is OOM-killed, or enters a hung state, all PortChannels on the switch go down simultaneously. This is a high-impact event -- all LAG-based connectivity (including LAG-backed BGP sessions, VLAN trunks, and MCLAG) drops at once. teamd runs in the 'teamd' Docker container.",
+      "resolutions": [
+        {
+          "action": "Check teamd container status: 'docker ps | grep teamd' and 'docker inspect teamd | grep -i status'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check teamd logs: 'docker logs teamd 2>&1 | tail -50'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check for OOM events: 'sudo dmesg | grep -i oom | tail -20'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Restart teamd container: 'sudo systemctl restart teamd' or 'sudo docker restart teamd'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "After restart, verify PortChannels recover: 'show interfaces PortChannel*'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check stale teamd socket files: 'ls /var/run/teamd/' -- stale .sock files may prevent restart",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "teamd OOM killed by Linux kernel due to memory pressure -- teamd exceeds its container memory limit",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "teamd Python/C process crash due to bug or unexpected configuration state",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Redis connection loss: teamd cannot reach CONFIG_DB or STATE_DB and terminates",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "teammgrd wrote invalid configuration to teamd that caused teamd to assert",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "SONiC image upgrade left inconsistent teamd state files in /var/run/teamd/",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Docker daemon restart killed the teamd container unexpectedly",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "teamd process crash or hang -- PortChannel goes down",
+      "symptoms": [
+        "All PortChannel interfaces go down simultaneously",
+        "'docker ps | grep teamd' shows teamd container as Exited or restarting",
+        "'show interfaces PortChannel*' shows all PortChannels as down",
+        "syslog shows teamd daemon died or was killed",
+        "BGP sessions that peer over PortChannels drop simultaneously",
+        "All LAG member ports revert to individual forwarding or are admin-disabled"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker ps -a | grep teamd",
+          "confirms_if": "Exited or non-zero RestartCount confirms teamd has crashed",
+          "look_for": "teamd container status -- Exited, Restarting, or Up; RestartCount > 0",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker logs teamd 2>&1 | tail -50",
+          "confirms_if": "Fatal error or exception in teamd logs confirms the crash reason",
+          "look_for": "Exception tracebacks, fatal errors, segfaults, or Redis connection errors",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo dmesg | grep -i oom | tail -20",
+          "confirms_if": "OOM kill event for teamd confirms memory pressure caused the crash",
+          "look_for": "OOM kill events targeting teamd or the teamd container cgroup",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show interfaces PortChannel<id>",
+          "confirms_if": "Simultaneous failure of all PortChannels indicates teamd-level failure rather than individual port issues",
+          "look_for": "Admin and Oper state -- all PortChannels showing Oper=down simultaneously",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 6 KEYS 'LAG_TABLE|*'",
+          "confirms_if": "Missing LAG_TABLE entries in STATE_DB confirm teamd is not running or not updating state",
+          "look_for": "LAG entries in STATE_DB -- absent entries confirm teamd is not maintaining LAG state",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "ls -la /var/run/teamd/",
+          "confirms_if": "Stale socket files from previous run may prevent teamd from restarting cleanly",
+          "look_for": "Stale .sock files from previous teamd instance",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "SONiC PortChannels can have more member ports configured than the hardware LAG max-bundle allows. The excess ports are placed in hot-standby mode -- they send and receive LACPDUs but are not in the DISTRIBUTING state. When an active member fails, a standby port should activate within one LACP timeout period. If the standby port fails to activate, the PortChannel loses bandwidth or goes below min_links and drops.",
+      "resolutions": [
+        {
+          "action": "Check teamd runner config: 'redis-cli -n 4 HGETALL \"PORTCHANNEL|PortChannel<id>\"' for runner field",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify member port priorities: 'docker exec teamd teamdctl PortChannel<id> state' -- check port_priority",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check orchagent for SAI errors on LAG member updates: 'docker logs swss 2>&1 | grep -iE \"lag member|SAI_STATUS\" | tail -30'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify ASIC LAG member table: 'redis-cli -n 1 KEYS \"ASIC_STATE:SAI_OBJECT_TYPE_LAG_MEMBER*\"'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check min_links setting vs available physical ports: 'redis-cli -n 4 HGETALL \"PORTCHANNEL|PortChannel<id>\"'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "If standby not activating, try removing and re-adding the standby port to trigger re-selection",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "teamd runner configuration does not have hot-standby correctly enabled -- missing 'hwaddr_policy' or incorrect runner type",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "SAI call to promote standby LAG member failed -- orchagent could not update the LAG member list in hardware",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Port priority values are equal for all members and teamd tie-breaks incorrectly during failover",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "min_links is set higher than the number of currently active members after failover but standby activation is delayed by LACP timer",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "orchagent busy or stalled -- SAI API to add new LAG member is queued but not processed",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "teamd state machine bug on specific SONiC version where standby selection logic fails after multiple successive failures",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Hot-standby member not activating when active member fails",
+      "symptoms": [
+        "Active member port goes down but PortChannel bandwidth does not recover",
+        "'show interfaces PortChannel<id>' shows fewer active members after a failure than expected",
+        "Hot-standby port shows LACPDU exchange but is not promoted to DISTRIBUTING state",
+        "teamd logs show standby port was not selected to replace failed active port",
+        "PortChannel goes below min_links threshold and drops even though physical standbys are available"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec teamd teamdctl PortChannel<id> state",
+          "confirms_if": "Standby ports showing selected=false while active members failed confirms standby is not being promoted",
+          "look_for": "Per-port selected and distributing status; port_priority values for all members",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 4 HGETALL 'PORTCHANNEL|PortChannel<id>'",
+          "confirms_if": "min_links value higher than remaining active ports confirms why PortChannel drops instead of failing over to standby",
+          "look_for": "min_links field and runner configuration; fast_rate setting",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker logs swss 2>&1 | grep -iE 'lag member|SAI_STATUS|orchagent.*lag' | tail -30",
+          "confirms_if": "SAI errors on LAG member add operation confirm orchagent could not activate the standby port in hardware",
+          "look_for": "SAI errors when adding or activating LAG member after failover event",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_LAG_MEMBER*'",
+          "confirms_if": "Missing or unchanged LAG member count after expected failover confirms ASIC-level standby activation failed",
+          "look_for": "Number of LAG member entries for the affected PortChannel in ASIC_DB",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show interfaces PortChannel<id>",
+          "confirms_if": "Reduced member count not recovering after active port failure confirms standby activation failure",
+          "look_for": "Member count and oper state after the active port failure",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "LACP Data Unit — carries actor/partner state and aggregation parameters",
+      "key_fields": [
+        "Actor System Priority",
+        "Actor System ID (MAC)",
+        "Actor Key",
+        "Actor Port Priority",
+        "Actor Port Number",
+        "Actor State (Activity, Timeout, Aggregation, Sync, Collecting, Distributing, Defaulted, Expired)",
+        "Partner System Priority",
+        "Partner System ID",
+        "Partner Key",
+        "Partner Port Priority",
+        "Partner Port Number",
+        "Partner State"
+      ],
+      "name": "LACPDU",
+      "when_sent": "Every LACP rate interval (1s or 30s) on LACP-enabled ports"
+    },
+    {
+      "description": "Used for redistributing frames during aggregation changes",
+      "key_fields": [
+        "Requester Port",
+        "Requester System"
+      ],
+      "name": "Marker PDU",
+      "when_sent": "During port-channel membership changes to ensure frame ordering"
+    },
+    {
+      "description": "The primary LACP control message exchanged between peers to negotiate and maintain link aggregation. Carried as an Ethernet slow protocol frame (EtherType 0x8809, subtype 0x01). Both actor and partner information is embedded, allowing each side to see what the other knows about the link state.",
+      "key_fields": [
+        "Actor System Priority: local system priority (lower = higher priority; default 65535)",
+        "Actor System ID: local system MAC address used as LACP system identifier",
+        "Actor Key: aggregation key -- ports with matching keys can join the same LAG",
+        "Actor Port Priority: per-port priority (lower = preferred when exceeding max ports)",
+        "Actor Port: physical port number identifier",
+        "Actor State: 8-bit field -- Activity (LACP active/passive), Timeout (short/long), Aggregation (individual/aggregatable), Synchronization, Collecting, Distributing, Defaulted, Expired",
+        "Partner System Priority: partner's system priority as known by actor",
+        "Partner System ID: partner's system MAC address as known by actor",
+        "Partner Key: partner's aggregation key as known by actor",
+        "Partner Port Priority: partner's port priority as known by actor",
+        "Partner Port: partner's port number as known by actor",
+        "Partner State: partner's 8-bit state field as known by actor"
+      ],
+      "name": "LACPDU (LACP Data Unit)",
+      "when_sent": "Periodically at PDU interval (1s fast, 30s slow); also triggered immediately on state change or port events"
+    },
+    {
+      "description": "Reply to a Marker PDU confirming that all frames transmitted on the specified port before the Marker PDU have been received and processed. Echoes the Requester fields back to the originator.",
+      "key_fields": [
+        "Requester System: echoed from the Marker PDU",
+        "Requester Port: echoed from the Marker PDU",
+        "Requester Transaction ID: echoed from the Marker PDU"
+      ],
+      "name": "Marker Response PDU",
+      "when_sent": "Immediately upon receipt of a Marker PDU from the partner"
+    }
+  ],
+  "operates_at": "Layer 2",
+  "protocol_family": "switching",
+  "protocol_id": "lacp",
+  "protocol_name": "LACP",
+  "purpose": "Link Aggregation Control Protocol — negotiates and maintains port-channel/bond membership",
+  "related_protocols": [
+    "rstp",
+    "vpc",
+    "stp",
+    "lldp",
+    "mclag"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "ieee-ieee8021ax2020",
+      "title": "IEEE 802.1AX-2020",
+      "type": "ieee_standard"
+    },
+    {
+      "id": "cisco:switching/lacp.json",
+      "title": "cisco knowledge base — switching/lacp.json",
+      "type": "documentation"
+    },
+    {
+      "id": "ieee-ieee8023ad8021ax",
+      "title": "IEEE 802.3ad (802.1AX)",
+      "type": "ieee_standard"
+    },
+    {
+      "id": "sonic:protocols/lacp.json",
+      "title": "sonic knowledge base — protocols/lacp.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "IEEE 802.1AX-2020",
+  "states": [
+    {
+      "description": "Port not attached to any aggregator",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "DETACHED"
+    },
+    {
+      "description": "Waiting for partner LACPDU before attaching",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "WAITING"
+    },
+    {
+      "description": "Port attached to aggregator but not distributing",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "ATTACHED"
+    },
+    {
+      "description": "Receiving frames from partner (not yet distributing)",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "COLLECTING"
+    },
+    {
+      "description": "Fully active in port-channel, sending and receiving",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "DISTRIBUTING"
+    },
+    {
+      "description": "No LACPDU received from partner; using default values",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "DEFAULTED"
+    },
+    {
+      "description": "Partner info has expired; short timeout in effect",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "EXPIRED"
+    }
+  ],
+  "tags": [
+    "layer2",
+    "link-aggregation",
+    "port-channel",
+    "etherchannel",
+    "bonding",
+    "lag",
+    "switching",
+    "teamd",
+    "layer-2",
+    "lacp",
+    "aggregation"
+  ],
+  "timers": [
+    {
+      "default_rfc": "30s",
+      "description": "Interval between LACPDU transmissions in long timeout mode",
+      "name": "LACP rate (long)",
+      "on_expiry": "Send LACPDU",
+      "tuning_advice": "Use long (default) unless sub-second failover needed"
+    },
+    {
+      "default_rfc": "1s",
+      "description": "Interval between LACPDU transmissions in short timeout mode",
+      "name": "LACP rate (short)",
+      "on_expiry": "Send LACPDU",
+      "tuning_advice": "Use for faster failure detection; increases control-plane load"
+    },
+    {
+      "default_rfc": "90s (3x long rate)",
+      "description": "Time to wait before declaring partner down (long timeout)",
+      "name": "current_while (long)",
+      "on_expiry": "Partner info expires; port moves to EXPIRED",
+      "tuning_advice": "Automatically set based on LACP rate"
+    },
+    {
+      "default_rfc": "3s (3x short rate)",
+      "description": "Time to wait before declaring partner down (short timeout)",
+      "name": "current_while (short)",
+      "on_expiry": "Partner info expires; port moves to EXPIRED"
+    },
+    {
+      "default_rfc": "2s",
+      "description": "Aggregation wait timer — prevents thrashing during startup",
+      "name": "wait_while",
+      "on_expiry": "Port proceeds to ATTACHED state"
+    },
+    {
+      "default_rfc": "90s (slow mode); 3s (fast mode)",
+      "description": "Timeout period after which a port is declared EXPIRED if no LACPDU has been received from the partner. In fast mode (LACP rate fast), the timeout is 3 x short timeout (3s). In slow mode (LACP rate slow), the timeout is 3 x long timeout (90s). Controls how quickly LACP detects a dead partner.",
+      "name": "LACP Actor Timeout",
+      "on_expiry": "Port transitions from DISTRIBUTING or COLLECTING to EXPIRED, then to DEFAULTED if not recovered",
+      "os_defaults": [
+        {
+          "config_path": "CONFIG_DB PORTCHANNEL|<name>: fast_rate field (true enables fast/short timeout)",
+          "default": "Slow mode (90s timeout) unless 'fast_rate: true' configured in CONFIG_DB PORTCHANNEL_MEMBER",
+          "frr_path": "N/A -- LACP is handled by teamd, not FRR",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "range": "3s (fast) or 90s (slow)",
+      "tuning_advice": "Use fast rate (3s timeout) for faster failover in data-center environments. Slow rate (90s) reduces control-plane overhead for stable links. Mismatched rates between peers cause premature timeout on the fast-rate side."
+    },
+    {
+      "default_rfc": "30s (slow); 1s (fast)",
+      "description": "Interval at which teamd sends LACPDUs to the partner. Slow rate sends one LACPDU every 30 seconds. Fast rate sends one LACPDU every 1 second. The partner's actor-timeout is always 3x the PDU interval (90s slow, 3s fast).",
+      "name": "LACP PDU Interval",
+      "on_expiry": "LACPDU is sent to the partner to maintain the LACP session",
+      "os_defaults": [
+        {
+          "config_path": "CONFIG_DB PORTCHANNEL|<name>: fast_rate field",
+          "default": "30s (slow) unless fast_rate configured",
+          "frr_path": "N/A -- LACP is handled by teamd",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "range": "1s (fast) or 30s (slow)",
+      "tuning_advice": "Match PDU interval on both sides. If one side is fast and the other is slow, the fast-rate side will timeout waiting for slow-rate LACPDUs."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "DETACHED",
+      "to_state": "WAITING",
+      "trigger": "LACP enabled and link comes up"
+    },
+    {
+      "from_state": "WAITING",
+      "to_state": "ATTACHED",
+      "trigger": "wait_while timer expires"
+    },
+    {
+      "from_state": "ATTACHED",
+      "to_state": "COLLECTING",
+      "trigger": "Partner agrees to aggregate (sync flag received)"
+    },
+    {
+      "from_state": "COLLECTING",
+      "to_state": "DISTRIBUTING",
+      "trigger": "Partner is collecting (partner collecting flag set)"
+    },
+    {
+      "from_state": "DISTRIBUTING",
+      "to_state": "COLLECTING",
+      "trigger": "Partner stopped collecting"
+    },
+    {
+      "from_state": "DISTRIBUTING",
+      "to_state": "DETACHED",
+      "trigger": "Port removed from port-channel or link failure"
+    },
+    {
+      "from_state": "COLLECTING",
+      "to_state": "ATTACHED",
+      "trigger": "Partner disagrees — incompatible parameters"
+    },
+    {
+      "from_state": "ATTACHED",
+      "to_state": "DETACHED",
+      "trigger": "Port configuration changed or removed from channel-group"
+    },
+    {
+      "failure_if_stuck": "Partner may not have LACP enabled (static port-channel on remote)",
+      "from_state": "WAITING",
+      "to_state": "DEFAULTED",
+      "trigger": "No LACPDU received within timeout"
+    },
+    {
+      "from_state": "DEFAULTED",
+      "to_state": "WAITING",
+      "trigger": "LACPDU received from partner"
+    },
+    {
+      "from_state": "DISTRIBUTING",
+      "to_state": "EXPIRED",
+      "trigger": "Partner LACPDU not received within timeout"
+    },
+    {
+      "from_state": "EXPIRED",
+      "to_state": "DEFAULTED",
+      "trigger": "No LACPDU received during short timeout (3s)"
+    },
+    {
+      "from_state": "EXPIRED",
+      "to_state": "DISTRIBUTING",
+      "trigger": "LACPDU received from partner (re-sync)"
+    },
+    {
+      "from_state": "DETACHED",
+      "to_state": "WAITING",
+      "trigger": "Port enabled and LACP negotiation starts; teamd sends LACPDU to partner and waits for response"
+    },
+    {
+      "failure_if_stuck": "No LACPDU received from partner -- verify physical link, partner LACP config, and CoPP rate limits",
+      "from_state": "WAITING",
+      "to_state": "ATTACHED",
+      "trigger": "Partner LACPDU received with matching aggregation key and compatible system parameters; Current While Timer expires and port is selected"
+    },
+    {
+      "from_state": "WAITING",
+      "to_state": "DEFAULTED",
+      "trigger": "Current While Timer expires with no partner LACPDU received; port falls back to default partner values"
+    },
+    {
+      "failure_if_stuck": "Partner not setting Sync bit -- check for system ID or aggregation key mismatch on partner side",
+      "from_state": "ATTACHED",
+      "to_state": "COLLECTING",
+      "trigger": "Aggregator enabled and partner confirms Synchronization bit set; port begins accepting inbound frames"
+    },
+    {
+      "failure_if_stuck": "Partner not confirming Collecting -- check partner LACP state, possible config mismatch or partner implementation bug",
+      "from_state": "COLLECTING",
+      "to_state": "DISTRIBUTING",
+      "trigger": "Partner confirms Collecting state (partner sets Collecting bit in LACPDU); local port enables outbound frame distribution"
+    },
+    {
+      "from_state": "DISTRIBUTING",
+      "to_state": "ATTACHED",
+      "trigger": "Partner signals de-selection (Sync bit cleared in LACPDU) or local configuration change; port stops distributing frames"
+    },
+    {
+      "from_state": "DISTRIBUTING",
+      "to_state": "EXPIRED",
+      "trigger": "No LACPDU received within the actor-timeout (3s fast, 90s slow); actor timer fires"
+    },
+    {
+      "from_state": "EXPIRED",
+      "to_state": "DISTRIBUTING",
+      "trigger": "LACPDU received from partner before EXPIRED timeout completes; port resynchronizes"
+    },
+    {
+      "failure_if_stuck": "Persistent LACPDU loss -- check physical layer, CoPP, and partner control-plane health",
+      "from_state": "EXPIRED",
+      "to_state": "DEFAULTED",
+      "trigger": "No LACPDU received during EXPIRED timer; port fully falls back to default partner values and may be removed from the LAG"
+    },
+    {
+      "from_state": "DEFAULTED",
+      "to_state": "WAITING",
+      "trigger": "LACPDU received from partner; port restarts negotiation"
+    }
+  ],
+  "transport": "Ethernet multicast 01:80:C2:00:00:02, EtherType 0x8809 (Slow Protocols)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "LACP available without explicit feature enable. Port-channel interface auto-created with 'channel-group' command. 'lacp rate fast' supported. Supports cross-stack EtherChannel on stackable platforms.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "Bundle interfaces used instead of port-channel. Configure as 'interface Bundle-Ether <N>' and 'bundle id <N> mode active' under member interface. LACP rate configurable per bundle. Min-links and max-active supported.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "LACP enabled by default with 'feature lacp'. Port-channel created automatically with 'channel-group N mode active'. Supports 'lacp rate fast' for 1s LACPDU interval. Max 32 members per port-channel (16 active, 16 hot-standby).",
+          "versions": "all"
+        },
+        {
+          "note": "vPC requires LACP; static port-channels not supported in vPC. LACP system-mac is automatically synchronized between vPC peers.",
+          "versions": "all"
+        }
+      ]
+    },
+    "sonic": {
+      "config_db_tables": [
+        {
+          "key_pattern": "PORTCHANNEL|<PortChannelName>",
+          "redis_command": "redis-cli -n 4 KEYS 'PORTCHANNEL|*'",
+          "relevant_fields": [
+            "admin_status: up/down administrative state",
+            "min_links: minimum number of active member links for PortChannel to be operationally up",
+            "mtu: MTU for the PortChannel logical interface",
+            "fast_rate: true/false -- enables fast LACP rate (1s PDU interval, 3s timeout)",
+            "lacp_key: optional explicit LACP aggregation key override",
+            "tpid: optional TPID for QinQ configurations",
+            "mc_lag_id: MCLAG domain ID if this PortChannel is part of an MCLAG",
+            "system_mac: optional LACP system MAC override (required for MCLAG)"
+          ],
+          "table": "PORTCHANNEL",
+          "verify_command": "redis-cli -n 4 HGETALL 'PORTCHANNEL|PortChannel<id>'"
+        },
+        {
+          "key_pattern": "PORTCHANNEL_MEMBER|<PortChannelName>|<member-port>",
+          "redis_command": "redis-cli -n 4 KEYS 'PORTCHANNEL_MEMBER|*'",
+          "relevant_fields": [
+            "(key presence indicates membership -- no additional fields required for basic membership)"
+          ],
+          "table": "PORTCHANNEL_MEMBER",
+          "verify_command": "redis-cli -n 4 KEYS 'PORTCHANNEL_MEMBER|PortChannel<id>|*'"
+        },
+        {
+          "key_pattern": "LAG_TABLE:<PortChannelName>",
+          "redis_command": "redis-cli -n 0 KEYS 'LAG_TABLE:*'",
+          "relevant_fields": [
+            "admin_status: administrative state",
+            "oper_status: operational state (up/down)",
+            "mtu: operational MTU",
+            "min_links: minimum links setting",
+            "learn_mode: MAC learning mode on the LAG"
+          ],
+          "table": "LAG_TABLE (APPL_DB)",
+          "verify_command": "redis-cli -n 0 HGETALL 'LAG_TABLE:PortChannel<id>'"
+        },
+        {
+          "key_pattern": "LAG_MEMBER_TABLE:<PortChannelName>:<member-port>",
+          "redis_command": "redis-cli -n 0 KEYS 'LAG_MEMBER_TABLE:PortChannel<id>:*'",
+          "relevant_fields": [
+            "status: enabled/disabled -- reflects whether teamd has this port in active distributing state"
+          ],
+          "table": "LAG_MEMBER_TABLE (APPL_DB)",
+          "verify_command": "redis-cli -n 0 HGETALL 'LAG_MEMBER_TABLE:PortChannel<id>:<member-port>'"
+        },
+        {
+          "key_pattern": "LAG_TABLE|<PortChannelName>",
+          "redis_command": "redis-cli -n 6 KEYS 'LAG_TABLE|*'",
+          "relevant_fields": [
+            "oper_status: current operational status",
+            "admin_status: administrative status"
+          ],
+          "table": "LAG_TABLE (STATE_DB)",
+          "verify_command": "redis-cli -n 6 HGETALL 'LAG_TABLE|PortChannel<id>'"
+        },
+        {
+          "key_pattern": "LAG_MEMBER_TABLE|<PortChannelName>|<member-port>",
+          "redis_command": "redis-cli -n 6 KEYS 'LAG_MEMBER_TABLE|PortChannel<id>|*'",
+          "relevant_fields": [
+            "status: active/inactive LACP member state as maintained by teamsyncd"
+          ],
+          "table": "LAG_MEMBER_TABLE (STATE_DB)",
+          "verify_command": "redis-cli -n 6 HGETALL 'LAG_MEMBER_TABLE|PortChannel<id>|<member-port>'"
+        }
+      ],
+      "frr_mapping": {
+        "bgpcfgd_source": "N/A",
+        "config_managed_by": "teammgrd (reads CONFIG_DB PORTCHANNEL and PORTCHANNEL_MEMBER, writes /etc/teamd/*.conf)",
+        "container": "teamd",
+        "frr_config_file": "N/A",
+        "frr_process": "N/A -- LACP is not managed by FRR; it is managed by teamd",
+        "supervisor_config": "/etc/supervisor/conf.d/teamd.conf (inside teamd container)",
+        "teamd_config_dir": "/etc/teamd/ (one JSON config file per PortChannel, generated by teammgrd)",
+        "teamd_socket_dir": "/var/run/teamd/ (one .sock file per PortChannel for teamdctl communication)"
+      },
+      "key_commands": [
+        "show interfaces PortChannel<id>",
+        "show interfaces PortChannel<id> status",
+        "show portchannel",
+        "sudo teamdctl PortChannel<id> state",
+        "sudo teamdctl PortChannel<id> config dump",
+        "docker exec teamd teamdctl PortChannel<id> state",
+        "docker ps | grep teamd",
+        "docker logs teamd 2>&1 | tail -50",
+        "docker exec teamd supervisorctl status",
+        "sudo tcpdump -i <member-port> ether proto 0x8809 -c 10 -e",
+        "redis-cli -n 4 KEYS 'PORTCHANNEL|*'",
+        "redis-cli -n 4 HGETALL 'PORTCHANNEL|PortChannel<id>'",
+        "redis-cli -n 4 KEYS 'PORTCHANNEL_MEMBER|*'",
+        "redis-cli -n 0 HGETALL 'LAG_TABLE:PortChannel<id>'",
+        "redis-cli -n 0 HGETALL 'LAG_MEMBER_TABLE:PortChannel<id>:<member-port>'",
+        "redis-cli -n 6 HGETALL 'LAG_TABLE|PortChannel<id>'",
+        "redis-cli -n 6 HGETALL 'LAG_MEMBER_TABLE|PortChannel<id>|<member-port>'",
+        "redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_LAG*'",
+        "redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_LAG_MEMBER*'",
+        "docker logs swss 2>&1 | grep -iE 'lag|ERROR' | tail -30",
+        "sudo grep -i lacp /var/log/syslog | tail -30",
+        "sudo dmesg | grep -i oom | tail -20"
+      ],
+      "notes": [
+        {
+          "human_error_risk": "HIGH",
+          "note": "In SONiC, LACP is managed by teamd running in the 'teamd' Docker container. teamd uses the Linux kernel's team driver (not the bond driver). Each PortChannel is a team device in the Linux kernel. The teamd process manages LACPDU exchange and aggregator selection. Do NOT use 'ip link' commands to manually add/remove ports from a team device -- use SONiC CLI ('config portchannel member add/del') which writes to CONFIG_DB and lets teammgrd/teamd handle it properly.",
+          "source_ref": "sonic-buildimage:src/sonic-teamd/ and src/sonic-swss/cfgmgr/teammgrd.cpp"
+        },
+        {
+          "human_error_risk": "MEDIUM",
+          "note": "The SONiC LACP pipeline is: CONFIG_DB -> teammgrd (writes teamd JSON config) -> teamd (LACP state machine) -> teamsyncd (netlink listener) -> APPL_DB LAG_MEMBER_TABLE -> orchagent -> ASIC_DB -> syncd -> ASIC. A failure at any stage stops LAG state from reaching hardware. When a PortChannel member does not forward traffic, always check both the teamd state and the ASIC_DB LAG member programming.",
+          "source_ref": "sonic-swss:cfgmgr/teammgrd.cpp and sonic-swss:orchagent/portsorch.cpp (LAG handling)"
+        },
+        {
+          "human_error_risk": "MEDIUM",
+          "note": "The minimum-links (min_links) parameter controls when a PortChannel is operationally down. If the number of active (DISTRIBUTING) member ports drops below min_links, the PortChannel interface goes operationally down even if some members are still physically up. The default min_links is 1. Set min_links higher only if you explicitly need the PortChannel to fail when redundancy is lost -- in many deployments min_links=1 is the correct setting.",
+          "source_ref": "SONiC PortChannel design and sonic-swss/orchagent/portsorch.cpp (LAG handling)"
+        },
+        {
+          "human_error_risk": "HIGH",
+          "note": "For MCLAG deployments, both MCLAG peers must present the same LACP System ID (system_mac + system_priority) to the client switch. The client switch sees a single LACP endpoint spanning both physical switches. Configure 'mclag_system_mac' in CONFIG_DB MCLAG_DOMAIN table and ensure it propagates to the PORTCHANNEL config on both peers via iccpd. Failure to match system MACs is the most common MCLAG LACP failure and causes split-brain LAG behavior.",
+          "source_ref": "SONiC MCLAG design and sonic-buildimage:src/iccpd/"
+        },
+        {
+          "human_error_risk": "HIGH",
+          "note": "teamd configuration files are written by teammgrd to /etc/teamd/<PortChannelName>.conf as JSON. These files are the live configuration teamd reads. Do not manually edit these files -- they are regenerated by teammgrd from CONFIG_DB on every teamd restart or configuration change. Manual edits will be overwritten. This is the same CONFIG_DB-as-source-of-truth pattern used by bgpcfgd for BGP.",
+          "source_ref": "sonic-buildimage:src/sonic-swss/cfgmgr/teammgrd.cpp"
+        },
+        {
+          "human_error_risk": "LOW",
+          "note": "LACPDUs use Ethernet EtherType 0x8809 (IEEE Slow Protocols). These frames are sent to the well-known multicast MAC 01:80:C2:00:00:02. In SONiC, CoPP (Control Plane Policing) rate-limits these frames as they go to the CPU. The default CoPP rate for slow protocols is typically 1000 pps, which is more than sufficient for LACP. However, custom CoPP configurations that are too aggressive can drop LACPDUs and cause LACP timeouts. Check CoPP config if LACPDU loss is suspected but physical layer is healthy.",
+          "source_ref": "SONiC CoPP design and IEEE 802.3ad"
+        },
+        {
+          "human_error_risk": "LOW",
+          "note": "SONiC 202211 and later versions support PortChannel per-member port hashing for load balancing. The hash is computed over packet fields (IP src/dst, TCP/UDP ports, etc.) by orchagent and programmed into the ASIC. If traffic appears unbalanced across LAG members (one member at 100%, others idle), check the load-balance hash configuration: 'show hash'. Asymmetric traffic patterns (e.g., all traffic has the same source IP) cannot be fixed by LACP -- this is a hash policy issue, not an LACP issue.",
+          "source_ref": "SONiC load balance design and sonic-swss/orchagent/portsorch.cpp (LAG hash handling)"
+        },
+        {
+          "human_error_risk": "MEDIUM",
+          "note": "teamd in SONiC supports both 'activebackup' and 'lacp' runner types. The LACP runner is used for dynamic LAG negotiation. The 'activebackup' runner does NOT use LACP -- it is a simple active/standby without negotiation. Verify the runner type in the teamd config file or via 'teamdctl <PortChannel> config dump' to confirm LACP is actually running and not a static bond.",
+          "source_ref": "teamd documentation and sonic-buildimage:src/sonic-swss/cfgmgr/teammgrd.cpp"
+        }
+      ]
+    }
+  }
+}

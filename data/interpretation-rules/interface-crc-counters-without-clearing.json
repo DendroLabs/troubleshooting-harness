@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "interface-crc-counters-without-clearing",
+  "display_name": "CRC counters are cumulative since last clear — check if incrementing now",
+  "category": "counter-interpretation",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "show interface output displaying CRC, input errors, or other error counters",
+  "observation": "CRC errors or input errors are non-zero in show interface output",
+  "naive_interpretation": "The interface has a physical layer problem causing CRC errors right now",
+  "correct_interpretation": "The counters are cumulative since the last counter clear or device reload. Non-zero CRCs only indicate a current problem if the counters are actively incrementing during the issue window. With weeks of uptime and no counter clears, even a healthy interface may show a small number of CRCs from past transient events.",
+  "why": [
+    "Interface counters on all major NOS platforms are cumulative — they count since boot or last clear counters command",
+    "There is no timestamp on individual counter values showing when the errors occurred",
+    "A device with 90 days of uptime showing 50 CRCs may have had all 50 occur during a cable swap two months ago"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface counters errors",
+      "purpose": "Check error counters — run twice with a 30-60 second gap to see if counters are incrementing"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface Ethernet1/1 | include CRC|errors|resets",
+      "purpose": "Snapshot the specific counters to compare against a second sample"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "clear counters interface Ethernet1/1",
+      "purpose": "Reset counters to zero and then monitor for new errors appearing"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces GigabitEthernet1/0/1 | include CRC|errors|resets",
+      "purpose": "Snapshot counters for delta comparison"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "clear counters GigabitEthernet1/0/1",
+      "purpose": "Reset counters and monitor for new errors"
+    }
+  ],
+  "traps": [
+    "Seeing non-zero CRCs and immediately blaming the cable or optic without checking if the errors are current",
+    "Replacing an SFP or cable based on stale counter data that predates the current issue",
+    "Not checking system uptime to contextualize counter magnitude — 10 CRCs in 90 days is very different from 10 CRCs in 5 minutes",
+    "Forgetting that a reload clears counters but a configuration change does not"
+  ],
+  "related_rules": [
+    "interface-counter-rate-vs-absolute",
+    "system-uptime-as-counter-context"
+  ],
+  "related_protocols": [],
+  "keywords": ["CRC", "counters", "interface errors", "input errors", "clear counters", "show interface", "physical layer"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

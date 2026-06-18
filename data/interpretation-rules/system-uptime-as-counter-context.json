@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "system-uptime-as-counter-context",
+  "display_name": "Always check system uptime before interpreting any cumulative counter",
+  "category": "timing-context",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Any troubleshooting session where cumulative counters are being evaluated",
+  "observation": "Counter values are presented without context on how long they have been accumulating",
+  "naive_interpretation": "The counter value represents the current state or recent behavior of the system",
+  "correct_interpretation": "Cumulative counters span the entire period since boot or last clear. A device with 180 days of uptime has counters covering 6 months of operation. The first step before interpreting any counter is to establish the accumulation window by checking uptime and last counter clear time.",
+  "why": [
+    "Without knowing the accumulation window, counter values are uninterpretable — 100 drops in 1 minute vs 100 drops in 6 months are completely different situations",
+    "Some counters reset on reload but not on failover, creating inconsistent windows across a redundant pair",
+    "The clear counters command may have been run at an unknown time by another operator, making the window even less predictable"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show system uptime",
+      "purpose": "Establish the maximum possible counter accumulation window"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show version | include uptime",
+      "purpose": "Establish the maximum possible counter accumulation window"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show version | include uptime",
+      "purpose": "Establish the maximum possible counter accumulation window"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface Ethernet1/1 | include Last clearing",
+      "purpose": "Check when counters were last cleared — if never, they span full uptime"
+    }
+  ],
+  "traps": [
+    "Interpreting counters without first establishing the time window",
+    "Assuming counters reset after a software upgrade when only a reload clears them",
+    "Not realizing that ISSU (in-service software upgrade) may not reset counters on some platforms",
+    "Comparing counters between two devices with different uptimes as if they are directly comparable"
+  ],
+  "related_rules": [
+    "interface-crc-counters-without-clearing",
+    "interface-counter-rate-vs-absolute"
+  ],
+  "related_protocols": [],
+  "keywords": ["uptime", "counters", "accumulation", "clear counters", "time window", "reload"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:memory-machine",
+      "asic_id": 0,
+      "asic_model": "Tomahawk",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "Host Table",
+        "TCAM",
+        "UFT"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 16.0,
+          "ifg_count": 4,
+          "ifg_serdes": "8x 100G per pipe",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G",
+                "2x50G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 16,
+              "label": "Eth-slot/1/1-16 (QSFP28)",
+              "native_speed": "100G",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 16.0,
+      "total_bandwidth_gbps": 3200.0
+    },
+    {
+      "asic_family": "asic:memory-machine",
+      "asic_id": 1,
+      "asic_model": "Tomahawk",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "Host Table",
+        "TCAM",
+        "UFT"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 16.0,
+          "ifg_count": 4,
+          "ifg_serdes": "8x 100G per pipe",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G",
+                "2x50G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 32,
+              "label": "Eth-slot/1/17-32 (QSFP28)",
+              "native_speed": "100G",
+              "start_port": 17
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 16.0,
+      "total_bandwidth_gbps": 3200.0
+    }
+  ],
+  "chassis_type": "modular",
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9500",
+  "platform_id": "x9432c-s",
+  "platform_name": "Nexus 9500 X9432C-S (Montage)",
+  "platform_pid": "N9K-X9432C-S",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-x9432c-s",
+      "title": "Tech Zone: Nexus 9k ASIC Mappings, Montage/Sugarloaf diagrams",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-9500/x9432c-s.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-9500/x9432c-s.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 3.2,
+  "total_ports": 32
+}

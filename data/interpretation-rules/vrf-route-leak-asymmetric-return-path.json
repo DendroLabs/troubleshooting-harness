@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "vrf-route-leak-asymmetric-return-path",
+  "display_name": "VRF route leaking — a leaked route enables forward path but return traffic may stay in the wrong VRF",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "VRF route leaking or import/export is configured to allow communication between VRFs; traffic flows one direction but not the return",
+  "observation": "A route to the destination exists in the source VRF via route leaking, and the source can send packets, but the destination never responds or connections fail (TCP SYN goes out, no SYN-ACK returns)",
+  "naive_interpretation": "The route leak is working because the route is in the table and packets are being sent — the problem must be on the destination side (firewall, service down, wrong port)",
+  "correct_interpretation": "Route leaking is directional. Leaking a route FROM vrf-B INTO vrf-A gives vrf-A a path to the destination in vrf-B, but the destination in vrf-B has no route back to the source in vrf-A unless a symmetric leak is configured in the other direction. The forward path works (source in vrf-A reaches destination in vrf-B via the leaked route), but the return traffic from the destination stays in vrf-B's routing table, which has no route to the source's subnet in vrf-A. The packet is either dropped or routed somewhere unintended. Both directions of the communication path must have routes — 'route exists' in one VRF does not mean 'path is complete' for bidirectional traffic.",
+  "why": [
+    "VRF route import/export (via BGP RT, route-map, or static route leaking) copies a route into a VRF's RIB — it does NOT create a reverse route automatically",
+    "IP communication is inherently bidirectional — even a unidirectional data flow (like syslog) requires the destination to send TCP ACKs or ICMP responses back to the source",
+    "The return path traverses the destination VRF's routing table, which is isolated from the source VRF by design — this is the entire purpose of VRFs",
+    "Asymmetric leaking is easy to create accidentally: an operator leaks routes for the destination but forgets the return path, and ping/traceroute from the source VRF appears to 'send' but gets no response"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route vrf <source-vrf> <destination-ip>",
+      "purpose": "Confirm the forward route exists in the source VRF via route leaking"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route vrf <dest-vrf> <source-ip>",
+      "purpose": "Check whether the destination VRF has a return route to the source — this is the most likely missing piece"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route vrf <dest-vrf> <source-ip>",
+      "purpose": "Verify the return path exists in the destination VRF — if missing, the destination cannot respond"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip vrf detail <vrf-name>",
+      "purpose": "Check route distinguisher and route target import/export configuration to verify symmetric leaking"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show route vrf <dest-vrf> <source-ip>",
+      "purpose": "Confirm the destination VRF has a route back to the source subnet"
+    }
+  ],
+  "traps": [
+    "Confirming the route exists in the source VRF and concluding the leak is working — this only proves the forward path; the return path is a separate check",
+    "Pinging from the source VRF and seeing 'request timed out' then blaming the destination — the ping was sent successfully but the reply had no route back",
+    "Configuring RT import in one direction only and assuming BGP will handle the reverse — RT import/export must be configured in both VRFs for symmetric leaking",
+    "Using static route leaking (ip route vrf X next-hop) in one direction without a matching static leak for the return path in the other VRF",
+    "Forgetting that even 'one-way' traffic like syslog, NetFlow, or SNMP traps requires return-path routing for TCP handshake or UDP source-port responses"
+  ],
+  "related_rules": [
+    "bgp-inactive-route-nexthop-unreachable",
+    "ecmp-uneven-distribution-is-flow-hashing"
+  ],
+  "related_protocols": ["vrf", "bgp-4"],
+  "keywords": ["VRF", "route leaking", "route import", "route export", "RT", "route target", "asymmetric", "return path", "inter-VRF", "bidirectional"],
+  "sources": [
+    {
+      "id": "rfc-4364",
+      "title": "RFC 4364 — BGP/MPLS IP Virtual Private Networks (VPNs)",
+      "type": "rfc",
+      "rfc_number": 4364,
+      "url": "https://www.rfc-editor.org/rfc/rfc4364.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

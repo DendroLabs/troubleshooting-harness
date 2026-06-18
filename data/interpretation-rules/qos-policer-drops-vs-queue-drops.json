@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "qos-policer-drops-vs-queue-drops",
+  "display_name": "Policer drops and queue drops have different root causes — congestion vs policy",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Investigating packet loss on an interface where QoS is configured and drop counters are non-zero",
+  "observation": "A QoS or interface drop counter is incrementing and the engineer needs to know why packets are being discarded",
+  "naive_interpretation": "The link is congested and needs more bandwidth, regardless of which drop counter is incrementing",
+  "correct_interpretation": "Policer drops and queue (tail/WRED) drops are not the same failure. A policer drops traffic that exceeds a configured rate even when the link is completely idle — it is a policy decision, not congestion. Queue drops (tail drop or WRED) occur when an egress queue fills because the link cannot drain it fast enough — that is real congestion. Adding bandwidth fixes queue drops but does nothing for policer drops, where the fix is the policer rate or the traffic profile. Always read which counter is incrementing before deciding the cause.",
+  "why": [
+    "A policer enforces a rate ceiling and discards or remarks conforming-exceeding traffic independent of link utilization (RFC 2697/2698 token-bucket behavior)",
+    "Tail drops and WRED drops are a function of queue depth, which only fills under egress congestion when offered load exceeds drain rate",
+    "Bandwidth upgrades relieve congestion-driven queue drops but leave policer drops unchanged because the policer rate is fixed by configuration",
+    "The two counters are reported separately in QoS statistics precisely because they require different remediation"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show policy-map interface Ethernet1/1",
+      "purpose": "Read per-class conform/exceed/violate (policer) counters versus queue drop counters to identify which is incrementing"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show queuing interface Ethernet1/1",
+      "purpose": "Show per-queue tail-drop and ECN/WRED statistics to confirm congestion-driven loss"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show policy-map interface GigabitEthernet1/0/1",
+      "purpose": "Distinguish policer drops (exceed/violate) from queue-limit/random drops on the same interface"
+    }
+  ],
+  "traps": [
+    "Recommending a bandwidth upgrade for loss that is entirely policer-driven and unrelated to link utilization",
+    "Reading a single aggregate 'output drops' number without breaking it down into policer versus queue drops",
+    "Assuming an idle link cannot be dropping packets — a policer drops at any utilization",
+    "Confusing WRED early drops (intentional congestion avoidance) with a hard tail-drop fault"
+  ],
+  "related_rules": [
+    "interface-drops-input-vs-output-queue",
+    "qos-dscp-remarked-at-trust-boundary"
+  ],
+  "related_protocols": [],
+  "keywords": ["QoS", "policer", "policing", "queue drops", "tail drop", "WRED", "congestion", "exceed", "violate", "drops"],
+  "sources": [
+    {
+      "id": "rfc-2698",
+      "title": "RFC 2698 — A Two Rate Three Color Marker",
+      "type": "rfc",
+      "rfc_number": 2698,
+      "url": "https://www.rfc-editor.org/rfc/rfc2698.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

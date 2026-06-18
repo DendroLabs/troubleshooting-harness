@@ -1,0 +1,96 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:trident2",
+      "asic_id": 0,
+      "asic_model": "Trident2",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 9.0,
+          "ifg_count": 0,
+          "ifg_serdes": "24x Quad 10GbaseT PHYs (2 banks of 12)",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "RJ45",
+              "end_port": 48,
+              "label": "Eth1/1-48 (10GbaseT RJ45)",
+              "native_speed": "10G",
+              "start_port": 1
+            },
+            {
+              "breakout_options": [],
+              "connector": "RJ45",
+              "end_port": 96,
+              "label": "Eth1/49-96 (10GbaseT RJ45)",
+              "native_speed": "10G",
+              "start_port": 49
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 9.0,
+      "total_bandwidth_gbps": 1280.0
+    },
+    {
+      "asic_family": "asic:trident2",
+      "asic_id": 1,
+      "asic_model": "Northstar",
+      "hbm_gb": 0.0,
+      "memory_tables": [],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 0,
+          "ifg_serdes": "8x 40G MACN ports",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 104,
+              "label": "Eth1/97-104 (QSFP+ 40G)",
+              "native_speed": "40G",
+              "start_port": 97
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 320.0
+    }
+  ],
+  "chassis_type": "fixed",
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9300",
+  "platform_id": "n93128tx",
+  "platform_name": "Nexus 93128TX (Nagano)",
+  "platform_pid": "N9K-C93128TX",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-n93128tx",
+      "title": "Tech Zone: Nexus 9k ASIC Mappings, Nagano Block Diagram",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-9300/n93128tx.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-9300/n93128tx.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 1.28,
+  "total_ports": 104
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "bgp-as-path-prepend-loses-to-earlier-tiebreakers",
+  "display_name": "AS-path prepend does nothing if weight or local-preference already decided best-path",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "AS-path prepending was applied to steer traffic away from a path, but the traffic still uses that path",
+  "observation": "A path was prepended to make it less preferred, yet best-path selection still chooses it",
+  "naive_interpretation": "Prepending is broken, or the prepend was not applied, so more prepends are needed",
+  "correct_interpretation": "AS-path length is only one step in the best-path algorithm, and several higher-priority steps run first: weight, then local-preference, then locally-originated, then AS-path length. If weight or local-preference already favors the path, the algorithm decides before it ever compares AS-path length, so prepend has no effect no matter how many ASNs you add. Prepend also only influences inbound path selection on the neighbor that receives it. Identify which tie-breaker actually decided best-path before adding more prepends.",
+  "why": [
+    "RFC 4271 best-path comparison is ordered; weight (vendor) and LOCAL_PREF are evaluated before AS_PATH length",
+    "Once an earlier, higher-priority attribute breaks the tie, later attributes including AS-path are never compared",
+    "Prepend lengthens AS-path only, so it is powerless against a higher weight or local-pref already set locally or by inbound policy",
+    "Prepend affects how the receiving AS chooses to reach you (inbound), not how your own router selects egress when local attributes dominate"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp ipv4 unicast <prefix>",
+      "purpose": "Read the per-path attributes and the stated best-path reason to see which step decided it"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip bgp <prefix>",
+      "purpose": "Compare weight, local-pref, and AS-path across paths to find the deciding attribute"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show route-map <name>",
+      "purpose": "Check for a weight or local-preference being set that overrides the AS-path prepend"
+    }
+  ],
+  "traps": [
+    "Adding more prepends when weight or local-preference, not AS-path, is deciding best-path",
+    "Forgetting that prepend influences inbound choices at the neighbor, not local egress when local attributes dominate",
+    "Not reading the best-path reason, which states exactly which attribute won",
+    "Overlooking an inbound route-map that sets local-pref and silently outranks the prepend"
+  ],
+  "related_rules": [
+    "bgp-set-community-replaces-without-additive",
+    "bgp-received-not-installed-vs-filtered",
+    "route-table-entry-ad-determines-source"
+  ],
+  "related_protocols": ["bgp-4"],
+  "keywords": ["BGP", "AS-path", "prepend", "best path", "weight", "local-preference", "tie-breaker", "path selection", "traffic engineering"],
+  "sources": [
+    {
+      "id": "rfc-4271",
+      "title": "RFC 4271 — A Border Gateway Protocol 4 (BGP-4)",
+      "type": "rfc",
+      "rfc_number": 4271,
+      "url": "https://www.rfc-editor.org/rfc/rfc4271.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

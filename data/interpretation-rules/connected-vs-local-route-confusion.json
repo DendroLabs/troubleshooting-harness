@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "connected-vs-local-route-confusion",
+  "display_name": "The /32 'local' route is the device's own interface IP, not a connected subnet — confusing them leads to wrong reachability conclusions",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Operator checks the routing table and sees both 'C' (connected) and 'L' (local) entries for the same interface",
+  "observation": "The routing table shows two entries for each interface: a connected route (C) with the subnet prefix and mask, and a local route (L) with a /32 host mask for the interface IP address",
+  "naive_interpretation": "There are duplicate or redundant routes in the table — the 'L' (local) route is just another way of showing the connected subnet, or it is an extra route that can be removed",
+  "correct_interpretation": "Connected (C) and local (L) routes serve fundamentally different purposes. The connected route (e.g., 'C 10.1.1.0/24 via Vlan100') tells the router that the entire subnet is reachable via that interface — any IP in the 10.1.1.0/24 range will be ARP-resolved on that interface. The local route (e.g., 'L 10.1.1.1/32 via Vlan100') is a host route for the device's own interface IP address — it tells the routing process that traffic destined TO 10.1.1.1 is for the device itself (deliver to CPU, don't forward). The local route always has a /32 mask and always has AD 0 — it cannot be overridden by any other routing protocol. Confusing these two route types leads to incorrect reachability analysis: the connected route determines what the device can REACH (other hosts in the subnet); the local route determines what is addressed TO the device itself. Removing or misinterpreting either one changes the forwarding behavior. In IOS-XR, the local route appears as 'L' with AD 0/metric 0; in IOS-XE and NX-OS, it also appears with the 'L' code.",
+  "why": [
+    "Before IOS 15.0 and NX-OS 6.x, local routes were hidden — the routing table showed only the connected route; the introduction of explicit 'L' entries confused operators who had never seen them before",
+    "The local route is what triggers the device to process traffic as 'for me' vs 'to be forwarded' — without it, packets addressed to the interface IP would be forwarded out the connected interface as if destined for another host",
+    "In longest-prefix-match routing, the /32 local route always wins over the /24 connected route for traffic destined to the device's own IP — this is the mechanism that ensures self-addressed traffic reaches the CPU",
+    "Policy-based routing, route-maps, and PBR can match on connected routes — operators who don't understand the distinction sometimes write PBR rules that inadvertently match the local route and redirect traffic destined for the router itself"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route connected",
+      "purpose": "Display only connected routes (the subnets reachable via each interface) — local routes are excluded from this view"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route local",
+      "purpose": "Display only local routes (/32 entries for the device's own interface IPs)"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route",
+      "purpose": "Full routing table showing both C (connected) and L (local) entries — verify that each interface has both and they are not being confused"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show route connected",
+      "purpose": "Display connected routes separately from local routes for clear identification"
+    },
+    {
+      "os": "eos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route connected",
+      "purpose": "Display connected subnet routes to distinguish from local host routes"
+    }
+  ],
+  "traps": [
+    "Treating the /32 local route as a connected subnet and concluding that the device has a /32 directly connected network — the /32 is a host route for the device's own IP, not a reachable subnet",
+    "Thinking the 'L' route is redundant with the 'C' route and trying to remove or suppress it — local routes are essential for the device to receive traffic addressed to its own interfaces",
+    "Using 'show ip route connected' to verify reachability to a specific IP and not finding the device's own interface IP — own-IP is in 'show ip route local', not 'connected'",
+    "In route redistribution, accidentally redistributing local routes (/32s) into a routing protocol — this advertises the device's interface IPs as host routes to the rest of the network, which may or may not be intended",
+    "Confusing the AD (administrative distance) of local (0) vs connected (0) — both have AD 0, but local routes have a /32 mask that gives them longest-prefix-match priority for self-addressed traffic"
+  ],
+  "related_rules": [
+    "route-table-entry-ad-determines-source"
+  ],
+  "related_protocols": [],
+  "keywords": ["connected", "local", "routing table", "host route", "/32", "administrative distance", "C route", "L route", "longest prefix match", "self-addressed", "for me"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

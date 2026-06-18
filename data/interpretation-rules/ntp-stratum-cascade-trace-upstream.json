@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "ntp-stratum-cascade-trace-upstream",
+  "display_name": "Multiple devices NTP unsynchronized — trace upstream to the failed source, don't troubleshoot each device",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Multiple devices in the network report NTP unsynchronized, stratum 16, or clock drift alerts simultaneously or in sequence",
+  "observation": "Several devices across the network show unsynchronized NTP status or high stratum values; monitoring reports widespread time drift",
+  "naive_interpretation": "Each device has its own NTP configuration problem — investigate and fix NTP on each affected device individually",
+  "correct_interpretation": "NTP is hierarchical: devices sync to upstream peers, which sync to their upstream peers, up to a stratum-1 reference source. When the root time source fails (stratum-1 server goes down, GPS antenna loses signal, upstream provider drops NTP service), every downstream device in the chain loses sync — the stratum-16 cascades outward like a ripple. The more devices affected, the higher up the hierarchy the problem is. Trace the NTP peer chain upstream from any affected device to find where the chain breaks. The fix is at that single point, not on each downstream device. Common root causes: the stratum-1 server lost its reference clock, a firewall change blocked NTP to the upstream source, or the upstream provider decommissioned a time server.",
+  "why": [
+    "NTP stratum increments by 1 at each hop — if a stratum-2 server loses its stratum-1 source, it goes to stratum 16 (unsync), and all its stratum-3 clients follow",
+    "The cascade is not instant — each device has its own poll interval and timeout, so downstream devices go unsync'd over minutes to hours, making the pattern look like independent failures",
+    "RFC 5905 Section 11.2.1 specifies that a server advertising stratum 16 is telling its clients it has no valid time source — clients will not sync to it",
+    "Fixing NTP on individual downstream devices is futile if their upstream source is still broken — they will go unsync'd again at the next poll"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ntp peer-status",
+      "purpose": "Identify the configured upstream peer and its stratum — if the peer shows stratum 16, trace further upstream"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ntp associations detail",
+      "purpose": "Show each NTP peer's stratum, reachability, and offset — follow the chain to find where sync breaks"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ntp associations",
+      "purpose": "Display NTP peer status including stratum and reference clock to trace the hierarchy"
+    },
+    {
+      "os": "junos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ntp associations",
+      "purpose": "Check NTP peer relationships and their stratum values to trace upstream"
+    }
+  ],
+  "traps": [
+    "Investigating NTP on each affected device individually instead of recognizing the pattern as a single upstream failure cascading down",
+    "Restarting the NTP process on downstream devices — this temporarily clears the state but they will go unsync'd again when they re-poll the broken upstream",
+    "Not tracing the NTP peer chain all the way to the root — the device's peer may be sync'd to a peer that is NOT sync'd to the actual reference clock",
+    "Confusing the staggered cascade timing with independent failures — devices go unsync'd at different times due to different poll intervals, masking the single root cause",
+    "Ignoring NTP unsync because 'the network still works' — time drift breaks syslog correlation, certificate validation, Kerberos authentication, and DNSSEC within hours"
+  ],
+  "related_rules": [
+    "ntp-stratum-16-means-unsynchronized",
+    "show-tech-is-sequential-snapshot-not-atomic"
+  ],
+  "related_protocols": ["ntp"],
+  "keywords": ["NTP", "stratum", "cascade", "upstream", "hierarchy", "unsynchronized", "clock drift", "reference clock", "stratum 1", "time source"],
+  "sources": [
+    {
+      "id": "rfc-5905",
+      "title": "RFC 5905 — Network Time Protocol Version 4",
+      "type": "rfc",
+      "rfc_number": 5905,
+      "url": "https://www.rfc-editor.org/rfc/rfc5905.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "ntp-stratum-16-means-unsynchronized",
+  "display_name": "NTP stratum 16 means the clock is unsynchronized, not that stratum 16 is a valid source",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "show ntp status or show ntp associations showing stratum 16",
+  "observation": "NTP source or local clock shows stratum 16",
+  "naive_interpretation": "The device is synchronized to a stratum 16 NTP source — just a very distant one in the hierarchy",
+  "correct_interpretation": "Stratum 16 is a special value defined in RFC 5905 meaning unsynchronized. Valid NTP strata range from 1 (reference clock) to 15. Stratum 16 means the device has no valid time source — it is free-running on its internal clock. Any other device peering with this one will also go unsynchronized.",
+  "why": [
+    "RFC 5905 Section 7.1 defines stratum 16 as MAXSTRAT — a kiss-of-death value meaning the clock is not synchronized",
+    "Valid strata are 1-15; stratum 0 is reserved for reference clocks (GPS, atomic)",
+    "A device showing stratum 16 will cause downstream peers to also lose sync — this cascades"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ntp status",
+      "purpose": "Check if the clock is actually synchronized and what stratum it claims"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ntp peer-status",
+      "purpose": "Check the status of all configured NTP peers — look for a selected peer (marked with *)"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ntp associations",
+      "purpose": "Check peer reachability and status — a peer with reach 0 has never responded"
+    }
+  ],
+  "traps": [
+    "Assuming stratum 16 is just a high-numbered but valid stratum",
+    "Not realizing that an unsynchronized device will poison the time of downstream NTP clients",
+    "Ignoring NTP unsync issues because the network seems to work — until certificate validation or logging timestamps break"
+  ],
+  "related_rules": ["ntp-stratum-cascade-trace-upstream"],
+  "related_protocols": ["ntp"],
+  "keywords": ["NTP", "stratum", "stratum 16", "unsynchronized", "clock", "time"],
+  "sources": [
+    {
+      "id": "rfc-5905",
+      "title": "RFC 5905 — Network Time Protocol Version 4",
+      "type": "rfc",
+      "rfc_number": 5905,
+      "url": "https://www.rfc-editor.org/rfc/rfc5905.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

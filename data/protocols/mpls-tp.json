@@ -1,0 +1,1270 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "End-to-end physical connectivity required on all links in the static LSP path",
+      "name": "Physical connectivity along LSP path",
+      "type": "infrastructure"
+    },
+    {
+      "description": "In-label and out-label must be manually provisioned on every node in the MPLS-TP LSP — no dynamic signaling",
+      "name": "Static label allocation on every node in path",
+      "type": "infrastructure"
+    },
+    {
+      "description": "BFD provides continuity check and connectivity verification for MPLS-TP LSPs",
+      "name": "BFD for fault detection (RFC 5884)",
+      "type": "protocol"
+    },
+    {
+      "description": "Static MPLS-TP labels must be in a reserved range that does not overlap with LDP/SR dynamic label allocation",
+      "name": "Label range separation from dynamic MPLS labels",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "Traffic not forwarded on MPLS-TP path because static labels are misconfigured on one or more nodes in the LSP, causing a label lookup failure and traffic drop",
+      "resolutions": [
+        {
+          "action": "Verify in-label and out-label match at every hop — walk the LSP hop-by-hop",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify in-label and out-label match at every hop — walk the LSP hop-by-hop",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify in-label and out-label match at every hop — walk the LSP hop-by-hop",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check LFIB on each node: 'show mpls forwarding-table'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check LFIB on each node: 'show mpls forwarding-table'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check LFIB on each node: 'show mpls forwarding-table'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure static labels are from reserved range (avoid dynamic label range)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure static labels are from reserved range (avoid dynamic label range)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure static labels are from reserved range (avoid dynamic label range)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reconcile label allocation across all nodes in the path",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reconcile label allocation across all nodes in the path",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reconcile label allocation across all nodes in the path",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Static label misconfigured on one or more nodes (in-label/out-label mismatch)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Label conflict with dynamically allocated labels (LDP/SR range overlap)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Node added to path without label provisioned",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Static LSP label mismatch — traffic black-hole",
+      "symptoms": [
+        "Traffic not forwarded on MPLS-TP path",
+        "BFD CC failing end-to-end",
+        "Label not in LFIB on transit node"
+      ],
+      "verify_commands": [
+        {
+          "command": "show mpls forwarding-table",
+          "confirms_if": "Missing or incorrect label entry on any node confirms the mismatch",
+          "look_for": "Verify label entry exists on each node — check in-label, out-label, and outgoing interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls forwarding-table",
+          "confirms_if": "Missing or incorrect label entry on any node confirms the mismatch",
+          "look_for": "Verify label entry exists on each node — check in-label, out-label, and outgoing interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls forwarding-table",
+          "confirms_if": "Missing or incorrect label entry on any node confirms the mismatch",
+          "look_for": "Verify label entry exists on each node — check in-label, out-label, and outgoing interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls tp lsps detail",
+          "confirms_if": "LSP shows DOWN with label-related error, or labels don't match expected values",
+          "look_for": "Check LSP operational status and configured labels at each endpoint",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls tp lsps detail",
+          "confirms_if": "LSP shows DOWN with label-related error, or labels don't match expected values",
+          "look_for": "Check LSP operational status and configured labels at each endpoint",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls tp lsps detail",
+          "confirms_if": "LSP shows DOWN with label-related error, or labels don't match expected values",
+          "look_for": "Check LSP operational status and configured labels at each endpoint",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "LSP shows UP but traffic is black-holed because BFD is not detecting the fault — either not configured, misconfigured, or not processing GAL correctly",
+      "resolutions": [
+        {
+          "action": "Verify BFD is bound to MPLS-TP tunnel",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify BFD is bound to MPLS-TP tunnel",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify BFD is bound to MPLS-TP tunnel",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check GAL label (13) processing on transit nodes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check GAL label (13) processing on transit nodes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check GAL label (13) processing on transit nodes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify BFD CC/CV intervals match end-to-end",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify BFD CC/CV intervals match end-to-end",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify BFD CC/CV intervals match end-to-end",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure BFD is using the correct G-ACh channel type for MPLS-TP (not IP/UDP BFD)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure BFD is using the correct G-ACh channel type for MPLS-TP (not IP/UDP BFD)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure BFD is using the correct G-ACh channel type for MPLS-TP (not IP/UDP BFD)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "BFD not configured on MPLS-TP LSP",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BFD session using wrong GAL (G-ACh) encapsulation",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BFD interval too long for SLA requirements",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BFD packet not forwarded correctly at transit nodes — GAL label (13) not processed",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "BFD for MPLS-TP not detecting fault",
+      "symptoms": [
+        "LSP shows UP but traffic is black-holed",
+        "No fault detection despite physical link failure",
+        "BFD session not established on MPLS-TP tunnel"
+      ],
+      "verify_commands": [
+        {
+          "command": "show mpls tp tunnel-tp detail",
+          "confirms_if": "BFD not configured or BFD session DOWN confirms the detection gap",
+          "look_for": "Check if BFD is enabled on the tunnel and whether BFD session state is UP or DOWN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls tp tunnel-tp detail",
+          "confirms_if": "BFD not configured or BFD session DOWN confirms the detection gap",
+          "look_for": "Check if BFD is enabled on the tunnel and whether BFD session state is UP or DOWN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls tp tunnel-tp detail",
+          "confirms_if": "BFD not configured or BFD session DOWN confirms the detection gap",
+          "look_for": "Check if BFD is enabled on the tunnel and whether BFD session state is UP or DOWN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors mpls-tp",
+          "confirms_if": "No BFD session listed, or session in DOWN state, confirms BFD is not functional",
+          "look_for": "Look for BFD session associated with the MPLS-TP tunnel — check state, interval, and multiplier",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors mpls-tp",
+          "confirms_if": "No BFD session listed, or session in DOWN state, confirms BFD is not functional",
+          "look_for": "Look for BFD session associated with the MPLS-TP tunnel — check state, interval, and multiplier",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors mpls-tp",
+          "confirms_if": "No BFD session listed, or session in DOWN state, confirms BFD is not functional",
+          "look_for": "Look for BFD session associated with the MPLS-TP tunnel — check state, interval, and multiplier",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Working LSP fails but traffic does not switch to the protection LSP, causing a service outage despite 1:1 or 1+1 protection being configured",
+      "resolutions": [
+        {
+          "action": "Verify protection LSP is pre-provisioned and operational",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify protection LSP is pre-provisioned and operational",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify protection LSP is pre-provisioned and operational",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check APS signaling channel (RFC 6378) — verify APS messages are exchanged",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check APS signaling channel (RFC 6378) — verify APS messages are exchanged",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check APS signaling channel (RFC 6378) — verify APS messages are exchanged",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review hold-off timer setting — reduce if protection switch is too slow",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review hold-off timer setting — reduce if protection switch is too slow",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review hold-off timer setting — reduce if protection switch is too slow",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for forced/manual switch locks and clear if appropriate",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for forced/manual switch locks and clear if appropriate",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for forced/manual switch locks and clear if appropriate",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Protection LSP not pre-provisioned or itself in DOWN state",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "APS (Automatic Protection Switching) channel not working — RFC 6378 signaling failure",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Hold-off timer delaying switch beyond acceptable time",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Forced switch or lockout on protection LSP prevents automatic switch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Linear protection not switching to standby",
+      "symptoms": [
+        "Working LSP fails but traffic doesn't switch to protection LSP",
+        "Service outage despite 1:1/1+1 protection configured",
+        "APS channel not exchanging protection messages"
+      ],
+      "verify_commands": [
+        {
+          "command": "show mpls tp tunnel-tp protection",
+          "confirms_if": "Protection LSP DOWN or APS state shows lockout or forced switch explains the failure",
+          "look_for": "Check protection type (1:1 or 1+1), working and protection LSP status, and APS state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls tp tunnel-tp protection",
+          "confirms_if": "Protection LSP DOWN or APS state shows lockout or forced switch explains the failure",
+          "look_for": "Check protection type (1:1 or 1+1), working and protection LSP status, and APS state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls tp tunnel-tp protection",
+          "confirms_if": "Protection LSP DOWN or APS state shows lockout or forced switch explains the failure",
+          "look_for": "Check protection type (1:1 or 1+1), working and protection LSP status, and APS state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls tp lsps detail",
+          "confirms_if": "Protection LSP missing or DOWN confirms it was not available for switchover",
+          "look_for": "Verify both working and protection LSPs are listed and check their operational state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls tp lsps detail",
+          "confirms_if": "Protection LSP missing or DOWN confirms it was not available for switchover",
+          "look_for": "Verify both working and protection LSPs are listed and check their operational state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls tp lsps detail",
+          "confirms_if": "Protection LSP missing or DOWN confirms it was not available for switchover",
+          "look_for": "Verify both working and protection LSPs are listed and check their operational state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "PW shows UP at one end but DOWN at the other, causing traffic to be forwarded into a black-hole because PW status is not being communicated between endpoints",
+      "resolutions": [
+        {
+          "action": "Enable PW Status TLV (RFC 6478) on static pseudowires",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable PW Status TLV (RFC 6478) on static pseudowires",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable PW Status TLV (RFC 6478) on static pseudowires",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure VCCV BFD for pseudowire monitoring",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure VCCV BFD for pseudowire monitoring",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure VCCV BFD for pseudowire monitoring",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PW OAM end-to-end — both endpoints must have matching OAM configuration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PW OAM end-to-end — both endpoints must have matching OAM configuration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PW OAM end-to-end — both endpoints must have matching OAM configuration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that G-ACh is operational on the PW for status TLV transport",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that G-ACh is operational on the PW for status TLV transport",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that G-ACh is operational on the PW for status TLV transport",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "PW Status TLV not enabled on static pseudowire",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Static PW has no signaling channel for status exchange",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "OAM not configured on the pseudowire",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Unidirectional failure not detected — no VCCV BFD",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "PW status not propagating — stale pseudowire state",
+      "symptoms": [
+        "PW shows UP at one end but DOWN at the other",
+        "Traffic forwarded into black-hole on the pseudowire",
+        "Unidirectional PW failure not detected by far end"
+      ],
+      "verify_commands": [
+        {
+          "command": "show mpls tp tunnel-tp detail",
+          "confirms_if": "PW Status TLV not enabled or status mismatch between endpoints confirms the issue",
+          "look_for": "Check PW status TLV configuration and whether PW status is being sent/received",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls tp tunnel-tp detail",
+          "confirms_if": "PW Status TLV not enabled or status mismatch between endpoints confirms the issue",
+          "look_for": "Check PW status TLV configuration and whether PW status is being sent/received",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls tp tunnel-tp detail",
+          "confirms_if": "PW Status TLV not enabled or status mismatch between endpoints confirms the issue",
+          "look_for": "Check PW status TLV configuration and whether PW status is being sent/received",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls l2transport vc detail",
+          "confirms_if": "Status mismatch (UP/DOWN) between local and remote confirms stale PW state",
+          "look_for": "Look for pseudowire status at both endpoints — compare local and remote status codes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls l2transport vc detail",
+          "confirms_if": "Status mismatch (UP/DOWN) between local and remote confirms stale PW state",
+          "look_for": "Look for pseudowire status at both endpoints — compare local and remote status codes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls l2transport vc detail",
+          "confirms_if": "Status mismatch (UP/DOWN) between local and remote confirms stale PW state",
+          "look_for": "Look for pseudowire status at both endpoints — compare local and remote status codes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Static MPLS-TP labels collide with dynamically allocated LDP or SR labels, causing random traffic misdirection, LFIB entries overwritten, or label lookup failures",
+      "resolutions": [
+        {
+          "action": "Reserve a dedicated label range for MPLS-TP static labels (e.g., 16-99 or a custom range)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reserve a dedicated label range for MPLS-TP static labels (e.g., 16-99 or a custom range)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reserve a dedicated label range for MPLS-TP static labels (e.g., 16-99 or a custom range)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure LDP/SR label range starts above the MPLS-TP static range",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure LDP/SR label range starts above the MPLS-TP static range",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure LDP/SR label range starts above the MPLS-TP static range",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify no overlaps: compare 'show mpls label range' with static MPLS-TP label assignments",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify no overlaps: compare 'show mpls label range' with static MPLS-TP label assignments",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify no overlaps: compare 'show mpls label range' with static MPLS-TP label assignments",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Document label allocation scheme across all nodes in the transport network",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Document label allocation scheme across all nodes in the transport network",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Document label allocation scheme across all nodes in the transport network",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Static MPLS-TP labels allocated from same range as LDP/SR dynamic labels",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No label range partitioning configured on the platform",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "MPLS-TP and dynamic MPLS label conflict",
+      "symptoms": [
+        "Random traffic misdirection on MPLS-TP paths",
+        "Label collision — LFIB entries overwritten unexpectedly",
+        "Intermittent forwarding failures on MPLS-TP tunnels"
+      ],
+      "verify_commands": [
+        {
+          "command": "show mpls label range",
+          "confirms_if": "Static MPLS-TP labels fall within the dynamic range, confirming a label conflict",
+          "look_for": "Check the dynamic label range (min/max) and compare with static MPLS-TP label values",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls label range",
+          "confirms_if": "Static MPLS-TP labels fall within the dynamic range, confirming a label conflict",
+          "look_for": "Check the dynamic label range (min/max) and compare with static MPLS-TP label values",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls label range",
+          "confirms_if": "Static MPLS-TP labels fall within the dynamic range, confirming a label conflict",
+          "look_for": "Check the dynamic label range (min/max) and compare with static MPLS-TP label values",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls forwarding-table",
+          "confirms_if": "Same label mapped to different destinations confirms the collision",
+          "look_for": "Look for duplicate label entries or unexpected next-hop/outgoing interface for MPLS-TP labels",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls forwarding-table",
+          "confirms_if": "Same label mapped to different destinations confirms the collision",
+          "look_for": "Look for duplicate label entries or unexpected next-hop/outgoing interface for MPLS-TP labels",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls forwarding-table",
+          "confirms_if": "Same label mapped to different destinations confirms the collision",
+          "look_for": "Look for duplicate label entries or unexpected next-hop/outgoing interface for MPLS-TP labels",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Continuity Check / Connectivity Verification for MPLS-TP (RFC 6428). Proactive OAM for fault detection.",
+      "key_fields": [
+        "BFD Discriminator",
+        "Session State",
+        "Diagnostic Code",
+        "GAL Label (13)"
+      ],
+      "name": "BFD CC/CV",
+      "when_sent": "Periodically at bfd-cc-interval on each MPLS-TP LSP"
+    },
+    {
+      "description": "Forward defect indication (RFC 6427). Sent downstream when fault detected on the path.",
+      "key_fields": [
+        "AIS Period (1s or 1min)",
+        "G-ACh channel type"
+      ],
+      "name": "AIS (Alarm Indication Signal)",
+      "when_sent": "Sent by intermediate node downstream when it detects a fault on the working path"
+    },
+    {
+      "description": "Sent back to source MEP to indicate far-end fault detection",
+      "key_fields": [
+        "RDI flag in BFD CC/CV"
+      ],
+      "name": "RDI (Remote Defect Indication)",
+      "when_sent": "Sent by sink MEP toward source MEP when a defect is detected at the far end"
+    },
+    {
+      "description": "Variant of AIS indicating a link-layer fault on the MPLS-TP path",
+      "key_fields": [
+        "G-ACh channel type"
+      ],
+      "name": "LDI (Link Down Indication)",
+      "when_sent": "Sent when a physical link failure is detected on a link in the MPLS-TP path"
+    },
+    {
+      "description": "Administrative lock for maintenance (RFC 6435). Indicates LSP is locked out of service.",
+      "key_fields": [
+        "LCK Period (1s or 1min)",
+        "G-ACh channel type"
+      ],
+      "name": "LCK (Locked Signal)",
+      "when_sent": "Sent when an operator administratively locks an LSP for maintenance"
+    },
+    {
+      "description": "Pseudowire status notification (RFC 6478). Reports PW up/down without tearing down the pseudowire.",
+      "key_fields": [
+        "PW Status Code",
+        "PW ID",
+        "PW Type"
+      ],
+      "name": "PW Status TLV",
+      "when_sent": "Sent when pseudowire operational status changes (e.g., AC down, PSN fault)"
+    }
+  ],
+  "operates_at": "Layer 2.5 (MPLS)",
+  "protocol_family": "transport",
+  "protocol_id": "mpls-tp",
+  "protocol_name": "MPLS-TP",
+  "purpose": "MPLS Transport Profile — deterministic, connection-oriented L2 transport without IP control plane, designed for carrier Ethernet and transport networks",
+  "related_protocols": [
+    "mpls-ldp",
+    "bfd",
+    "cfm-y1731",
+    "evpn"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-5921",
+      "rfc_number": 5921,
+      "title": "RFC 5921",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc5921.txt"
+    },
+    {
+      "id": "rfc-6370",
+      "rfc_number": 6370,
+      "title": "RFC 6370",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc6370.txt"
+    },
+    {
+      "id": "rfc-6428",
+      "rfc_number": 6428,
+      "title": "RFC 6428",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc6428.txt"
+    },
+    {
+      "id": "rfc-6478",
+      "rfc_number": 6478,
+      "title": "RFC 6478",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc6478.txt"
+    },
+    {
+      "id": "agent-cisco-kb:transport/mpls-tp.json",
+      "title": "agent-cisco-kb knowledge base — transport/mpls-tp.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 5921 / RFC 6370 / RFC 6428 / RFC 6478",
+  "states": [
+    {
+      "description": "LSP operational, BFD session up, forwarding active",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "UP"
+    },
+    {
+      "description": "LSP not operational, BFD session down or not configured",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "DOWN"
+    },
+    {
+      "description": "LSP operational but OAM indicates degraded performance — high loss or delay exceeding SLA thresholds",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "DEGRADED"
+    },
+    {
+      "description": "Working LSP failed, traffic switched to protection LSP (1:1 or 1+1 linear protection per RFC 6378)",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "PROTECTION_ACTIVE"
+    },
+    {
+      "description": "LSP administratively locked for maintenance — LCK OAM sent, traffic blocked",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "LOCKED"
+    }
+  ],
+  "tags": [
+    "transport",
+    "carrier-ethernet",
+    "deterministic",
+    "static-lsp",
+    "oam",
+    "linear-protection"
+  ],
+  "timers": [
+    {
+      "default_rfc": "1s",
+      "description": "Continuity Check interval for MPLS-TP BFD (RFC 5884/6428)",
+      "name": "bfd-cc-interval",
+      "on_expiry": "BFD CC packet sent. 3.5x interval = fault detection time",
+      "range": "3.3ms-10s (matches CFM intervals)"
+    },
+    {
+      "default_rfc": "0ms",
+      "description": "Delay before triggering protection switch — allows lower-layer protection to act first",
+      "name": "hold-off",
+      "on_expiry": "Protection switch triggered if fault persists",
+      "range": "0-10000ms (100ms steps)"
+    },
+    {
+      "default_rfc": "5min",
+      "description": "Wait-to-Restore for linear protection in revertive mode (RFC 6378)",
+      "name": "wtr",
+      "on_expiry": "Traffic reverts from protection LSP back to restored working LSP",
+      "range": "1-12min"
+    },
+    {
+      "default_rfc": "varies",
+      "description": "Wait-to-Block for manual/forced switch commands in linear protection",
+      "name": "wtb",
+      "on_expiry": "Forced/manual switch released, normal APS operation resumes",
+      "range": "1-12min"
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "DOWN",
+      "to_state": "UP",
+      "trigger": "Static LSP labels configured on all nodes, BFD session established end-to-end"
+    },
+    {
+      "from_state": "UP",
+      "to_state": "DOWN",
+      "trigger": "BFD session failure (3x interval), AIS received, or physical link failure on LSP path"
+    },
+    {
+      "from_state": "UP",
+      "to_state": "DEGRADED",
+      "trigger": "Y.1731 PM detects threshold breach — loss or delay exceeds SLA thresholds"
+    },
+    {
+      "from_state": "DEGRADED",
+      "to_state": "UP",
+      "trigger": "PM metrics return to within SLA thresholds"
+    },
+    {
+      "from_state": "UP",
+      "to_state": "PROTECTION_ACTIVE",
+      "trigger": "Working LSP failure detected, linear protection switch to standby LSP (RFC 6378)"
+    },
+    {
+      "from_state": "PROTECTION_ACTIVE",
+      "to_state": "UP",
+      "trigger": "Working LSP restored, WTR timer expired, traffic reverted (revertive mode)"
+    },
+    {
+      "from_state": "UP",
+      "to_state": "LOCKED",
+      "trigger": "Administrative lock (LCK OAM sent, traffic blocked)"
+    },
+    {
+      "from_state": "LOCKED",
+      "to_state": "UP",
+      "trigger": "Administrative unlock"
+    }
+  ],
+  "transport": "MPLS label stack (static LSPs, no LDP/RSVP-TE signaling)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "IOS-XE supports MPLS-TP on ASR 920, ASR 903, ASR 1000. Configured under 'mpls tp'. Static LSPs with BFD CC/CV. Linear protection (1+1) supported. 'show mpls tp' hierarchy for tunnel, LSP, and link status.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "IOS-XR supports MPLS-TP on ASR 9000. Static MPLS-TP tunnels with BFD-based OAM. RFC 6378 linear protection. 'show mpls tp' commands. Less commonly deployed than SR-MPLS on IOS-XR platforms.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "NX-OS does not support MPLS-TP. NX-OS focuses on VXLAN/EVPN for data center overlays rather than transport network features.",
+          "versions": "n/a"
+        }
+      ]
+    },
+    "saos": {
+      "notes": [
+        {
+          "note": "MPLS-TP is a core transport feature of SAOS 8.x — designed for carrier Ethernet transport with deterministic behavior. Static LSPs, no dynamic signaling. Full OAM: BFD CC/CV, AIS, RDI, LDI, LCK. Linear protection (1:1, 1+1) per RFC 6378. PW status TLV for pseudowire monitoring. SAOS 10.x continues MPLS-TP support alongside SR-MPLS/LDP. Subject-verb CLI: 'mpls-tp show tunnel' not 'show mpls tp'. Hardware-assisted OAM on all platforms.",
+          "versions": "8.0+"
+        }
+      ]
+    }
+  }
+}

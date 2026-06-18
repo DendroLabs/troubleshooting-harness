@@ -1,0 +1,92 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:silicon-one",
+      "asic_id": 0,
+      "asic_model": "Q100",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "CEM",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 54.0,
+          "ifg_count": 2,
+          "ifg_serdes": "16x50G per IFG",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 12,
+              "label": "HundredGigE0/0/0/0-11",
+              "native_speed": "100G",
+              "start_port": 1
+            },
+            {
+              "breakout_options": [
+                "4x100G",
+                "2x200G"
+              ],
+              "connector": "QSFP-DD",
+              "end_port": 18,
+              "label": "FourHundredGigE0/0/0/0-5",
+              "native_speed": "400G",
+              "start_port": 13
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        },
+        {
+          "buffer_mb": 54.0,
+          "ifg_count": 2,
+          "ifg_serdes": "16x50G per IFG",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x100G",
+                "2x200G"
+              ],
+              "connector": "QSFP-DD",
+              "end_port": 36,
+              "label": "FourHundredGigE0/0/0/6-23",
+              "native_speed": "400G",
+              "start_port": 19
+            }
+          ],
+          "slice_id": 1,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 108.0,
+      "total_bandwidth_gbps": 10800.0
+    }
+  ],
+  "chassis_type": "fixed",
+  "confidence": "medium",
+  "os": "iosxr",
+  "platform_family": "cisco-8000",
+  "platform_id": "8201",
+  "platform_name": "Cisco 8201",
+  "platform_pid": "8201-SYS",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-8201",
+      "title": "BRKSPG-2900-2024, Cisco 8201 datasheet",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/cisco-8000/8201.json",
+      "title": "cisco knowledge base — hardware-topology/cisco-8000/8201.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 10.8,
+  "total_ports": 36
+}

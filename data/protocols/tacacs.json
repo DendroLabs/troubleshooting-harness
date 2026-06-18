@@ -1,0 +1,2762 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "NAS must reach TACACS+ server on TCP port 49. Unlike RADIUS (UDP), TACACS+ uses TCP — provides reliable delivery and encrypted full packet body. Firewall must permit TCP/49.",
+      "name": "TCP reachability to TACACS+ server",
+      "type": "infrastructure"
+    },
+    {
+      "description": "IOS-XE: 'aaa new-model' required. NX-OS: 'feature tacacs+' required. IOS-XR: AAA enabled by default.",
+      "name": "AAA model enabled",
+      "type": "infrastructure"
+    },
+    {
+      "description": "NAS and TACACS+ server must have identical shared secret. Entire packet body (except header) is encrypted with this key — mismatch causes complete communication failure.",
+      "name": "Shared secret configured on both sides",
+      "type": "infrastructure"
+    },
+    {
+      "description": "NAS must have IP route to TACACS+ server. VRF-aware configuration needed if TACACS+ server is in management VRF.",
+      "name": "IP routing / reachability",
+      "type": "protocol"
+    },
+    {
+      "description": "AAA method lists must reference the TACACS+ server group. Authentication, authorization, and accounting each need their own method lists. ALWAYS include 'local' fallback.",
+      "name": "Method lists mapping to server groups",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "TACACS+ shared key differs between NAS and server — all packets are encrypted with this key, so mismatch causes complete authentication failure",
+      "resolutions": [
+        {
+          "action": "Re-enter shared key on both NAS and TACACS+ server — type manually",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Re-enter shared key on both NAS and TACACS+ server — type manually",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Re-enter shared key on both NAS and TACACS+ server — type manually",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: 'show run | inc tacacs' to see configured key (type-7)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: 'show run | inc tacacs' to see configured key (type-7)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: 'show run | inc tacacs' to see configured key (type-7)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: check 'show run | sec tacacs' for per-server and global keys",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: check 'show run | sec tacacs' for per-server and global keys",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: check 'show run | sec tacacs' for per-server and global keys",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On ISE: Administration > Network Resources > Network Devices > TACACS settings",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On ISE: Administration > Network Resources > Network Devices > TACACS settings",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On ISE: Administration > Network Resources > Network Devices > TACACS settings",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with 'test aaa group tacacs+ <user> <pass> new-code' (IOS-XE)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with 'test aaa group tacacs+ <user> <pass> new-code' (IOS-XE)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with 'test aaa group tacacs+ <user> <pass> new-code' (IOS-XE)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Temporarily set a simple key (no special chars) on both sides to isolate",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Temporarily set a simple key (no special chars) on both sides to isolate",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Temporarily set a simple key (no special chars) on both sides to isolate",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Shared key misconfigured on NAS or server",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Copy-paste error with trailing whitespace/newline",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Key contains special characters (quotes, $, !) interpreted by shell",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Key configured per-server differs from global key",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ISE TACACS device entry has different key than switch config",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Shared key mismatch",
+      "symptoms": [
+        "Login always fails with 'Authentication failed' or 'incorrect password'",
+        "debug tacacs shows 'TACACS+: invalid REPLY received' or garbled data",
+        "TACACS+ server logs show 'bad shared secret' or decryption error",
+        "'show aaa servers' may show transactions attempted but failing"
+      ],
+      "verify_commands": [
+        {
+          "command": "debug tacacs authentication",
+          "confirms_if": "Garbled REPLY data strongly indicates shared key mismatch",
+          "look_for": "Look for 'invalid REPLY' or corrupted/garbled data in debug output",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug tacacs authentication",
+          "confirms_if": "Garbled REPLY data strongly indicates shared key mismatch",
+          "look_for": "Look for 'invalid REPLY' or corrupted/garbled data in debug output",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug tacacs authentication",
+          "confirms_if": "Garbled REPLY data strongly indicates shared key mismatch",
+          "look_for": "Look for 'invalid REPLY' or corrupted/garbled data in debug output",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show tacacs-server",
+          "confirms_if": "Requests sent with zero successes confirms server-side rejection",
+          "look_for": "Check server status and transaction counts — auth requests sent vs failures",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show tacacs-server",
+          "confirms_if": "Requests sent with zero successes confirms server-side rejection",
+          "look_for": "Check server status and transaction counts — auth requests sent vs failures",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show tacacs-server",
+          "confirms_if": "Requests sent with zero successes confirms server-side rejection",
+          "look_for": "Check server status and transaction counts — auth requests sent vs failures",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "test aaa group tacacs+ <user> <pass> new-code",
+          "confirms_if": "Error result with known-good credentials confirms key mismatch",
+          "look_for": "Error vs explicit reject — error = likely key mismatch, reject = creds wrong",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "test aaa group tacacs+ <user> <pass> new-code",
+          "confirms_if": "Error result with known-good credentials confirms key mismatch",
+          "look_for": "Error vs explicit reject — error = likely key mismatch, reject = creds wrong",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "test aaa group tacacs+ <user> <pass> new-code",
+          "confirms_if": "Error result with known-good credentials confirms key mismatch",
+          "look_for": "Error vs explicit reject — error = likely key mismatch, reject = creds wrong",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "NAS cannot establish TCP connection to TACACS+ server — login attempts hang until timeout, then fail or fall through to local auth",
+      "resolutions": [
+        {
+          "action": "Verify TCP/49 connectivity: on NX-OS 'telnet <ip> 49 vrf <vrf>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify TCP/49 connectivity: on NX-OS 'telnet <ip> 49 vrf <vrf>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify TCP/49 connectivity: on NX-OS 'telnet <ip> 49 vrf <vrf>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check TACACS+ server service status (ISE: ise-psc status)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check TACACS+ server service status (ISE: ise-psc status)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check TACACS+ server service status (ISE: ise-psc status)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify firewall allows TCP/49 inbound to TACACS+ server",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify firewall allows TCP/49 inbound to TACACS+ server",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify firewall allows TCP/49 inbound to TACACS+ server",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check source-interface: 'ip tacacs source-interface' (IOS-XE)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check source-interface: 'ip tacacs source-interface' (IOS-XE)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check source-interface: 'ip tacacs source-interface' (IOS-XE)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure deadtime to avoid delays on dead servers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure deadtime to avoid delays on dead servers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure deadtime to avoid delays on dead servers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'feature tacacs+' is enabled (NX-OS)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'feature tacacs+' is enabled (NX-OS)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'feature tacacs+' is enabled (NX-OS)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "TACACS+ server process down",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Firewall blocking TCP port 49",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Network path failure (routing, interface down)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Source interface on NAS in wrong VRF or not configured",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "TACACS+ server listening on non-default port",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "TCP connection limit reached on server",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "TACACS+ server unreachable (TCP/49)",
+      "symptoms": [
+        "Login takes a long time (timeout per dead server) then may work via local fallback",
+        "Login hangs for 5-15+ seconds before prompting",
+        "'show tacacs-server' shows server(s) as dead or with high failure count",
+        "TCP RST or connection refused in packet capture"
+      ],
+      "verify_commands": [
+        {
+          "command": "show tacacs-server",
+          "confirms_if": "Server marked DEAD or zero successes confirms unreachability",
+          "look_for": "Check server status — look for DEAD state or no successful transactions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show tacacs-server",
+          "confirms_if": "Server marked DEAD or zero successes confirms unreachability",
+          "look_for": "Check server status — look for DEAD state or no successful transactions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show tacacs-server",
+          "confirms_if": "Server marked DEAD or zero successes confirms unreachability",
+          "look_for": "Check server status — look for DEAD state or no successful transactions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "100% timeout rate confirms server unreachable",
+          "look_for": "Check TACACS+ server counters — requests vs timeouts",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "100% timeout rate confirms server unreachable",
+          "look_for": "Check TACACS+ server counters — requests vs timeouts",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "100% timeout rate confirms server unreachable",
+          "look_for": "Check TACACS+ server counters — requests vs timeouts",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <tacacs-ip> source <source-intf>",
+          "confirms_if": "Ping failure confirms network-level unreachability",
+          "look_for": "ICMP reachability from correct source interface/VRF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <tacacs-ip> source <source-intf>",
+          "confirms_if": "Ping failure confirms network-level unreachability",
+          "look_for": "ICMP reachability from correct source interface/VRF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <tacacs-ip> source <source-intf>",
+          "confirms_if": "Ping failure confirms network-level unreachability",
+          "look_for": "ICMP reachability from correct source interface/VRF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "User can log in but specific commands are blocked by TACACS+ authorization policy — 'Command authorization failed' error",
+      "resolutions": [
+        {
+          "action": "Check ISE TACACS command set: Device Administration > Command Sets",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE TACACS command set: Device Administration > Command Sets",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE TACACS command set: Device Administration > Command Sets",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify user's shell profile: privilege level, assigned command sets",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify user's shell profile: privilege level, assigned command sets",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify user's shell profile: privilege level, assigned command sets",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "debug tacacs authorization — check exact cmd and cmd-arg being sent",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "debug tacacs authorization — check exact cmd and cmd-arg being sent",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "debug tacacs authorization — check exact cmd and cmd-arg being sent",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test specific commands by adding to command set on ISE, use 'permit' first",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test specific commands by adding to command set on ISE, use 'permit' first",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test specific commands by adding to command set on ISE, use 'permit' first",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check method list: 'aaa authorization commands <level> default group tacacs+ local'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check method list: 'aaa authorization commands <level> default group tacacs+ local'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check method list: 'aaa authorization commands <level> default group tacacs+ local'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider using 'aaa authorization commands <level>' with local fallback for safety",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider using 'aaa authorization commands <level>' with local fallback for safety",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider using 'aaa authorization commands <level>' with local fallback for safety",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "TACACS+ command set on server missing the specific command",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Command set uses 'deny' by default and command not explicitly permitted",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Privilege level mismatch — user assigned priv 1 but command requires priv 15",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Command arguments not matching — 'show' permitted but 'show running-config' denied",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Authorization method-list missing or pointing to wrong server group",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ISE command set regex incorrect — common with sub-commands and arguments",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Command authorization denied",
+      "symptoms": [
+        "User can log in but certain commands return 'Command authorization failed'",
+        "User gets 'Authorization failed' after typing a command",
+        "Some commands work but others don't — inconsistent access",
+        "debug tacacs shows AUTHOR_FAIL for specific cmd/cmd-arg pairs"
+      ],
+      "verify_commands": [
+        {
+          "command": "debug tacacs authorization",
+          "confirms_if": "FAIL with specific cmd/cmd-arg shows exactly which command is denied and why",
+          "look_for": "Look for the specific cmd and cmd-arg being denied — AUTHOR/FAIL status",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug tacacs authorization",
+          "confirms_if": "FAIL with specific cmd/cmd-arg shows exactly which command is denied and why",
+          "look_for": "Look for the specific cmd and cmd-arg being denied — AUTHOR/FAIL status",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug tacacs authorization",
+          "confirms_if": "FAIL with specific cmd/cmd-arg shows exactly which command is denied and why",
+          "look_for": "Look for the specific cmd and cmd-arg being denied — AUTHOR/FAIL status",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show privilege",
+          "confirms_if": "Low privilege level with commands requiring higher priv confirms priv mismatch",
+          "look_for": "Check current user's privilege level",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show privilege",
+          "confirms_if": "Low privilege level with commands requiring higher priv confirms priv mismatch",
+          "look_for": "Check current user's privilege level",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show privilege",
+          "confirms_if": "Low privilege level with commands requiring higher priv confirms priv mismatch",
+          "look_for": "Check current user's privilege level",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa authorization",
+          "confirms_if": "Missing or misconfigured method-list confirms authorization config issue",
+          "look_for": "Check authorization method-lists for commands and exec",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa authorization",
+          "confirms_if": "Missing or misconfigured method-list confirms authorization config issue",
+          "look_for": "Check authorization method-lists for commands and exec",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa authorization",
+          "confirms_if": "Missing or misconfigured method-list confirms authorization config issue",
+          "look_for": "Check authorization method-lists for commands and exec",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "User authenticates but lands at wrong privilege level — unable to enter enable mode or starts in wrong mode",
+      "resolutions": [
+        {
+          "action": "ISE: check shell profile under Device Administration > Shell Profiles",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ISE: check shell profile under Device Administration > Shell Profiles",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ISE: check shell profile under Device Administration > Shell Profiles",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'priv-lvl=15' is set in custom attributes for admin users",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'priv-lvl=15' is set in custom attributes for admin users",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'priv-lvl=15' is set in custom attributes for admin users",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: verify 'aaa authorization exec default group tacacs+ local'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: verify 'aaa authorization exec default group tacacs+ local'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: verify 'aaa authorization exec default group tacacs+ local'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: verify 'aaa authorization commands default group tacacs+ local'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: verify 'aaa authorization commands default group tacacs+ local'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: verify 'aaa authorization commands default group tacacs+ local'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: verify task-group assignment in TACACS+ (not priv-lvl)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: verify task-group assignment in TACACS+ (not priv-lvl)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: verify task-group assignment in TACACS+ (not priv-lvl)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check enable authentication: 'aaa authentication enable default group tacacs+ enable'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check enable authentication: 'aaa authentication enable default group tacacs+ enable'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check enable authentication: 'aaa authentication enable default group tacacs+ enable'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "TACACS+ shell profile not assigning correct priv-lvl attribute",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Shell profile missing 'priv-lvl=15' in custom attributes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IOS-XR: task-group assignment missing or wrong (IOS-XR uses tasks, not priv-levels)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NAS 'aaa authorization exec' not configured — server attributes not applied",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ISE returning priv-lvl=0 or priv-lvl=1 by default",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Enable authentication using different method than login",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Privilege level mismatch / wrong shell profile",
+      "symptoms": [
+        "User logs in at privilege level 1 instead of expected 15",
+        "User cannot enter 'enable' mode or enable password is rejected",
+        "'show privilege' shows unexpected level",
+        "User gets exec shell instead of enable shell (or vice versa)"
+      ],
+      "verify_commands": [
+        {
+          "command": "debug tacacs authorization",
+          "confirms_if": "priv-lvl=1 or missing priv-lvl in response confirms shell profile issue",
+          "look_for": "Check priv-lvl returned in authorization RESPONSE — should show priv-lvl=15",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug tacacs authorization",
+          "confirms_if": "priv-lvl=1 or missing priv-lvl in response confirms shell profile issue",
+          "look_for": "Check priv-lvl returned in authorization RESPONSE — should show priv-lvl=15",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug tacacs authorization",
+          "confirms_if": "priv-lvl=1 or missing priv-lvl in response confirms shell profile issue",
+          "look_for": "Check priv-lvl returned in authorization RESPONSE — should show priv-lvl=15",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show privilege",
+          "confirms_if": "Privilege level != expected confirms TACACS+ shell profile misconfiguration",
+          "look_for": "Current privilege level — should be 15 for admin access",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show privilege",
+          "confirms_if": "Privilege level != expected confirms TACACS+ shell profile misconfiguration",
+          "look_for": "Current privilege level — should be 15 for admin access",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show privilege",
+          "confirms_if": "Privilege level != expected confirms TACACS+ shell profile misconfiguration",
+          "look_for": "Current privilege level — should be 15 for admin access",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa authorization exec",
+          "confirms_if": "Missing exec authorization explains why server-assigned priv-lvl is ignored",
+          "look_for": "Check exec authorization is configured and pointing to TACACS+ group",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa authorization exec",
+          "confirms_if": "Missing exec authorization explains why server-assigned priv-lvl is ignored",
+          "look_for": "Check exec authorization is configured and pointing to TACACS+ group",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa authorization exec",
+          "confirms_if": "Missing exec authorization explains why server-assigned priv-lvl is ignored",
+          "look_for": "Check exec authorization is configured and pointing to TACACS+ group",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "single-connection (persistent TCP session) between NAS and TACACS+ server becomes stale or causes intermittent failures",
+      "resolutions": [
+        {
+          "action": "Option 1: Disable single-connection — use per-session TCP (more reliable through firewalls)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Option 1: Disable single-connection — use per-session TCP (more reliable through firewalls)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Option 1: Disable single-connection — use per-session TCP (more reliable through firewalls)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Option 2: Increase firewall/NAT idle timeout above TACACS+ idle timeout",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Option 2: Increase firewall/NAT idle timeout above TACACS+ idle timeout",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Option 2: Increase firewall/NAT idle timeout above TACACS+ idle timeout",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Option 3: Enable TCP keepalives on NAS: 'ip tacacs-server directed-request' (IOS-XE varies)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Option 3: Enable TCP keepalives on NAS: 'ip tacacs-server directed-request' (IOS-XE varies)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Option 3: Enable TCP keepalives on NAS: 'ip tacacs-server directed-request' (IOS-XE varies)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE TACACS settings: single-connect timeout",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE TACACS settings: single-connect timeout",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISE TACACS settings: single-connect timeout",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: remove 'single-connection' from 'tacacs-server host' line",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: remove 'single-connection' from 'tacacs-server host' line",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: remove 'single-connection' from 'tacacs-server host' line",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Firewall/NAT idle timeout shorter than single-connection idle time",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "TACACS+ server drops idle connections (ISE default: 120s)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Network device between NAS and server doing stateful inspection with aggressive timeouts",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "TCP keepalives not configured or not reaching through firewalls",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Server-side connection limit reached, refusing new persistent connections",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Single-connection mode issues",
+      "symptoms": [
+        "Intermittent authentication failures — works sometimes, fails other times",
+        "First login after idle period fails, subsequent logins work",
+        "debug tacacs shows TCP connection reset or unexpected close",
+        "Firewall/NAT timeout killing idle persistent TCP connection"
+      ],
+      "verify_commands": [
+        {
+          "command": "show tacacs-server",
+          "confirms_if": "Single-connection enabled + intermittent failures = likely stale TCP session",
+          "look_for": "Check if 'single-connection' is shown for the server",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show tacacs-server",
+          "confirms_if": "Single-connection enabled + intermittent failures = likely stale TCP session",
+          "look_for": "Check if 'single-connection' is shown for the server",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show tacacs-server",
+          "confirms_if": "Single-connection enabled + intermittent failures = likely stale TCP session",
+          "look_for": "Check if 'single-connection' is shown for the server",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug tacacs",
+          "confirms_if": "TCP RST or unexpected close during auth attempt confirms stale connection",
+          "look_for": "Look for TCP connection reset, close, or re-establishment events",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug tacacs",
+          "confirms_if": "TCP RST or unexpected close during auth attempt confirms stale connection",
+          "look_for": "Look for TCP connection reset, close, or re-establishment events",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug tacacs",
+          "confirms_if": "TCP RST or unexpected close during auth attempt confirms stale connection",
+          "look_for": "Look for TCP connection reset, close, or re-establishment events",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include tacacs-server host",
+          "confirms_if": "Confirms single-connection is configured",
+          "look_for": "Check for 'single-connection' keyword in server definition",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include tacacs-server host",
+          "confirms_if": "Confirms single-connection is configured",
+          "look_for": "Check for 'single-connection' keyword in server definition",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include tacacs-server host",
+          "confirms_if": "Confirms single-connection is configured",
+          "look_for": "Check for 'single-connection' keyword in server definition",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "TACACS+ accounting records (command logs, session stop) not reaching server — incomplete audit trail",
+      "resolutions": [
+        {
+          "action": "IOS-XE: 'aaa accounting exec default start-stop group tacacs+'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: 'aaa accounting exec default start-stop group tacacs+'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: 'aaa accounting exec default start-stop group tacacs+'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: 'aaa accounting commands 15 default start-stop group tacacs+'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: 'aaa accounting commands 15 default start-stop group tacacs+'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: 'aaa accounting commands 15 default start-stop group tacacs+'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: 'aaa accounting default group tacacs+'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: 'aaa accounting default group tacacs+'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: 'aaa accounting default group tacacs+'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: 'aaa accounting commands default start-stop group tacacs+'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: 'aaa accounting commands default start-stop group tacacs+'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: 'aaa accounting commands default start-stop group tacacs+'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add system accounting: 'aaa accounting system default start-stop group tacacs+'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add system accounting: 'aaa accounting system default start-stop group tacacs+'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add system accounting: 'aaa accounting system default start-stop group tacacs+'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify method-list references correct server group",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify method-list references correct server group",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify method-list references correct server group",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "aaa accounting not configured on NAS",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Accounting server unreachable when session ended",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NAS reloaded without sending accounting-stop",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Method list for accounting pointing to wrong server group",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Command accounting not enabled — only session start/stop",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Accounting queue full on NAS (high-traffic scenario)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Accounting stop failures / missing audit trail",
+      "symptoms": [
+        "ISE TACACS Live Logs show session start but no stop",
+        "Command accounting logs missing — compliance gap",
+        "'show aaa servers' shows accounting timeouts or failures",
+        "TACACS+ server shows incomplete session records"
+      ],
+      "verify_commands": [
+        {
+          "command": "show running-config | include aaa accounting",
+          "confirms_if": "Missing accounting config confirms root cause",
+          "look_for": "Check for exec, commands, and system accounting configurations",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa accounting",
+          "confirms_if": "Missing accounting config confirms root cause",
+          "look_for": "Check for exec, commands, and system accounting configurations",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa accounting",
+          "confirms_if": "Missing accounting config confirms root cause",
+          "look_for": "Check for exec, commands, and system accounting configurations",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Accounting timeouts confirm server not receiving records",
+          "look_for": "Check TACACS+ accounting counters — requests vs timeouts/errors",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Accounting timeouts confirm server not receiving records",
+          "look_for": "Check TACACS+ accounting counters — requests vs timeouts/errors",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Accounting timeouts confirm server not receiving records",
+          "look_for": "Check TACACS+ accounting counters — requests vs timeouts/errors",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show tacacs-server",
+          "confirms_if": "Server down or wrong port confirms accounting delivery failure",
+          "look_for": "Check accounting port and server status",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show tacacs-server",
+          "confirms_if": "Server down or wrong port confirms accounting delivery failure",
+          "look_for": "Check accounting port and server status",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show tacacs-server",
+          "confirms_if": "Server down or wrong port confirms accounting delivery failure",
+          "look_for": "Check accounting port and server status",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "All TACACS+ servers unreachable and local fallback authentication not configured or not working — complete lockout from device",
+      "resolutions": [
+        {
+          "action": "ALWAYS configure local fallback: 'aaa authentication login default group tacacs+ local'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ALWAYS configure local fallback: 'aaa authentication login default group tacacs+ local'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ALWAYS configure local fallback: 'aaa authentication login default group tacacs+ local'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Create local emergency admin: 'username admin privilege 15 secret <pass>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Create local emergency admin: 'username admin privilege 15 secret <pass>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Create local emergency admin: 'username admin privilege 15 secret <pass>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure console has local fallback: 'line con 0' / 'login authentication default'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure console has local fallback: 'line con 0' / 'login authentication default'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure console has local fallback: 'line con 0' / 'login authentication default'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: configure local fallback in 'aaa authentication login default group tacacs+ local'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: configure local fallback in 'aaa authentication login default group tacacs+ local'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: configure local fallback in 'aaa authentication login default group tacacs+ local'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: 'aaa authentication login default group tacacs+ local'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: 'aaa authentication login default group tacacs+ local'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: 'aaa authentication login default group tacacs+ local'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If locked out: use password recovery procedure (console + ROMMON)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If locked out: use password recovery procedure (console + ROMMON)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If locked out: use password recovery procedure (console + ROMMON)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Method list missing 'local' fallback: 'aaa authentication login default group tacacs+' (no 'local')",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Local user account not configured as fallback",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Local user password expired or account disabled",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Console line not configured with fallback method list",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "'aaa authentication login console' overriding default method list without local",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Local fallback not working when all servers down",
+      "symptoms": [
+        "Cannot log in to device at all — locked out",
+        "Login hangs for a very long time then gets 'Authentication failed'",
+        "Console and VTY access both failing",
+        "Only recoverable via password-recovery procedure"
+      ],
+      "verify_commands": [
+        {
+          "command": "show running-config | include aaa authentication",
+          "confirms_if": "Missing local fallback at end of method-list confirms lockout risk",
+          "look_for": "Check method-lists end with 'local' or 'enable' as fallback",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa authentication",
+          "confirms_if": "Missing local fallback at end of method-list confirms lockout risk",
+          "look_for": "Check method-lists end with 'local' or 'enable' as fallback",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include aaa authentication",
+          "confirms_if": "Missing local fallback at end of method-list confirms lockout risk",
+          "look_for": "Check method-lists end with 'local' or 'enable' as fallback",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include username",
+          "confirms_if": "No local users configured = no fallback available if servers down",
+          "look_for": "Verify at least one local user with privilege 15 exists",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include username",
+          "confirms_if": "No local users configured = no fallback available if servers down",
+          "look_for": "Verify at least one local user with privilege 15 exists",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include username",
+          "confirms_if": "No local users configured = no fallback available if servers down",
+          "look_for": "Verify at least one local user with privilege 15 exists",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "IOS-XR uses task-based authorization instead of IOS/NX-OS privilege levels — TACACS+ server sending priv-lvl attributes that IOS-XR ignores",
+      "resolutions": [
+        {
+          "action": "IOS-XR uses task-based RBAC: configure TACACS+ to return 'task' AV-pairs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR uses task-based RBAC: configure TACACS+ to return 'task' AV-pairs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR uses task-based RBAC: configure TACACS+ to return 'task' AV-pairs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ISE: shell profile must include 'task' attribute with IOS-XR task-group name",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ISE: shell profile must include 'task' attribute with IOS-XR task-group name",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "ISE: shell profile must include 'task' attribute with IOS-XR task-group name",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Map TACACS+ users to local usergroups: 'usergroup <group>' with task assignments",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Map TACACS+ users to local usergroups: 'usergroup <group>' with task assignments",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Map TACACS+ users to local usergroups: 'usergroup <group>' with task assignments",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Common task-groups: root-system, cisco-support, operator, read-only",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Common task-groups: root-system, cisco-support, operator, read-only",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Common task-groups: root-system, cisco-support, operator, read-only",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reference: IOS-XR AAA configuration guide for task-group hierarchy",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reference: IOS-XR AAA configuration guide for task-group hierarchy",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reference: IOS-XR AAA configuration guide for task-group hierarchy",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with 'show aaa usergroup' and 'show user tasks' on IOS-XR",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with 'show aaa usergroup' and 'show user tasks' on IOS-XR",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with 'show aaa usergroup' and 'show user tasks' on IOS-XR",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "TACACS+ server sending priv-lvl instead of task attributes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IOS-XR task-group assignment not matching user's role",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "TACACS+ shell profile using IOS-style attributes (priv-lvl) instead of task strings",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Local usergroup mapping not aligned with TACACS+ returned group",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Missing 'aaa authorization exec' on IOS-XR to apply TACACS+ attributes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "IOS-XR task-based authorization mismatch",
+      "symptoms": [
+        "User authenticated on IOS-XR but missing expected permissions",
+        "Some commands work, others don't — inconsistent with IOS behavior",
+        "Task-group permissions not matching expected access level",
+        "TACACS+ policy works on IOS-XE/NX-OS but not on IOS-XR"
+      ],
+      "verify_commands": [
+        {
+          "command": "show user tasks",
+          "confirms_if": "Missing expected tasks confirms task-group assignment issue",
+          "look_for": "Check assigned tasks for the logged-in user — compare to expected permissions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show user tasks",
+          "confirms_if": "Missing expected tasks confirms task-group assignment issue",
+          "look_for": "Check assigned tasks for the logged-in user — compare to expected permissions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show user tasks",
+          "confirms_if": "Missing expected tasks confirms task-group assignment issue",
+          "look_for": "Check assigned tasks for the logged-in user — compare to expected permissions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa usergroup",
+          "confirms_if": "User's assigned group missing required tasks confirms TACACS+ attribute mismatch",
+          "look_for": "Check defined usergroups and their associated task-groups",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa usergroup",
+          "confirms_if": "User's assigned group missing required tasks confirms TACACS+ attribute mismatch",
+          "look_for": "Check defined usergroups and their associated task-groups",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa usergroup",
+          "confirms_if": "User's assigned group missing required tasks confirms TACACS+ attribute mismatch",
+          "look_for": "Check defined usergroups and their associated task-groups",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug tacacs authorization",
+          "confirms_if": "priv-lvl returned instead of task attributes confirms IOS-XR/IOS mismatch",
+          "look_for": "Check attributes returned by TACACS+ server — should see task strings, not priv-lvl",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug tacacs authorization",
+          "confirms_if": "priv-lvl returned instead of task attributes confirms IOS-XR/IOS mismatch",
+          "look_for": "Check attributes returned by TACACS+ server — should see task strings, not priv-lvl",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug tacacs authorization",
+          "confirms_if": "priv-lvl returned instead of task attributes confirms IOS-XR/IOS mismatch",
+          "look_for": "Check attributes returned by TACACS+ server — should see task strings, not priv-lvl",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "NAS initiates authentication — sends action type (LOGIN, CHPASS, SENDAUTH), authen_type (ASCII, PAP, CHAP, MSCHAP), and optional username",
+      "key_fields": [
+        "action (LOGIN, ENABLE, CHPASS)",
+        "priv_lvl (requested privilege level)",
+        "authen_type (ASCII, PAP, CHAP, MSCHAPv1, MSCHAPv2)",
+        "service (LOGIN, ENABLE, PPP)",
+        "user (username if known at START time)"
+      ],
+      "name": "Authentication START",
+      "when_sent": "User connects to NAS (SSH, console, vty login)"
+    },
+    {
+      "description": "Server response to START or CONTINUE — indicates result or requests more data",
+      "key_fields": [
+        "status (PASS, FAIL, GETDATA, GETUSER, GETPASS, RESTART, ERROR)",
+        "flags (TAC_PLUS_REPLY_FLAG_NOECHO for password prompts)",
+        "server_msg (text to display to user)",
+        "data (additional data for NAS)"
+      ],
+      "name": "Authentication REPLY",
+      "when_sent": "After processing authentication START or CONTINUE"
+    },
+    {
+      "description": "NAS sends additional data requested by server (username, password, response to challenge)",
+      "key_fields": [
+        "user_msg (user-supplied data — username or password)",
+        "flags (TAC_PLUS_CONTINUE_FLAG_ABORT to cancel)"
+      ],
+      "name": "Authentication CONTINUE",
+      "when_sent": "After server replies with GETUSER, GETPASS, or GETDATA"
+    },
+    {
+      "description": "NAS asks server whether a specific action is permitted — includes service type, command, and arguments",
+      "key_fields": [
+        "authen_method (TACACSPLUS, LOCAL, LINE, etc.)",
+        "priv_lvl (current privilege level)",
+        "authen_type (ASCII, PAP, etc.)",
+        "service (shell, exec, ppp)",
+        "cmd (command being authorized, e.g., 'show')",
+        "cmd-arg (command arguments, e.g., 'running-config')"
+      ],
+      "name": "Authorization REQUEST",
+      "when_sent": "On every command execution (if command authorization enabled), on shell access (exec authorization), or on service request"
+    },
+    {
+      "description": "Server response to authorization request — permits, denies, or modifies the request",
+      "key_fields": [
+        "status (PASS_ADD, PASS_REPL, FAIL, ERROR, FOLLOW)",
+        "arg (attribute-value pairs: priv-lvl, acl, autocmd, etc.)",
+        "server_msg (text displayed to user on FAIL)"
+      ],
+      "name": "Authorization RESPONSE",
+      "when_sent": "After processing authorization REQUEST"
+    },
+    {
+      "description": "NAS sends accounting record — start, stop, watchdog (interim), or command accounting",
+      "key_fields": [
+        "flags (START, STOP, WATCHDOG)",
+        "authen_method, priv_lvl, authen_type, service",
+        "task_id (correlates start/stop for same session)",
+        "start_time, stop_time, elapsed_time",
+        "cmd (for command accounting)"
+      ],
+      "name": "Accounting REQUEST",
+      "when_sent": "Session start/stop, command execution (if command accounting enabled), or periodic watchdog"
+    },
+    {
+      "description": "Server acknowledges accounting record",
+      "key_fields": [
+        "status (SUCCESS, ERROR, FOLLOW)",
+        "server_msg (error text if ERROR)"
+      ],
+      "name": "Accounting REPLY",
+      "when_sent": "After processing accounting REQUEST"
+    }
+  ],
+  "operates_at": "Layer 7 (Application)",
+  "protocol_family": "security",
+  "protocol_id": "tacacs",
+  "protocol_name": "TACACS+",
+  "purpose": "TCP-based AAA protocol for device administration — separates authentication, authorization, and accounting into independent protocol exchanges with full packet encryption",
+  "related_protocols": [
+    "radius",
+    "dot1x"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-8907",
+      "rfc_number": 8907,
+      "title": "RFC 8907",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc8907.txt"
+    },
+    {
+      "id": "agent-cisco-kb:security/tacacs.json",
+      "title": "agent-cisco-kb knowledge base — security/tacacs.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 8907",
+  "states": [
+    {
+      "description": "No active TACACS+ transaction — NAS ready to initiate new authentication/authorization/accounting exchange",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "IDLE"
+    },
+    {
+      "description": "NAS establishing TCP connection to TACACS+ server (port 49). With single-connection mode, may reuse existing TCP session.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "TCP_CONNECTING"
+    },
+    {
+      "description": "Authentication START packet sent — waiting for REPLY from TACACS+ server with PASS, FAIL, GETUSER, GETPASS, or ERROR",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "AUTHEN_START_SENT"
+    },
+    {
+      "description": "Multi-round authentication in progress — NAS sending CONTINUE packets with user-supplied data (username, password)",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "AUTHEN_CONTINUE"
+    },
+    {
+      "description": "Authentication succeeded — user credentials accepted",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "AUTHEN_PASS"
+    },
+    {
+      "description": "Authentication failed — bad credentials or policy denial",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "AUTHEN_FAIL"
+    },
+    {
+      "description": "Authorization REQUEST sent — NAS asking TACACS+ server whether this user/command is permitted",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "AUTHOR_REQUEST_SENT"
+    },
+    {
+      "description": "Authorization succeeded with PASS_ADD — server returned additional attributes (privilege level, autocommand, etc.)",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "AUTHOR_PASS_ADD"
+    },
+    {
+      "description": "Authorization succeeded with PASS_REPL — server replaced the requested command/args with modified values",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "AUTHOR_PASS_REPL"
+    },
+    {
+      "description": "Authorization denied — user not permitted to execute the requested command or access the requested service",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "AUTHOR_FAIL"
+    },
+    {
+      "description": "Accounting REQUEST sent — NAS reporting session event (start, stop, command) to TACACS+ server",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "ACCT_REQUEST_SENT"
+    },
+    {
+      "description": "TACACS+ server marked dead after TCP connection failures or timeouts — NAS skips this server until deadtime expires",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "SERVER_DEAD"
+    }
+  ],
+  "tags": [
+    "aaa",
+    "authentication",
+    "authorization",
+    "accounting",
+    "tacacs",
+    "security",
+    "device-admin",
+    "command-authorization",
+    "rbac",
+    "tcp"
+  ],
+  "timers": [
+    {
+      "default_rfc": "5s",
+      "description": "Time to wait for TCP connection establishment to TACACS+ server",
+      "name": "tcp-timeout",
+      "on_expiry": "TCP connection attempt abandoned, try next server",
+      "os_defaults": [
+        {
+          "default": "5s",
+          "notes": "Configured via 'tacacs-server timeout'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "5s",
+          "notes": "Configured via 'tacacs-server timeout' or per-server 'timeout' under 'tacacs server <name>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "5s",
+          "notes": "Configured under 'tacacs-server host' or 'aaa group server tacacs+'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-60s",
+      "tuning_advice": "Lower for faster failover (2-3s recommended). Default 5s means 5s delay per dead server before trying the next one."
+    },
+    {
+      "default_rfc": "0 (disabled)",
+      "description": "Time a TACACS+ server remains marked dead after TCP failures — requests skip dead servers during this period",
+      "name": "deadtime",
+      "on_expiry": "Server returned to active pool for probing",
+      "os_defaults": [
+        {
+          "default": "0 (disabled)",
+          "notes": "Configured via 'tacacs-server deadtime'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "0 (disabled)",
+          "notes": "Configured via 'tacacs-server deadtime'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "0 (disabled)",
+          "notes": "Configured under 'tacacs-server deadtime'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-1440 min",
+      "tuning_advice": "ALWAYS configure deadtime (5-15 min). Without it, every login attempt waits for TCP timeout to dead server. Critical when primary server is down."
+    },
+    {
+      "default_rfc": "5s (same as tcp-timeout on most platforms)",
+      "description": "Maximum time for a complete TACACS+ transaction (connect + exchange + response) before aborting",
+      "name": "session-timeout",
+      "on_expiry": "TACACS+ transaction aborted, fallback to next method in method-list",
+      "range": "1-60s"
+    },
+    {
+      "default_rfc": "Platform-dependent",
+      "description": "In single-connection mode, how long to keep the TCP session open while idle before tearing it down",
+      "name": "single-connection-idle",
+      "on_expiry": "Idle TCP connection torn down, next request opens new connection",
+      "range": "Varies",
+      "tuning_advice": "Single-connection reduces TCP setup overhead but can cause issues if the persistent TCP session goes stale through firewalls (NAT/PAT timeouts) or if server-side session limit is reached."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "IDLE",
+      "to_state": "TCP_CONNECTING",
+      "trigger": "User login or command execution triggers AAA request"
+    },
+    {
+      "from_state": "TCP_CONNECTING",
+      "to_state": "AUTHEN_START_SENT",
+      "trigger": "TCP connection established, authentication START sent"
+    },
+    {
+      "failure_if_stuck": "Check TCP/49 reachability, firewall rules, TACACS+ server process status",
+      "from_state": "TCP_CONNECTING",
+      "to_state": "SERVER_DEAD",
+      "trigger": "TCP connection refused or timed out"
+    },
+    {
+      "from_state": "AUTHEN_START_SENT",
+      "to_state": "AUTHEN_CONTINUE",
+      "trigger": "Server replies with GETUSER or GETPASS — requesting additional credentials from NAS"
+    },
+    {
+      "from_state": "AUTHEN_START_SENT",
+      "to_state": "AUTHEN_PASS",
+      "trigger": "Server replies with PASS — authentication successful"
+    },
+    {
+      "from_state": "AUTHEN_START_SENT",
+      "to_state": "AUTHEN_FAIL",
+      "trigger": "Server replies with FAIL — credentials rejected"
+    },
+    {
+      "from_state": "AUTHEN_CONTINUE",
+      "to_state": "AUTHEN_PASS",
+      "trigger": "Server replies with PASS after receiving credentials"
+    },
+    {
+      "from_state": "AUTHEN_CONTINUE",
+      "to_state": "AUTHEN_FAIL",
+      "trigger": "Server replies with FAIL — credentials rejected"
+    },
+    {
+      "from_state": "AUTHEN_PASS",
+      "to_state": "AUTHOR_REQUEST_SENT",
+      "trigger": "Authentication succeeded, NAS sends authorization REQUEST for the requested service (shell, command, etc.)"
+    },
+    {
+      "from_state": "AUTHOR_REQUEST_SENT",
+      "to_state": "AUTHOR_PASS_ADD",
+      "trigger": "Server responds with PASS_ADD — authorized with additional attributes"
+    },
+    {
+      "from_state": "AUTHOR_REQUEST_SENT",
+      "to_state": "AUTHOR_PASS_REPL",
+      "trigger": "Server responds with PASS_REPL — authorized with replaced attributes"
+    },
+    {
+      "failure_if_stuck": "Check TACACS+ policy: user may be missing shell profile, command set, or privilege level on the server",
+      "from_state": "AUTHOR_REQUEST_SENT",
+      "to_state": "AUTHOR_FAIL",
+      "trigger": "Server responds with FAIL — command or service denied"
+    },
+    {
+      "from_state": "AUTHOR_PASS_ADD",
+      "to_state": "ACCT_REQUEST_SENT",
+      "trigger": "Authorized action triggers accounting record (command or session event)"
+    },
+    {
+      "from_state": "ACCT_REQUEST_SENT",
+      "to_state": "IDLE",
+      "trigger": "Accounting SUCCESS received or timeout — transaction complete"
+    },
+    {
+      "from_state": "AUTHEN_FAIL",
+      "to_state": "IDLE",
+      "trigger": "Authentication failure processed, connection closed or returned to pool"
+    },
+    {
+      "from_state": "AUTHOR_FAIL",
+      "to_state": "IDLE",
+      "trigger": "Authorization failure processed"
+    },
+    {
+      "from_state": "SERVER_DEAD",
+      "to_state": "IDLE",
+      "trigger": "Deadtime expires — server returned to active pool"
+    }
+  ],
+  "transport": "TCP/49",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "IOS-XE TACACS+: 'aaa new-model' required. Named server syntax: 'tacacs server <name>' / 'address ipv4 <ip>' / 'key <secret>'. Server groups: 'aaa group server tacacs+ <name>'. Test: 'test aaa group tacacs+ <user> <pass> new-code'.",
+          "versions": "16.12+"
+        },
+        {
+          "note": "IOS-XE command authorization: 'aaa authorization commands <level> default group tacacs+ local' — authorizes EVERY command at that privilege level. Use with caution — if TACACS+ server is slow or unreachable, every command will hang. ALWAYS include 'local' fallback. Consider 'if-authenticated' keyword as alternative.",
+          "versions": "16.12+"
+        },
+        {
+          "note": "IOS-XE privilege levels: 0 (minimal), 1 (user EXEC), 15 (privileged EXEC). TACACS+ returns priv-lvl=<N> in shell profile. Custom levels 2-14 supported via 'privilege exec level <N> <command>'. Different from IOS-XR task-based model.",
+          "versions": "16.12+"
+        },
+        {
+          "note": "IOS-XE TACACS+ accounting: for compliance, configure all three: 'aaa accounting exec', 'aaa accounting commands 15', and 'aaa accounting system'. This gives session logs + command audit trail + reload/config events.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "IOS-XR TACACS+: configured under 'tacacs-server host <ip> port 49 key <secret>'. Server groups: 'aaa group server tacacs+ <name>'. Source interface via 'source-interface' under group config.",
+          "versions": "7.5+"
+        },
+        {
+          "note": "IOS-XR task-based authorization: does NOT use IOS privilege levels. Uses task-groups (read, write, execute, debug per feature). TACACS+ must return task strings, not priv-lvl. Pre-defined groups: root-system, root-lr, cisco-support, operator. Custom task-groups supported. This is the #1 gotcha when migrating from IOS/NX-OS.",
+          "versions": "7.5+"
+        },
+        {
+          "note": "IOS-XR NACM (NETCONF Access Control Model): RFC 8341. For NETCONF/ gNMI access, IOS-XR uses NACM rules in addition to or instead of TACACS+ authorization. Task-groups map to NACM groups. Consider this for devices managed via automation/NETCONF.",
+          "versions": "7.5+"
+        },
+        {
+          "note": "IOS-XR local user fallback: 'aaa authentication login default group tacacs+ local'. Create local user with 'username <user> group root-system secret <pass>'. CRITICAL for preventing lockout when TACACS+ servers unreachable.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "NX-OS TACACS+: requires 'feature tacacs+'. Primary AAA protocol for device administration on Nexus. Configured via 'tacacs-server host <ip> key <secret>'. Server groups via 'aaa group server tacacs+'. Test with 'test aaa server tacacs+ <ip> <user> <pass>'.",
+          "versions": "7.0+"
+        },
+        {
+          "note": "NX-OS VRF-aware TACACS+: use 'use-vrf management' (or other VRF) under 'aaa group server tacacs+'. Critical for Nexus where management traffic is in mgmt VRF by default. Without this, TACACS+ traffic goes out default VRF and fails.",
+          "versions": "7.0+"
+        },
+        {
+          "note": "NX-OS TACACS+ user roles: supports mapping TACACS+ users to NX-OS roles via cisco-av-pair: 'shell:roles=\"network-admin\"'. Roles: network-admin (full), network-operator (read-only), vdc-admin, vdc-operator, or custom roles.",
+          "versions": "7.0+"
+        },
+        {
+          "note": "NX-OS TACACS+ single-connection: supported via 'single-connection' keyword on tacacs-server host. Can cause issues through firewalls — disable if intermittent failures occur.",
+          "versions": "7.0+"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "dhcp-no-address-relay-vs-server",
+  "display_name": "DHCP clients getting no address — distinguish relay/giaddr/option-82 drops from server scope exhaustion",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "DHCP clients on a subnet are failing to obtain IP addresses; the DHCP server is remote (requires relay)",
+  "observation": "Clients send DHCP Discover but receive no Offer, or receive a NAK; the relay agent is configured and the server is reachable",
+  "naive_interpretation": "The DHCP server's scope/pool is exhausted or the server is down — focus troubleshooting on the server side",
+  "correct_interpretation": "When clients fail to get addresses through a relay, the relay path is at least as likely to be the problem as the server. The relay's giaddr (Gateway IP Address) tells the server which scope to allocate from — if giaddr is wrong (relay source interface down, wrong SVI, secondary address used), the server either has no matching scope or allocates from the wrong pool. Option 82 (Relay Agent Information) insertion can cause drops if the server doesn't understand option 82 or has a policy to reject requests with/without it. The server may also drop relayed requests if the giaddr doesn't match any configured subnet. Check the relay path (giaddr value, option 82 policy, helper-address reachability) before assuming the server is the problem. Server scope exhaustion is easy to confirm via the server's lease table — if the scope isn't full, the problem is almost certainly on the relay side.",
+  "why": [
+    "The DHCP relay sets giaddr to its own interface IP on the client-facing VLAN; this IP determines which scope the server allocates from (RFC 2131 Section 4.3.1)",
+    "If the relay's source interface (SVI/VLAN interface) is down or has no IP, giaddr may be 0.0.0.0 or an unexpected address, causing the server to drop or misallocate",
+    "Option 82 (RFC 3046) adds circuit-id/remote-id to relayed requests; servers may be configured to require, drop, or process this option differently — a mismatch silently drops the request",
+    "Multiple ip helper-address statements relay to multiple servers; if only one is reachable or configured correctly, clients get intermittent failures that look like server-side problems",
+    "Server scope exhaustion produces a specific NAK or no-offer behavior AND is visible in the server's lease count — if the scope isn't full, look at the relay"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip dhcp relay information trusted-sources",
+      "purpose": "Check option 82 trust and policy settings on the relay to see if relayed packets are being modified or dropped"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip interface brief",
+      "purpose": "Verify the SVI/VLAN interface used as giaddr is up and has the correct IP address matching the server's scope"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip dhcp relay",
+      "purpose": "Display DHCP relay statistics including forwarded/dropped counts per interface"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip dhcp relay statistics",
+      "purpose": "Check relay counters for discover/offer/request/ack to identify where packets are being lost in the relay path"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "debug ip dhcp server packet",
+      "purpose": "Trace DHCP packets on the relay to see the giaddr value and option 82 content being sent to the server"
+    }
+  ],
+  "traps": [
+    "Immediately blaming the DHCP server without checking whether relayed Discovers even reach it — a routing or ACL issue between relay and server is common",
+    "Assuming giaddr is correct because the SVI is configured — if the SVI has multiple secondary addresses or the primary changed, giaddr may not match the server scope",
+    "Not checking option 82 policy on both relay AND server — the relay may insert it but the server may be configured to drop requests containing option 82 (or vice versa)",
+    "Confusing client-side 'no address' with server-side 'scope exhausted' without checking the server's actual lease utilization",
+    "Overlooking helper-address pointing to a decommissioned or unreachable server, causing half of DHCP transactions to black-hole"
+  ],
+  "related_rules": [
+    "copp-drops-mimic-protocol-failure"
+  ],
+  "related_protocols": ["dhcp"],
+  "keywords": ["DHCP", "relay", "giaddr", "option 82", "helper-address", "scope", "pool", "exhaustion", "NAK", "Discover", "Offer", "SVI", "VLAN interface"],
+  "sources": [
+    {
+      "id": "rfc-2131",
+      "title": "RFC 2131 — Dynamic Host Configuration Protocol",
+      "type": "rfc",
+      "rfc_number": 2131,
+      "url": "https://www.rfc-editor.org/rfc/rfc2131.txt"
+    },
+    {
+      "id": "rfc-3046",
+      "title": "RFC 3046 — DHCP Relay Agent Information Option",
+      "type": "rfc",
+      "rfc_number": 3046,
+      "url": "https://www.rfc-editor.org/rfc/rfc3046.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

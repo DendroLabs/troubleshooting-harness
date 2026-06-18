@@ -1,0 +1,173 @@
+{
+  "applicable_os": [
+    "iosxr"
+  ],
+  "category": "system-operations",
+  "confidence": "medium",
+  "prerequisites": [
+    "Verify current image: show version",
+    "Check available disk space: dir bootflash: (NX-OS/IOS-XE) or show media (IOS-XR)",
+    "Backup running configuration to external server",
+    "Verify new image integrity (MD5/SHA512 checksum against cisco.com)",
+    "Review release notes for target version — check for known caveats and ISSU support",
+    "Confirm hardware compatibility (image must support installed line cards / supervisors)",
+    "Schedule maintenance window with change control approval",
+    "Ensure console access is available (not just SSH/VTY)",
+    "For dual-sup systems: verify standby sup is online and in sync"
+  ],
+  "procedure_id": "software-install-iosxr",
+  "procedure_name": "Software Installation / Image Upgrade (iosxr)",
+  "purpose": "Upgrade, downgrade, or patch the OS image on a network device [iosxr — method: install package model (add/activate/commit); platforms: Cisco 8000, NCS 5500, NCS 540/560, ASR 9000, XRv 9000]",
+  "risk_level": "high",
+  "rollback": [
+    {
+      "action": "install rollback to <committed-point> — rolls back to a previous committed state",
+      "commands": [],
+      "step_id": "rollback-1"
+    },
+    {
+      "action": "If not committed: reload will auto-rollback to previous committed packages",
+      "commands": [],
+      "step_id": "rollback-2"
+    },
+    {
+      "action": "For emergency: 'install rollback to last-committed' from admin mode",
+      "commands": [],
+      "step_id": "rollback-3"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco:procedures/software-install.json",
+      "title": "cisco knowledge base — procedures/software-install.json",
+      "type": "documentation"
+    }
+  ],
+  "steps": [
+    {
+      "action": "Copy image to harddisk or repository",
+      "commands": [
+        {
+          "command": "copy scp://user@server/path/8000-x64-<version>.iso harddisk:",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "IOS-XR uses ISO images or individual packages. GISO (Golden ISO) bundles base + SMUs + config for single-step install.",
+      "step": 1,
+      "step_id": "step-1"
+    },
+    {
+      "action": "Install add — extract packages",
+      "commands": [
+        {
+          "command": "install add source harddisk: <image>.iso",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "Extracts and stages packages. Monitor with 'show install request'.",
+      "step": 2,
+      "step_id": "step-2"
+    },
+    {
+      "action": "Install activate — activate packages",
+      "commands": [
+        {
+          "command": "install activate <package-names or id>",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "Activates the packages. Depending on platform and package type, this may require a reload or be hitless (for SMUs). Use 'install activate id <op-id>' to reference the add operation.",
+      "step": 3,
+      "step_id": "step-3"
+    },
+    {
+      "action": "Install commit — make permanent",
+      "commands": [
+        {
+          "command": "install commit",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "CRITICAL: Without commit, the system rolls back to the previous version on next reload. Always commit after validation.",
+      "step": 4,
+      "step_id": "step-4"
+    },
+    {
+      "action": "Verify the procedure completed successfully",
+      "commands": [],
+      "step": 5,
+      "step_id": "verify",
+      "verification": [
+        {
+          "command": "show install active summary",
+          "confirms_if": "New packages are active",
+          "look_for": "Target version packages listed as Active",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show install committed summary",
+          "confirms_if": "Active packages are committed (persist across reload)",
+          "look_for": "Same packages as active summary",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show platform",
+          "confirms_if": "All line cards and RSPs are operational",
+          "look_for": "All nodes show IOS XR RUN state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show version",
+          "confirms_if": "Correct version is running",
+          "look_for": "Target version string",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    "ISSU is NOT supported on all platforms or between all version combinations — always verify the ISSU compatibility matrix",
+    "Always have console access before starting an upgrade — if the device fails to boot you need console to recover",
+    "Verify boot variables after upgrade to prevent boot loop on next reload",
+    "On dual-sup systems, upgrade BOTH supervisors — mismatched versions cause unpredictable behavior",
+    "SMU/GISO patches may have dependencies — install in the order specified by release notes",
+    "Never delete the currently running image until the new image is confirmed stable",
+    "IOS-XR install operations run from admin mode on some older platforms (admin install add ...)",
+    "Cisco 8000 with 24.x: GISO is the recommended upgrade method — bundles all packages and SMUs",
+    "Parallel reload: IOS-XR can reload line cards in parallel to reduce downtime — verify with 'install activate ... noprompt parallel-reload'",
+    "SMU install can be hitless (process restart) or requires LC reload — check SMU release notes"
+  ]
+}

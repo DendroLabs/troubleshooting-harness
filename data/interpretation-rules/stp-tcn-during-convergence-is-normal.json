@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "stp-tcn-during-convergence-is-normal",
+  "display_name": "STP topology change notifications after a link event are normal convergence, not a loop",
+  "category": "expected-behavior",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Syslog or show spanning-tree output showing topology change notifications (TCN) or TC flag after a link goes up or down",
+  "observation": "Multiple STP topology change notifications appearing in logs after a link event",
+  "naive_interpretation": "There is a spanning tree loop or instability in the network",
+  "correct_interpretation": "A burst of TCNs immediately following a link state change is STP doing its job — reconverging the tree after a topology event. This is expected and healthy behavior. A loop would manifest as sustained TCN storms, MAC flapping on multiple ports, and high CPU — not a one-time burst that settles within the convergence timer window (typically 2-30 seconds for RSTP).",
+  "why": [
+    "STP is designed to send TCNs when topology changes — that is how it propagates the change to all bridges",
+    "Each bridge receiving the TCN shortens its MAC aging timer to flush stale entries, which is correct behavior",
+    "RSTP converges in 1-2 seconds; legacy STP takes up to 50 seconds. TCNs during this window are normal"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree detail | include topology|change",
+      "purpose": "Check the topology change counter and when the last change occurred — a single recent timestamp is normal, rapid-fire changes over minutes is not"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree detail | include topology|change",
+      "purpose": "Check topology change count and timestamp"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show mac address-table count",
+      "purpose": "If MAC table is fluctuating wildly over time, that suggests a real loop — a stable count after the TCN burst is normal"
+    }
+  ],
+  "traps": [
+    "Seeing TCN logs and assuming there is a loop without checking whether the TCNs settled",
+    "Disabling STP or portfast to stop the TCN messages instead of understanding they are normal",
+    "Not distinguishing between a one-time TCN burst (normal convergence) and sustained TCN storms (actual problem)"
+  ],
+  "related_rules": [],
+  "related_protocols": ["rstp", "mst", "stp"],
+  "keywords": ["STP", "spanning tree", "TCN", "topology change", "loop", "convergence", "RSTP"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

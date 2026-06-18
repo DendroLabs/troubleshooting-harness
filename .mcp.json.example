@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "tsh-harness": {
+      "command": "python3",
+      "args": ["<REPO_ROOT>/harness/interfaces/mcp/server.py"]
+    }
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "procedure.schema.json",
+  "title": "Operational Procedure",
+  "description": "Step-by-step operational procedure (upgrade, reboot, recovery) with per-step commands scoped to OS/version/platform.",
+
+  "$defs": {
+    "step_verification": {
+      "type": "object",
+      "properties": {
+        "os": { "type": "string" },
+        "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+        "command": { "type": "string" },
+        "look_for": { "type": "string" },
+        "confirms_if": { "type": "string" }
+      },
+      "required": ["os", "version_range", "command", "look_for", "confirms_if"],
+      "additionalProperties": false
+    },
+
+    "daemon_impact": {
+      "type": "object",
+      "properties": {
+        "daemon": { "type": "string", "description": "def_id of the affected daemon" },
+        "impact": { "type": "string" }
+      },
+      "required": ["daemon", "impact"],
+      "additionalProperties": false
+    },
+
+    "procedure_step": {
+      "type": "object",
+      "properties": {
+        "step_id": { "type": "string" },
+        "step": { "type": "integer", "minimum": 1 },
+        "action": { "type": "string" },
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "os": { "type": "string" },
+              "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+              "platforms": {
+                "oneOf": [
+                  { "type": "array", "items": { "type": "string" } },
+                  { "type": "null" }
+                ]
+              },
+              "command": { "type": "string" }
+            },
+            "required": ["os", "version_range", "command"],
+            "additionalProperties": false
+          }
+        },
+        "verification": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/step_verification" }
+        },
+        "next_step_id": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "null" }
+          ]
+        },
+        "rollback_step_id": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "null" }
+          ]
+        },
+        "daemon_impact": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/daemon_impact" }
+        },
+        "warning": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["step_id", "step", "action", "commands"],
+      "additionalProperties": false
+    },
+
+    "rollback_step": {
+      "type": "object",
+      "properties": {
+        "step_id": { "type": "string" },
+        "action": { "type": "string" },
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "os": { "type": "string" },
+              "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+              "command": { "type": "string" }
+            },
+            "required": ["os", "version_range", "command"],
+            "additionalProperties": false
+          }
+        },
+        "notes": { "type": "string" }
+      },
+      "required": ["step_id", "action", "commands"],
+      "additionalProperties": false
+    }
+  },
+
+  "type": "object",
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+    "deprecated": { "type": "boolean", "default": false },
+
+    "procedure_id": { "type": "string" },
+    "procedure_name": { "type": "string" },
+    "category": { "type": "string" },
+    "risk_level": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "purpose": { "type": "string" },
+    "applicable_os": { "type": "array", "items": { "type": "string" } },
+    "def_refs": { "type": "array", "items": { "type": "string" } },
+    "prerequisites": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+
+    "steps": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/procedure_step" },
+      "minItems": 1
+    },
+    "rollback": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/rollback_step" }
+    },
+
+    "sources": {
+      "type": "array",
+      "items": { "$ref": "protocol.schema.json#/$defs/source" }
+    }
+  },
+  "required": ["schema_version", "procedure_id", "procedure_name", "category", "risk_level", "purpose", "applicable_os", "steps"],
+  "additionalProperties": false
+}

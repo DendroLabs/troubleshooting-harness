@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "copp-drops-mimic-protocol-failure",
+  "display_name": "CoPP drops on control-plane traffic look exactly like a protocol failure — check CoPP counters before debugging the protocol",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "A control-plane protocol (BGP, OSPF, HSRP/VRRP, ARP, DHCP, BFD) is failing or flapping intermittently with no obvious configuration issue",
+  "observation": "BGP session drops, OSPF adjacency resets, ARP resolution fails, HSRP/VRRP goes dual-active, or BFD declares a peer down — but the config, cabling, and remote peer all appear healthy",
+  "naive_interpretation": "The protocol is misconfigured, the remote peer is unstable, or there is a bug in the protocol implementation",
+  "correct_interpretation": "Control-plane protocols rely on packets punted to the CPU (hellos, keepalives, ARP requests, BGP updates). CoPP (Control Plane Policing) rate-limits these packets to protect the CPU from DoS. If the aggregate rate of punted traffic exceeds the CoPP policer for that class, legitimate protocol packets are dropped alongside the excess — and the protocol sees the exact same symptoms as a dead peer or broken link. This is especially common during convergence events (route churn generating heavy BGP updates), ARP storms, or scanning attacks that flood the punt path. Check CoPP drop counters BEFORE debugging the protocol itself.",
+  "why": [
+    "CoPP polices CPU-bound traffic by class; BGP, OSPF, ARP, and FHRP hellos may share a class or have individual rate limits — a burst in one can starve another",
+    "Protocol keepalives (BGP hold, OSPF dead interval, HSRP holdtime) have finite timers; if enough consecutive keepalives are CoPP-dropped, the peer is declared dead",
+    "CoPP drops are silent from the protocol's perspective — BGP does not distinguish 'holdtime expired because CoPP dropped the keepalive' from 'peer crashed'",
+    "BFD is particularly vulnerable because its sub-second timers leave almost no margin for even a few dropped packets",
+    "Convergence events amplify the problem: a link failure triggers route withdrawals (BGP updates flood the CPU), and the CoPP drops caused by that flood take out other protocols on the same box"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show policy-map interface control-plane",
+      "purpose": "Check per-class CoPP policer conform/violate/drop counters to identify which class is dropping"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show policy-map control-plane",
+      "purpose": "Display CoPP policy counters — look for non-zero drop counts in classes carrying the affected protocol"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show lpts pifib hardware police",
+      "purpose": "Display LPTS (Local Packet Transport Services) policer rates and drop counters for each protocol class"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show hardware rate-limiter",
+      "purpose": "Check hardware-level punt rate limiters that may drop traffic before it reaches the CoPP policy"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show platform software punt-policer",
+      "purpose": "Check punt-policer drop counters at the platform level for each punt cause"
+    }
+  ],
+  "traps": [
+    "Spending hours debugging BGP/OSPF config when the protocol is fine but its packets are being dropped by CoPP",
+    "Blaming the remote peer for instability when the drops are happening locally on ingress to the CPU",
+    "Not correlating the timing of protocol failures with a concurrent event (DDoS, ARP storm, convergence) that spiked punt traffic",
+    "Checking CoPP once, seeing zero drops, and dismissing it — CoPP counters should be polled across the failure window, not spot-checked after recovery",
+    "Increasing the CoPP rate limit without understanding what is flooding the class — raising the limit may just move the bottleneck to CPU exhaustion"
+  ],
+  "related_rules": [
+    "hsrp-vrrp-dual-active-is-keepalive-loss",
+    "debug-no-output-is-not-proof-of-absence",
+    "bgp-established-then-idle-is-not-flap"
+  ],
+  "related_protocols": ["bgp-4", "ospfv2", "hsrp", "vrrp", "bfd", "dhcp"],
+  "keywords": ["CoPP", "control plane policing", "LPTS", "punt", "rate-limit", "drops", "BGP", "OSPF", "ARP", "HSRP", "BFD", "keepalive", "holdtime", "CPU"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

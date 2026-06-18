@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "bgp-established-then-idle-is-not-flap",
+  "display_name": "BGP peer going Established->Idle once is a reset, not a flap — check state time",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "show bgp summary output showing a peer in Idle or Active state with a low uptime/state timer",
+  "observation": "A BGP peer shows state Idle or Active and the up/down timer shows a recent time (minutes or hours)",
+  "naive_interpretation": "The BGP session is flapping and unstable",
+  "correct_interpretation": "A single transition from Established to Idle is a session reset, not a flap. Flapping means the session is cycling between Established and down states repeatedly. Check the state change counter and look at the time pattern. A peer that went down once and stayed down has a different root cause (likely a deliberate action or single event) than one cycling every few minutes (likely a hold timer or route-related issue).",
+  "why": [
+    "The up/down field shows time since last state change — a short time could mean one recent event, not ongoing instability",
+    "True flapping produces high state change counters and a pattern of short up/down intervals in the logs",
+    "A single reset is often caused by a maintenance action, a single link failure, or a one-time configuration change on the remote end"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp neighbor <peer-ip> | include state|changes|reset",
+      "purpose": "Check the state change counter and last reset reason to distinguish single event from flapping"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show logging | include BGP-5-ADJCHANGE",
+      "purpose": "Look for a pattern of repeated up/down transitions versus a single event"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp neighbors <peer-ip> | include state|changes|reset",
+      "purpose": "Check state change count and reset reason"
+    }
+  ],
+  "traps": [
+    "Declaring a peer as flapping based on a single down event",
+    "Not checking the state change counter to see if this is a one-time or repeated event",
+    "Not reading the last reset reason — it often points directly to the cause (hold timer expired, admin reset, notification received)",
+    "Conflating the concepts of down and flapping when they have different troubleshooting approaches"
+  ],
+  "related_rules": [
+    "bgp-high-cpu-after-topology-change"
+  ],
+  "related_protocols": ["bgp-4"],
+  "keywords": ["BGP", "flapping", "Idle", "Active", "Established", "state change", "session reset", "hold timer"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

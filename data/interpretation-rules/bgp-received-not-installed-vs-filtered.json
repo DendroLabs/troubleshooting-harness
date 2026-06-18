@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "bgp-received-not-installed-vs-filtered",
+  "display_name": "A route 'received' but not in the RIB can be not-best, filtered, or next-hop-invalid — these are different problems",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "A prefix the peer should be sending is missing from the routing table and the engineer is determining why",
+  "observation": "A prefix is expected from a BGP neighbor but is absent from the RIB; it may or may not appear in the BGP table",
+  "naive_interpretation": "The neighbor is not advertising the route, so the problem is on the remote end",
+  "correct_interpretation": "There are three distinct reasons a route does not land in the RIB, and they need different checks. (1) Not received at all — inbound policy on this router rejected it, or the peer never sent it. (2) Received but not best — a competing path won best-path selection, so this path is hidden. (3) Received and best but invalid — the next-hop is unresolvable. Use received-routes versus the post-policy table to separate 'never arrived' from 'arrived but dropped by policy' from 'arrived but lost selection'. Don't assume the remote end is at fault until you've confirmed the route was never received.",
+  "why": [
+    "Inbound route-maps/prefix-lists silently discard routes before they enter the BGP table, so absence in the table does not mean the peer withheld them",
+    "Best-path selection keeps only one path active; a received route can be valid yet simply not the winner",
+    "soft-reconfiguration inbound or Adj-RIB-In viewing reveals what was actually received pre-policy versus what survived",
+    "Each cause has a different fix — peer/advertisement, local policy, path attributes, or next-hop resolution — so identifying which one is the whole job"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp ipv4 unicast neighbors <peer-ip> received-routes",
+      "purpose": "Show pre-policy received routes to confirm whether the prefix actually arrived from the peer"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp ipv4 unicast neighbors <peer-ip> routes",
+      "purpose": "Show post-inbound-policy routes to detect whether local filtering dropped the prefix"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip bgp <prefix>",
+      "purpose": "Inspect all received paths for the prefix and why a given path is or is not best"
+    }
+  ],
+  "traps": [
+    "Blaming the remote peer before confirming with received-routes that the prefix never arrived",
+    "Forgetting that received-routes requires soft-reconfiguration inbound (or route-refresh support) on some platforms or it returns nothing misleadingly",
+    "Treating 'not in RIB' as a single condition instead of distinguishing not-received, filtered, not-best, and next-hop-invalid",
+    "Overlooking inbound route-policy that silently drops the prefix and assuming a protocol bug"
+  ],
+  "related_rules": [
+    "bgp-inactive-route-nexthop-unreachable",
+    "route-table-entry-ad-determines-source"
+  ],
+  "related_protocols": ["bgp-4"],
+  "keywords": ["BGP", "received-routes", "Adj-RIB-In", "route-map", "prefix-list", "filtered", "best path", "soft-reconfiguration", "advertisement"],
+  "sources": [
+    {
+      "id": "rfc-4271",
+      "title": "RFC 4271 — A Border Gateway Protocol 4 (BGP-4)",
+      "type": "rfc",
+      "rfc_number": 4271,
+      "url": "https://www.rfc-editor.org/rfc/rfc4271.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

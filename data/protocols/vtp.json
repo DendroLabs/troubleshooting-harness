@@ -1,0 +1,704 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "VTP advertisements are sent only over trunk links. No trunk = no VTP propagation.",
+      "name": "802.1Q trunk links",
+      "type": "infrastructure"
+    },
+    {
+      "description": "All switches in the VTP domain must share the same domain name to exchange VLAN information.",
+      "name": "Matching VTP domain name",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "A switch with a higher VTP configuration revision number than the production domain is connected to the network. Because VTP servers and clients accept the VLAN database from the highest revision number, the new switch's VLAN database (which may be empty, from a lab, or outdated) overwrites the ENTIRE production VLAN database on ALL switches in the VTP domain. Every non-default VLAN is deleted network-wide, causing a catastrophic outage. This is one of the most notorious operational disasters in switching.",
+      "resolutions": [
+        {
+          "action": "IMMEDIATE: If caught in progress, physically disconnect the offending switch immediately",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMMEDIATE: If caught in progress, physically disconnect the offending switch immediately",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMMEDIATE: If caught in progress, physically disconnect the offending switch immediately",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "RECOVERY: Re-create all deleted VLANs manually on a VTP server switch — use backup configs or documentation",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "RECOVERY: Re-create all deleted VLANs manually on a VTP server switch — use backup configs or documentation",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "RECOVERY: Re-create all deleted VLANs manually on a VTP server switch — use backup configs or documentation",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "RECOVERY: If VLAN names/IDs are unknown, check access switch configs — 'switchport access vlan' and 'switchport trunk allowed vlan' still reference the VLANs even though they no longer exist",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "RECOVERY: If VLAN names/IDs are unknown, check access switch configs — 'switchport access vlan' and 'switchport trunk allowed vlan' still reference the VLANs even though they no longer exist",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "RECOVERY: If VLAN names/IDs are unknown, check access switch configs — 'switchport access vlan' and 'switchport trunk allowed vlan' still reference the VLANs even though they no longer exist",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTION: Use VTP transparent mode on all switches — manually manage VLANs per switch",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTION: Use VTP transparent mode on all switches — manually manage VLANs per switch",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTION: Use VTP transparent mode on all switches — manually manage VLANs per switch",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTION: Upgrade to VTPv3 which requires a primary server to make changes and supports confirmation prompts",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTION: Upgrade to VTPv3 which requires a primary server to make changes and supports confirmation prompts",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTION: Upgrade to VTPv3 which requires a primary server to make changes and supports confirmation prompts",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTION: Reset VTP revision number before connecting any switch: change mode to transparent and back, or change VTP domain name and back",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTION: Reset VTP revision number before connecting any switch: change mode to transparent and back, or change VTP domain name and back",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTION: Reset VTP revision number before connecting any switch: change mode to transparent and back, or change VTP domain name and back",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTION: Configure a VTP password on all switches in the domain",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTION: Configure a VTP password on all switches in the domain",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "PREVENTION: Configure a VTP password on all switches in the domain",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Newly connected switch from lab/storage has a higher VTP revision number from previous use in the same VTP domain",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Switch was removed from the network, VLANs were modified (increasing revision), then re-connected — its higher revision overwrites production",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VTPv1/v2 in server mode — no protection against higher revision numbers from unauthorized sources",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No VTP password configured — any switch joining the domain name can propagate changes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VTP domain name inadvertently matches production domain on a lab or staging switch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "VTP revision number bomb (VLAN database wipe)",
+      "symptoms": [
+        "Multiple VLANs suddenly disappear from all switches in the domain",
+        "Mass connectivity loss as ports on deleted VLANs become inactive",
+        "'show vlan brief' shows only VLAN 1 and system VLANs",
+        "STP topology changes cascade across the network",
+        "'show vtp status' shows unexpectedly high revision number that matches the rogue switch"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vtp status",
+          "confirms_if": "Shows current VTP state and revision number",
+          "look_for": "Check 'Configuration Revision' number, VTP mode, domain name, and VTP version. A newly connected switch with a higher revision than expected is the bomb",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vtp status",
+          "confirms_if": "Shows current VTP state and revision number",
+          "look_for": "Check 'Configuration Revision' number, VTP mode, domain name, and VTP version. A newly connected switch with a higher revision than expected is the bomb",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vtp status",
+          "confirms_if": "Shows current VTP state and revision number",
+          "look_for": "Check 'Configuration Revision' number, VTP mode, domain name, and VTP version. A newly connected switch with a higher revision than expected is the bomb",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan brief",
+          "confirms_if": "Shows current VLAN database — missing VLANs confirm the wipe",
+          "look_for": "Check for missing VLANs — if only VLAN 1 and system VLANs (1002-1005) remain, a VTP bomb has occurred",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan brief",
+          "confirms_if": "Shows current VLAN database — missing VLANs confirm the wipe",
+          "look_for": "Check for missing VLANs — if only VLAN 1 and system VLANs (1002-1005) remain, a VTP bomb has occurred",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan brief",
+          "confirms_if": "Shows current VLAN database — missing VLANs confirm the wipe",
+          "look_for": "Check for missing VLANs — if only VLAN 1 and system VLANs (1002-1005) remain, a VTP bomb has occurred",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vtp counters",
+          "confirms_if": "Shows VTP message activity",
+          "look_for": "Check 'Summary advertisements received' and 'Subset advertisements received' for a spike indicating a recent VTP update",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vtp counters",
+          "confirms_if": "Shows VTP message activity",
+          "look_for": "Check 'Summary advertisements received' and 'Subset advertisements received' for a spike indicating a recent VTP update",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vtp counters",
+          "confirms_if": "Shows VTP message activity",
+          "look_for": "Check 'Summary advertisements received' and 'Subset advertisements received' for a spike indicating a recent VTP update",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "VLANs created on one switch do not appear on other switches in the VTP domain. New VLANs exist only locally despite VTP being configured.",
+      "resolutions": [
+        {
+          "action": "Verify VTP domain name matches on all switches: 'show vtp status'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VTP domain name matches on all switches: 'show vtp status'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VTP domain name matches on all switches: 'show vtp status'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VTP password: 'show vtp password' — must match on all switches",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VTP password: 'show vtp password' — must match on all switches",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VTP password: 'show vtp password' — must match on all switches",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure trunk links exist between switches: 'show interfaces trunk'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure trunk links exist between switches: 'show interfaces trunk'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure trunk links exist between switches: 'show interfaces trunk'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VTP mode: switches in transparent mode do not propagate VLAN changes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VTP mode: switches in transparent mode do not propagate VLAN changes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VTP mode: switches in transparent mode do not propagate VLAN changes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VTP version: all switches must run the same VTP version or be compatible",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VTP version: all switches must run the same VTP version or be compatible",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VTP version: all switches must run the same VTP version or be compatible",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "VTP domain name mismatch between switches",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VTP password mismatch — switch silently rejects VTP advertisements with wrong password",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VTP mode set to transparent on the switch creating VLANs — transparent mode does not advertise VLAN changes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No trunk link between switches — VTP requires 802.1Q trunk to propagate",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VTP version mismatch (v1 vs v2) — v1 cannot process v2 advertisements",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "VLANs not propagating across switches",
+      "symptoms": [
+        "VLAN exists on one switch but not others",
+        "'show vtp status' shows different revision numbers on different switches",
+        "Ports on the missing VLAN are inactive on remote switches"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vtp status",
+          "confirms_if": "Mismatched domain names or passwords prevent VTP synchronization",
+          "look_for": "Compare domain name, VTP version, operating mode, and revision number across all switches",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vtp status",
+          "confirms_if": "Mismatched domain names or passwords prevent VTP synchronization",
+          "look_for": "Compare domain name, VTP version, operating mode, and revision number across all switches",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vtp status",
+          "confirms_if": "Mismatched domain names or passwords prevent VTP synchronization",
+          "look_for": "Compare domain name, VTP version, operating mode, and revision number across all switches",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vtp password",
+          "confirms_if": "Password mismatch prevents VTP advertisement acceptance",
+          "look_for": "Verify password matches on all switches — displayed as hash on some platforms",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vtp password",
+          "confirms_if": "Password mismatch prevents VTP advertisement acceptance",
+          "look_for": "Verify password matches on all switches — displayed as hash on some platforms",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vtp password",
+          "confirms_if": "Password mismatch prevents VTP advertisement acceptance",
+          "look_for": "Verify password matches on all switches — displayed as hash on some platforms",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interfaces trunk",
+          "confirms_if": "No trunk = no VTP propagation path",
+          "look_for": "Verify trunk links exist between switches — VTP requires active trunk connections",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interfaces trunk",
+          "confirms_if": "No trunk = no VTP propagation path",
+          "look_for": "Verify trunk links exist between switches — VTP requires active trunk connections",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interfaces trunk",
+          "confirms_if": "No trunk = no VTP propagation path",
+          "look_for": "Verify trunk links exist between switches — VTP requires active trunk connections",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Contains VTP domain name, revision number, number of VLANs, and VTP version",
+      "key_fields": [
+        "VTP Domain Name",
+        "Configuration Revision Number",
+        "Number of Subset Advertisements to Follow",
+        "MD5 Digest (if VTP password is configured)"
+      ],
+      "name": "Summary Advertisement",
+      "when_sent": "Every 5 minutes and immediately after a VLAN change"
+    },
+    {
+      "description": "Contains the actual VLAN database information",
+      "key_fields": [
+        "VLAN Information (VLAN ID, Name, Type, MTU, State)"
+      ],
+      "name": "Subset Advertisement",
+      "when_sent": "Following a summary advertisement after a VLAN change"
+    }
+  ],
+  "operates_at": "Layer 2",
+  "protocol_family": "switching",
+  "protocol_id": "vtp",
+  "protocol_name": "VTP",
+  "purpose": "VLAN Trunking Protocol — automatically propagates VLAN database changes across switches in the same VTP domain",
+  "related_protocols": [
+    "rstp",
+    "l2-infrastructure"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco:vendor/vtp.json",
+      "title": "cisco knowledge base — vendor/vtp.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "Cisco proprietary",
+  "states": [
+    {
+      "description": "Can create, modify, and delete VLANs. Advertises VLAN database to clients. Default mode.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "SERVER"
+    },
+    {
+      "description": "Cannot create, modify, or delete VLANs. Accepts and forwards VTP advertisements. Synchronizes VLAN database from servers.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "CLIENT"
+    },
+    {
+      "description": "Does not participate in VTP domain synchronization. Maintains its own VLAN database independently. Forwards VTP advertisements (VTPv2+) but does not apply them.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "TRANSPARENT"
+    },
+    {
+      "description": "VTP disabled entirely. Does not send, forward, or process VTP advertisements.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "OFF"
+    }
+  ],
+  "tags": [
+    "layer2",
+    "vlan",
+    "vtp",
+    "cisco-proprietary",
+    "vlan-database",
+    "switching"
+  ],
+  "timers": [
+    {
+      "default_rfc": "300s (5 minutes) for summary, triggered for subset",
+      "description": "Interval between VTP summary advertisements",
+      "name": "VTP advertisement interval",
+      "on_expiry": "Send VTP summary advertisement"
+    }
+  ],
+  "transport": "802.1Q trunk links, multicast 01:00:0C:CC:CC:CC",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "vtp mode transparent"
+      ],
+      "notes": [
+        {
+          "note": "IOS-XE defaults to VTP server mode with domain name NULL. CRITICAL: Use VTPv3 or VTP transparent mode in production. VTPv3 adds primary server concept (must explicitly promote a server to primary with 'vtp primary'), preventing accidental VLAN database overwrites.",
+          "versions": "16.12+"
+        },
+        {
+          "note": "TRAP: To reset VTP revision number to 0 on IOS-XE, change the VTP domain name to something else and then change it back. Or switch to transparent mode and back. Simply rebooting does NOT reset the revision number. Always check 'show vtp status' before connecting any switch to the production network.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "NX-OS defaults to VTP transparent mode. VTP is largely unnecessary on NX-OS deployments — VLANs are managed locally or via automation. If VTP is needed, enable with 'feature vtp'.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

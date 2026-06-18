@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "adjacency-log-is-point-in-time-not-current",
+  "display_name": "A routing protocol adjacency 'down' log is a historical event — the adjacency may have re-established by the time you read it",
+  "category": "log-analysis",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Reviewing syslog messages that show a routing protocol adjacency went down, or reading an NMS alert triggered by an adjacency-down event",
+  "observation": "Syslog shows a message like 'OSPF-5-ADJCHG: Neighbor x.x.x.x on Ethernet1/1 from FULL to DOWN' or 'BGP-5-ADJCHANGE: neighbor x.x.x.x Down' — the operator sees this and begins troubleshooting the downed adjacency",
+  "naive_interpretation": "The routing adjacency is currently down and needs to be fixed — there is an active outage on this neighbor relationship",
+  "correct_interpretation": "An adjacency-down log message records the MOMENT the adjacency dropped. It says nothing about the CURRENT state. Most adjacency flaps are transient — the neighbor relationship re-establishes within seconds to minutes (after hello timers expire and hellos resume). By the time a human reads the log (often minutes to hours later), the adjacency may already be FULL/Established again and routes are converged. The log message is historical evidence of a past event, not a live status indicator. Always check the current adjacency state ('show ip ospf neighbor', 'show bgp summary', etc.) before troubleshooting. If the adjacency is currently up, the investigation shifts from 'why is it down?' to 'why did it flap?' — a fundamentally different troubleshooting path focused on root-causing the transient disruption rather than fixing a current outage.",
+  "why": [
+    "Syslog messages are written at the moment an event occurs and never updated — a DOWN message is never automatically followed by an UP message in the same log entry",
+    "Routing protocol adjacencies are designed to recover automatically — BGP re-establishes after the hold timer expires and a new TCP session succeeds, OSPF reforms after hello exchange resumes",
+    "The delay between event and observation is the critical gap — NMS alert pipelines, log aggregation, and human response times all add latency, during which the protocol may have already recovered",
+    "A flap (down then up) is a different problem than a sustained outage — flaps indicate link instability, keepalive loss, or brief control-plane congestion, while sustained down indicates misconfiguration, MTU mismatch, or physical failure"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip ospf neighbor",
+      "purpose": "Check the CURRENT OSPF neighbor state — if FULL, the adjacency has recovered since the log message"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp ipv4 unicast summary",
+      "purpose": "Check current BGP session state and uptime — the 'Up/Down' column shows how long the current state has lasted"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip ospf neighbor",
+      "purpose": "Verify current OSPF neighbor state and dead timer countdown"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp summary",
+      "purpose": "Check current BGP state — look at the State/PfxRcd column for established sessions"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ospf neighbor",
+      "purpose": "Verify current OSPF neighbor state on IOS-XR"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp summary",
+      "purpose": "Check BGP session state and duration"
+    }
+  ],
+  "traps": [
+    "Treating a log message as current state — the adjacency-down log could be minutes or hours old while the adjacency is now fully operational",
+    "Starting a full outage troubleshooting workflow when the issue was a brief flap that already recovered — wasting time on a non-issue or making unnecessary changes",
+    "Not checking the 'uptime' or 'Up/Down' field after confirming the adjacency is up — this tells you WHEN it recovered, which helps correlate with the root cause",
+    "Ignoring the flap entirely because the adjacency is currently up — flaps cause traffic loss during reconvergence and may indicate an underlying instability that will recur",
+    "Escalating an NMS alert for an adjacency-down event without first verifying current state — by the time the alert is acknowledged, the protocol may have recovered"
+  ],
+  "related_rules": ["single-log-message-not-causation", "syslog-severity-is-not-operational-impact"],
+  "related_protocols": ["ospfv2", "ospfv3", "bgp-4", "eigrp", "isis"],
+  "keywords": ["adjacency", "neighbor", "down", "flap", "syslog", "ADJCHG", "ADJCHANGE", "current state", "historical", "log message", "uptime", "recovery"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

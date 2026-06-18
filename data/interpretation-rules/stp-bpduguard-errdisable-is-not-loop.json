@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "stp-bpduguard-errdisable-is-not-loop",
+  "display_name": "BPDU Guard err-disable means a BPDU was received — not that a loop exists",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "eos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "A port transitions to err-disabled state with the reason 'bpduguard' or 'rootguard'",
+  "observation": "An access or edge port goes err-disabled citing BPDU Guard or Root Guard as the cause",
+  "naive_interpretation": "There is a layer-2 loop in the network and STP protections caught it",
+  "correct_interpretation": "BPDU Guard err-disable means the port received a BPDU — period. This could be a loop, but is more often a miscabled uplink (switch connected to an access port), a rogue switch or AP with STP enabled, or a legitimate topology change where a trunk was plugged into a portfast-enabled port. Root Guard err-disable means a superior BPDU arrived that would change the root bridge — this is the guard working as designed to protect root placement, not evidence of a loop. Investigate what device sent the BPDU (check the source MAC in the BPDU) before assuming a loop. A real L2 loop typically manifests as MAC flapping, broadcast storms, and high CPU — not a clean err-disable on one port.",
+  "why": [
+    "BPDU Guard is designed for edge/access ports where no switch should be connected; it kills the port on ANY BPDU, regardless of loop potential",
+    "Root Guard protects root bridge placement by blocking ports that receive superior BPDUs — this is a topology protection, not loop detection",
+    "A real forwarding loop causes MAC table instability, broadcast storms, and rising CPU on multiple switches simultaneously — a single port err-disable is actually STP preventing those symptoms",
+    "IEEE 802.1D specifies that any port receiving BPDUs participates in STP; portfast/edge ports skip this, and BPDU Guard enforces that skip by disabling on receipt"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface status err-disabled",
+      "purpose": "List all err-disabled ports and their disable reason to confirm bpduguard/rootguard vs other causes"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree detail | include from|err",
+      "purpose": "Identify the source bridge ID and port of the received BPDU that triggered the guard"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show errdisable recovery",
+      "purpose": "Check if automatic recovery is configured and when the port will re-enable"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree inconsistentports",
+      "purpose": "List ports with STP inconsistencies including root-guard violations"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show mac address-table notification mac-move",
+      "purpose": "Check for MAC flapping which would indicate an actual loop rather than just a BPDU receipt"
+    }
+  ],
+  "traps": [
+    "Assuming a loop exists and searching for it across the network when the err-disable is simply BPDU Guard doing its job on a miscabled port",
+    "Re-enabling the port without identifying WHAT sent the BPDU — if it was a miscabled uplink, re-enabling just re-triggers the err-disable",
+    "Confusing Root Guard (blocks superior BPDUs to protect root placement) with BPDU Guard (blocks ALL BPDUs on edge ports) — different mechanisms, different implications",
+    "Disabling BPDU Guard to 'fix' the err-disable instead of fixing the cabling or removing the rogue switch"
+  ],
+  "related_rules": [
+    "stp-tcn-during-convergence-is-normal",
+    "mac-flapping-log-check-both-ports",
+    "stp-port-role-vs-port-state"
+  ],
+  "related_protocols": ["stp", "rstp", "mst"],
+  "keywords": ["BPDU Guard", "Root Guard", "err-disable", "errdisable", "portfast", "edge port", "loop", "STP", "BPDU", "spanning-tree"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

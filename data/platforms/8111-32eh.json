@@ -1,0 +1,82 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:silicon-one",
+      "asic_id": 0,
+      "asic_model": "Q200",
+      "hbm_gb": 8.0,
+      "memory_tables": [
+        "LPM",
+        "CEM",
+        "TCAM",
+        "EM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 2,
+          "ifg_serdes": "16x100G per IFG",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x100G",
+                "2x200G"
+              ],
+              "connector": "QSFP-DD",
+              "end_port": 16,
+              "label": "FourHundredGigE0/0/0/0-15",
+              "native_speed": "400G",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        },
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 2,
+          "ifg_serdes": "16x100G per IFG",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x100G",
+                "2x200G"
+              ],
+              "connector": "QSFP-DD",
+              "end_port": 32,
+              "label": "FourHundredGigE0/0/0/16-31",
+              "native_speed": "400G",
+              "start_port": 17
+            }
+          ],
+          "slice_id": 1,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 128.0,
+      "total_bandwidth_gbps": 12800.0
+    }
+  ],
+  "chassis_type": "fixed",
+  "confidence": "medium",
+  "os": "iosxr",
+  "platform_family": "cisco-8000",
+  "platform_id": "8111-32eh",
+  "platform_name": "Cisco 8111-32EH",
+  "platform_pid": "8111-32EH-SYS",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-8111-32eh",
+      "title": "BRKSPG-2900-2024, Cisco 8111-32EH datasheet",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/cisco-8000/8111-32eh.json",
+      "title": "cisco knowledge base — hardware-topology/cisco-8000/8111-32eh.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 12.8,
+  "total_ports": 32
+}

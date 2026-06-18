@@ -1,0 +1,89 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:m-series",
+      "asic_id": 0,
+      "asic_model": "Starlifter",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "Algorithmic TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "24x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 24,
+              "label": "Eth-slot/1/1-24",
+              "native_speed": "10G",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 240.0
+    },
+    {
+      "asic_family": "asic:m-series",
+      "asic_id": 1,
+      "asic_model": "Starlifter",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "Algorithmic TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "24x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 48,
+              "label": "Eth-slot/1/25-48",
+              "native_speed": "10G",
+              "start_port": 25
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 240.0
+    }
+  ],
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-7700",
+  "platform_id": "n77-m348xp-23l",
+  "platform_name": "Nexus 7700 N77-M348XP-23L (CB Brabham 10G)",
+  "platform_pid": "N77-M348XP-23L",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-n77-m348xp-23l",
+      "title": "Cisco Tech Zone: N7K ASIC Mappings, CB Brabham 10G diagram",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-7000/n77-m348xp-23l.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-7000/n77-m348xp-23l.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 0.48,
+  "total_ports": 48
+}

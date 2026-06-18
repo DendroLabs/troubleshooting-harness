@@ -1,0 +1,2089 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "SR-MPLS prefix-SIDs and adjacency-SIDs are advertised via IGP extensions (IS-IS TLV 135/235 sub-TLVs, OSPF Opaque LSA). SR requires an IGP to distribute SID bindings.",
+      "name": "IGP (IS-IS or OSPF) for SID distribution",
+      "type": "protocol"
+    },
+    {
+      "description": "SR-TE policies can be distributed via BGP SR Policy SAFI (73) from controllers or between ASBRs. Also used for SRv6 VPN services (VPNv4/v6 with SRv6 SID).",
+      "name": "BGP for SR-TE policy distribution (optional)",
+      "type": "protocol"
+    },
+    {
+      "description": "PCE communicates with PCC via PCEP to compute and delegate SR-TE policies. Required for centralized traffic engineering.",
+      "name": "PCEP for centralized path computation (optional)",
+      "type": "protocol"
+    },
+    {
+      "description": "All SR-MPLS nodes must have the same SRGB range for index-based prefix-SIDs to resolve to consistent labels.",
+      "name": "Consistent SRGB across SR domain",
+      "type": "infrastructure"
+    },
+    {
+      "description": "IOS-XR requires 'hw-module profile segment-routing srv6 mode' configuration and a reload before SRv6 is operational.",
+      "name": "SRv6 hw-module profile (IOS-XR)",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "The Segment Routing Global Block is full (all label indices allocated) or different nodes have different SRGB ranges, causing prefix-SID label mismatches and forwarding black holes.",
+      "resolutions": [
+        {
+          "action": "Configure identical SRGB range on ALL nodes in the SR domain",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure identical SRGB range on ALL nodes in the SR domain",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure identical SRGB range on ALL nodes in the SR domain",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Default SRGB: 16000-23999 (IOS-XR), 16000-23999 (NX-OS) -- verify with 'show segment-routing mpls'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Default SRGB: 16000-23999 (IOS-XR), 16000-23999 (NX-OS) -- verify with 'show segment-routing mpls'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Default SRGB: 16000-23999 (IOS-XR), 16000-23999 (NX-OS) -- verify with 'show segment-routing mpls'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If SRGB needs expansion, plan a maintenance window to change on all nodes simultaneously",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If SRGB needs expansion, plan a maintenance window to change on all nodes simultaneously",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If SRGB needs expansion, plan a maintenance window to change on all nodes simultaneously",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Avoid overlapping SRGB with SRLB (local block) or static label ranges",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Avoid overlapping SRGB with SRLB (local block) or static label ranges",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Avoid overlapping SRGB with SRLB (local block) or static label ranges",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'show segment-routing local-block inconsistencies' (IOS-XR) to find conflicts",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'show segment-routing local-block inconsistencies' (IOS-XR) to find conflicts",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'show segment-routing local-block inconsistencies' (IOS-XR) to find conflicts",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "SRGB range not configured consistently across all nodes (must be identical for index-based SIDs)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SRGB range too small for the number of prefix-SIDs needed",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Static MPLS labels or LDP labels overlapping with SRGB range",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Node added to SR domain without matching SRGB configuration",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "SRGB exhaustion or range mismatch across domain",
+      "symptoms": [
+        "show segment-routing mpls shows different SRGB range on different nodes",
+        "Prefix-SID not appearing in SID database",
+        "Traffic black-hole for SR-MPLS forwarded packets",
+        "IS-IS/OSPF logs showing SID index out of SRGB range"
+      ],
+      "verify_commands": [
+        {
+          "command": "show segment-routing mpls",
+          "confirms_if": "Shows the configured and operational SRGB range",
+          "look_for": "Check SRGB range (start, end) -- must be identical across all nodes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing mpls",
+          "confirms_if": "Shows the configured and operational SRGB range",
+          "look_for": "Check SRGB range (start, end) -- must be identical across all nodes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing mpls",
+          "confirms_if": "Shows the configured and operational SRGB range",
+          "look_for": "Check SRGB range (start, end) -- must be identical across all nodes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis segment-routing sids",
+          "confirms_if": "Shows all prefix-SIDs learned via IS-IS with their labels",
+          "look_for": "Look for SID entries and verify label = SRGB_start + SID_index for each prefix",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis segment-routing sids",
+          "confirms_if": "Shows all prefix-SIDs learned via IS-IS with their labels",
+          "look_for": "Look for SID entries and verify label = SRGB_start + SID_index for each prefix",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis segment-routing sids",
+          "confirms_if": "Shows all prefix-SIDs learned via IS-IS with their labels",
+          "look_for": "Look for SID entries and verify label = SRGB_start + SID_index for each prefix",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing local-block inconsistencies",
+          "confirms_if": "Identifies label range conflicts (IOS-XR)",
+          "look_for": "Any reported inconsistencies between SRGB/SRLB and other label allocations",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing local-block inconsistencies",
+          "confirms_if": "Identifies label range conflicts (IOS-XR)",
+          "look_for": "Any reported inconsistencies between SRGB/SRLB and other label allocations",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing local-block inconsistencies",
+          "confirms_if": "Identifies label range conflicts (IOS-XR)",
+          "look_for": "Any reported inconsistencies between SRGB/SRLB and other label allocations",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Two or more nodes advertise the same SID index for different loopback prefixes. The conflicting SID is ambiguous and cannot be used for forwarding.",
+      "resolutions": [
+        {
+          "action": "Identify conflicting nodes: check SID database on any node to see which prefixes claim the same index",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify conflicting nodes: check SID database on any node to see which prefixes claim the same index",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify conflicting nodes: check SID database on any node to see which prefixes claim the same index",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reconfigure one of the conflicting nodes with a unique SID index",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reconfigure one of the conflicting nodes with a unique SID index",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reconfigure one of the conflicting nodes with a unique SID index",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Maintain a SID allocation spreadsheet or use a controller for SID management",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Maintain a SID allocation spreadsheet or use a controller for SID management",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Maintain a SID allocation spreadsheet or use a controller for SID management",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using mapping server, ensure no overlap between mapping server entries and locally configured SIDs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using mapping server, ensure no overlap between mapping server entries and locally configured SIDs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using mapping server, ensure no overlap between mapping server entries and locally configured SIDs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Two routers configured with the same prefix-SID index under different loopbacks",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Renumbering or migration leaving stale SID assignments",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Lack of centralized SID allocation tracking",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Mapping server advertising a SID that conflicts with a locally configured one",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Prefix-SID conflict (duplicate SID index for different prefixes)",
+      "symptoms": [
+        "SID database shows conflict flag for a SID index",
+        "IS-IS or OSPF logs warning about duplicate SID",
+        "Traffic using the conflicting SID reaches wrong destination",
+        "SR-TE policies using the conflicting SID fail validation"
+      ],
+      "verify_commands": [
+        {
+          "command": "show isis segment-routing sids",
+          "confirms_if": "Shows all prefix-SIDs in IS-IS LSDB with conflict indicators",
+          "look_for": "Look for duplicate SID indices assigned to different prefixes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis segment-routing sids",
+          "confirms_if": "Shows all prefix-SIDs in IS-IS LSDB with conflict indicators",
+          "look_for": "Look for duplicate SID indices assigned to different prefixes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis segment-routing sids",
+          "confirms_if": "Shows all prefix-SIDs in IS-IS LSDB with conflict indicators",
+          "look_for": "Look for duplicate SID indices assigned to different prefixes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf segment-routing sid-database",
+          "confirms_if": "Shows OSPF SR SID database (NX-OS)",
+          "look_for": "Look for entries with conflict flag",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf segment-routing sid-database",
+          "confirms_if": "Shows OSPF SR SID database (NX-OS)",
+          "look_for": "Look for entries with conflict flag",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf segment-routing sid-database",
+          "confirms_if": "Shows OSPF SR SID database (NX-OS)",
+          "look_for": "Look for entries with conflict flag",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing mapping-server prefix-sid-map",
+          "confirms_if": "Shows centralized SID-to-prefix mappings (IOS-XR)",
+          "look_for": "Verify mapping server entries don't conflict with local SIDs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing mapping-server prefix-sid-map",
+          "confirms_if": "Shows centralized SID-to-prefix mappings (IOS-XR)",
+          "look_for": "Verify mapping server entries don't conflict with local SIDs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing mapping-server prefix-sid-map",
+          "confirms_if": "Shows centralized SID-to-prefix mappings (IOS-XR)",
+          "look_for": "Verify mapping server entries don't conflict with local SIDs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "An SR-TE policy has no valid candidate paths because all segment lists contain at least one SID that cannot be resolved to a forwarding entry. Traffic that should use this policy is either dropped or falls back to IGP.",
+      "resolutions": [
+        {
+          "action": "Check each SID in the segment list: 'show segment-routing traffic-eng policy detail'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check each SID in the segment list: 'show segment-routing traffic-eng policy detail'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check each SID in the segment list: 'show segment-routing traffic-eng policy detail'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MSD capability: platform-specific (typically 6-12 labels for SR-MPLS, varies by ASIC)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MSD capability: platform-specific (typically 6-12 labels for SR-MPLS, varies by ASIC)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MSD capability: platform-specific (typically 6-12 labels for SR-MPLS, varies by ASIC)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check PCE connectivity: 'show segment-routing traffic-eng pcc'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check PCE connectivity: 'show segment-routing traffic-eng pcc'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check PCE connectivity: 'show segment-routing traffic-eng pcc'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For Flex-Algo: verify all transit nodes participate in the required algorithm",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For Flex-Algo: verify all transit nodes participate in the required algorithm",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For Flex-Algo: verify all transit nodes participate in the required algorithm",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider using dynamic path computation instead of explicit segment lists for resilience",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider using dynamic path computation instead of explicit segment lists for resilience",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider using dynamic path computation instead of explicit segment lists for resilience",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check binding-SID of nested policies if using hierarchical SR-TE",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check binding-SID of nested policies if using hierarchical SR-TE",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check binding-SID of nested policies if using hierarchical SR-TE",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "SID in segment list references a node that is down or unreachable",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Maximum SID Depth (MSD) exceeded — label stack too deep for platform hardware",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PCE lost connectivity and cannot provide updated paths",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Flex-Algo referenced in segment list not enabled on transit nodes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Binding-SID of nested policy not active",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Adjacency-SID in explicit path references a link that is down",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "SR-TE policy down — segment list unresolvable",
+      "symptoms": [
+        "show segment-routing traffic-eng policy shows policy status DOWN",
+        "SR-TE steering not active — traffic taking IGP path instead of engineered path",
+        "PCE logs showing path computation failure",
+        "BGP routes with color community not resolving via SR policy"
+      ],
+      "verify_commands": [
+        {
+          "command": "show segment-routing traffic-eng policy",
+          "confirms_if": "Shows all SR-TE policies and their operational state",
+          "look_for": "Look for policy Admin/Oper status, candidate path validity, and segment list resolution state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing traffic-eng policy",
+          "confirms_if": "Shows all SR-TE policies and their operational state",
+          "look_for": "Look for policy Admin/Oper status, candidate path validity, and segment list resolution state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing traffic-eng policy",
+          "confirms_if": "Shows all SR-TE policies and their operational state",
+          "look_for": "Look for policy Admin/Oper status, candidate path validity, and segment list resolution state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing traffic-eng forwarding policy",
+          "confirms_if": "Shows hardware-programmed SR-TE forwarding entries (IOS-XR)",
+          "look_for": "Check if policy has forwarding entries programmed in hardware",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing traffic-eng forwarding policy",
+          "confirms_if": "Shows hardware-programmed SR-TE forwarding entries (IOS-XR)",
+          "look_for": "Check if policy has forwarding entries programmed in hardware",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing traffic-eng forwarding policy",
+          "confirms_if": "Shows hardware-programmed SR-TE forwarding entries (IOS-XR)",
+          "look_for": "Check if policy has forwarding entries programmed in hardware",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing traffic-eng pcc",
+          "confirms_if": "Shows PCC-to-PCE session status and delegated policy state",
+          "look_for": "Check PCE session state and delegated policies",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing traffic-eng pcc",
+          "confirms_if": "Shows PCC-to-PCE session status and delegated policy state",
+          "look_for": "Check PCE session state and delegated policies",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing traffic-eng pcc",
+          "confirms_if": "Shows PCC-to-PCE session status and delegated policy state",
+          "look_for": "Check PCE session state and delegated policies",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The SR label stack (MPLS) or SRv6 SID list exceeds the platform's hardware capability to push/process segments. The policy is rejected or packets are dropped.",
+      "resolutions": [
+        {
+          "action": "Check platform MSD: typically 6 labels for Memory Based, 10-12 for NPU-based (Cisco 8000, NCS-5500)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform MSD: typically 6 labels for Memory Based, 10-12 for NPU-based (Cisco 8000, NCS-5500)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform MSD: typically 6 labels for Memory Based, 10-12 for NPU-based (Cisco 8000, NCS-5500)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Advertise MSD in IGP so PCE can constrain path computation",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Advertise MSD in IGP so PCE can constrain path computation",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Advertise MSD in IGP so PCE can constrain path computation",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use SRv6 micro-SID (uSID) to reduce header overhead (16-bit per micro-SID vs 128-bit)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use SRv6 micro-SID (uSID) to reduce header overhead (16-bit per micro-SID vs 128-bit)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use SRv6 micro-SID (uSID) to reduce header overhead (16-bit per micro-SID vs 128-bit)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce label stack by using binding-SIDs for hierarchical SR-TE",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce label stack by using binding-SIDs for hierarchical SR-TE",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce label stack by using binding-SIDs for hierarchical SR-TE",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable 'hw-module profile sr-policy v6-null-label-autopush' (IOS-XR) for SRv6 optimization",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable 'hw-module profile sr-policy v6-null-label-autopush' (IOS-XR) for SRv6 optimization",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable 'hw-module profile sr-policy v6-null-label-autopush' (IOS-XR) for SRv6 optimization",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Explicit segment list has more SIDs than platform supports",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "TI-LFA backup path requires additional labels beyond the primary path stack",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PCE not aware of MSD capability and computing paths that are too deep",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SRv6 micro-SID mode not enabled, requiring full 128-bit SIDs (fewer fit per MTU)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "MSD (Maximum SID Depth) exceeded",
+      "symptoms": [
+        "SR-TE policy rejected with MSD error",
+        "Packets with deep label stacks dropped by transit node",
+        "PCE unable to find path within MSD constraint",
+        "show segment-routing traffic-eng policy shows 'unresolved' for segment lists exceeding MSD"
+      ],
+      "verify_commands": [
+        {
+          "command": "show segment-routing traffic-eng policy detail",
+          "confirms_if": "Shows detailed segment list composition per candidate path",
+          "look_for": "Check segment list depth and any MSD-related errors",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing traffic-eng policy detail",
+          "confirms_if": "Shows detailed segment list composition per candidate path",
+          "look_for": "Check segment list depth and any MSD-related errors",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing traffic-eng policy detail",
+          "confirms_if": "Shows detailed segment list composition per candidate path",
+          "look_for": "Check segment list depth and any MSD-related errors",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing mpls",
+          "confirms_if": "Shows SR-MPLS configuration including MSD capability",
+          "look_for": "Check MSD value advertised by this node",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing mpls",
+          "confirms_if": "Shows SR-MPLS configuration including MSD capability",
+          "look_for": "Check MSD value advertised by this node",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing mpls",
+          "confirms_if": "Shows SR-MPLS configuration including MSD capability",
+          "look_for": "Check MSD value advertised by this node",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "SRv6 locator prefix is not being advertised in IGP or not reachable from remote nodes, causing SRv6 SID resolution failures. SRv6 services (VPN, TE) fail.",
+      "resolutions": [
+        {
+          "action": "Verify SRv6 mode is enabled: 'show segment-routing srv6' (IOS-XR) or 'show segment-routing' (NX-OS)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SRv6 mode is enabled: 'show segment-routing srv6' (IOS-XR) or 'show segment-routing' (NX-OS)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SRv6 mode is enabled: 'show segment-routing srv6' (IOS-XR) or 'show segment-routing' (NX-OS)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XR: 'hw-module profile segment-routing srv6 mode base' (or micro-segment) REQUIRES RELOAD",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XR: 'hw-module profile segment-routing srv6 mode base' (or micro-segment) REQUIRES RELOAD",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XR: 'hw-module profile segment-routing srv6 mode base' (or micro-segment) REQUIRES RELOAD",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure locator under 'segment-routing srv6' and reference it in IGP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure locator under 'segment-routing srv6' and reference it in IGP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure locator under 'segment-routing srv6' and reference it in IGP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU: SRv6 adds minimum 40 bytes (IPv6) + 8+16*n bytes (SRH). Ensure path MTU >= 1500 + overhead",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU: SRv6 adds minimum 40 bytes (IPv6) + 8+16*n bytes (SRH). Ensure path MTU >= 1500 + overhead",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU: SRv6 adds minimum 40 bytes (IPv6) + 8+16*n bytes (SRH). Ensure path MTU >= 1500 + overhead",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that all transit nodes have IPv6 forwarding enabled",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that all transit nodes have IPv6 forwarding enabled",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that all transit nodes have IPv6 forwarding enabled",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "SRv6 locator not configured or not enabled in IGP",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "hw-module profile for SRv6 not activated (IOS-XR requires 'hw-module profile segment-routing srv6 mode' and reload)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Locator prefix not redistributed or filtered by IGP policy",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MTU too small for SRv6 encapsulated packets (IPv6 + SRH adds 40+ bytes)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Transit nodes not running SRv6 or not forwarding based on SRH",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "SRv6 locator not reachable or SID not programmed",
+      "symptoms": [
+        "show segment-routing srv6 sid shows SIDs not operational",
+        "SRv6 VPN routes present in BGP but traffic not forwarding",
+        "Remote nodes cannot resolve SRv6 SID to a forwarding path",
+        "IS-IS not advertising locator prefix in TLV 27 (SRv6 Locator)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show segment-routing srv6 sid",
+          "confirms_if": "Shows all SRv6 SIDs and their status (IOS-XR)",
+          "look_for": "Check locator status, SID allocation, and operational state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing srv6 sid",
+          "confirms_if": "Shows all SRv6 SIDs and their status (IOS-XR)",
+          "look_for": "Check locator status, SID allocation, and operational state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show segment-routing srv6 sid",
+          "confirms_if": "Shows all SRv6 SIDs and their status (IOS-XR)",
+          "look_for": "Check locator status, SID allocation, and operational state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis segment-routing srv6 locators",
+          "confirms_if": "Shows SRv6 locators in IS-IS LSDB (NX-OS/IOS-XR)",
+          "look_for": "Verify locator is being advertised and reachable in IS-IS",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis segment-routing srv6 locators",
+          "confirms_if": "Shows SRv6 locators in IS-IS LSDB (NX-OS/IOS-XR)",
+          "look_for": "Verify locator is being advertised and reachable in IS-IS",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis segment-routing srv6 locators",
+          "confirms_if": "Shows SRv6 locators in IS-IS LSDB (NX-OS/IOS-XR)",
+          "look_for": "Verify locator is being advertised and reachable in IS-IS",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp segment-routing srv6",
+          "confirms_if": "Shows BGP SRv6 SID information (NX-OS)",
+          "look_for": "Verify BGP SRv6 SID allocation for VPN services",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp segment-routing srv6",
+          "confirms_if": "Shows BGP SRv6 SID information (NX-OS)",
+          "look_for": "Verify BGP SRv6 SID allocation for VPN services",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp segment-routing srv6",
+          "confirms_if": "Shows BGP SRv6 SID information (NX-OS)",
+          "look_for": "Verify BGP SRv6 SID allocation for VPN services",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Topology-Independent Loop-Free Alternate fast-reroute backup paths are not being computed or programmed for protected prefixes, leaving the network without sub-50ms failover for SR paths.",
+      "resolutions": [
+        {
+          "action": "Enable TI-LFA: 'fast-reroute per-prefix ti-lfa' under IS-IS/OSPF interface (IOS-XR) or globally",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable TI-LFA: 'fast-reroute per-prefix ti-lfa' under IS-IS/OSPF interface (IOS-XR) or globally",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable TI-LFA: 'fast-reroute per-prefix ti-lfa' under IS-IS/OSPF interface (IOS-XR) or globally",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify topology has at least one alternate path to each prefix",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify topology has at least one alternate path to each prefix",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify topology has at least one alternate path to each prefix",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check SRLB allocation: 'show segment-routing local-block' (IOS-XR)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check SRLB allocation: 'show segment-routing local-block' (IOS-XR)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check SRLB allocation: 'show segment-routing local-block' (IOS-XR)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MSD supports the backup label stack depth",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MSD supports the backup label stack depth",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MSD supports the backup label stack depth",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure SR is enabled on all interfaces in the backup path",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure SR is enabled on all interfaces in the backup path",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure SR is enabled on all interfaces in the backup path",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "TI-LFA not enabled under IGP interface or globally",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No alternate path exists in the topology (single-homed node)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SRLB (local block) exhausted — cannot allocate adjacency-SIDs needed for repair path",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Platform does not support required MSD for the repair label stack",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGP interface not configured for segment-routing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "TI-LFA backup not computed or not installed",
+      "symptoms": [
+        "show isis fast-reroute shows no backup for protected prefixes",
+        "Convergence time exceeds expected sub-50ms for link failures",
+        "No repair label stack in CEF/FIB entries for SR prefixes",
+        "Link failure causes traffic black-hole until IGP reconverges"
+      ],
+      "verify_commands": [
+        {
+          "command": "show isis fast-reroute summary",
+          "confirms_if": "Shows TI-LFA protection statistics (IOS-XR)",
+          "look_for": "Check percentage of prefixes with TI-LFA backup coverage",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis fast-reroute summary",
+          "confirms_if": "Shows TI-LFA protection statistics (IOS-XR)",
+          "look_for": "Check percentage of prefixes with TI-LFA backup coverage",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis fast-reroute summary",
+          "confirms_if": "Shows TI-LFA protection statistics (IOS-XR)",
+          "look_for": "Check percentage of prefixes with TI-LFA backup coverage",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf segment-routing adj-sid-database",
+          "confirms_if": "Shows OSPF adjacency-SID database (NX-OS)",
+          "look_for": "Verify adjacency-SIDs are allocated for backup paths",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf segment-routing adj-sid-database",
+          "confirms_if": "Shows OSPF adjacency-SID database (NX-OS)",
+          "look_for": "Verify adjacency-SIDs are allocated for backup paths",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf segment-routing adj-sid-database",
+          "confirms_if": "Shows OSPF adjacency-SID database (NX-OS)",
+          "look_for": "Verify adjacency-SIDs are allocated for backup paths",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Flexible Algorithm is configured on some nodes but not all transit nodes in the path, causing Flex-Algo-specific SIDs to be unresolvable and traffic to be dropped or misrouted.",
+      "resolutions": [
+        {
+          "action": "Configure Flex-Algo definition consistently on ALL participating nodes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure Flex-Algo definition consistently on ALL participating nodes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure Flex-Algo definition consistently on ALL participating nodes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify affinity bits on interfaces match the Flex-Algo constraints",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify affinity bits on interfaces match the Flex-Algo constraints",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify affinity bits on interfaces match the Flex-Algo constraints",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure prefix-SID under the Flex-Algo on each loopback that needs to be reachable",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure prefix-SID under the Flex-Algo on each loopback that needs to be reachable",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure prefix-SID under the Flex-Algo on each loopback that needs to be reachable",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check Flex-Algo topology with IGP show commands to verify full connectivity",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check Flex-Algo topology with IGP show commands to verify full connectivity",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check Flex-Algo topology with IGP show commands to verify full connectivity",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Flex-Algo definition not configured on all transit nodes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Flex-Algo affinity/metric constraints exclude critical links",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGP not advertising Flex-Algo participation (FAD TLV missing)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Prefix-SID for Flex-Algo not configured on destination node",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Flex-Algo not operational on all nodes",
+      "symptoms": [
+        "SR-TE policy using Flex-Algo SIDs shows partial reachability",
+        "Some nodes missing from Flex-Algo topology",
+        "show isis flex-algo shows algorithm not participating on transit nodes",
+        "Traffic using Flex-Algo falls back to Algorithm 0 or is dropped"
+      ],
+      "verify_commands": [
+        {
+          "command": "show isis flex-algo",
+          "confirms_if": "Shows Flex-Algo configuration and participation (IOS-XR)",
+          "look_for": "Check which algorithms are enabled and which nodes participate",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis flex-algo",
+          "confirms_if": "Shows Flex-Algo configuration and participation (IOS-XR)",
+          "look_for": "Check which algorithms are enabled and which nodes participate",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis flex-algo",
+          "confirms_if": "Shows Flex-Algo configuration and participation (IOS-XR)",
+          "look_for": "Check which algorithms are enabled and which nodes participate",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis segment-routing sids",
+          "confirms_if": "Shows all prefix-SIDs including Flex-Algo variants",
+          "look_for": "Look for SIDs with algorithm > 0 (128+) indicating Flex-Algo SIDs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis segment-routing sids",
+          "confirms_if": "Shows all prefix-SIDs including Flex-Algo variants",
+          "look_for": "Look for SIDs with algorithm > 0 (128+) indicating Flex-Algo SIDs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis segment-routing sids",
+          "confirms_if": "Shows all prefix-SIDs including Flex-Algo variants",
+          "look_for": "Look for SIDs with algorithm > 0 (128+) indicating Flex-Algo SIDs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Advertises prefix-SID binding in IS-IS or OSPF",
+      "key_fields": [
+        "SID Index/Label",
+        "Flags (N-flag: node-SID, P-flag: no-PHP, E-flag: explicit-null)",
+        "Algorithm (0=SPF, 128-255=Flex-Algo)"
+      ],
+      "name": "IGP Prefix-SID Sub-TLV",
+      "when_sent": "When segment-routing is enabled on a prefix in the IGP"
+    },
+    {
+      "description": "Advertises adjacency-SID for a specific link",
+      "key_fields": [
+        "SID/Label",
+        "Flags (B-flag: backup, V-flag: value, L-flag: local)",
+        "Weight"
+      ],
+      "name": "IGP Adjacency-SID Sub-TLV",
+      "when_sent": "When SR adjacency-SID is assigned to a link (automatic or explicit)"
+    },
+    {
+      "description": "Distributes SR-TE policy candidate paths via BGP",
+      "key_fields": [
+        "Distinguisher",
+        "Policy Color",
+        "Endpoint",
+        "Preference",
+        "Binding SID",
+        "Segment List (label stack or SRv6 SID list)"
+      ],
+      "name": "BGP SR Policy NLRI (SAFI 73)",
+      "when_sent": "When an SR-TE policy is created/modified and distributed via BGP (e.g., from PCE or controller)"
+    },
+    {
+      "description": "PCE provides an explicit SR path to the PCC via PCEP",
+      "key_fields": [
+        "SR-ERO subobjects (Node-SID, Adj-SID, Binding-SID)",
+        "NAI (Node or Adjacency Identifier)",
+        "SID type (MPLS label or SRv6 SID)"
+      ],
+      "name": "PCEP SR-ERO (Explicit Route Object)",
+      "when_sent": "In response to PCC path computation request or PCE-initiated policy"
+    },
+    {
+      "description": "IPv6 extension header carrying the SRv6 segment list in the data plane",
+      "key_fields": [
+        "Segments Left",
+        "Segment List[0..n] (128-bit SRv6 SIDs)",
+        "Tag",
+        "Flags"
+      ],
+      "name": "SRv6 Segment Routing Header (SRH)",
+      "when_sent": "Inserted by ingress node when steering traffic into an SRv6 policy"
+    }
+  ],
+  "operates_at": "Layer 3",
+  "protocol_family": "routing",
+  "protocol_id": "segment-routing",
+  "protocol_name": "Segment Routing (SR-MPLS / SRv6)",
+  "purpose": "Source-routed forwarding paradigm where the ingress node steers packets through an ordered list of segments (instructions). SR-MPLS encodes segments as MPLS labels; SRv6 encodes them as IPv6 addresses in a Segment Routing Header (SRH). Eliminates per-flow state in the network core — all forwarding state is in the packet header.",
+  "related_protocols": [
+    "isis",
+    "ospfv2",
+    "bgp-4",
+    "mpls-ldp",
+    "evpn",
+    "vxlan"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-8402",
+      "rfc_number": 8402,
+      "title": "RFC 8402",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc8402.txt"
+    },
+    {
+      "id": "rfc-8660",
+      "rfc_number": 8660,
+      "title": "RFC 8660",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc8660.txt"
+    },
+    {
+      "id": "rfc-8986",
+      "rfc_number": 8986,
+      "title": "RFC 8986",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc8986.txt"
+    },
+    {
+      "id": "rfc-9256",
+      "rfc_number": 9256,
+      "title": "RFC 9256",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc9256.txt"
+    },
+    {
+      "id": "agent-cisco-kb:routing/segment-routing.json",
+      "title": "agent-cisco-kb knowledge base — routing/segment-routing.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 8402 (architecture), RFC 8660 (SR-MPLS), RFC 8986 (SRv6), RFC 9256 (SR Policy)",
+  "states": [
+    {
+      "description": "Segment Routing Global Block (SRGB) has been allocated and is consistent across nodes in the SR domain. Each node maps its prefix-SID index into this label range. This is the operational steady state for SR-MPLS.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "SRGB_ALLOCATED"
+    },
+    {
+      "description": "SRGB range overlaps with statically configured labels or differs across nodes. Prefix-SID absolute labels will not match across the domain, causing forwarding failures.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "SRGB_CONFLICT"
+    },
+    {
+      "description": "A prefix-SID or adjacency-SID has been allocated, advertised via IGP, and programmed in the forwarding table. Traffic can be steered using this SID.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "SID_ACTIVE"
+    },
+    {
+      "description": "Two or more nodes are advertising the same SID index for different prefixes. The conflicting SID is unusable until resolved.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "SID_CONFLICT"
+    },
+    {
+      "description": "An SR-TE policy is active with at least one valid candidate path. Traffic matching the policy's steering criteria (color + endpoint) is being forwarded along the segment list.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "SR_POLICY_ACTIVE"
+    },
+    {
+      "description": "All candidate paths for an SR-TE policy are invalid. No segment list can be resolved. Traffic that should use this policy falls back to IGP shortest path or is dropped (depending on steering mode).",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "SR_POLICY_DOWN"
+    },
+    {
+      "description": "SRv6 locator prefix is configured, advertised in IGP, and SIDs under this locator are operational. SRv6 endpoints can be reached.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "SRV6_LOCATOR_ACTIVE"
+    }
+  ],
+  "tags": [
+    "segment-routing",
+    "sr-mpls",
+    "srv6",
+    "sr-te",
+    "traffic-engineering",
+    "source-routing",
+    "prefix-sid",
+    "adjacency-sid",
+    "srgb",
+    "ti-lfa",
+    "fast-reroute",
+    "flex-algo",
+    "pce",
+    "pcep",
+    "binding-sid",
+    "usid",
+    "micro-segment",
+    "label-stack",
+    "routing"
+  ],
+  "timers": [
+    {
+      "default_rfc": "Immediate (part of SPF computation)",
+      "description": "Time to compute Topology-Independent Loop-Free Alternate (TI-LFA) backup paths after SPF run",
+      "name": "TI-LFA Computation",
+      "on_expiry": "Backup label stacks installed in FIB for fast reroute",
+      "range": "N/A",
+      "tuning_advice": "TI-LFA computation time is a function of topology size. Monitor SPF duration if convergence is slow."
+    },
+    {
+      "default_rfc": "30s",
+      "description": "PCEP session keepalive interval between PCC (router) and PCE controller",
+      "name": "PCE Keepalive",
+      "on_expiry": "Send PCEP keepalive to maintain session",
+      "os_defaults": [
+        {
+          "default": "30s",
+          "notes": "Configured under 'segment-routing traffic-eng' -> 'pce' stanza",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "0-255s",
+      "tuning_advice": "Lower for faster PCE failure detection; use BFD for sub-second detection if supported"
+    },
+    {
+      "default_rfc": "120s (4x keepalive)",
+      "description": "Maximum time without receiving a PCEP keepalive before declaring PCE dead",
+      "name": "PCE Dead Timer",
+      "on_expiry": "PCE session torn down; delegated SR policies revert to local computation or go down",
+      "range": "1-255s",
+      "tuning_advice": "Set to 4x keepalive timer. If PCE manages critical traffic engineering, consider redundant PCE."
+    },
+    {
+      "default_rfc": "600s (IOS-XR)",
+      "description": "Periodic timer for re-evaluating SR-TE policy candidate paths against current topology",
+      "name": "SR Policy Reoptimization",
+      "on_expiry": "SR-TE policy segment lists are re-validated; better paths may be selected",
+      "os_defaults": [
+        {
+          "default": "600s",
+          "notes": "Can be triggered manually with 'segment-routing traffic-engineering reoptimize'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "600s",
+          "notes": "Configured under 'segment-routing traffic-engineering'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "0-86400s",
+      "tuning_advice": "Lower for dynamic environments; event-driven reoptimization is preferred over timer-based"
+    },
+    {
+      "default_rfc": "5000ms (IOS-XR)",
+      "description": "Delay before updating RIB after topology change to prevent microloops during convergence. Uses SR to steer traffic along the post-convergence path during the delay window.",
+      "name": "Microloop Avoidance Delay",
+      "on_expiry": "RIB updated with new SPF results; SR microloop-avoidance label stack removed",
+      "os_defaults": [
+        {
+          "default": "5000ms",
+          "notes": "Configured under IGP: 'microloop avoidance segment-routing'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "5000ms",
+          "notes": "Available in 10.4+ under OSPF/IS-IS",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-60000ms",
+      "tuning_advice": "Should exceed the slowest node's SPF + FIB programming time in the domain"
+    }
+  ],
+  "transitions": [
+    {
+      "failure_if_stuck": "Check SRGB range consistency across all SR nodes with 'show segment-routing mpls'",
+      "from_state": "SRGB_ALLOCATED",
+      "to_state": "SRGB_CONFLICT",
+      "trigger": "New node joins domain with overlapping SRGB or static label conflicts"
+    },
+    {
+      "from_state": "SRGB_CONFLICT",
+      "to_state": "SRGB_ALLOCATED",
+      "trigger": "SRGB reconfigured to non-overlapping range and propagated via IGP"
+    },
+    {
+      "failure_if_stuck": "Identify conflicting nodes via SID database and reassign SID indices",
+      "from_state": "SID_ACTIVE",
+      "to_state": "SID_CONFLICT",
+      "trigger": "Another node advertises the same SID index for a different prefix"
+    },
+    {
+      "failure_if_stuck": "Check segment list validity, MSD, and PCE connectivity",
+      "from_state": "SR_POLICY_ACTIVE",
+      "to_state": "SR_POLICY_DOWN",
+      "trigger": "All segment lists become unresolvable (SID not reachable, MSD exceeded, PCE withdraws path)"
+    },
+    {
+      "from_state": "SR_POLICY_DOWN",
+      "to_state": "SR_POLICY_ACTIVE",
+      "trigger": "At least one candidate path segment list becomes resolvable"
+    }
+  ],
+  "transport": "SR-MPLS: MPLS label stack; SRv6: IPv6 + SRH (next-header 43)",
+  "vendor_notes": {
+    "iosxr": {
+      "notes": [
+        {
+          "note": "SR-MPLS: IOS-XR is the primary SR platform (Cisco 8000, NCS-5500/5700, NCS-540/560, ASR 9000). SRGB default 16000-23999, configured under 'segment-routing mpls'. All 164+ SR commands in dedicated command family. Supports Flex-Algo (algorithm 128-255), mapping server, TI-LFA, microloop avoidance. Prefix-SID configured under IS-IS/OSPF interface with 'prefix-sid index <N>'. Use absolute labels only when interworking with non-SR nodes.",
+          "versions": "7.5+"
+        },
+        {
+          "note": "SRv6 on IOS-XR: REQUIRES 'hw-module profile segment-routing srv6 mode {base|micro-segment}' + RELOAD. micro-segment (uSID) uses compressed 16-bit SIDs for up to 6 uSIDs per 128-bit container — preferred for production. Locator configured under 'segment-routing srv6 locators locator <name>'. SRv6 services: L3VPN (VPNv4/v6), EVPN, TE. Silicon One supports full SRv6 uSID pipeline. Max SID depth varies by platform: NCS-5500 up to 6 SIDs, Cisco 8000 up to 12 SIDs.",
+          "versions": "7.5+"
+        },
+        {
+          "note": "SR-TE on IOS-XR: Configured under 'segment-routing traffic-eng'. Supports PCE-delegated and locally-computed policies. Key concepts: policy (color + endpoint), candidate-path (preference), segment-list (ordered SIDs), binding-SID (policy identifier for hierarchical TE). 'show segment-routing traffic-eng policy' is the primary diagnostic. Forwarding validation: 'show segment-routing traffic-eng forwarding policy'.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "SR-MPLS: Requires 'feature mpls segment-routing'. Supported on Nexus 9000 with Cisco Cloud Scale (Memory Based) and Cisco Silicon One ASICs. SRGB default 16000-23999. Prefix-SID configured under IS-IS or OSPF interface. TI-LFA supported in 9.3+. NX-OS 10.4 adds SRv6 support. Use 'show segment-routing mpls' for global SR state and 'show segment-routing clients' for protocol registrations.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "SR-TE on NX-OS: 'feature mpls segment-routing-traffic-engineering' enables SR-TE policy support. Supports color-based steering with BGP next-hop resolution. PCE integration available via PCEP. Consistency checker: 'show consistency-checker segment-routing mpls' validates label programming in hardware.",
+          "versions": "10.4+"
+        }
+      ]
+    },
+    "sonic": {
+      "notes": [
+        {
+          "note": "SR on SONiC: FRR provides IS-IS SR extension support (prefix-SID, adjacency-SID) in bgp/isisd containers. SRv6 support in FRR 10.x (sonic-202411+) adds uSID. Configuration via CONFIG_DB or vtysh 'router isis' -> 'segment-routing'. Cisco 8000-O with Silicon One natively supports SRv6 uSID in hardware. APPL_DB tables for SR: ROUTE_TABLE entries with MPLS next-hop, SRV6_SID_LIST_TABLE, SRV6_MY_SID_TABLE. Use 'sonic_trace_redis_table' to debug SR programming pipeline. FRR logs SR events to /var/log/frr/isisd.log.",
+          "versions": "202311+"
+        }
+      ]
+    }
+  }
+}

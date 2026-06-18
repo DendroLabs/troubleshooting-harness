@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "mpls-missing-label-check-igp-first",
+  "display_name": "A missing MPLS label usually means the prefix is missing from the IGP, not an LDP/SR problem",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "A prefix that should be label-switched has no label binding in the LFIB or LIB, or an LSP is incomplete",
+  "observation": "No label exists for a prefix that should have one — 'show mpls forwarding-table' or 'show mpls ldp bindings' shows no entry for the destination",
+  "naive_interpretation": "LDP or Segment Routing is misconfigured — the label distribution protocol is failing to allocate or advertise labels",
+  "correct_interpretation": "LDP allocates labels for prefixes it learns from the IGP RIB. SR assigns labels based on the SID index from the IGP (IS-IS/OSPF). In both cases, if the prefix is not in the IGP routing table on the local router, no label is allocated or imported. The most common cause of a missing label is a missing IGP route — not an LDP/SR configuration error. Check the IGP first: is the prefix in the IS-IS/OSPF database and RIB? Is the advertising router reachable? Only after confirming the IGP route exists should you look at LDP session state, label allocation filters, or SR prefix-SID configuration.",
+  "why": [
+    "LDP liberal-retention mode stores remote bindings, but the local label for forwarding is allocated only for prefixes in the local FIB/RIB from the IGP",
+    "SR prefix-SIDs are configured under the IGP (IS-IS/OSPF) and distributed via IGP advertisements — no IGP adjacency or route means no SID is learned",
+    "An IGP route withdrawal (due to metric change, passive-interface, redistribution filter, or area boundary) removes the prefix from the RIB, which cascades to label removal",
+    "LDP requires an LDP session AND a matching IGP route to create a usable label-switched path; either missing breaks the LSP"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route",
+      "purpose": "Verify the prefix exists in the RIB via IGP before investigating label allocation"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show mpls ldp bindings",
+      "purpose": "Check if any local or remote label bindings exist for the prefix — absence confirms the IGP-first theory"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show mpls forwarding-table",
+      "purpose": "Check the LFIB for the prefix label entry; no entry means no label was installed for forwarding"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show isis route",
+      "purpose": "Confirm the prefix is in the IS-IS RIB; missing here means SR cannot allocate a label for it"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show mpls label table detail",
+      "purpose": "Check label allocation and whether the prefix-SID for the destination is present in the label table"
+    }
+  ],
+  "traps": [
+    "Debugging LDP or SR configuration when the prefix is simply not in the IGP routing table",
+    "Restarting LDP sessions or clearing label tables when the root cause is an IGP adjacency or route-filter issue",
+    "Confusing LDP liberal-retention (stores remote bindings) with actual forwarding — remote bindings may exist but local label may be absent if the IGP route is missing",
+    "In SR environments, checking segment-routing config when the prefix-SID was correctly configured but the IGP route was withdrawn by the advertising router"
+  ],
+  "related_rules": [
+    "bgp-inactive-route-nexthop-unreachable"
+  ],
+  "related_protocols": ["mpls-ldp", "segment-routing", "ospfv2", "isis"],
+  "keywords": ["MPLS", "LDP", "SR", "segment routing", "label", "LFIB", "LIB", "IGP", "prefix-SID", "missing label", "LSP"],
+  "sources": [
+    {
+      "id": "rfc-5036",
+      "title": "RFC 5036 — LDP Specification",
+      "type": "rfc",
+      "rfc_number": 5036,
+      "url": "https://www.rfc-editor.org/rfc/rfc5036.txt"
+    },
+    {
+      "id": "rfc-8402",
+      "title": "RFC 8402 — Segment Routing Architecture",
+      "type": "rfc",
+      "rfc_number": 8402,
+      "url": "https://www.rfc-editor.org/rfc/rfc8402.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

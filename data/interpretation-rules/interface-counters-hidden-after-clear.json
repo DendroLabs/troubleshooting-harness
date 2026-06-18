@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "interface-counters-hidden-after-clear",
+  "display_name": "Some interface error counters have internal values that do not reset with 'clear counters' — the displayed zero can be misleading",
+  "category": "counter-interpretation",
+  "applicable_os": ["nxos", "iosxe", "iosxr"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "An operator runs 'clear counters' on an interface and then monitors 'show interface' to watch for new errors from a clean baseline",
+  "observation": "After 'clear counters', the interface error counters show zero. But errors like 'ignored', 'overrun', 'watchdog', or platform-specific ASIC counters continue to accumulate at the hardware level, and some counters may reappear with non-zero values on the next polling cycle or after a brief period",
+  "naive_interpretation": "All error counters were reset to zero by 'clear counters', so any non-zero value seen afterward represents new errors that occurred since the clear",
+  "correct_interpretation": "'clear counters' resets the SOFTWARE counters displayed by 'show interface' — it zeros the running total that the IOS/NX-OS software tracks. However, certain error categories are maintained by separate mechanisms: (1) Hardware/ASIC-level counters (CRC, FCS, runts, giants on some platforms) may have their own registers that 'clear counters' does not touch — the software counter resets but the hardware counter does not, and on the next poll the software re-reads the hardware value, showing a delta that looks like new errors. (2) Some NX-OS platforms maintain 'ignored' and 'overrun' counters at the port-ASIC level, independent of the CLI clear. (3) On IOS-XR, 'clear counters' clears interface statistics but platform-specific 'show controllers' counters require a separate clear command. The safe practice is to NOTE the counter values before and after an event rather than relying on 'clear counters' to provide a clean baseline. Use rate-based monitoring ('show interface counters rates' or SNMP ifInErrors delta) instead of absolute values when measuring ongoing error conditions.",
+  "why": [
+    "Network devices use a two-tier counter architecture: hardware registers in the port ASIC that count physical-layer events, and software counters in the OS that periodically read and accumulate those hardware values",
+    "'clear counters' only resets the software accumulator — it cannot reset the hardware register on most platforms because the ASIC does not support a per-counter reset without a full port reset",
+    "The polling interval between hardware reads means a 'cleared' counter may reappear with a non-zero value on the next read cycle — this is not a new error but the hardware counter's accumulated value since the port was last initialized",
+    "Different counter types are owned by different subsystems (driver, ASIC, optics module) — there is no single reset mechanism that covers all of them"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface <intf> counters errors",
+      "purpose": "Display error counters broken down by type — compare before and after 'clear counters' to identify which counters were actually reset"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show hardware internal errors module <mod>",
+      "purpose": "Display hardware-level error counters that are independent of the CLI 'clear counters' command"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces <intf> counters errors",
+      "purpose": "Display per-interface error counters by category"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show controllers <intf>",
+      "purpose": "Display hardware-level controller statistics that may not be cleared by 'clear counters'"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show controllers <intf> stats",
+      "purpose": "Display ASIC-level counters — requires 'clear controller' for reset, not 'clear counters'"
+    }
+  ],
+  "traps": [
+    "Assuming 'clear counters' gives a perfectly clean baseline — some error types will reappear on the next hardware poll cycle and look like new errors",
+    "Declaring an interface error-free because all counters show zero immediately after clearing — the zero may be temporary until the next hardware read",
+    "Not distinguishing between software-level counters (cleared) and hardware/ASIC-level counters (not cleared) when diagnosing errors",
+    "Using 'clear counters' to determine if an error is ongoing vs historical — rate-based monitoring ('show interface counters rates' or 'load-interval' output) is more reliable for this purpose",
+    "On IOS-XR, expecting 'clear counters' to clear controller-level stats — those require 'clear controller <intf> stats'"
+  ],
+  "related_rules": ["interface-counter-rate-vs-absolute", "interface-crc-counters-without-clearing"],
+  "related_protocols": [],
+  "keywords": ["clear counters", "interface errors", "hardware counters", "ASIC counters", "ignored", "overrun", "CRC", "reset", "baseline", "counter rates"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

@@ -1,0 +1,1504 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "NTP requires IP connectivity to configured NTP servers on UDP port 123. Both source and destination must be routable.",
+      "name": "IP reachability",
+      "type": "infrastructure"
+    },
+    {
+      "description": "If NTP servers are configured by hostname instead of IP, DNS resolution must be functional. Prefer IP addresses for NTP server configuration to avoid circular dependency (DNS may depend on NTP for DNSSEC validation).",
+      "name": "DNS (if NTP server is hostname)",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "The device shows 'unsynchronized' in NTP status and displays stratum 16, meaning no valid time source is available. The clock is free-running and will drift. All time-dependent features (logging, certificates, RADIUS) are affected.",
+      "resolutions": [
+        {
+          "action": "Verify IP reachability to NTP server: ping from the correct VRF and source interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify IP reachability to NTP server: ping from the correct VRF and source interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify IP reachability to NTP server: ping from the correct VRF and source interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs and firewalls for UDP 123 in both directions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs and firewalls for UDP 123 in both directions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs and firewalls for UDP 123 in both directions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NTP authentication keys match on both sides (key ID, key string, trusted-key)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NTP authentication keys match on both sides (key ID, key string, trusted-key)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NTP authentication keys match on both sides (key ID, key string, trusted-key)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure the correct source interface: 'ntp source <interface>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure the correct source interface: 'ntp source <interface>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure the correct source interface: 'ntp source <interface>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm the NTP server is itself synchronized: 'show ntp status' on the server",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm the NTP server is itself synchronized: 'show ntp status' on the server",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm the NTP server is itself synchronized: 'show ntp status' on the server",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For management VRF on NX-OS: 'ntp server <ip> use-vrf management'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For management VRF on NX-OS: 'ntp server <ip> use-vrf management'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For management VRF on NX-OS: 'ntp server <ip> use-vrf management'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "NTP server IP is unreachable — routing issue, firewall blocking, or server down",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL or firewall blocking UDP port 123 in either direction",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NTP authentication configured on one side but not the other (key mismatch)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Source interface not specified or specified interface is down / has no IP",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NTP server itself is unsynchronized (stratum 16) — cannot serve time",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VRF mismatch — NTP server is in management VRF but 'use-vrf' not configured",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "NTP not synchronizing — stratum 16 (unsynchronized)",
+      "symptoms": [
+        "'show ntp status' shows 'Clock is unsynchronized' with stratum 16",
+        "System clock shows incorrect time or drifts over hours/days",
+        "All NTP associations show reach 0 or no configured peers",
+        "Syslog timestamps are wrong or inconsistent with other devices"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ntp associations",
+          "confirms_if": "Reach is 0 for all servers — confirms no server is reachable",
+          "look_for": "Check reach column (should be 377 = last 8 polls succeeded). Check stratum of each server (should be < 16). Look for '*' (sys.peer) or '+' (candidate) tally codes.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp associations",
+          "confirms_if": "Reach is 0 for all servers — confirms no server is reachable",
+          "look_for": "Check reach column (should be 377 = last 8 polls succeeded). Check stratum of each server (should be < 16). Look for '*' (sys.peer) or '+' (candidate) tally codes.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp associations",
+          "confirms_if": "Reach is 0 for all servers — confirms no server is reachable",
+          "look_for": "Check reach column (should be 377 = last 8 polls succeeded). Check stratum of each server (should be < 16). Look for '*' (sys.peer) or '+' (candidate) tally codes.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp status",
+          "confirms_if": "'unsynchronized' with stratum 16 confirms no valid time source",
+          "look_for": "Check 'Clock is synchronized/unsynchronized', stratum value, reference clock ID, and root dispersion",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp status",
+          "confirms_if": "'unsynchronized' with stratum 16 confirms no valid time source",
+          "look_for": "Check 'Clock is synchronized/unsynchronized', stratum value, reference clock ID, and root dispersion",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp status",
+          "confirms_if": "'unsynchronized' with stratum 16 confirms no valid time source",
+          "look_for": "Check 'Clock is synchronized/unsynchronized', stratum value, reference clock ID, and root dispersion",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp peers",
+          "confirms_if": "Shows which peers are configured and their reachability status",
+          "look_for": "Lists configured NTP peers/servers with their stratum, reach, delay, offset, and dispersion values",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp peers",
+          "confirms_if": "Shows which peers are configured and their reachability status",
+          "look_for": "Lists configured NTP peers/servers with their stratum, reach, delay, offset, and dispersion values",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp peers",
+          "confirms_if": "Shows which peers are configured and their reachability status",
+          "look_for": "Lists configured NTP peers/servers with their stratum, reach, delay, offset, and dispersion values",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The device clock is more than 1000 seconds (default panic threshold) away from the NTP server's time. NTP refuses to make such a large correction automatically to protect against time jumps that could break running protocols, invalidate certificates, or corrupt logs.",
+      "resolutions": [
+        {
+          "action": "Manually set the clock close to correct time: 'clock set HH:MM:SS DD Mon YYYY'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Manually set the clock close to correct time: 'clock set HH:MM:SS DD Mon YYYY'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Manually set the clock close to correct time: 'clock set HH:MM:SS DD Mon YYYY'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "After setting clock, restart NTP process or clear associations",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "After setting clock, restart NTP process or clear associations",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "After setting clock, restart NTP process or clear associations",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: use 'ntp update-calendar' to sync hardware clock after NTP locks",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: use 'ntp update-calendar' to sync hardware clock after NTP locks",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: use 'ntp update-calendar' to sync hardware clock after NTP locks",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Replace CMOS battery if clock resets on every reboot",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Replace CMOS battery if clock resets on every reboot",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Replace CMOS battery if clock resets on every reboot",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NTP server time is correct before pointing devices to it",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NTP server time is correct before pointing devices to it",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NTP server time is correct before pointing devices to it",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Device clock was never manually set after initial deployment — defaults to factory date",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RTC/CMOS battery is dead — clock resets on every reboot",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NTP server itself has wrong time (misconfigured or compromised)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Device was powered off for an extended period and clock drifted beyond panic threshold",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Clock offset too large — NTP refuses to sync (panic threshold)",
+      "symptoms": [
+        "'show ntp status' shows 'unsynchronized' despite server being reachable (reach > 0)",
+        "NTP log messages indicating 'frequency error' or 'no server suitable for synchronization'",
+        "Clock is off by hours, days, or years (e.g., shows year 2002 or 1970)",
+        "Device was recently rebooted and CMOS/RTC battery is dead or clock was never set"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ntp status",
+          "confirms_if": "Large offset with 'unsynchronized' status confirms panic threshold issue",
+          "look_for": "Check the offset value — if it shows a very large number (thousands of seconds), the panic threshold is being hit",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp status",
+          "confirms_if": "Large offset with 'unsynchronized' status confirms panic threshold issue",
+          "look_for": "Check the offset value — if it shows a very large number (thousands of seconds), the panic threshold is being hit",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp status",
+          "confirms_if": "Large offset with 'unsynchronized' status confirms panic threshold issue",
+          "look_for": "Check the offset value — if it shows a very large number (thousands of seconds), the panic threshold is being hit",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show clock",
+          "confirms_if": "Clock showing wildly incorrect date/time confirms the root cause",
+          "look_for": "Compare the displayed time with a known-good source. Look for '*' prefix which indicates time is not authoritative",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show clock",
+          "confirms_if": "Clock showing wildly incorrect date/time confirms the root cause",
+          "look_for": "Compare the displayed time with a known-good source. Look for '*' prefix which indicates time is not authoritative",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show clock",
+          "confirms_if": "Clock showing wildly incorrect date/time confirms the root cause",
+          "look_for": "Compare the displayed time with a known-good source. Look for '*' prefix which indicates time is not authoritative",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "NTP authentication is enabled but the client and server have mismatched key IDs, key strings, or the key is not marked as trusted. The association forms but authentication fails, so the server is rejected as a valid time source.",
+      "resolutions": [
+        {
+          "action": "Verify key ID matches on both client and server",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify key ID matches on both client and server",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify key ID matches on both client and server",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify key string is identical (watch for trailing spaces or encoding differences)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify key string is identical (watch for trailing spaces or encoding differences)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify key string is identical (watch for trailing spaces or encoding differences)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure the key is marked as trusted: 'ntp trusted-key <id>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure the key is marked as trusted: 'ntp trusted-key <id>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure the key is marked as trusted: 'ntp trusted-key <id>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'ntp authenticate' is enabled on the client if authentication is required",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'ntp authenticate' is enabled on the client if authentication is required",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'ntp authenticate' is enabled on the client if authentication is required",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Match hash algorithm on both ends — prefer SHA over MD5 where supported",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Match hash algorithm on both ends — prefer SHA over MD5 where supported",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Match hash algorithm on both ends — prefer SHA over MD5 where supported",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Key ID on client does not match key ID configured on the server",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Key string (password) is different between client and server",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Key exists but is not listed as a trusted key ('ntp trusted-key <id>' missing)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "'ntp authenticate' is enabled on client but server is not sending authenticated responses",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Hash algorithm mismatch (MD5 vs SHA1 vs SHA256) between client and server",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "NTP authentication failure — MD5/SHA key mismatch",
+      "symptoms": [
+        "NTP association shows reach > 0 but tally code is blank (not '*' or '+')",
+        "'show ntp associations detail' shows auth status as 'bad' or 'none'",
+        "Server is reachable but clock does not synchronize",
+        "NTP debug shows 'authentication failed' or 'bad auth' messages"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ntp associations detail",
+          "confirms_if": "Auth status 'bad' or 'none' confirms authentication mismatch",
+          "look_for": "Check 'configured' vs 'authenticated' status for each association. Look for 'auth' field — should show 'ok' if authentication is passing",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp associations detail",
+          "confirms_if": "Auth status 'bad' or 'none' confirms authentication mismatch",
+          "look_for": "Check 'configured' vs 'authenticated' status for each association. Look for 'auth' field — should show 'ok' if authentication is passing",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp associations detail",
+          "confirms_if": "Auth status 'bad' or 'none' confirms authentication mismatch",
+          "look_for": "Check 'configured' vs 'authenticated' status for each association. Look for 'auth' field — should show 'ok' if authentication is passing",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp authentication-keys",
+          "confirms_if": "Missing key, wrong key ID, or untrusted key confirms the root cause",
+          "look_for": "Verify key IDs are configured and match the expected values. Check if keys are marked as trusted.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp authentication-keys",
+          "confirms_if": "Missing key, wrong key ID, or untrusted key confirms the root cause",
+          "look_for": "Verify key IDs are configured and match the expected values. Check if keys are marked as trusted.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp authentication-keys",
+          "confirms_if": "Missing key, wrong key ID, or untrusted key confirms the root cause",
+          "look_for": "Verify key IDs are configured and match the expected values. Check if keys are marked as trusted.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp authentication-status",
+          "confirms_if": "Authentication disabled when it should be enabled (or vice versa)",
+          "look_for": "Check if NTP authentication is enabled globally",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp authentication-status",
+          "confirms_if": "Authentication disabled when it should be enabled (or vice versa)",
+          "look_for": "Check if NTP authentication is enabled globally",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp authentication-status",
+          "confirms_if": "Authentication disabled when it should be enabled (or vice versa)",
+          "look_for": "Check if NTP authentication is enabled globally",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Devices in the network are configured as NTP peers of each other with no external authoritative time source (stratum 1 or 2). Each device increments its stratum based on the peer it syncs to, causing stratum to creep upward until all devices reach stratum 16 and lose synchronization. This is a circular reference problem.",
+      "resolutions": [
+        {
+          "action": "Configure at least 2-3 external NTP servers (e.g., pool.ntp.org, internal stratum-1)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure at least 2-3 external NTP servers (e.g., pool.ntp.org, internal stratum-1)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure at least 2-3 external NTP servers (e.g., pool.ntp.org, internal stratum-1)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Design a proper NTP hierarchy: core devices sync to external, access devices sync to core",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Design a proper NTP hierarchy: core devices sync to external, access devices sync to core",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Design a proper NTP hierarchy: core devices sync to external, access devices sync to core",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'ntp server' (client mode) toward upstream, 'ntp peer' only between same-tier devices",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'ntp server' (client mode) toward upstream, 'ntp peer' only between same-tier devices",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'ntp server' (client mode) toward upstream, 'ntp peer' only between same-tier devices",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove circular peer relationships — NTP hierarchy must be a DAG (no loops)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove circular peer relationships — NTP hierarchy must be a DAG (no loops)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove circular peer relationships — NTP hierarchy must be a DAG (no loops)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using 'ntp master', understand it makes the device a stratum source of last resort",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using 'ntp master', understand it makes the device a stratum source of last resort",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using 'ntp master', understand it makes the device a stratum source of last resort",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "No external NTP server configured — all devices are configured as peers of each other",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "External NTP server became unreachable and devices fell back to peering with each other",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Circular NTP hierarchy: A syncs to B, B syncs to C, C syncs to A",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Misconfigured 'ntp master' / 'ntp source' causing a device to advertise itself as a reference",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "NTP loop / stratum creep — devices syncing to each other",
+      "symptoms": [
+        "Stratum values across devices keep incrementing over time",
+        "All devices eventually show stratum 16 (unsynchronized)",
+        "No device has a '*' (sys.peer) pointing to an external reference",
+        "'show ntp associations' shows all references are internal peers with high stratum"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ntp associations",
+          "confirms_if": "All associations are internal peers with no external reference — confirms NTP loop",
+          "look_for": "Check the 'ref clock' column and stratum for each association. All references should trace back to a low-stratum external source. Look for circular references (A->B->C->A).",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp associations",
+          "confirms_if": "All associations are internal peers with no external reference — confirms NTP loop",
+          "look_for": "Check the 'ref clock' column and stratum for each association. All references should trace back to a low-stratum external source. Look for circular references (A->B->C->A).",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp associations",
+          "confirms_if": "All associations are internal peers with no external reference — confirms NTP loop",
+          "look_for": "Check the 'ref clock' column and stratum for each association. All references should trace back to a low-stratum external source. Look for circular references (A->B->C->A).",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp status",
+          "confirms_if": "High or increasing stratum with no external reference confirms loop",
+          "look_for": "Check stratum value — it should be stable and low (2-4 for typical enterprise). Stratum > 10 or increasing over time indicates a loop.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp status",
+          "confirms_if": "High or increasing stratum with no external reference confirms loop",
+          "look_for": "Check stratum value — it should be stable and low (2-4 for typical enterprise). Stratum > 10 or increasing over time indicates a loop.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp status",
+          "confirms_if": "High or increasing stratum with no external reference confirms loop",
+          "look_for": "Check stratum value — it should be stable and low (2-4 for typical enterprise). Stratum > 10 or increasing over time indicates a loop.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The device clock is significantly wrong due to NTP not being synchronized, causing all time-dependent security operations to fail. TLS/SSL certificates have 'Not Before' and 'Not After' fields — a wrong clock causes valid certificates to appear expired or not-yet-valid. This cascades to RADIUS, TACACS+, PKI, and any HTTPS-based management.",
+      "resolutions": [
+        {
+          "action": "Fix NTP synchronization first — this is the root cause, not the certificate errors",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix NTP synchronization first — this is the root cause, not the certificate errors",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix NTP synchronization first — this is the root cause, not the certificate errors",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Manually set clock close to correct time, then let NTP fine-tune it",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Manually set clock close to correct time, then let NTP fine-tune it",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Manually set clock close to correct time, then let NTP fine-tune it",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "After clock is corrected, re-authenticate or re-enroll certificates if needed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "After clock is corrected, re-authenticate or re-enroll certificates if needed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "After clock is corrected, re-authenticate or re-enroll certificates if needed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure NTP authentication to prevent syncing to a rogue time source",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure NTP authentication to prevent syncing to a rogue time source",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure NTP authentication to prevent syncing to a rogue time source",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Implement NTP monitoring/alerting to detect sync loss before it causes cascading failures",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Implement NTP monitoring/alerting to detect sync loss before it causes cascading failures",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Implement NTP monitoring/alerting to detect sync loss before it causes cascading failures",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "NTP not configured or not synchronized — clock drifted far from real time",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Device rebooted with dead CMOS battery — clock reset to factory default (e.g., year 2002)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NTP server was decommissioned and no replacement was configured",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NTP is synchronized but to a wrong time source (compromised or misconfigured server)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "NTP affecting certificate/authentication — clock too far off causes cert validation failures",
+      "symptoms": [
+        "TLS/SSL handshake failures with 'certificate not yet valid' or 'certificate expired'",
+        "PKI operations fail — certificate enrollment or renewal rejected",
+        "RADIUS/TACACS+ authentication fails with certificate errors (EAP-TLS)",
+        "HTTPS management access fails with browser certificate warnings",
+        "Syslog timestamps are inconsistent across devices, complicating incident analysis"
+      ],
+      "verify_commands": [
+        {
+          "command": "show clock",
+          "confirms_if": "Clock showing wrong date/time confirms NTP-driven certificate issue",
+          "look_for": "Compare displayed time against a known-good reference. Check for '*' prefix indicating time is not authoritative.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show clock",
+          "confirms_if": "Clock showing wrong date/time confirms NTP-driven certificate issue",
+          "look_for": "Compare displayed time against a known-good reference. Check for '*' prefix indicating time is not authoritative.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show clock",
+          "confirms_if": "Clock showing wrong date/time confirms NTP-driven certificate issue",
+          "look_for": "Compare displayed time against a known-good reference. Check for '*' prefix indicating time is not authoritative.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp status",
+          "confirms_if": "Unsynchronized NTP confirms root cause of certificate/auth failures",
+          "look_for": "Check synchronization status and stratum. An unsynchronized clock with stratum 16 explains certificate failures.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp status",
+          "confirms_if": "Unsynchronized NTP confirms root cause of certificate/auth failures",
+          "look_for": "Check synchronization status and stratum. An unsynchronized clock with stratum 16 explains certificate failures.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ntp status",
+          "confirms_if": "Unsynchronized NTP confirms root cause of certificate/auth failures",
+          "look_for": "Check synchronization status and stratum. An unsynchronized clock with stratum 16 explains certificate failures.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto pki certificates",
+          "confirms_if": "Certificate validity dates vs device clock mismatch confirms time-related certificate failure",
+          "look_for": "Check 'Not Before' and 'Not After' dates on installed certificates. Compare against current device clock.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto pki certificates",
+          "confirms_if": "Certificate validity dates vs device clock mismatch confirms time-related certificate failure",
+          "look_for": "Check 'Not Before' and 'Not After' dates on installed certificates. Compare against current device clock.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show crypto pki certificates",
+          "confirms_if": "Certificate validity dates vs device clock mismatch confirms time-related certificate failure",
+          "look_for": "Check 'Not Before' and 'Not After' dates on installed certificates. Compare against current device clock.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Client-to-server poll requesting current time. Contains client transmit timestamp, version, and mode.",
+      "key_fields": [
+        "Version",
+        "Mode (3=client)",
+        "Transmit Timestamp",
+        "Poll Interval"
+      ],
+      "name": "NTP Request",
+      "when_sent": "Every poll interval to each configured NTP server"
+    },
+    {
+      "description": "Server-to-client reply with reference time, receive timestamp, transmit timestamp, stratum, and precision. Client uses these to compute offset and round-trip delay.",
+      "key_fields": [
+        "Stratum",
+        "Reference ID",
+        "Root Delay",
+        "Root Dispersion",
+        "Receive Timestamp",
+        "Transmit Timestamp"
+      ],
+      "name": "NTP Response",
+      "when_sent": "In response to an NTP Request"
+    },
+    {
+      "description": "Server sends a response with stratum 0 and an ASCII code in the Reference ID field indicating the client should stop querying. Common codes: DENY (access denied), RATE (rate limit exceeded), RSTR (restricted).",
+      "key_fields": [
+        "Stratum (0)",
+        "Reference ID (ASCII kiss code)",
+        "Mode"
+      ],
+      "name": "Kiss-of-Death (KoD)",
+      "when_sent": "When server rejects the client — access control violation, rate limiting, or server shutting down"
+    },
+    {
+      "description": "Mode 6 messages used for NTP management and monitoring. Used by ntpq to query server status, peer associations, and system variables.",
+      "key_fields": [
+        "OpCode",
+        "Association ID",
+        "Data"
+      ],
+      "name": "NTP Control Message",
+      "when_sent": "Administrative queries via ntpq or NTP management tools"
+    }
+  ],
+  "operates_at": "Layer 7 (Application)",
+  "protocol_family": "services",
+  "protocol_id": "ntp",
+  "protocol_name": "NTP",
+  "purpose": "Network Time Protocol — synchronizes device clocks to an authoritative time source via a hierarchical stratum system. Critical for logging accuracy, certificate validation, and protocol authentication.",
+  "related_protocols": [
+    "ptp-synce"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-5905",
+      "rfc_number": 5905,
+      "title": "RFC 5905",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc5905.txt"
+    },
+    {
+      "id": "agent-cisco-kb:services/ntp.json",
+      "title": "agent-cisco-kb knowledge base — services/ntp.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 5905 (NTPv4)",
+  "states": [
+    {
+      "description": "NTP client initialized but has not received any response from configured NTP servers — clock is unsynchronized",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "INIT"
+    },
+    {
+      "description": "NTP server is reachable and responding to polls, but the client has not yet achieved synchronization — still gathering enough samples to discipline the local clock",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "REACH"
+    },
+    {
+      "description": "Clock is synchronized to a valid NTP reference. Stratum reflects the distance from the authoritative time source. This is the normal operational state.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "SYNC"
+    },
+    {
+      "description": "NTP server rejected — clock offset exceeds the panic threshold (1000 seconds by default). NTP refuses to set the clock to prevent catastrophic time jumps. Manual intervention required.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "INSANE"
+    }
+  ],
+  "tags": [
+    "ntp",
+    "time",
+    "synchronization",
+    "stratum",
+    "clock",
+    "authentication",
+    "services"
+  ],
+  "timers": [
+    {
+      "default_rfc": "64s",
+      "description": "Interval between NTP polls to the server. Starts short and increases exponentially (minpoll to maxpoll) as the clock stabilizes. Decreases when offset increases.",
+      "name": "poll-interval",
+      "on_expiry": "Send NTP request to server",
+      "range": "16-1024s (2^4 to 2^10)",
+      "tuning_advice": "Shorter poll intervals (minpoll 4 = 16s) speed up initial sync but increase server load. Default is appropriate for most deployments. Do not set below 16s unless using a local stratum-1 source."
+    },
+    {
+      "default_rfc": "1000s",
+      "description": "Maximum allowable offset between local clock and NTP server. If the offset exceeds this value, NTP refuses to set the clock to prevent catastrophic time jumps. The ntpd daemon will exit rather than apply a correction this large.",
+      "name": "panic-threshold",
+      "on_expiry": "NTP refuses to synchronize — clock is considered insane. Manual clock set required before NTP will resume.",
+      "range": "N/A (compile-time constant in ntpd; some implementations allow override)",
+      "tuning_advice": "Do not disable the panic threshold in production. If a device boots with a wildly incorrect clock, manually set the clock close to the correct time first, then let NTP fine-tune it."
+    },
+    {
+      "default_rfc": "Varies (typically 8 poll intervals)",
+      "description": "Hold-off period before NTP declares synchronization. Ensures enough samples are collected to produce a statistically reliable offset and delay estimate before disciplining the clock.",
+      "name": "minimum-dispersion",
+      "on_expiry": "NTP transitions from REACH to SYNC state once dispersion drops below threshold",
+      "range": "N/A (algorithm-driven)",
+      "tuning_advice": "Not directly tunable. Reducing poll interval indirectly reduces time to first sync."
+    }
+  ],
+  "transitions": [
+    {
+      "failure_if_stuck": "Server unreachable — check IP reachability, ACLs blocking UDP 123, source interface configuration, VRF routing",
+      "from_state": "INIT",
+      "to_state": "REACH",
+      "trigger": "First valid NTP response received from a configured server"
+    },
+    {
+      "failure_if_stuck": "Offset not converging — authentication mismatch, high jitter, or server is itself unsynchronized (stratum 16)",
+      "from_state": "REACH",
+      "to_state": "SYNC",
+      "trigger": "Clock offset within acceptable range after 8+ successful polls — NTP clock discipline algorithm converges"
+    },
+    {
+      "from_state": "SYNC",
+      "to_state": "REACH",
+      "trigger": "Reference source changes stratum, becomes unreachable, or offset increases beyond acceptable thresholds — NTP client re-evaluates and selects a new reference"
+    },
+    {
+      "failure_if_stuck": "Clock was never set or battery died — must manually set clock close to correct time before NTP will synchronize",
+      "from_state": "REACH",
+      "to_state": "INSANE",
+      "trigger": "Clock offset exceeds panic threshold (default 1000 seconds) — NTP refuses to adjust the clock to prevent dangerous time jumps"
+    },
+    {
+      "from_state": "INSANE",
+      "to_state": "INIT",
+      "trigger": "Manual intervention — administrator sets clock to approximate correct time, or NTP server offset is corrected, bringing the offset back within the panic threshold"
+    }
+  ],
+  "transport": "UDP 123",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "ntp authenticate\nntp authentication-key 1 md5 SecretKey123\nntp trusted-key 1\nntp server 10.1.1.1 key 1 source Loopback0\nntp server 10.1.1.2 key 1 source Loopback0\nntp update-calendar"
+      ],
+      "notes": [
+        {
+          "note": "NTP configuration: 'ntp server <ip> [source <intf>] [key <id>]'. Enable authentication with 'ntp authenticate' + 'ntp trusted-key'. Use 'ntp update-calendar' to sync the hardware clock (RTC) with NTP — without this, the hardware clock drifts independently and the device boots with wrong time until NTP re-syncs. Default source interface matters — explicitly set it with 'ntp source <intf>' to ensure NTP packets use the correct source IP.",
+          "versions": "all"
+        }
+      ]
+    },
+    "iosxr": {
+      "config_examples": [
+        "ntp\n server 10.1.1.1 source Loopback0\n server 10.1.1.2 source Loopback0\n authentication-key 1 md5 encrypted SecretKey123\n trusted-key 1\n!"
+      ],
+      "notes": [
+        {
+          "note": "NTP configured under global config: 'ntp server <ip>'. Source interface set with 'ntp source <intf>'. Authentication: 'ntp authentication-key <id> md5 <key>' and 'ntp trusted-key <id>'. IOS-XR uses 'show ntp associations' and 'show ntp status' for verification. On Cisco 8000 and NCS platforms, NTP runs in the XR VM — ensure management interface or loopback is used as source.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "feature ntp\nntp server 10.1.1.1 use-vrf management\nntp server 10.1.1.2 use-vrf management\nntp authentication-key 1 md5 SecretKey123\nntp trusted-key 1\nntp server 10.1.1.1 key 1"
+      ],
+      "notes": [
+        {
+          "note": "NTP requires 'feature ntp' to be enabled. Use 'ntp server <ip> use-vrf management' when the NTP server is reachable via the management VRF. Authentication uses 'ntp authentication-key <id> md5 <key>' and 'ntp trusted-key <id>'. NX-OS defaults to stratum 8 if no NTP server is configured and 'ntp master' is used. Check with 'show ntp status' and 'show ntp peer-status'.",
+          "versions": "all"
+        }
+      ]
+    },
+    "sonic": {
+      "config_examples": [
+        "# CONFIG_DB NTP configuration\nconfig ntp add 10.1.1.1\nconfig ntp add 10.1.1.2\n# Verify\nntpstat\nntpq -p"
+      ],
+      "notes": [
+        {
+          "note": "NTP runs on the host Linux OS, not inside any SONiC container. Configuration is stored in CONFIG_DB under the NTP and NTP_SERVER tables. Use 'ntpstat' to check synchronization status and 'ntpq -p' to see peer associations. Newer SONiC builds use chrony instead of ntpd — check with 'chronyc tracking' and 'chronyc sources'. Config changes via 'config ntp add/del <server>'.",
+          "versions": "202311+"
+        }
+      ]
+    }
+  }
+}

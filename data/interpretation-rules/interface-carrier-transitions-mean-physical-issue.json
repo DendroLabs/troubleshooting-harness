@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "interface-carrier-transitions-mean-physical-issue",
+  "display_name": "High carrier transition count on an interface indicates physical layer instability, not a protocol or configuration issue",
+  "category": "counter-interpretation",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "sonic", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "An interface is flapping (up/down/up cycles) or protocols on the interface (BGP, OSPF, LACP) keep dropping and re-establishing",
+  "observation": "The interface shows a high or increasing number of carrier transitions (also called 'link flaps' or 'input/output state changes') in 'show interface' output, and protocols riding the interface keep resetting",
+  "naive_interpretation": "The protocol is misconfigured or unstable — debug the protocol (BGP, OSPF, LACP) to find the root cause of the session resets",
+  "correct_interpretation": "Carrier transitions count the number of times the physical link state changed (up-to-down or down-to-up). A high or increasing count means the physical layer is unstable — the problem is below Layer 3, not at it. Every carrier transition tears down all protocols on the interface because the link goes down, even briefly. Debugging the protocol is wasted effort when the root cause is physical. Common causes: bad or dirty fiber optic patch cord, failing SFP/QSFP transceiver (check DOM values), loose cable connection, far-end device rebooting or port flapping, auto-negotiation mismatch, or a bad port on the switch. The correct diagnostic path is: check optic DOM levels (Tx/Rx power), inspect/replace the cable, try a different SFP, try a different port. Only investigate the protocol after the physical layer is stable (zero carrier transitions over a meaningful observation period).",
+  "why": [
+    "Carrier transitions are a Layer 1 metric — they count physical link state changes, which are invisible to protocol debugs but fatal to every protocol session on the interface",
+    "A single sub-second link bounce is enough to tear down a BGP session (holdtime expires or TCP RST), an OSPF adjacency (dead interval expires), or an LACP bundle member (LACP timeout) — the protocol logs show 'neighbor down' but the cause is physical",
+    "SFP transceivers degrade gradually — Rx power dropping toward the receiver sensitivity threshold causes intermittent link loss that appears random but correlates with temperature or vibration",
+    "Auto-negotiation mismatches (one side forced, one side auto) can cause periodic link renegotiation that shows as carrier transitions without any cable or optic issue"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface <interface> | include carrier",
+      "purpose": "Display the carrier transition count — a non-zero and increasing count confirms physical layer instability"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces <interface> | include carrier",
+      "purpose": "Check carrier transition count and correlate with protocol resets"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface <interface> transceiver details",
+      "purpose": "Check SFP DOM values (Tx power, Rx power, temperature, voltage) for out-of-spec readings that indicate a failing transceiver"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces <interface> transceiver",
+      "purpose": "Display DOM optical power levels to check for degraded signal that causes intermittent link loss"
+    },
+    {
+      "os": "sonic",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces transceiver eeprom <interface>",
+      "purpose": "Read transceiver EEPROM including DOM values to check for failing optics"
+    },
+    {
+      "os": "junos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces <interface> extensive | match flap",
+      "purpose": "Display link flap count and timestamps to quantify physical layer instability"
+    }
+  ],
+  "traps": [
+    "Spending hours debugging BGP/OSPF/LACP when the protocol logs say 'neighbor down' but the root cause is a bad cable or optic — always check carrier transitions first",
+    "Assuming zero CRC errors means the physical layer is fine — a link can flap cleanly (carrier transitions) without generating CRC errors if the signal loss is complete rather than degraded",
+    "Not correlating the timestamp of carrier transitions with protocol reset timestamps — if they match exactly, the protocol reset is a consequence, not a cause",
+    "Clearing interface counters and then concluding the problem is fixed because the carrier transition count is now zero — watch the counter over time; a single clear proves nothing",
+    "Ignoring DOM warnings — Rx power dropping from -5 dBm to -12 dBm is a transceiver or fiber that will fail intermittently before failing permanently"
+  ],
+  "related_rules": [
+    "optic-dom-warning-vs-alarm",
+    "interface-crc-counters-without-clearing",
+    "interface-up-line-down"
+  ],
+  "related_protocols": ["lacp", "lldp"],
+  "keywords": ["carrier transitions", "link flap", "interface flapping", "SFP", "transceiver", "DOM", "optics", "physical layer", "Layer 1", "cable", "fiber", "auto-negotiation"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

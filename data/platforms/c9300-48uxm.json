@@ -1,0 +1,85 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:uadp",
+      "asic_id": 0,
+      "asic_model": "UADP 2.0",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "L2 MAC Table",
+        "L3 FIB",
+        "ACL",
+        "QoS"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "RJ45 mGig",
+              "end_port": 24,
+              "label": "Gi1/0/1-24",
+              "native_speed": "mGig",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        },
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "RJ45 mGig",
+              "end_port": 48,
+              "label": "Gi1/0/25-48",
+              "native_speed": "mGig",
+              "start_port": 25
+            },
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 52,
+              "label": "Te1/1/1-4",
+              "native_speed": "10G",
+              "start_port": 49
+            }
+          ],
+          "slice_id": 1,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 480.0
+    }
+  ],
+  "chassis_type": "fixed",
+  "confidence": "medium",
+  "os": "iosxe",
+  "platform_family": "catalyst-9300",
+  "platform_id": "c9300-48uxm",
+  "platform_name": "Catalyst 9300-48UXM",
+  "platform_pid": "C9300-48UXM",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-c9300-48uxm",
+      "title": "C9300-48UXM datasheet, BRKARC-3438-2024",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/catalyst-9300/c9300-48uxm.json",
+      "title": "cisco knowledge base — hardware-topology/catalyst-9300/c9300-48uxm.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 0.48,
+  "total_ports": 52
+}

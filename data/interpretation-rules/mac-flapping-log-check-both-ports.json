@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "mac-flapping-log-check-both-ports",
+  "display_name": "MAC flapping logs name two ports — investigate both, not just one",
+  "category": "log-analysis",
+  "applicable_os": ["nxos", "iosxe", "eos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Syslog messages indicating MAC address flapping between two ports on the same switch",
+  "observation": "Log message like 'MAC XXXX.XXXX.XXXX in VLAN X is flapping between port A and port B'",
+  "naive_interpretation": "One of the two ports has a problem or there is a loop on one of them",
+  "correct_interpretation": "MAC flapping means the switch is seeing the same source MAC arrive on two different ports, and keeps updating the MAC table. Both ports are receiving frames with that MAC. The root cause is almost never the ports themselves — it is either a Layer 2 loop upstream (STP failure, miscabled redundant links), a VM or host that has moved or has dual-homed NICs, or a duplicate MAC address on two different hosts. Investigate the device with that MAC address and the L2 path to both ports.",
+  "why": [
+    "The MAC table is doing exactly what it should — updating the port when it sees the MAC on a different interface",
+    "A loop causes the same frame to arrive on multiple ports, which looks like MAC flapping from the switch's perspective",
+    "VM migration can cause legitimate MAC moves that trigger flapping alerts briefly — check if it stabilizes"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show mac address-table address XXXX.XXXX.XXXX",
+      "purpose": "Check which port the MAC is currently on — if it keeps changing, the flap is active"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree vlan <X>",
+      "purpose": "Check for STP issues on the VLAN where flapping occurs — look for ports in FWD that should be BLK"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show mac address-table address XXXX.XXXX.XXXX",
+      "purpose": "Track the MAC location"
+    }
+  ],
+  "traps": [
+    "Shutting down one of the two named ports without understanding the topology — this may fix the flapping but disconnect a valid device",
+    "Not checking whether the flapping is transient (VM migration, host reboot) vs sustained (loop)",
+    "Looking at the switch ports instead of tracing the L2 path upstream to find where the loop originates",
+    "Ignoring MAC flapping logs because the network seems to work — flapping increases CPU load and can cause traffic blackholing"
+  ],
+  "related_rules": [
+    "stp-tcn-during-convergence-is-normal"
+  ],
+  "related_protocols": ["rstp", "mst", "stp"],
+  "keywords": ["MAC", "flapping", "loop", "spanning tree", "MAC address table", "L2 loop"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

@@ -1,0 +1,2356 @@
+{
+  "confidence": "medium",
+  "def_refs": [
+    "daemon:bfdd",
+    "daemon:zebra",
+    "daemon:bgpd",
+    "daemon:ospfd",
+    "daemon:orchagent",
+    "timer:bfd-detect-multiplier",
+    "timer:bfd-tx-interval",
+    "timer:bfd-rx-interval",
+    "db:config_db",
+    "db:appl_db",
+    "db:state_db"
+  ],
+  "dependencies": [
+    {
+      "description": "Requires IP reachability between BFD peers",
+      "name": "IP connectivity",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Both sides must have BFD configured with compatible parameters",
+      "name": "BFD enabled on both endpoints",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Routing protocol must be configured to use BFD for failure detection",
+      "name": "Client protocol integration",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Sub-100ms timers typically require ASIC/hardware offload for reliable operation",
+      "name": "Hardware offload for aggressive timers",
+      "type": "infrastructure"
+    },
+    {
+      "description": "BFD in SONiC runs as the bfdd process inside the 'bgp' Docker container via FRR. bfdd manages the BFD FSM, sends and receives Control packets, and notifies registered clients (bgpd, ospfd, zebra) on session state changes via the FRR inter-process communication (Zserv/ZAPI).",
+      "name": "FRR bfdd",
+      "type": "daemon"
+    },
+    {
+      "description": "FRR zebra acts as the central routing daemon and receives BFD session notifications from bfdd via ZAPI. When bfdd declares a session Down, zebra triggers next-hop tracking updates and notifies bgpd and ospfd. Zebra must be running for BFD notifications to propagate to routing protocols.",
+      "name": "zebra",
+      "type": "daemon"
+    },
+    {
+      "description": "BGP uses BFD for sub-second peer failure detection. When 'neighbor <ip> bfd' is configured in FRR, bgpd registers the peer with bfdd. On BFD session Down, bgpd immediately tears down the BGP session without waiting for the Hold Timer to expire.",
+      "name": "bgpd (optional client)",
+      "type": "daemon"
+    },
+    {
+      "description": "OSPF uses BFD for sub-second neighbor failure detection. When BFD is enabled on an OSPF interface, ospfd registers the neighbor with bfdd. On BFD Down, ospfd immediately triggers SPF recalculation and route updates.",
+      "name": "ospfd (optional client)",
+      "type": "daemon"
+    },
+    {
+      "description": "On platforms supporting hardware-offloaded BFD, orchagent programs BFD session objects into ASIC_DB via SAI. The bfdorch module inside orchagent handles BFD SAI object lifecycle. Hardware offload is optional -- software BFD in bfdd operates independently of orchagent.",
+      "name": "orchagent (swss container)",
+      "type": "daemon"
+    },
+    {
+      "description": "BFD Control packets are delivered to bfdd via the CPU path and are subject to CoPP rate limiting. The default BFD CoPP class rate must be high enough to sustain the configured BFD packet rate across all sessions. CoPP drops are the most common cause of BFD false positives in SONiC.",
+      "name": "CoPP (Control Plane Policing)",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Source of truth for BFD configuration: BFD_PEER_SINGLE_HOP and BFD_PEER_MULTI_HOP tables. frrcfgd or bgpcfgd reads these to configure bfdd via vtysh.",
+      "name": "CONFIG_DB (Redis DB 4)",
+      "type": "database"
+    },
+    {
+      "description": "BFD session state is published here in BFD_SESSION_TABLE. Other SONiC components and monitoring tools read this table to determine current BFD session health. Updated by bfdd via the FRR BFD state change notification path.",
+      "name": "STATE_DB (Redis DB 6)",
+      "type": "database"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "BFD session fails to reach UP state, remaining stuck in DOWN or INIT",
+      "resolutions": [
+        {
+          "action": "Verify BFD enabled on both ends: 'show bfd neighbors' on both sides",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify BFD enabled on both ends: 'show bfd neighbors' on both sides",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify BFD enabled on both ends: 'show bfd neighbors' on both sides",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for ACL blocking UDP 3784: 'show ip access-lists'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for ACL blocking UDP 3784: 'show ip access-lists'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for ACL blocking UDP 3784: 'show ip access-lists'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify client protocol has BFD enabled: e.g., 'ip ospf bfd', 'neighbor <ip> fall-over bfd'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify client protocol has BFD enabled: e.g., 'ip ospf bfd', 'neighbor <ip> fall-over bfd'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify client protocol has BFD enabled: e.g., 'ip ospf bfd', 'neighbor <ip> fall-over bfd'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check BFD mode matches: both single-hop or both multi-hop",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check BFD mode matches: both single-hop or both multi-hop",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check BFD mode matches: both single-hop or both multi-hop",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On port-channels: verify per-link BFD or micro-BFD is configured correctly",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On port-channels: verify per-link BFD or micro-BFD is configured correctly",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On port-channels: verify per-link BFD or micro-BFD is configured correctly",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "BFD not enabled on both ends of the link",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL blocking UDP 3784/4784",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BFD timer mismatch preventing negotiation (rare — BFD negotiates)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Asymmetric BFD support (one side hardware, other software with incompatible minimum timers)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Client protocol not configured to use BFD",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ECMP/LAG causing BFD packets to take different path than data traffic",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "BFD session stuck in DOWN/INIT",
+      "symptoms": [
+        "show bfd neighbors shows DOWN or INIT state",
+        "Associated routing protocol not converging",
+        "Client protocol (OSPF/BGP) not registering BFD session"
+      ],
+      "verify_commands": [
+        {
+          "command": "show bfd neighbors detail",
+          "confirms_if": "Shows full BFD session details including why it's down",
+          "look_for": "Look for session state, negotiated intervals, registered protocols, and diagnostic codes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors detail",
+          "confirms_if": "Shows full BFD session details including why it's down",
+          "look_for": "Look for session state, negotiated intervals, registered protocols, and diagnostic codes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors detail",
+          "confirms_if": "Shows full BFD session details including why it's down",
+          "look_for": "Look for session state, negotiated intervals, registered protocols, and diagnostic codes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors",
+          "confirms_if": "Shows summary of all BFD sessions",
+          "look_for": "Look for all BFD sessions and their current state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors",
+          "confirms_if": "Shows summary of all BFD sessions",
+          "look_for": "Look for all BFD sessions and their current state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors",
+          "confirms_if": "Shows summary of all BFD sessions",
+          "look_for": "Look for all BFD sessions and their current state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface <intf> | include BFD",
+          "confirms_if": "Confirms OSPF is configured to use BFD on this interface",
+          "look_for": "Look for BFD enabled status on OSPF interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface <intf> | include BFD",
+          "confirms_if": "Confirms OSPF is configured to use BFD on this interface",
+          "look_for": "Look for BFD enabled status on OSPF interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface <intf> | include BFD",
+          "confirms_if": "Confirms OSPF is configured to use BFD on this interface",
+          "look_for": "Look for BFD enabled status on OSPF interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp neighbor <ip> | include BFD",
+          "confirms_if": "Confirms BGP is configured to use BFD for this neighbor",
+          "look_for": "Look for BFD status for this BGP peer",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp neighbor <ip> | include BFD",
+          "confirms_if": "Confirms BGP is configured to use BFD for this neighbor",
+          "look_for": "Look for BFD status for this BGP peer",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp neighbor <ip> | include BFD",
+          "confirms_if": "Confirms BGP is configured to use BFD for this neighbor",
+          "look_for": "Look for BFD status for this BGP peer",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "BFD session repeatedly transitions between UP and DOWN states",
+      "resolutions": [
+        {
+          "action": "Move to hardware-offloaded BFD if using software mode",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Move to hardware-offloaded BFD if using software mode",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Move to hardware-offloaded BFD if using software mode",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase detect multiplier (e.g., 3→5) to tolerate transient loss",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase detect multiplier (e.g., 3→5) to tolerate transient loss",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase detect multiplier (e.g., 3→5) to tolerate transient loss",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure BFD packets get highest QoS priority (DSCP CS6)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure BFD packets get highest QoS priority (DSCP CS6)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure BFD packets get highest QoS priority (DSCP CS6)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase timer interval if hardware offload is not available",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase timer interval if hardware offload is not available",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase timer interval if hardware offload is not available",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check optics: 'show interface transceiver' for degraded signal",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check optics: 'show interface transceiver' for degraded signal",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check optics: 'show interface transceiver' for degraded signal",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Aggressive timer settings on congested control-plane",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Software-based BFD hitting CPU limits under load",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Packet loss on link exceeding detect multiplier tolerance",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interface micro-outages (e.g., optics degradation)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Asymmetric forwarding — BFD and data on different paths",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "QoS not prioritizing BFD packets",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "BFD session flapping",
+      "symptoms": [
+        "Frequent BFD DOWN/UP transitions in logs",
+        "Associated routing protocol flapping with BFD",
+        "Traffic disruption during BFD flaps"
+      ],
+      "verify_commands": [
+        {
+          "command": "show bfd neighbors detail",
+          "confirms_if": "Shows what's causing BFD flaps",
+          "look_for": "Look for 'Last diag' reason, session uptime, and negotiated timers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors detail",
+          "confirms_if": "Shows what's causing BFD flaps",
+          "look_for": "Look for 'Last diag' reason, session uptime, and negotiated timers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors detail",
+          "confirms_if": "Shows what's causing BFD flaps",
+          "look_for": "Look for 'Last diag' reason, session uptime, and negotiated timers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors | count",
+          "confirms_if": "High session count may indicate scale issue",
+          "look_for": "Look for total number of BFD sessions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors | count",
+          "confirms_if": "High session count may indicate scale issue",
+          "look_for": "Look for total number of BFD sessions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors | count",
+          "confirms_if": "High session count may indicate scale issue",
+          "look_for": "Look for total number of BFD sessions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu | include BFD",
+          "confirms_if": "High CPU indicates software BFD may be overloaded",
+          "look_for": "Look for BFD process CPU usage",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu | include BFD",
+          "confirms_if": "High CPU indicates software BFD may be overloaded",
+          "look_for": "Look for BFD process CPU usage",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu | include BFD",
+          "confirms_if": "High CPU indicates software BFD may be overloaded",
+          "look_for": "Look for BFD process CPU usage",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf> counters errors",
+          "confirms_if": "Identifies physical layer issues",
+          "look_for": "Look for CRC, input errors that correlate with BFD flaps",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf> counters errors",
+          "confirms_if": "Identifies physical layer issues",
+          "look_for": "Look for CRC, input errors that correlate with BFD flaps",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf> counters errors",
+          "confirms_if": "Identifies physical layer issues",
+          "look_for": "Look for CRC, input errors that correlate with BFD flaps",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "BFD session goes DOWN but the associated routing protocol adjacency remains up, defeating the purpose of BFD",
+      "resolutions": [
+        {
+          "action": "Verify BFD client registration: 'show bfd neighbors detail' — check registered protocols",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify BFD client registration: 'show bfd neighbors detail' — check registered protocols",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify BFD client registration: 'show bfd neighbors detail' — check registered protocols",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reconfigure BFD on the routing protocol",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reconfigure BFD on the routing protocol",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reconfigure BFD on the routing protocol",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure BFD source/destination matches routing protocol peering addresses",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure BFD source/destination matches routing protocol peering addresses",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure BFD source/destination matches routing protocol peering addresses",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check BFD dampening configuration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check BFD dampening configuration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check BFD dampening configuration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "BFD not registered as client by the routing protocol",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BFD session exists but routing protocol not subscribed to it",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Different BFD session (wrong source/dest) than routing protocol expects",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BFD dampening delaying notification to clients",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "BFD not triggering routing protocol failover",
+      "symptoms": [
+        "BFD goes DOWN but routing protocol adjacency stays up",
+        "Failover takes dead-timer time instead of BFD detect time",
+        "show bfd neighbors shows DOWN but OSPF/BGP neighbor shows FULL/Established"
+      ],
+      "verify_commands": [
+        {
+          "command": "show bfd neighbors detail",
+          "confirms_if": "Confirms which protocols are subscribed to BFD events",
+          "look_for": "Look for 'Registered protocols' list — should include OSPF, BGP, etc.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors detail",
+          "confirms_if": "Confirms which protocols are subscribed to BFD events",
+          "look_for": "Look for 'Registered protocols' list — should include OSPF, BGP, etc.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors detail",
+          "confirms_if": "Confirms which protocols are subscribed to BFD events",
+          "look_for": "Look for 'Registered protocols' list — should include OSPF, BGP, etc.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors detail",
+          "confirms_if": "Shows which protocol owns each BFD session",
+          "look_for": "Look for 'Session host' to confirm which process owns the BFD session",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors detail",
+          "confirms_if": "Shows which protocol owns each BFD session",
+          "look_for": "Look for 'Session host' to confirm which process owns the BFD session",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bfd neighbors detail",
+          "confirms_if": "Shows which protocol owns each BFD session",
+          "look_for": "Look for 'Session host' to confirm which process owns the BFD session",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The BFD session is configured on both ends but never leaves the Down state. bfdd is sending Control packets but not receiving any from the peer, or the received packets are being dropped before reaching bfdd. This is the most common BFD failure in SONiC deployments and is almost always caused by IP reachability problems, CoPP rate limiting, or misconfiguration of the peer address.",
+      "resolutions": [
+        {
+          "action": "Verify IP reachability: 'ping <peer-ip> -I <src-interface> -c 5'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Capture BFD packets: 'sudo tcpdump -i <interface> udp port 3784 -c 20' -- check for inbound packets",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check CoPP: 'show copp config' and 'show copp statistics' -- look for BFD class drop counters",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify bfdd on peer: confirm FRR bfdd process is running on the remote device",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check source IP: 'docker exec bgp vtysh -c show bfd peers' shows Local address being used",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify VRF: ensure BFD session is configured in the same VRF on both ends",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check CONFIG_DB: 'redis-cli -n 4 KEYS BFD*' to confirm BFD configuration is present",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Peer IP address unreachable -- no route to peer, interface down, or ARP/ND not resolved",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "CoPP (Control Plane Policing) dropping BFD UDP packets before they reach bfdd -- default CoPP rate may be too low",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Firewall or ACL on the peer device blocking UDP port 3784",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "bfdd not running on the peer side -- peer does not have BFD configured or its bfdd process crashed",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Wrong source IP -- bfdd is sourcing packets from an IP the peer does not recognize and is dropping",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "VRF mismatch -- BFD session configured in wrong VRF on one end",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "TTL issue for single-hop BFD -- BFD Control packets must be sent with TTL=255 (RFC 5881); intermediate routing would decrement TTL and peer drops packets with TTL != 255",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "BFD session not establishing -- stuck in Down state",
+      "symptoms": [
+        "'show bfd peers' shows session state as 'down' with no uptime",
+        "'docker exec bgp vtysh -c show bfd peers' shows State: Down for the peer",
+        "redis-cli -n 6 HGETALL shows state=down in BFD_SESSION_TABLE",
+        "BFD packets visible outbound in tcpdump on UDP port 3784 but no inbound packets seen",
+        "BGP or OSPF that depends on BFD never comes up or stays in degraded state"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec bgp vtysh -c 'show bfd peers'",
+          "confirms_if": "State: Down with no uptime confirms session has never established",
+          "look_for": "State field -- Down with Diagnostic 'No Diagnostic' means never received a packet; 'Control Detection Time Expired' means was Up before",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo tcpdump -i <interface> udp port 3784 -c 20 -nn",
+          "confirms_if": "Outbound but no inbound BFD packets confirms peer is not responding -- unreachable or bfdd not running on peer",
+          "look_for": "Outbound BFD packets from local IP to peer IP; absence of inbound packets from peer confirms one-way or no path",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show copp statistics",
+          "confirms_if": "Non-zero BFD drop counter in CoPP statistics confirms control plane policing is discarding BFD packets",
+          "look_for": "BFD trap class drop counter -- non-zero drops indicate CoPP is rate-limiting BFD packets",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "ping <peer-ip> -I <src-interface> -c 5",
+          "confirms_if": "100% packet loss confirms IP connectivity is broken, explaining why BFD cannot establish",
+          "look_for": "Packet loss or unreachable -- any loss indicates Layer 3 reachability issue",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 6 HGETALL 'BFD_SESSION_TABLE|default|default|<peer-ip>'",
+          "confirms_if": "Wrong local_addr or peer_addr in STATE_DB confirms misconfiguration of the BFD session parameters",
+          "look_for": "state field value -- 'down' confirms current state; check local_addr and peer_addr for correctness",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show bfd peers counters'",
+          "confirms_if": "TX incrementing with zero RX confirms local bfdd is sending but receiving nothing from peer",
+          "look_for": "Control packet TX count increasing but RX count at zero",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "BFD sessions that were stable begin going Down and coming back Up (flapping) during periods of high CPU utilization on the SONiC device. The BFD detection timer expires because bfdd cannot process or send Control packets fast enough when the CPU is saturated. This generates spurious BGP or OSPF session drops that are not caused by actual forwarding failures. This is one of the most operationally damaging BFD failure modes in production.",
+      "resolutions": [
+        {
+          "action": "Increase BFD timers to reduce sensitivity: change to 300ms tx/rx with multiplier 3 (900ms detection) or 500ms with multiplier 3",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Increase detect-multiplier from 3 to 5 before increasing intervals -- less aggressive detection",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check CPU load: 'top' and 'docker stats' during a flap event to identify the competing process",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check bfdd memory and CPU inside bgp container: 'docker exec bgp top -p $(docker exec bgp pgrep bfdd)'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Reduce BFD session count if running many sessions -- consolidate where protocol-level detection is acceptable",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check CoPP BFD class rates: 'show copp config' -- increase BFD CoPP rate if platform supports it",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Do NOT set BFD timers below 100ms on most SONiC platforms without validating control plane capacity first",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "bfdd process starved of CPU time due to other processes in the bgp container (bgpd, zebra, fpmsyncd) consuming CPU during route churn",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "BFD timer intervals set too aggressively (below 100ms) for the platform's control plane capacity",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Linux scheduler not prioritizing bfdd -- BFD runs at normal process priority in FRR",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "CoPP burst absorbing BFD packets in bursts then dropping under sustained load",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Large BGP UPDATE storms triggering zebra and fpmsyncd activity that starves bfdd",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "System memory pressure causing swap usage and increasing timer jitter",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Route scale too large -- thousands of BFD sessions consuming disproportionate CPU on timer processing",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "BFD false positives from CPU overload -- session flaps under load",
+      "symptoms": [
+        "'show bfd peers' shows intermittent Down/Up transitions during heavy traffic or route churn",
+        "BGP or OSPF sessions drop coincidentally with high CPU periods",
+        "BFD session diagnostic code shows 'Control Detection Time Expired' in logs",
+        "'docker stats' shows high CPU in bgp or other containers",
+        "syslog shows BFD session down/up events correlating with route table updates or other CPU-intensive events",
+        "Sessions with aggressive timers (50-100ms) are more affected than those with 300ms+ timers"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker stats bgp --no-stream",
+          "confirms_if": "High CPU in bgp container during BFD flap events confirms resource contention is causing false positives",
+          "look_for": "CPU % for bgp container -- high CPU (>70%) during flap events correlates with timer starvation",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show bfd peers'",
+          "confirms_if": "Detection time expired diagnostic without link-level events confirms timer starvation, not actual path failure",
+          "look_for": "Diagnostic code field -- 'Control Detection Time Expired' on a session that should have stable forwarding",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo grep -i 'bfd' /var/log/syslog | tail -50",
+          "confirms_if": "Flap events correlating with BGP route churn or other CPU-intensive periods confirm false positive hypothesis",
+          "look_for": "Repeated BFD session down/up events with short durations between them; timestamps correlating with other events",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show bfd peers counters'",
+          "confirms_if": "RX count continuing to increment after session Down confirms packets are arriving but detection timer fired before processing",
+          "look_for": "Control RX count -- check if RX packets are being received but processed late (session goes Down then quickly Up)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show copp statistics",
+          "confirms_if": "BFD CoPP drops during high-load periods confirm control plane policing is contributing to false positives",
+          "look_for": "BFD trap class drops -- elevated drops confirm control plane is not keeping up with BFD packet rate",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "BFD echo mode is configured locally but the peer's forwarding plane is not looping back echo packets. Echo mode tests the forwarding path end-to-end by sending packets that the peer should loop back without processing at the BFD protocol layer. If the peer does not support echo loopback, or if an intermediate device is consuming the echo packets, the echo detection timer will expire and the session will go Down even though regular Control packet exchange is working fine.",
+      "resolutions": [
+        {
+          "action": "Disable echo mode: 'no bfd echo-mode' in FRR bfdd config or remove echo-mode from BFD peer config",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify peer echo support: check peer documentation and BFD Required Min Echo RX Interval in received Control packets (should be non-zero)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Capture echo traffic: 'sudo tcpdump -i any udp port 3785 -c 10' to check if echo packets return",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Use standard Control packet mode for detection -- adequate for most deployments when timer intervals are set correctly",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "If echo is required: ensure both endpoints have echo mode enabled and no ACL blocks UDP 3785",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Peer device does not support BFD echo loopback -- not all implementations loop back echo packets",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Peer firewall or ACL blocking UDP port 3785 (BFD echo port) while allowing 3784",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Intermediate device consuming echo packets instead of forwarding them back",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Required Min Echo RX Interval set to 0 on peer -- peer has advertised it will not support echo",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Echo packets being routed to a different path than the control packets, breaking the loopback",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Virtual environments (KVM, Docker, virtualized SONiC) often do not support echo mode -- hypervisor does not loop back packets",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "BFD echo mode failures -- echo packets not looped back by peer",
+      "symptoms": [
+        "BFD session goes Down with diagnostic 'Echo Function Failed'",
+        "Regular BFD Control packet exchange works ('show bfd peers counters' shows RX incrementing)",
+        "Session goes Up briefly then Down again on echo failure",
+        "Peer device documentation or configuration does not mention echo mode support",
+        "Echo packets visible outbound in tcpdump on UDP port 3785 but no return traffic seen"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec bgp vtysh -c 'show bfd peers'",
+          "confirms_if": "Echo Function Failed diagnostic with Control packets still being exchanged confirms echo mode misconfiguration or peer incompatibility",
+          "look_for": "Diagnostic code 'Echo Function Failed' -- confirms echo mode is the cause, not Control packet loss",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo tcpdump -i <interface> udp port 3785 -c 10 -nn",
+          "confirms_if": "No return echo packets confirms peer does not support or is not configured for echo loopback",
+          "look_for": "Outbound echo packets; absence of return echo packets from peer confirms peer is not looping them back",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show bfd peers counters'",
+          "confirms_if": "Echo TX without matching Echo RX confirms echo packets are being sent but not returned by peer",
+          "look_for": "Echo TX incrementing but Echo RX at zero or not incrementing",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo tcpdump -i any udp port 3784 -c 20 -nn",
+          "confirms_if": "Required Min Echo RX Interval = 0 in peer's Control packets confirms peer explicitly disabled echo support",
+          "look_for": "Required Min Echo RX Interval field in captured BFD Control packets from peer -- value of 0 means peer disables echo",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Multi-hop BFD (RFC 5883) sessions configured between non-adjacent peers fail to establish or flap intermittently. Unlike single-hop BFD, multi-hop uses UDP port 4784 and does not enforce the TTL=255 rule. Common in SONiC deployments where BGP loopback-based peering uses multi-hop BFD for liveness detection across multiple hops. Failures are often due to routing asymmetry, source address mismatches, or TTL configuration errors.",
+      "resolutions": [
+        {
+          "action": "Verify multi-hop configuration: 'docker exec bgp vtysh -c show bfd peers' -- confirm multihop flag is set",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Explicitly set local-address to the loopback IP: 'bfd peer <remote-loopback> local-address <local-loopback> multihop'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Capture on UDP 4784: 'sudo tcpdump -i any udp port 4784 -c 20' to verify packets are reaching bfdd",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check routing for the BFD peer address: 'ip route get <peer-loopback-ip> from <local-loopback-ip>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify symmetric routing -- trace path in both directions to ensure same devices are traversed",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "For TTL issues: check intermediate device ACLs and TTL decrements along the path",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Source address mismatch -- bfdd is sourcing multi-hop BFD from an interface IP instead of the loopback IP configured as the peer source",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Routing asymmetry -- forward path and return path go through different devices; return path does not reach the correct bfdd listening socket",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "TTL too low -- multi-hop BFD packets being dropped by intermediate routers with TTL exhausted",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Missing multihop keyword in FRR peer config -- bfdd treating the session as single-hop and enforcing wrong port/TTL rules",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Firewall blocking UDP port 4784 while allowing 3784",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Static route to reach the BFD peer loopback is missing -- BFD session comes up before routing converges",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Profile misconfiguration -- local-address not set to the correct loopback interface",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Multi-hop BFD failures -- TTL or source address mismatches",
+      "symptoms": [
+        "Multi-hop BFD session stuck in Down state despite IP reachability between loopbacks",
+        "Session goes Down intermittently when routing changes temporarily alter the path between loopbacks",
+        "BFD peer shows Down but 'ping <loopback-ip> source <local-loopback>' succeeds",
+        "Diagnostic 'Path Down' or 'Concatenated Path Down' in BFD session status",
+        "'show bfd peers' shows multi-hop session never reaching Up"
+      ],
+      "verify_commands": [
+        {
+          "command": "sudo tcpdump -i any udp port 4784 -c 20 -nn",
+          "confirms_if": "Outbound packets but no inbound on port 4784 confirms multi-hop BFD packets are not reaching local bfdd",
+          "look_for": "BFD multi-hop packets on port 4784 -- source and destination IP addresses; absence of inbound packets",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show bfd peers'",
+          "confirms_if": "Wrong local address in session details confirms source address mismatch causing packets to go to wrong destination",
+          "look_for": "Multi-hop field in session details; Local address field -- must match the intended source loopback",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "ip route get <peer-loopback-ip> from <local-loopback-ip>",
+          "confirms_if": "No route or unexpected path confirms routing issue preventing multi-hop BFD packets from reaching peer",
+          "look_for": "Route exists and shows expected next-hop and outgoing interface",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show bfd peers counters'",
+          "confirms_if": "TX without RX confirms packets are being sent but return path is broken",
+          "look_for": "TX count incrementing but RX count at zero for multi-hop session",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo traceroute -U -p 4784 <peer-loopback-ip> -s <local-loopback-ip>",
+          "confirms_if": "Asymmetric paths or dropped hops confirm routing asymmetry or TTL exhaustion is breaking multi-hop BFD",
+          "look_for": "Path taken and hop count; check for asymmetry compared to reverse traceroute",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Two BFD peers are configured with significantly different timer intervals. BFD timer negotiation results in using the higher of the two desired-min-tx values and the higher of the two required-min-rx values, but the detection timer is calculated based on the remote peer's detect-multiplier and the negotiated interval. Asymmetric configuration can result in one side detecting failures much faster than the other, or in unexpected detection times that operators do not anticipate.",
+      "resolutions": [
+        {
+          "action": "Check negotiated timers: 'docker exec bgp vtysh -c show bfd peers' -- look for TX/RX interval fields showing negotiated values",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Align timer configuration on both ends to the same desired-min-tx and required-min-rx",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Calculate actual detection time: detection = remote detect-multiplier * negotiated RX interval",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "After changing timers, verify both ends have updated: check 'show bfd peers' on both devices",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "For sub-second detection requirements, set both required-min-rx to the target interval -- this enforces the upper bound regardless of peer config",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Local desired-min-tx (50ms) lower than remote required-min-rx (300ms) -- negotiation forces TX at 300ms, giving 900ms detection with multiplier 3",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Different detection multipliers on each end -- each end independently calculates its own detection timeout using remote detect-mult",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Configuration applied to only one end after a timer change -- peer still has old timer values",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Platform hardware limitation on one end setting a higher required-min-rx than configured",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "FRR bfdd overriding configured timers based on platform capability limits",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Asymmetric timer negotiation causing unexpected session behavior",
+      "symptoms": [
+        "BFD session is Up but detection time is much longer or shorter than expected",
+        "'show bfd peers' shows negotiated TX interval different from configured desired-min-tx",
+        "One end detects the peer as Down much faster than the other end (asymmetric detection)",
+        "BFD session degrades after configuration change on one peer without changing the other",
+        "Operators configure 50ms intervals expecting 150ms detection but actual detection is 900ms due to peer's 300ms required-min-rx"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec bgp vtysh -c 'show bfd peers'",
+          "confirms_if": "Negotiated intervals different from configured values confirms timer negotiation has resolved to a different value due to peer constraints",
+          "look_for": "Negotiated TX Interval and Negotiated RX Interval fields -- compare against configured desired-min-tx and required-min-rx",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo tcpdump -i <interface> udp port 3784 -c 5 -nn",
+          "confirms_if": "Packet interval larger than configured TX interval confirms peer's required-min-rx is constraining the negotiated rate",
+          "look_for": "Timestamp delta between consecutive BFD packets -- actual TX interval can be measured from packet captures",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show bfd peers counters'",
+          "confirms_if": "Packet reception rate lower than expected confirms negotiated interval is longer than locally configured",
+          "look_for": "Control packet RX rate -- compare expected rate (1/interval) against actual reception rate",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 6 HGETALL 'BFD_SESSION_TABLE|default|default|<peer-ip>'",
+          "confirms_if": "Mismatch between local and negotiated intervals in STATE_DB confirms asymmetric negotiation",
+          "look_for": "negotiated_transmit_interval and negotiated_receive_interval fields vs local_transmit_interval and local_receive_interval",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Some SONiC-supported ASIC platforms (e.g., certain Broadcom and Mellanox/NVIDIA platforms) support hardware-offloaded BFD, where the ASIC processes BFD Control packets and manages the detection timer in hardware without involving the control plane CPU. When hardware offload is misconfigured, not initialized properly, or encounters a SAI programming error, BFD sessions may not establish, may silently fail to detect forwarding failures, or may generate false positives from the hardware detection path.",
+      "resolutions": [
+        {
+          "action": "Check orchagent BFD SAI errors: 'docker logs swss 2>&1 | grep -i bfd | tail -50'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check ASIC_DB for BFD session objects: 'redis-cli -n 1 KEYS \"ASIC_STATE:SAI_OBJECT_TYPE_BFD*\"'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify STATE_DB BFD status: 'redis-cli -n 6 KEYS \"BFD_SESSION_TABLE*\"'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check if hardware BFD is supported on this platform: review platform SAI capabilities",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "If hardware offload failing, disable hardware BFD and fall back to software: consult platform documentation",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Count hardware BFD sessions: 'redis-cli -n 1 KEYS \"ASIC_STATE:SAI_OBJECT_TYPE_BFD_SESSION*\" | wc -l'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "SAI BFD object creation failure -- orchagent attempted to program hardware BFD session but SAI returned error",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Hardware BFD table full -- ASIC supports limited number of hardware BFD sessions (platform-specific)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "bfdd not signaling session to orchagent for hardware offload -- FRR BFD hardware offload integration not triggered",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Mismatch between software BFD configuration and hardware BFD capabilities (e.g., timer resolution below ASIC minimum)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "syncd SAI library version does not support BFD SAI objects for this platform",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "BFD session in a non-default VRF and hardware VRF-aware BFD not supported on this platform",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "orchagent BFD orchestrator not initialized or crashed",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Hardware BFD offload failures on platforms that support it",
+      "symptoms": [
+        "BFD sessions configured but ASIC is not generating hardware BFD packets -- no UDP 3784 traffic seen at line rate",
+        "Hardware BFD detection events not propagating to bfdd or to BGP/OSPF",
+        "BFD sessions show Up in software ('show bfd peers') but hardware forwarding detection is broken",
+        "orchagent logs show SAI errors when creating BFD session objects",
+        "Platform supports hardware BFD but sessions are falling back to software mode unexpectedly",
+        "Very high session counts causing hardware BFD table exhaustion"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker logs swss 2>&1 | grep -i bfd | tail -50",
+          "confirms_if": "SAI errors in orchagent logs confirm hardware BFD programming failed",
+          "look_for": "SAI errors creating BFD session objects -- SAI_STATUS_FAILURE, SAI_STATUS_TABLE_FULL, or unsupported attribute errors",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_BFD_SESSION*'",
+          "confirms_if": "Empty result when BFD sessions exist in software confirms hardware offload programming did not complete",
+          "look_for": "BFD session keys present in ASIC_DB -- one per configured BFD session that is hardware-offloaded",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_BFD_SESSION*' | wc -l",
+          "confirms_if": "Count at or near platform limit confirms hardware BFD table exhaustion",
+          "look_for": "Count of hardware BFD sessions; compare against platform hardware BFD session limit",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker logs swss 2>&1 | grep -i 'bfdorch' | tail -30",
+          "confirms_if": "bfdorch errors confirm the orchagent BFD orchestrator failed to program hardware sessions",
+          "look_for": "BFD orchestrator initialization and session creation log messages; errors indicate offload path failures",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 6 HGETALL 'BFD_SESSION_TABLE|default|default|<peer-ip>'",
+          "confirms_if": "offload_type showing 'none' or software when hardware is expected confirms hardware offload is not active",
+          "look_for": "offload_type field if present -- indicates whether hardware or software BFD is active for this session",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Carries session state and negotiation parameters",
+      "key_fields": [
+        "Version",
+        "Diagnostic Code (reason for last DOWN)",
+        "State (AdminDown/Down/Init/Up)",
+        "Flags (Poll, Final, Control Plane Independent, Authentication, Demand, Multipoint)",
+        "Detect Multiplier",
+        "My Discriminator",
+        "Your Discriminator",
+        "Desired Min TX Interval",
+        "Required Min RX Interval",
+        "Required Min Echo RX Interval"
+      ],
+      "name": "BFD Control Packet",
+      "when_sent": "Periodically at negotiated tx interval"
+    },
+    {
+      "description": "The primary BFD protocol message used for session establishment, liveness detection, and parameter negotiation. Sent at the negotiated interval in both directions. Contains FSM state, discriminators, timer values, and flag bits for Poll/Final and Demand mode.",
+      "key_fields": [
+        "Vers (version, must be 1)",
+        "Diag (diagnostic code -- reason for last state change: 0=No Diagnostic, 1=Control Detection Time Expired, 2=Echo Function Failed, 3=Neighbor Signaled Session Down, 4=Forwarding Plane Reset, 5=Path Down, 6=Concatenated Path Down, 7=Administratively Down, 8=Reverse Concatenated Path Down)",
+        "Sta (State: 0=AdminDown, 1=Down, 2=Init, 3=Up)",
+        "P (Poll bit -- request parameter renegotiation)",
+        "F (Final bit -- response to Poll)",
+        "C (Control Plane Independent -- set if forwarding continues independently of control plane)",
+        "A (Authentication Present)",
+        "D (Demand mode)",
+        "M (Multipoint -- reserved for future use)",
+        "Detect Mult (detection time multiplier)",
+        "Length (total packet length, typically 24 bytes without auth)",
+        "My Discriminator (locally assigned unique session ID)",
+        "Your Discriminator (remote discriminator learned from peer; 0 before session established)",
+        "Desired Min TX Interval (microseconds)",
+        "Required Min RX Interval (microseconds)",
+        "Required Min Echo RX Interval (microseconds; 0 to disable echo mode)"
+      ],
+      "name": "BFD Control",
+      "when_sent": "Periodically at the negotiated TX interval when session is Down, Init, or Up; immediately on state change"
+    },
+    {
+      "description": "Optional echo mode packets sent by the local system and expected to be looped back by the peer's forwarding plane (not processed by the peer's BFD stack). Tests the forwarding path independently of the control plane. Sent on UDP port 3785. Not universally supported -- some peers or platforms do not loop back echo packets.",
+      "key_fields": [
+        "Local Discriminator (used to match returned echo to the correct session)",
+        "Payload (arbitrary -- looped back unchanged by peer forwarding plane)"
+      ],
+      "name": "BFD Echo",
+      "when_sent": "When echo mode is enabled and the session is Up; sent at the echo TX interval"
+    }
+  ],
+  "operates_at": "Layer 3",
+  "protocol_family": "transport",
+  "protocol_id": "bfd",
+  "protocol_name": "BFD",
+  "purpose": "Bidirectional Forwarding Detection — provides sub-second failure detection for any transport protocol",
+  "related_protocols": [
+    "ospfv2",
+    "ospfv3",
+    "bgp-4",
+    "isis",
+    "eigrp",
+    "static-routing"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-5880",
+      "rfc_number": 5880,
+      "title": "RFC 5880",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc5880.txt"
+    },
+    {
+      "id": "cisco:transport/bfd.json",
+      "title": "cisco knowledge base — transport/bfd.json",
+      "type": "documentation"
+    },
+    {
+      "id": "rfc-5881",
+      "rfc_number": 5881,
+      "title": "RFC 5881",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc5881.txt"
+    },
+    {
+      "id": "sonic:protocols/bfd.json",
+      "title": "sonic knowledge base — protocols/bfd.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 5880",
+  "states": [
+    {
+      "description": "Session administratively disabled",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "ADMINDOWN"
+    },
+    {
+      "description": "Session is down or just initialized",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "DOWN"
+    },
+    {
+      "description": "Local side is up, waiting for peer to confirm",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "INIT"
+    },
+    {
+      "description": "Session fully operational, forwarding path verified",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "UP"
+    }
+  ],
+  "tags": [
+    "fault-detection",
+    "sub-second",
+    "convergence",
+    "keepalive",
+    "hardware-offload",
+    "transport",
+    "frr",
+    "bfd"
+  ],
+  "timers": [
+    {
+      "default_rfc": "varies by platform — typically 50ms-1000ms",
+      "description": "Minimum interval between transmitted BFD control packets",
+      "name": "DesiredMinTxInterval",
+      "on_expiry": "Send BFD control packet",
+      "os_defaults": [
+        {
+          "default": "50ms (hardware offload on Nexus 9000)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "50ms (hardware offload on Catalyst 9000 with C-BFD)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "15ms minimum (hardware offload on Cisco 8000)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "config_path": "CONFIG_DB BFD_PEER_SINGLE_HOP|<vrf>|<peer-ip> or FRR: 'bfd peer <ip>: transmit-interval <ms>'",
+          "default": "300ms",
+          "frr_path": "bfdd: bfd_peer->timers.desired_min_tx (FRR source: bfdd/bfd.c)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "range": "50ms-30000ms (platform-dependent minimum)",
+      "tuning_advice": "Lower for faster detection; must consider CPU/ASIC capability. Hardware-offloaded BFD can go to 50ms, software BFD typically 50-100ms minimum."
+    },
+    {
+      "default_rfc": "matches tx interval",
+      "description": "Minimum receive interval this system can handle",
+      "name": "RequiredMinRxInterval",
+      "on_expiry": "n/a (receiver-side parameter)",
+      "os_defaults": [
+        {
+          "config_path": "CONFIG_DB BFD_PEER_SINGLE_HOP|<vrf>|<peer-ip> or FRR: 'bfd peer <ip>: receive-interval <ms>'",
+          "default": "300ms",
+          "frr_path": "bfdd: bfd_peer->timers.required_min_rx (FRR source: bfdd/bfd.c)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "range": "50ms-30000ms",
+      "tuning_advice": "Set to match or slightly higher than tx interval"
+    },
+    {
+      "default_rfc": "3",
+      "description": "Number of missed packets before declaring session down",
+      "name": "DetectMultiplier",
+      "on_expiry": "Session declared DOWN after (DetectMultiplier × negotiated interval) with no packet",
+      "range": "2-255",
+      "tuning_advice": "Higher values tolerate more packet loss but slow detection. Typical: 3 (e.g., 3 × 50ms = 150ms detect time)"
+    },
+    {
+      "default_rfc": "3 (FRR bfdd default)",
+      "description": "Number of consecutive missed Control packets before the session is declared Down. The detection timer = detection-multiplier * negotiated-rx-interval. A multiplier of 3 with 300ms intervals gives a 900ms detection time. Sent in every Control packet so the peer knows how many packets it can miss before being declared down.",
+      "name": "Detection Multiplier",
+      "on_expiry": "Detection timer fires: session declared Down; registered protocols (BGP, OSPF) notified immediately",
+      "os_defaults": [
+        {
+          "config_path": "CONFIG_DB BFD_PEER_SINGLE_HOP|<vrf>|<peer-ip> or FRR: 'bfd peer <ip>: detect-multiplier <n>'",
+          "default": "3",
+          "frr_path": "bfdd: bfd_peer->detect_mult (FRR source: bfdd/bfd.c)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "range": "1-255",
+      "tuning_advice": "Use multiplier 3 as the default. Multiplier 1 is aggressive and causes false positives on any single dropped packet (common under CPU load). For noisy or high-latency paths, increase multiplier rather than increasing interval."
+    },
+    {
+      "default_rfc": "Implicit: uses current TX interval for retransmission",
+      "description": "When BFD parameters change (e.g., interval renegotiation), bfdd initiates a Poll sequence by setting the Poll (P) bit in Control packets. The peer responds with a Final (F) bit. The new parameters take effect after the Final is received. A timeout during Poll causes the session to reset.",
+      "name": "Poll Sequence Timer",
+      "on_expiry": "Poll sequence retransmit or session Down if no Final received within detection time",
+      "os_defaults": [
+        {
+          "config_path": "Not directly configurable; triggered automatically",
+          "default": "Triggered automatically on interval change via vtysh or CONFIG_DB update",
+          "frr_path": "bfdd: bfd_poll_handler() (FRR source: bfdd/bfd.c)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "range": "N/A (derived from TX interval)",
+      "tuning_advice": "Avoid rapidly changing BFD parameters on active sessions -- each change triggers a Poll sequence that can cause brief instability."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "DOWN",
+      "to_state": "INIT",
+      "trigger": "BFD control packet received from peer in DOWN state"
+    },
+    {
+      "from_state": "INIT",
+      "to_state": "UP",
+      "trigger": "BFD control packet received from peer in INIT or UP state"
+    },
+    {
+      "from_state": "DOWN",
+      "to_state": "UP",
+      "trigger": "BFD control packet received from peer in INIT state (simultaneous establishment)"
+    },
+    {
+      "failure_if_stuck": "Unidirectional forwarding failure, or peer BFD process crashed",
+      "from_state": "UP",
+      "to_state": "DOWN",
+      "trigger": "Detection timer expires (no BFD packet received within detect time) or admin down received"
+    },
+    {
+      "from_state": "UP",
+      "to_state": "ADMINDOWN",
+      "trigger": "Local admin disable"
+    },
+    {
+      "from_state": "ADMINDOWN",
+      "to_state": "DOWN",
+      "trigger": "Admin re-enable"
+    },
+    {
+      "from_state": "INIT",
+      "to_state": "DOWN",
+      "trigger": "Detection timer expires without peer transitioning to UP"
+    },
+    {
+      "from_state": "AdminDown",
+      "to_state": "Down",
+      "trigger": "Administrative enable of the BFD session -- operator removes 'shutdown' or re-enables BFD on the peer"
+    },
+    {
+      "failure_if_stuck": "UDP port 3784 blocked, peer IP unreachable, wrong source IP, or CoPP rate-limiting BFD packets on either side",
+      "from_state": "Down",
+      "to_state": "Init",
+      "trigger": "Received a BFD Control packet from the peer with State=Down or State=Init; bfdd transitions to Init to signal one-way reachability"
+    },
+    {
+      "failure_if_stuck": "Persistent Down: peer is not transmitting BFD packets -- check peer bfdd process, IP reachability, and CoPP",
+      "from_state": "Down",
+      "to_state": "Down",
+      "trigger": "Detection timer expires without receiving a valid Control packet from peer; session remains Down"
+    },
+    {
+      "failure_if_stuck": "Stuck in Init: one-way reachability only -- check asymmetric routing (return path different), TTL issues for multi-hop, or CoPP dropping packets in one direction",
+      "from_state": "Init",
+      "to_state": "Up",
+      "trigger": "Received a BFD Control packet from the peer with State=Init or State=Up; bidirectional reachability confirmed"
+    },
+    {
+      "from_state": "Init",
+      "to_state": "Down",
+      "trigger": "Detection timer expires while in Init state -- peer stopped responding before confirming Up"
+    },
+    {
+      "from_state": "Up",
+      "to_state": "Down",
+      "trigger": "Detection timer expires (no Control packets received within detect-multiplier * rx-interval), peer sends State=Down, or BFD Poll sequence failure"
+    },
+    {
+      "from_state": "Up",
+      "to_state": "AdminDown",
+      "trigger": "Operator disables the BFD session or shuts down the neighbor configuration"
+    }
+  ],
+  "transport": "UDP port 3784 (single-hop), UDP port 4784 (multi-hop)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "BFD available without feature enable (bfd-template model or interface-level). Supports hardware offload (C-BFD) on Catalyst 9000. 'bfd interval <ms> min_rx <ms> multiplier <N>' configured under interface.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "BFD configured under 'router ospf', 'router bgp', or 'router isis' with 'bfd minimum-interval <ms> multiplier <N>'. Supports 15ms minimum with hardware offload on Cisco 8000. Bundle-level BFD and per-member BFD (micro-BFD) supported.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "BFD requires 'feature bfd'. Supports hardware offload on Nexus 9000 (50ms minimum). Configure per-protocol: 'ip ospf bfd', 'neighbor <ip> bfd', 'isis bfd'. Supports BFD over port-channel (per-link or micro-BFD).",
+          "versions": "all"
+        }
+      ]
+    },
+    "sonic": {
+      "config_db_tables": [
+        {
+          "key_pattern": "BFD_PEER_SINGLE_HOP|<vrfname>|<interface>|<peer-ip>",
+          "redis_command": "redis-cli -n 4 KEYS 'BFD_PEER_SINGLE_HOP*'",
+          "relevant_fields": [
+            "local_addr: source IP address for BFD packets (must match interface IP)",
+            "txinterval: desired min TX interval in milliseconds",
+            "rxinterval: required min RX interval in milliseconds",
+            "multiplier: detection time multiplier (default 3)",
+            "multihop: false for single-hop",
+            "echo_active: enable echo mode (true/false)",
+            "echo_transmit_interval: echo TX interval in milliseconds",
+            "shutdown: administratively disable the session (true/false)"
+          ],
+          "table": "BFD_PEER_SINGLE_HOP",
+          "verify_command": "redis-cli -n 4 HGETALL 'BFD_PEER_SINGLE_HOP|default|<ifname>|<peer-ip>'"
+        },
+        {
+          "key_pattern": "BFD_PEER_MULTI_HOP|<vrfname>|<peer-ip>|<local-ip>",
+          "redis_command": "redis-cli -n 4 KEYS 'BFD_PEER_MULTI_HOP*'",
+          "relevant_fields": [
+            "local_addr: source loopback IP address for multi-hop BFD",
+            "txinterval: desired min TX interval in milliseconds",
+            "rxinterval: required min RX interval in milliseconds",
+            "multiplier: detection time multiplier",
+            "multihop: true",
+            "shutdown: administratively disable"
+          ],
+          "table": "BFD_PEER_MULTI_HOP",
+          "verify_command": "redis-cli -n 4 HGETALL 'BFD_PEER_MULTI_HOP|default|<peer-ip>|<local-ip>'"
+        },
+        {
+          "key_pattern": "BFD_SESSION_TABLE|<vrfname>|<interface>|<peer-ip>",
+          "redis_command": "redis-cli -n 6 KEYS 'BFD_SESSION_TABLE*'",
+          "relevant_fields": [
+            "state: current BFD session state (Up/Down/Init/AdminDown)",
+            "type: single_hop or multi_hop",
+            "local_addr: local IP address used for this session",
+            "peer_addr: remote peer IP address",
+            "local_discriminator: locally assigned BFD discriminator",
+            "remote_discriminator: peer's discriminator",
+            "local_diagnostic: diagnostic code for last state change",
+            "remote_diagnostic: peer's diagnostic code",
+            "local_state: local state as seen from this end",
+            "remote_state: peer's state as reported in last received packet",
+            "negotiated_transmit_interval: negotiated TX interval in microseconds",
+            "negotiated_receive_interval: negotiated RX interval in microseconds"
+          ],
+          "table": "BFD_SESSION_TABLE (STATE_DB)",
+          "verify_command": "redis-cli -n 6 HGETALL 'BFD_SESSION_TABLE|default|default|<peer-ip>'"
+        }
+      ],
+      "frr_mapping": {
+        "config_db_tables": "CONFIG_DB (Redis DB 4): BFD_PEER_SINGLE_HOP, BFD_PEER_MULTI_HOP",
+        "config_managed_by": "frrcfgd or bgpcfgd translating CONFIG_DB BFD tables to FRR vtysh commands",
+        "container": "bgp",
+        "frr_config_file": "/etc/frr/bfdd.conf (managed by frrcfgd or bgpcfgd; do not edit directly in SONiC)",
+        "frr_process": "bfdd",
+        "frr_socket": "/var/run/frr/bfdd.vty",
+        "state_db_table": "STATE_DB (Redis DB 6): BFD_SESSION_TABLE",
+        "supervisor_config": "/etc/supervisor/conf.d/bfdd.conf (inside bgp container)",
+        "zapi_socket": "/var/run/frr/zserv.api (bfdd communicates with zebra/bgpd/ospfd via ZAPI)"
+      },
+      "key_commands": [
+        "show bfd peers",
+        "show bfd peers counters",
+        "docker exec bgp vtysh -c 'show bfd peers'",
+        "docker exec bgp vtysh -c 'show bfd peers counters'",
+        "docker exec bgp vtysh -c 'show bfd peers brief'",
+        "redis-cli -n 6 KEYS 'BFD_SESSION_TABLE*'",
+        "redis-cli -n 6 HGETALL 'BFD_SESSION_TABLE|default|default|<peer-ip>'",
+        "redis-cli -n 4 KEYS 'BFD_PEER_SINGLE_HOP*'",
+        "redis-cli -n 4 HGETALL 'BFD_PEER_SINGLE_HOP|default|<ifname>|<peer-ip>'",
+        "redis-cli -n 4 KEYS 'BFD_PEER_MULTI_HOP*'",
+        "redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_BFD_SESSION*'",
+        "sudo tcpdump -i <interface> udp port 3784 -c 20 -nn",
+        "sudo tcpdump -i <interface> udp port 4784 -c 20 -nn",
+        "show copp statistics",
+        "show copp config",
+        "docker exec bgp supervisorctl status bfdd",
+        "docker logs swss 2>&1 | grep -i bfd | tail -50",
+        "sudo grep -i bfd /var/log/syslog | tail -50",
+        "docker stats bgp --no-stream"
+      ],
+      "notes": [
+        {
+          "human_error_risk": "HIGH",
+          "note": "BFD in SONiC runs as the bfdd process inside the 'bgp' Docker container, managed by FRR's integrated multi-daemon architecture. bfdd communicates with bgpd and ospfd via the ZAPI (Zebra API) socket. BFD configuration can be done via FRR vtysh ('bfd peer <ip>') or via CONFIG_DB BFD_PEER_SINGLE_HOP / BFD_PEER_MULTI_HOP tables. CONFIG_DB is the SONiC source of truth -- vtysh changes are overwritten on restart.",
+          "source_ref": "sonic-buildimage:src/sonic-frr/ and FRR bfdd source"
+        },
+        {
+          "human_error_risk": "HIGH",
+          "note": "CoPP is the #1 cause of BFD false positives in SONiC production deployments. BFD packets are punted to the CPU by the ASIC and rate-limited by CoPP. The default BFD CoPP class rate may be insufficient for large numbers of sessions or aggressive timer intervals. Always check 'show copp statistics' for BFD class drops before assuming a physical failure caused a BFD session to go Down.",
+          "source_ref": "SONiC CoPP design and platform-specific CoPP configs in sonic-buildimage"
+        },
+        {
+          "human_error_risk": "LOW",
+          "note": "BFD session state in SONiC is reflected in STATE_DB (Redis DB 6) in the BFD_SESSION_TABLE. This is the correct place to check BFD state programmatically or for monitoring integration. The 'show bfd peers' CLI command reads from STATE_DB. Direct redis-cli queries to DB 6 provide raw session details including diagnostic codes.",
+          "source_ref": "SONiC STATE_DB schema and bfdd state publication via ZAPI"
+        },
+        {
+          "human_error_risk": "MEDIUM",
+          "note": "When BGP uses BFD ('neighbor <ip> bfd' in FRR), BFD session Down events cause immediate BGP session teardown -- faster than the BGP Hold Timer. This is the intended behavior but operators sometimes see BGP sessions dropping unexpectedly and assume a BGP problem when the root cause is a BFD false positive (CPU overload, CoPP drop). Always correlate BFD session events with BGP adjacency changes when troubleshooting BGP flaps.",
+          "source_ref": "FRR bgpd BFD integration and SONiC BGP+BFD design"
+        },
+        {
+          "human_error_risk": "MEDIUM",
+          "note": "BFD timer negotiation: the actual TX interval used is max(local desired-min-tx, remote required-min-rx). The actual detection time = remote detect-multiplier * max(local desired-min-tx, remote required-min-rx). Configuring 50ms on a local peer does nothing if the remote requires 300ms RX -- detection will be 300ms * remote-multiplier. Check 'show bfd peers' negotiated interval fields, not just configured values.",
+          "source_ref": "RFC 5880 Section 6.8.7 -- Transmitting BFD Control Packets"
+        },
+        {
+          "human_error_risk": "HIGH",
+          "note": "Multi-hop BFD (UDP port 4784) requires the local-address to be explicitly configured when the source IP must be a loopback. Without explicit local-address, bfdd may source packets from the wrong interface IP, causing the peer to drop packets that don't match the expected source. Always configure 'local-address <loopback-ip>' for multi-hop BFD sessions used with BGP loopback peering.",
+          "source_ref": "RFC 5883 and FRR bfdd multi-hop peer configuration"
+        },
+        {
+          "human_error_risk": "MEDIUM",
+          "note": "Echo mode is rarely used in SONiC data-center deployments. It requires the peer's forwarding plane to loop back packets, which is not supported by all platforms or virtual environments. Disable echo mode ('no bfd echo-mode' in FRR or echo_active: false in CONFIG_DB) unless explicitly required and peer support has been verified. Echo mode failures produce misleading diagnostics because Control packet exchange is healthy while echo detection fails.",
+          "source_ref": "RFC 5880 Section 6.4 -- Echo Function and FRR bfdd echo implementation"
+        },
+        {
+          "human_error_risk": "LOW",
+          "note": "Hardware-offloaded BFD is platform-specific and not universally available in SONiC. On supported platforms (some Broadcom and NVIDIA/Mellanox ASICs), orchagent programs BFD sessions into hardware via SAI, allowing the ASIC to maintain liveness independently of the control plane CPU. When hardware offload is available, it improves BFD reliability under CPU load. Check 'redis-cli -n 1 KEYS ASIC_STATE:SAI_OBJECT_TYPE_BFD_SESSION*' to see if hardware offload is active.",
+          "source_ref": "SONiC BFD HW Offload design document and orchagent/bfdorch.cpp"
+        }
+      ]
+    }
+  }
+}

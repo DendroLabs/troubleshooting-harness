@@ -1,0 +1,2056 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "VXLAN requires routable IP connectivity between all VTEP loopback interfaces via the underlay network (OSPF, IS-IS, or BGP)",
+      "name": "Underlay IP reachability between VTEPs",
+      "type": "infrastructure"
+    },
+    {
+      "description": "VXLAN adds 50-54 bytes overhead; underlay MTU must accommodate full inner frame plus encapsulation headers",
+      "name": "MTU 9216+ on underlay",
+      "type": "infrastructure"
+    },
+    {
+      "description": "The NVE (Network Virtualization Edge) interface must be configured with a source-interface (typically a loopback) that provides the local VTEP IP",
+      "name": "NVE interface with source-interface",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Each VLAN that needs to traverse the overlay must be mapped to a unique 24-bit VNI",
+      "name": "VLAN-to-VNI mapping",
+      "type": "infrastructure"
+    },
+    {
+      "description": "BUM traffic handling requires either a static ingress replication list, BGP EVPN-based ingress replication, or a multicast group for underlay BUM transport",
+      "name": "Ingress replication or multicast group for BUM",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "The local VTEP has no remote peers in its peer table. show nve peers returns an empty list, meaning no VXLAN tunnels are formed and no overlay traffic can flow.",
+      "resolutions": [
+        {
+          "action": "Verify NVE interface status: 'show nve interface'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NVE interface status: 'show nve interface'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NVE interface status: 'show nve interface'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm source-interface loopback is up with IP: 'show interface loopback <N>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm source-interface loopback is up with IP: 'show interface loopback <N>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm source-interface loopback is up with IP: 'show interface loopback <N>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check underlay routing for remote VTEP loopbacks: 'show ip route <remote-vtep-ip>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check underlay routing for remote VTEP loopbacks: 'show ip route <remote-vtep-ip>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check underlay routing for remote VTEP loopbacks: 'show ip route <remote-vtep-ip>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For EVPN mode, verify BGP L2VPN EVPN session: 'show bgp l2vpn evpn summary'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For EVPN mode, verify BGP L2VPN EVPN session: 'show bgp l2vpn evpn summary'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For EVPN mode, verify BGP L2VPN EVPN session: 'show bgp l2vpn evpn summary'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For multicast BUM, verify multicast group is correct and PIM is operational",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For multicast BUM, verify multicast group is correct and PIM is operational",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For multicast BUM, verify multicast group is correct and PIM is operational",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "NVE source interface down or misconfigured",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Underlay routing not advertising VTEP loopback",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Multicast group misconfigured (if using multicast-based BUM)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "EVPN BGP session not up (if using BGP EVPN)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "VTEP peers not discovered",
+      "symptoms": [
+        "show nve peers is empty",
+        "No VXLAN tunnels formed",
+        "No overlay traffic flowing between VTEPs"
+      ],
+      "verify_commands": [
+        {
+          "command": "show nve interface",
+          "confirms_if": "Shows whether NVE interface is up and has a valid source IP",
+          "look_for": "Look for NVE interface state, source-interface, and primary IP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve interface",
+          "confirms_if": "Shows whether NVE interface is up and has a valid source IP",
+          "look_for": "Look for NVE interface state, source-interface, and primary IP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve interface",
+          "confirms_if": "Shows whether NVE interface is up and has a valid source IP",
+          "look_for": "Look for NVE interface state, source-interface, and primary IP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve peers",
+          "confirms_if": "Confirms whether remote VTEPs are known",
+          "look_for": "Look for any remote VTEP entries; empty means no peers discovered",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve peers",
+          "confirms_if": "Confirms whether remote VTEPs are known",
+          "look_for": "Look for any remote VTEP entries; empty means no peers discovered",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve peers",
+          "confirms_if": "Confirms whether remote VTEPs are known",
+          "look_for": "Look for any remote VTEP entries; empty means no peers discovered",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <remote-vtep>",
+          "confirms_if": "Confirms underlay reachability to remote VTEP",
+          "look_for": "Look for route to remote VTEP loopback IP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <remote-vtep>",
+          "confirms_if": "Confirms underlay reachability to remote VTEP",
+          "look_for": "Look for route to remote VTEP loopback IP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <remote-vtep>",
+          "confirms_if": "Confirms underlay reachability to remote VTEP",
+          "look_for": "Look for route to remote VTEP loopback IP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn summary",
+          "confirms_if": "Confirms BGP EVPN control plane is operational",
+          "look_for": "Look for BGP EVPN session state and prefixes received from spine/route-reflector",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn summary",
+          "confirms_if": "Confirms BGP EVPN control plane is operational",
+          "look_for": "Look for BGP EVPN session state and prefixes received from spine/route-reflector",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn summary",
+          "confirms_if": "Confirms BGP EVPN control plane is operational",
+          "look_for": "Look for BGP EVPN session state and prefixes received from spine/route-reflector",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A specific VNI is shown as down or missing in 'show nve vni'. Traffic for the associated VLAN cannot be encapsulated or decapsulated.",
+      "resolutions": [
+        {
+          "action": "Verify VLAN exists: 'show vlan id <vlan>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN exists: 'show vlan id <vlan>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN exists: 'show vlan id <vlan>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VNI mapping: 'show running-config interface nve1'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VNI mapping: 'show running-config interface nve1'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VNI mapping: 'show running-config interface nve1'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NVE is up: 'show nve interface'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NVE is up: 'show nve interface'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify NVE is up: 'show nve interface'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS, verify 'vn-segment' under VLAN config",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS, verify 'vn-segment' under VLAN config",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS, verify 'vn-segment' under VLAN config",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check anycast gateway SVI configuration if using distributed gateway",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check anycast gateway SVI configuration if using distributed gateway",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check anycast gateway SVI configuration if using distributed gateway",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "VLAN not created on the switch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VLAN-to-VNI mapping missing under NVE interface or VLAN config",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NVE interface not up",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Anycast gateway misconfigured for the SVI",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "VNI not operational",
+      "symptoms": [
+        "show nve vni shows VNI as down",
+        "Traffic for specific VLAN not crossing overlay",
+        "VLAN traffic works locally but not to remote VTEPs"
+      ],
+      "verify_commands": [
+        {
+          "command": "show nve vni",
+          "confirms_if": "Shows which VNIs are active and their state",
+          "look_for": "Look for VNI state (Up/Down), associated VLAN, and VNI type (L2/L3)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve vni",
+          "confirms_if": "Shows which VNIs are active and their state",
+          "look_for": "Look for VNI state (Up/Down), associated VLAN, and VNI type (L2/L3)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve vni",
+          "confirms_if": "Shows which VNIs are active and their state",
+          "look_for": "Look for VNI state (Up/Down), associated VLAN, and VNI type (L2/L3)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan",
+          "confirms_if": "Confirms VLAN exists on the switch",
+          "look_for": "Look for target VLAN in the VLAN database",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan",
+          "confirms_if": "Confirms VLAN exists on the switch",
+          "look_for": "Look for target VLAN in the VLAN database",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan",
+          "confirms_if": "Confirms VLAN exists on the switch",
+          "look_for": "Look for target VLAN in the VLAN database",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface nve1",
+          "confirms_if": "Shows NVE interface configuration including VNI-to-VLAN mappings",
+          "look_for": "Look for 'member vni' entries and their associated configuration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface nve1",
+          "confirms_if": "Shows NVE interface configuration including VNI-to-VLAN mappings",
+          "look_for": "Look for 'member vni' entries and their associated configuration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface nve1",
+          "confirms_if": "Shows NVE interface configuration including VNI-to-VLAN mappings",
+          "look_for": "Look for 'member vni' entries and their associated configuration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "VTEP peers are discovered and VNIs are operational but actual data traffic (ping, application flows) fails to traverse the VXLAN fabric.",
+      "resolutions": [
+        {
+          "action": "Check underlay MTU on all links (must be 9216+ to accommodate VXLAN 50-54 byte overhead): 'show interface <underlay-intf>' on all hops",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check underlay MTU on all links (must be 9216+ to accommodate VXLAN 50-54 byte overhead): 'show interface <underlay-intf>' on all hops",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check underlay MTU on all links (must be 9216+ to accommodate VXLAN 50-54 byte overhead): 'show interface <underlay-intf>' on all hops",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify bidirectional underlay reachability between VTEPs: ping from source-interface loopback",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify bidirectional underlay reachability between VTEPs: ping from source-interface loopback",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify bidirectional underlay reachability between VTEPs: ping from source-interface loopback",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MAC address table for remote MACs: 'show mac address-table'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MAC address table for remote MACs: 'show mac address-table'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MAC address table for remote MACs: 'show mac address-table'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ARP suppression table entries: 'show ip arp suppression-cache detail'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ARP suppression table entries: 'show ip arp suppression-cache detail'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ARP suppression table entries: 'show ip arp suppression-cache detail'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Underlay MTU too small (need 50+ bytes for VXLAN overhead; 9216 jumbo recommended)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Source interface IP not in remote VTEP's routing table",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Asymmetric routing issue in VXLAN fabric",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ARP suppression issue preventing address resolution",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Traffic not crossing overlay",
+      "symptoms": [
+        "Ping fails across VXLAN fabric",
+        "Application traffic not reaching remote hosts",
+        "VTEP peers shown but traffic black-holed"
+      ],
+      "verify_commands": [
+        {
+          "command": "show nve peers",
+          "confirms_if": "Confirms remote VTEP peers are up and reachable",
+          "look_for": "Look for peer state (Up) and peer router-mac",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve peers",
+          "confirms_if": "Confirms remote VTEP peers are up and reachable",
+          "look_for": "Look for peer state (Up) and peer router-mac",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve peers",
+          "confirms_if": "Confirms remote VTEP peers are up and reachable",
+          "look_for": "Look for peer state (Up) and peer router-mac",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "Shows whether remote MACs are being learned through the overlay",
+          "look_for": "Look for remote MAC entries learned via NVE interface (dynamic or EVPN)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "Shows whether remote MACs are being learned through the overlay",
+          "look_for": "Look for remote MAC entries learned via NVE interface (dynamic or EVPN)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "Shows whether remote MACs are being learned through the overlay",
+          "look_for": "Look for remote MAC entries learned via NVE interface (dynamic or EVPN)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <dest>",
+          "confirms_if": "Confirms routing to destination is correct",
+          "look_for": "Look for route to destination IP, verify next-hop is reachable",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <dest>",
+          "confirms_if": "Confirms routing to destination is correct",
+          "look_for": "Look for route to destination IP, verify next-hop is reachable",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <dest>",
+          "confirms_if": "Confirms routing to destination is correct",
+          "look_for": "Look for route to destination IP, verify next-hop is reachable",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <underlay-intf>",
+          "confirms_if": "Confirms underlay MTU is sufficient for VXLAN encapsulation",
+          "look_for": "Look for MTU value -- must be 9216 or higher for VXLAN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <underlay-intf>",
+          "confirms_if": "Confirms underlay MTU is sufficient for VXLAN encapsulation",
+          "look_for": "Look for MTU value -- must be 9216 or higher for VXLAN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <underlay-intf>",
+          "confirms_if": "Confirms underlay MTU is sufficient for VXLAN encapsulation",
+          "look_for": "Look for MTU value -- must be 9216 or higher for VXLAN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Remote host MAC addresses are not appearing in the local MAC address table and ARP resolution fails across the VXLAN fabric. Hosts cannot communicate across the overlay even though VTEP peers are up.",
+      "resolutions": [
+        {
+          "action": "Check MAC address table for remote VNI entries: 'show mac address-table vlan <vlan>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MAC address table for remote VNI entries: 'show mac address-table vlan <vlan>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MAC address table for remote VNI entries: 'show mac address-table vlan <vlan>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify EVPN type-2 MAC/IP routes: 'show bgp l2vpn evpn route-type 2'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify EVPN type-2 MAC/IP routes: 'show bgp l2vpn evpn route-type 2'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify EVPN type-2 MAC/IP routes: 'show bgp l2vpn evpn route-type 2'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ingress replication peers: 'show nve peers' and 'show nve vni ingress-replication'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ingress replication peers: 'show nve peers' and 'show nve vni ingress-replication'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ingress replication peers: 'show nve peers' and 'show nve vni ingress-replication'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VNI matches on both VTEPs: 'show nve vni' on both sides",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VNI matches on both VTEPs: 'show nve vni' on both sides",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VNI matches on both VTEPs: 'show nve vni' on both sides",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "ARP suppression misconfigured",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "EVPN type-2 routes not being advertised",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Ingress replication list missing remote VTEP",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VNI mismatch between VTEPs",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "MAC/IP learning failure",
+      "symptoms": [
+        "Remote MAC not in address table",
+        "ARP not resolving across fabric",
+        "Hosts on same VNI cannot communicate across VTEPs"
+      ],
+      "verify_commands": [
+        {
+          "command": "show mac address-table vlan <vlan>",
+          "confirms_if": "Shows whether remote MACs are populated in the VLAN's forwarding table",
+          "look_for": "Look for remote MAC entries learned via nve1; absence means learning failure",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table vlan <vlan>",
+          "confirms_if": "Shows whether remote MACs are populated in the VLAN's forwarding table",
+          "look_for": "Look for remote MAC entries learned via nve1; absence means learning failure",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table vlan <vlan>",
+          "confirms_if": "Shows whether remote MACs are populated in the VLAN's forwarding table",
+          "look_for": "Look for remote MAC entries learned via nve1; absence means learning failure",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Shows L2 route table with EVPN-learned MAC entries",
+          "look_for": "Look for MAC entries, their associated VTEP, and flags (local vs remote)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Shows L2 route table with EVPN-learned MAC entries",
+          "look_for": "Look for MAC entries, their associated VTEP, and flags (local vs remote)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Shows L2 route table with EVPN-learned MAC entries",
+          "look_for": "Look for MAC entries, their associated VTEP, and flags (local vs remote)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn",
+          "confirms_if": "Confirms whether EVPN is advertising MAC/IP information",
+          "look_for": "Look for type-2 (MAC/IP) routes from remote VTEPs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn",
+          "confirms_if": "Confirms whether EVPN is advertising MAC/IP information",
+          "look_for": "Look for type-2 (MAC/IP) routes from remote VTEPs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn",
+          "confirms_if": "Confirms whether EVPN is advertising MAC/IP information",
+          "look_for": "Look for type-2 (MAC/IP) routes from remote VTEPs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Inter-subnet routed traffic across the VXLAN fabric is silently dropped because the L3VNI SVI is missing the 'ip forward' command. The L3VNI appears operationally up in 'show nve vni' but routed traffic is not forwarded between subnets through the overlay.",
+      "resolutions": [
+        {
+          "action": "Add 'ip forward' under the L3VNI SVI: 'interface vlan <L3VNI-VLAN>' → 'ip forward'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add 'ip forward' under the L3VNI SVI: 'interface vlan <L3VNI-VLAN>' → 'ip forward'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add 'ip forward' under the L3VNI SVI: 'interface vlan <L3VNI-VLAN>' → 'ip forward'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SVI state: 'show interface vlan <L3VNI-VLAN>' — must be up/up",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SVI state: 'show interface vlan <L3VNI-VLAN>' — must be up/up",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SVI state: 'show interface vlan <L3VNI-VLAN>' — must be up/up",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VRF-to-VNI association: 'show running-config vrf <name>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VRF-to-VNI association: 'show running-config vrf <name>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VRF-to-VNI association: 'show running-config vrf <name>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "'ip forward' missing on L3VNI SVI (NX-OS requires this explicitly)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SVI for L3VNI not in 'up/up' state",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VRF not associated with L3VNI",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "L3VNI missing ip forward causing inter-subnet black-hole",
+      "symptoms": [
+        "Inter-subnet routing fails across VXLAN fabric",
+        "Intra-subnet (same VNI) traffic works but cross-VNI traffic is dropped",
+        "show nve vni shows L3VNI as Up but routed traffic black-holed",
+        "show ip route vrf shows routes present but traffic not forwarded"
+      ],
+      "verify_commands": [
+        {
+          "command": "show running-config interface vlan <L3VNI-VLAN>",
+          "confirms_if": "Shows whether ip forward is configured on the L3VNI SVI",
+          "look_for": "Look for 'ip forward' under the SVI — its absence is the root cause",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface vlan <L3VNI-VLAN>",
+          "confirms_if": "Shows whether ip forward is configured on the L3VNI SVI",
+          "look_for": "Look for 'ip forward' under the SVI — its absence is the root cause",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface vlan <L3VNI-VLAN>",
+          "confirms_if": "Shows whether ip forward is configured on the L3VNI SVI",
+          "look_for": "Look for 'ip forward' under the SVI — its absence is the root cause",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve vni",
+          "confirms_if": "Shows L3VNI state but does not indicate forwarding issue",
+          "look_for": "Look for L3 type VNI entry — it may show Up even without ip forward",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve vni",
+          "confirms_if": "Shows L3VNI state but does not indicate forwarding issue",
+          "look_for": "Look for L3 type VNI entry — it may show Up even without ip forward",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve vni",
+          "confirms_if": "Shows L3VNI state but does not indicate forwarding issue",
+          "look_for": "Look for L3 type VNI entry — it may show Up even without ip forward",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name>",
+          "confirms_if": "Shows routes exist in VRF RIB",
+          "look_for": "Routes may be present but not forwarded without ip forward",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name>",
+          "confirms_if": "Shows routes exist in VRF RIB",
+          "look_for": "Routes may be present but not forwarded without ip forward",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name>",
+          "confirms_if": "Shows routes exist in VRF RIB",
+          "look_for": "Routes may be present but not forwarded without ip forward",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "ARP suppression is enabled on an L2VNI but the distributed anycast gateway is not configured for that SVI. The VTEP suppresses ARP requests locally but cannot provide proxy-ARP responses because it has no gateway IP/MAC, causing ARP resolution to fail for hosts behind remote VTEPs.",
+      "resolutions": [
+        {
+          "action": "Configure anycast gateway MAC globally: 'fabric forwarding anycast-gateway-mac <mac>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure anycast gateway MAC globally: 'fabric forwarding anycast-gateway-mac <mac>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure anycast gateway MAC globally: 'fabric forwarding anycast-gateway-mac <mac>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable on SVI: 'interface vlan <X>' → 'fabric forwarding mode anycast-gateway'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable on SVI: 'interface vlan <X>' → 'fabric forwarding mode anycast-gateway'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable on SVI: 'interface vlan <X>' → 'fabric forwarding mode anycast-gateway'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Alternatively, disable ARP suppression if anycast gateway is not desired: under NVE member VNI, remove 'suppress-arp'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Alternatively, disable ARP suppression if anycast gateway is not desired: under NVE member VNI, remove 'suppress-arp'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Alternatively, disable ARP suppression if anycast gateway is not desired: under NVE member VNI, remove 'suppress-arp'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "ARP suppression enabled without distributed anycast gateway on SVI",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Anycast gateway MAC not configured globally ('fabric forwarding anycast-gateway-mac')",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SVI missing 'fabric forwarding mode anycast-gateway'",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "ARP suppression without anycast gateway causing silent drops",
+      "symptoms": [
+        "ARP resolution fails for remote hosts in EVPN fabric",
+        "Local ARP requests suppressed but no reply generated",
+        "show ip arp suppression-cache shows entries but hosts cannot communicate",
+        "Hosts on same subnet across VTEPs cannot reach each other via IP"
+      ],
+      "verify_commands": [
+        {
+          "command": "show fabric forwarding anycast-gateway-mac",
+          "confirms_if": "Shows configured anycast gateway MAC",
+          "look_for": "Look for anycast gateway MAC address — must be configured globally",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show fabric forwarding anycast-gateway-mac",
+          "confirms_if": "Shows configured anycast gateway MAC",
+          "look_for": "Look for anycast gateway MAC address — must be configured globally",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show fabric forwarding anycast-gateway-mac",
+          "confirms_if": "Shows configured anycast gateway MAC",
+          "look_for": "Look for anycast gateway MAC address — must be configured globally",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp suppression-cache detail",
+          "confirms_if": "Shows ARP suppression cache state",
+          "look_for": "Look for cache entries and whether proxy responses are being generated",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp suppression-cache detail",
+          "confirms_if": "Shows ARP suppression cache state",
+          "look_for": "Look for cache entries and whether proxy responses are being generated",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp suppression-cache detail",
+          "confirms_if": "Shows ARP suppression cache state",
+          "look_for": "Look for cache entries and whether proxy responses are being generated",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface vlan <X>",
+          "confirms_if": "Confirms anycast gateway is enabled on the SVI",
+          "look_for": "Look for 'fabric forwarding mode anycast-gateway' on the SVI",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface vlan <X>",
+          "confirms_if": "Confirms anycast gateway is enabled on the SVI",
+          "look_for": "Look for 'fabric forwarding mode anycast-gateway' on the SVI",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface vlan <X>",
+          "confirms_if": "Confirms anycast gateway is enabled on the SVI",
+          "look_for": "Look for 'fabric forwarding mode anycast-gateway' on the SVI",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "VXLAN encapsulation fails because the underlay path between VTEPs traverses a sub-interface (e.g., router-on-a-stick or inter-VRF leaking via sub-interfaces). Many platforms do not support VXLAN encapsulation/decapsulation on sub-interfaces, causing silent packet drops.",
+      "resolutions": [
+        {
+          "action": "Redesign underlay to use only routed physical interfaces or SVIs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Redesign underlay to use only routed physical interfaces or SVIs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Redesign underlay to use only routed physical interfaces or SVIs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Avoid sub-interfaces in the VXLAN underlay path",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Avoid sub-interfaces in the VXLAN underlay path",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Avoid sub-interfaces in the VXLAN underlay path",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify platform support for VXLAN on the transit interface type",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify platform support for VXLAN on the transit interface type",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify platform support for VXLAN on the transit interface type",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Underlay path traverses a sub-interface that does not support VXLAN",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Router-on-a-stick topology used in underlay between spine and leaf",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Inter-VRF leaking via sub-interfaces in the VXLAN path",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Underlay sub-interfaces blocking VXLAN encapsulation",
+      "symptoms": [
+        "VTEP peers shown as Up but no data traffic flows",
+        "Ping between VTEPs succeeds (underlay) but VXLAN-encapsulated traffic fails",
+        "Packet captures show VXLAN packets arriving at transit device but not forwarded"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip route <remote-vtep-ip>",
+          "confirms_if": "Identifies whether underlay path traverses sub-interfaces",
+          "look_for": "Check if the path to the remote VTEP uses any sub-interfaces (e.g., Gi0/0.100)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <remote-vtep-ip>",
+          "confirms_if": "Identifies whether underlay path traverses sub-interfaces",
+          "look_for": "Check if the path to the remote VTEP uses any sub-interfaces (e.g., Gi0/0.100)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <remote-vtep-ip>",
+          "confirms_if": "Identifies whether underlay path traverses sub-interfaces",
+          "look_for": "Check if the path to the remote VTEP uses any sub-interfaces (e.g., Gi0/0.100)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve peers detail",
+          "confirms_if": "Shows tunnel statistics to identify data plane failure",
+          "look_for": "Look for peer state and tunnel statistics — zero TX/RX with Up state indicates encap issue",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve peers detail",
+          "confirms_if": "Shows tunnel statistics to identify data plane failure",
+          "look_for": "Look for peer state and tunnel statistics — zero TX/RX with Up state indicates encap issue",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve peers detail",
+          "confirms_if": "Shows tunnel statistics to identify data plane failure",
+          "look_for": "Look for peer state and tunnel statistics — zero TX/RX with Up state indicates encap issue",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "After a VM migration or host move, traffic to the host is black-holed because the old VTEP still has a stale local MAC entry and continues to attract traffic via its EVPN type-2 advertisement. The new VTEP has learned the MAC locally but the sequence number race has not resolved, or ARP suppression cache has a stale entry.",
+      "resolutions": [
+        {
+          "action": "Verify MAC mobility: 'show bgp l2vpn evpn route-type 2' — check sequence numbers from both VTEPs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MAC mobility: 'show bgp l2vpn evpn route-type 2' — check sequence numbers from both VTEPs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MAC mobility: 'show bgp l2vpn evpn route-type 2' — check sequence numbers from both VTEPs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear stale ARP suppression entries: 'clear ip arp suppression-cache vlan <X>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear stale ARP suppression entries: 'clear ip arp suppression-cache vlan <X>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear stale ARP suppression entries: 'clear ip arp suppression-cache vlan <X>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for stuck local MAC: 'show mac address-table address <mac>' on old VTEP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for stuck local MAC: 'show mac address-table address <mac>' on old VTEP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for stuck local MAC: 'show mac address-table address <mac>' on old VTEP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune duplicate detection thresholds if legitimate migrations trigger freezing",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune duplicate detection thresholds if legitimate migrations trigger freezing",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune duplicate detection thresholds if legitimate migrations trigger freezing",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "MAC mobility sequence number not incrementing fast enough",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ARP suppression cache stale on intermediate VTEPs",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Old VTEP not clearing local MAC entry promptly after port-down",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Orphan port on old VTEP still forwarding for the migrated host",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Silent host black-hole after migration",
+      "symptoms": [
+        "Host unreachable after VM migration for 30-300 seconds",
+        "show l2route evpn mac all shows MAC on both old and new VTEPs",
+        "ARP suppression cache on remote VTEPs points to old VTEP IP",
+        "Gradual recovery as timers expire"
+      ],
+      "verify_commands": [
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Shows MAC mobility state and which VTEP currently owns the MAC",
+          "look_for": "Look for same MAC from multiple VTEPs with different sequence numbers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Shows MAC mobility state and which VTEP currently owns the MAC",
+          "look_for": "Look for same MAC from multiple VTEPs with different sequence numbers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Shows MAC mobility state and which VTEP currently owns the MAC",
+          "look_for": "Look for same MAC from multiple VTEPs with different sequence numbers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows EVPN type-2 route with mobility sequence for convergence tracking",
+          "look_for": "Filter by MAC address — check originating VTEP and sequence number",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows EVPN type-2 route with mobility sequence for convergence tracking",
+          "look_for": "Filter by MAC address — check originating VTEP and sequence number",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows EVPN type-2 route with mobility sequence for convergence tracking",
+          "look_for": "Filter by MAC address — check originating VTEP and sequence number",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp suppression-cache detail",
+          "confirms_if": "Shows whether ARP suppression cache is pointing to the correct VTEP",
+          "look_for": "Check if cached VTEP IP matches the current VTEP hosting the MAC",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp suppression-cache detail",
+          "confirms_if": "Shows whether ARP suppression cache is pointing to the correct VTEP",
+          "look_for": "Check if cached VTEP IP matches the current VTEP hosting the MAC",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp suppression-cache detail",
+          "confirms_if": "Shows whether ARP suppression cache is pointing to the correct VTEP",
+          "look_for": "Check if cached VTEP IP matches the current VTEP hosting the MAC",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Encapsulated L2 frame with VXLAN header. The original Ethernet frame is encapsulated with a VXLAN header, UDP header, outer IP header, and outer Ethernet header.",
+      "key_fields": [
+        "Outer Destination IP (remote VTEP)",
+        "Outer Source IP (local VTEP)",
+        "UDP Destination Port (4789)",
+        "VXLAN VNI (24-bit)",
+        "Inner Ethernet Frame"
+      ],
+      "name": "VXLAN Data Frame",
+      "when_sent": "When frame needs to cross the overlay (destination MAC is behind remote VTEP)"
+    },
+    {
+      "description": "Broadcast/Unknown-unicast/Multicast traffic handling. BUM traffic is replicated to all VTEPs in the VNI via either ingress replication (unicast to each peer) or multicast underlay group.",
+      "key_fields": [
+        "Ingress Replication list or Multicast Group",
+        "VNI",
+        "BUM traffic type"
+      ],
+      "name": "VXLAN BUM Frame",
+      "when_sent": "When destination is unknown or broadcast/multicast"
+    }
+  ],
+  "operates_at": "Layer 2/3",
+  "protocol_family": "overlay",
+  "protocol_id": "vxlan",
+  "protocol_name": "VXLAN",
+  "purpose": "Virtual Extensible LAN -- Layer 2 overlay over Layer 3 underlay using UDP encapsulation",
+  "related_protocols": [
+    "evpn",
+    "bgp-4",
+    "vxlan-evpn"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-7348",
+      "rfc_number": 7348,
+      "title": "RFC 7348",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc7348.txt"
+    },
+    {
+      "id": "cisco:overlay/vxlan.json",
+      "title": "cisco knowledge base — overlay/vxlan.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 7348",
+  "states": [
+    {
+      "description": "VTEP (NVE) interface is administratively or operationally down. No VXLAN encapsulation or decapsulation is occurring.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "DOWN"
+    },
+    {
+      "description": "VTEP is operationally up with VNI mappings active. VXLAN encapsulation and decapsulation are functioning. Remote VTEP peers are reachable and traffic can traverse the overlay.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "UP"
+    },
+    {
+      "description": "Remote VTEP peer is unreachable. The local NVE interface may be up but one or more remote VTEPs cannot be contacted, typically due to an underlay routing failure or remote VTEP going offline.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "PEER_DOWN"
+    },
+    {
+      "description": "A specific VNI is inactive. The NVE interface may be up but an individual VLAN-to-VNI mapping is not operational, preventing traffic for that segment from crossing the overlay.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "VNI_DOWN"
+    }
+  ],
+  "tags": [
+    "overlay",
+    "vxlan",
+    "vtep",
+    "vni",
+    "encapsulation",
+    "data-center",
+    "fabric"
+  ],
+  "timers": [
+    {
+      "default_rfc": "300s (flood-and-learn mode)",
+      "description": "Time to retain remote host MAC/IP learned via data-plane in flood-and-learn mode",
+      "name": "host-reachability-hold",
+      "on_expiry": "Remote host entry aged out",
+      "tuning_advice": "In flood-and-learn deployments, lower values increase convergence speed but also increase BUM flooding. In BGP EVPN mode this timer is superseded by EVPN MAC aging."
+    },
+    {
+      "default_rfc": "300-600s (varies)",
+      "description": "Timeout for cached ARP entries in the VXLAN ARP suppression table",
+      "name": "ARP suppression cache timeout",
+      "on_expiry": "Entry removed, next ARP is flooded",
+      "tuning_advice": "Keep aligned with host ARP cache timeout. Too low causes excessive ARP flooding; too high risks stale entries."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "DOWN",
+      "to_state": "UP",
+      "trigger": "NVE interface configured and source interface is up with routable IP"
+    },
+    {
+      "from_state": "UP",
+      "to_state": "DOWN",
+      "trigger": "NVE source interface down or NVE shutdown"
+    },
+    {
+      "from_state": "UP",
+      "to_state": "PEER_DOWN",
+      "trigger": "Remote VTEP becomes unreachable (underlay routing failure)"
+    },
+    {
+      "from_state": "PEER_DOWN",
+      "to_state": "UP",
+      "trigger": "Remote VTEP becomes reachable again"
+    },
+    {
+      "from_state": "VNI_DOWN",
+      "to_state": "UP",
+      "trigger": "VLAN-to-VNI mapping resolved and NVE is up"
+    }
+  ],
+  "transport": "UDP port 4789, outer IP header",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "VXLAN supported on Catalyst 9000 with 'interface nve1'. Supports BGP EVPN control plane. Different CLI syntax from NX-OS -- uses 'member vni' under NVE interface.",
+          "versions": "17.9+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "VXLAN supported via BGP EVPN only (no flood-and-learn). Configured under 'l2vpn bridge group' and 'evpn'. NVE interface not used -- VXLAN encapsulation configured under bridge-domain.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "VXLAN requires 'feature nv overlay' and 'feature vn-segment-vlan-based'. NVE interface configured as 'interface nve1'. Supports both flood-and-learn and BGP EVPN control plane. 'host-reachability protocol bgp' for EVPN mode.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "CRITICAL: L3VNI SVI requires 'ip forward' for inter-subnet routing to work. Without it, the L3VNI shows Up in 'show nve vni' but routed traffic is silently dropped. Also requires 'no shutdown' and VRF membership on the SVI.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "ARP suppression ('suppress-arp' under member VNI) requires anycast gateway to be configured on the SVI for proxy-ARP to work. Without 'fabric forwarding mode anycast-gateway' on the SVI, ARP requests are suppressed but no proxy response is generated, causing ARP failures.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "In vPC VXLAN deployments, VLAN-to-VNI mapping must be identical on both peers. Mismatches cause NVE shutdown on the secondary peer via VXLAN consistency check. Verify with 'show vpc consistency-parameters global'.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "vPC delay-restore timers are critical for VXLAN fabrics. After peer reload: 'delay restore' (default 150s) controls when vPC member ports come up, 'delay restore interface-vlan' (default 10s) controls DAG SVI restoration, and NVE 'source-interface hold-down-timer' (default 180s) controls when the VTEP starts forwarding. The NVE hold-down must be longer than delay restore to prevent post-reload black-holes.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "VXLAN does not support sub-interfaces in the underlay path. If the underlay route to a remote VTEP traverses a sub-interface (e.g., router-on-a-stick), VXLAN encapsulated packets will be silently dropped. Use only routed physical interfaces, port-channels, or SVIs in the underlay.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

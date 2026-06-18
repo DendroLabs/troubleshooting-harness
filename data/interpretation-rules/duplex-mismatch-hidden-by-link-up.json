@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "duplex-mismatch-hidden-by-link-up",
+  "display_name": "Interface shows up/up but has late collisions or runts — one side is full-duplex, the other half-duplex; link state does not reveal this",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "eos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "An Ethernet interface shows up/up and passes some traffic, but performance is poor and interface counters show late collisions, FCS errors, runts, or alignment errors",
+  "observation": "The interface is up/up with no protocol errors, but 'show interface' reveals incrementing late collisions (on the half-duplex side) or FCS/runt/alignment errors (on the full-duplex side), and throughput is significantly below the link speed",
+  "naive_interpretation": "There is a bad cable, a failing NIC, or a switch port hardware issue causing physical layer errors — replace the cable or the port",
+  "correct_interpretation": "Late collisions on an Ethernet interface almost always indicate a duplex mismatch: one end of the link is operating in full-duplex mode and the other in half-duplex. The link comes up and shows up/up because each side independently negotiates (or is forced to) a valid speed and duplex — neither side is aware of what the other chose. In half-duplex, the device uses CSMA/CD and expects collisions to occur within the first 64 bytes (slot time). When the full-duplex side transmits simultaneously (which it does freely because it believes the link is full-duplex), the half-duplex side detects a collision after the slot time — this is a 'late collision,' which is abnormal in properly functioning Ethernet and nearly pathognomonic for duplex mismatch. The full-duplex side sees FCS errors and runts because the half-duplex side truncates frames when it backs off mid-transmission. The fix is to ensure both sides are set to the same duplex — preferably both on auto-negotiation, or both forced to full-duplex.",
+  "why": [
+    "IEEE 802.3 auto-negotiation failure mode: if one side is forced to full-duplex and the other is set to auto, the auto side cannot detect the forced side's duplex (only speed is detectable via link pulses) and defaults to half-duplex — this is the most common cause of duplex mismatch",
+    "The interface link state protocol (up/up) does not negotiate or verify duplex agreement — each side operates independently in its configured duplex mode, so a mismatch is invisible to link state",
+    "Late collisions are nearly impossible on a properly functioning full-duplex link (collisions don't exist in full-duplex) and rare on a properly functioning half-duplex link (they require cable length exceeding the collision domain) — their presence is a strong indicator of duplex mismatch",
+    "At low traffic rates, the mismatch may not produce symptoms because collisions are probabilistic — the problem only manifests under load when both sides transmit frequently enough to collide"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface <interface> | include duplex|collision|runt|CRC",
+      "purpose": "Check the negotiated duplex mode and look for late collisions, runts, or CRC errors — late collisions strongly indicate duplex mismatch"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces <interface> | include duplex|collision|runt|CRC",
+      "purpose": "Display duplex setting and error counters — compare duplex on both ends of the link"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show cdp neighbors <interface> detail | include Duplex",
+      "purpose": "If CDP is available, check the remote side's reported duplex without logging into it — a duplex mismatch will be visible in CDP data"
+    },
+    {
+      "os": "eos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces <interface> | include duplex|collisions",
+      "purpose": "Verify negotiated duplex and check for late collision counters"
+    }
+  ],
+  "traps": [
+    "Replacing cables or SFPs when the error pattern (late collisions + runts) points to duplex mismatch — physical layer components do not cause late collisions",
+    "Setting one side to 'auto' and the other to 'full-duplex' and assuming they will agree — the auto side detects speed but defaults to half-duplex when it cannot see the other side's duplex advertisement, creating the mismatch",
+    "Not noticing the problem at low traffic rates — duplex mismatch only causes collisions when both sides transmit simultaneously, so lightly loaded links may appear fine during testing",
+    "Checking only the local side's duplex setting — the mismatch requires comparing BOTH ends; each side's configuration looks valid in isolation",
+    "On modern 1G/10G/25G+ links, assuming duplex mismatch is impossible — while most high-speed links are full-duplex only, management interfaces and some legacy 100M connections can still have this issue"
+  ],
+  "related_rules": [
+    "interface-crc-counters-without-clearing",
+    "interface-carrier-transitions-mean-physical-issue",
+    "interface-up-line-down"
+  ],
+  "related_protocols": ["lldp"],
+  "keywords": ["duplex", "half-duplex", "full-duplex", "late collision", "collision", "auto-negotiation", "runt", "FCS", "CRC", "alignment error", "802.3", "speed mismatch"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

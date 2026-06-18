@@ -1,0 +1,393 @@
+{
+  "best_practice_id": "iosxr-best-practices",
+  "categories": [
+    {
+      "category": "General / Architecture",
+      "documents": [
+        {
+          "description": "Official hardware architecture",
+          "format": "HTML",
+          "title": "NCS 5500/5700 Fixed Platforms Architecture White Paper",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/routers/network-convergence-system-5500-series/ncs-5500-5700-platform-ar-wp.html"
+        },
+        {
+          "description": "VOQ design, NPE slices, IFGs, RxPP/TxPP, marking, policing, scheduling",
+          "format": "HTML",
+          "title": "Cisco 8000 Silicon One QoS Architecture",
+          "url": "https://xrdocs.io/8000/blogs/Cisco-8000-QOS-architecture"
+        },
+        {
+          "description": "FIB scale considerations and best practices",
+          "format": "HTML",
+          "title": "Cisco 8000 FIB Scale for Silicon One P100",
+          "url": "https://xrdocs.io/8000/tutorials/cisco-8000-fib-scale-for-silicon-one-p100"
+        },
+        {
+          "description": "Master catalog of all CL sessions for Cisco 8000",
+          "format": "HTML",
+          "title": "Cisco 8000 Cisco Live Session Index",
+          "url": "https://xrdocs.io/8000/blogs/cisco-8000-cisco-live-sessions"
+        },
+        {
+          "description": "Full tutorial index: QoS, buffering, ACLs, EVPN",
+          "format": "HTML",
+          "title": "XRdocs NCS 5500 Tutorials",
+          "url": "https://xrdocs.io/ncs5500/tutorials"
+        },
+        {
+          "description": "Full tutorial index for Cisco 8000",
+          "format": "HTML",
+          "title": "XRdocs Cisco 8000 Tutorials",
+          "url": "https://xrdocs.io/8000/tutorials/"
+        }
+      ]
+    },
+    {
+      "category": "BGP Best Practices (SP Scale)",
+      "documents": [
+        {
+          "description": "Primary reference — NSR/NSF/GR timers, RR/confederation scaling, RPL, summarization, memory (~5.5 GB for full table)",
+          "format": "HTML",
+          "title": "IOS XR Deployment Best Practices for OSPF/IS-IS and BGP",
+          "url": "https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-xr-software/IOS-XR-Best-Practices/IOSXR-Deployment-BestPractices.html"
+        },
+        {
+          "description": "RR platform selection, KPI monitoring",
+          "format": "HTML",
+          "title": "BGP RR Scale Considerations and KPI Monitoring",
+          "url": "https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-xr-software/221590-bgp-rr-scale-considerations-and-kpi-moni.html"
+        },
+        {
+          "description": "Platform-specific BGP guide",
+          "format": "HTML",
+          "title": "BGP Config Guide for Cisco 8000",
+          "url": "https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/bgp/b-bgp-config-cisco8000.html"
+        },
+        {
+          "description": "NCS 5500 specific",
+          "format": "HTML",
+          "title": "BGP Config Guide for NCS 5500 (7.11.x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/bgp/711x/configuration/guide/b-bgp-cg-ncs5500-711x/implementing-bgp.html"
+        }
+      ]
+    },
+    {
+      "category": "Segment Routing / SR-MPLS / SRv6",
+      "documents": [
+        {
+          "description": "Design guidelines, deployment, migration strategies",
+          "format": "HTML",
+          "title": "SRv6 Design and Migration Best Practices",
+          "url": "https://www.cisco.com/c/en/us/support/docs/ip/ipv6-routing/220485-configure-design-and-migration-best-prac.html"
+        },
+        {
+          "description": "Reference architecture — Cisco 8000 (core) + NCS 5500 (access/agg); IOS-XR 7.5.2 validated",
+          "format": "HTML",
+          "title": "Converged SDN Transport High Level Design v5.0",
+          "url": "https://xrdocs.io/design/blogs/latest-converged-sdn-transport-hld"
+        },
+        {
+          "description": "SRv6 variant — address summarization, S-RR architecture",
+          "format": "HTML",
+          "title": "Converged SDN Transport SRv6 Design",
+          "url": "https://xrdocs.io/design/blogs/latest-converged-sdn-transport-srv6"
+        },
+        {
+          "description": "Step-by-step config for all roles",
+          "format": "HTML",
+          "title": "Converged SDN Transport Implementation Guide",
+          "url": "https://xrdocs.io/design/blogs/latest-converged-sdn-transport-ig"
+        },
+        {
+          "description": "IP+optical integration (updated Oct 2025)",
+          "format": "HTML",
+          "title": "Routed Optical Networking Design",
+          "url": "https://xrdocs.io/design/blogs/latest-routed-optical-networking-hld"
+        },
+        {
+          "description": "Official solution page",
+          "format": "HTML",
+          "title": "Converged SDN Transport (Cisco.com)",
+          "url": "https://www.cisco.com/c/en/us/solutions/service-provider/converged-sdn-transport.html"
+        }
+      ]
+    },
+    {
+      "category": "IS-IS Best Practices",
+      "documents": [
+        {
+          "description": "IS-IS metric-style wide, LSP gen timers, SPF timers, auth, overload-bit. IS-IS recommended over OSPFv3 for SRv6.",
+          "format": "HTML",
+          "title": "IOS XR Deployment Best Practices for OSPF/IS-IS and BGP",
+          "url": "https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-xr-software/IOS-XR-Best-Practices/IOSXR-Deployment-BestPractices.html"
+        }
+      ]
+    },
+    {
+      "category": "Security Hardening",
+      "documents": [
+        {
+          "description": "Definitive reference — SSH (public-key, X.509v3), AAA/TACACS+, MPP, control plane",
+          "format": "HTML",
+          "title": "IOS XR Software Hardening Guide",
+          "url": "https://sec.cloudapps.cisco.com/security/center/resources/Cisco-IOS-XR-HardeningGuide"
+        },
+        {
+          "description": "AAA, MACsec, keychain, trustworthy systems",
+          "format": "HTML",
+          "title": "System Security Config Guide — Cisco 8000 (7.9.x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/security/79x/b-system-security-cg-cisco8000-79x.html"
+        },
+        {
+          "description": "NCS 5500 security config",
+          "format": "HTML",
+          "title": "System Security Config Guide — NCS 5500 (7.11.x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/security/711x/configuration/guide/b-system-security-cg-ncs5500-711x.html"
+        }
+      ]
+    },
+    {
+      "category": "Upgrade / ISSU",
+      "documents": [
+        {
+          "description": "Official guide — upgrade paths, bridging SMUs, FPD, ISSU, Golden ISO, rollback",
+          "format": "HTML",
+          "title": "Cisco 8000 Setup and Upgrade Guide",
+          "url": "https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/b-setup-and-upgrade-cisco8k.html"
+        },
+        {
+          "description": "Practical tutorial",
+          "format": "HTML",
+          "title": "Cisco 8000 Software Upgrade with install replace & GISO",
+          "url": "https://xrdocs.io/8000/tutorials/cisco-8000-software-upgrade-install-replace-golden-iso"
+        },
+        {
+          "description": "24.x.x/25.x.x versioning, recommended paths",
+          "format": "HTML",
+          "title": "IOS XR Release Strategy and Deployment Suggestion",
+          "url": "https://community.cisco.com/t5/service-providers-knowledge-base/ios-xr-release-strategy-and-deployment-suggestion/ta-p/4938182"
+        },
+        {
+          "description": "NCS 5500/5700 upgrade for 24.x",
+          "format": "HTML",
+          "title": "NCS 5500 System Setup Guide (24.x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/system-setup/24xx/configuration/guide/b-system-setup-cg-ncs5500-24xx/m-ncs5700-system-setup.html"
+        },
+        {
+          "description": "Master index for all NCS 5500 config guides",
+          "format": "HTML",
+          "title": "NCS 5500 Config Guides Landing Page",
+          "url": "https://www.cisco.com/c/en/us/support/routers/network-convergence-system-5500-series/products-installation-and-configuration-guides-list.html"
+        }
+      ]
+    },
+    {
+      "category": "QoS",
+      "documents": [
+        {
+          "description": "Classification, marking, policing, queuing, H-QoS",
+          "format": "PDF",
+          "title": "Modular QoS Config Guide — Cisco 8000",
+          "url": "https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/qos/b-modular-qos-config-cisco8000.pdf"
+        },
+        {
+          "description": "VOQ, DSCP/MPLS-EXP remarking, 1R2C/2R3C policing",
+          "format": "HTML",
+          "title": "Cisco 8000 Silicon One QoS Architecture",
+          "url": "https://xrdocs.io/8000/blogs/Cisco-8000-QOS-architecture"
+        },
+        {
+          "description": "Max 4 priority levels in H-QoS profile mode",
+          "format": "HTML",
+          "title": "NCS 5500 H-QoS Config Guide (7.5.x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/qos/75x/b-qos-cg-ncs5500-75x/config-hqos-75x.html"
+        },
+        {
+          "description": "VOQ-only, single-lookup, ingress-buffering architecture",
+          "format": "HTML",
+          "title": "NCS5500 QoS Part 1 — Understanding Packet Buffering",
+          "url": "https://xrdocs.io/ncs5500/tutorials/ncs5500-qos-part-1-understanding-packet-buffering"
+        },
+        {
+          "description": "Burst handling, monitoring tools",
+          "format": "HTML",
+          "title": "NCS5500 QoS Part 2 — Verifying Buffering",
+          "url": "https://xrdocs.io/ncs5500/tutorials/ncs5500-qos-part-2-verifying-buffering"
+        },
+        {
+          "description": "ETM (Egress Traffic Manager) mode",
+          "format": "HTML",
+          "title": "QoS Enhancements on NCS5700 (7.6.1)",
+          "url": "https://xrdocs.io/ncs5500/tutorials/qos-enhancements-ncs5700-ios-xr-7-6-1"
+        },
+        {
+          "description": "IPv6 DSCP/Precedence in SRv6 encap",
+          "format": "HTML",
+          "title": "SRv6 QoS on NCS 5500",
+          "url": "https://xrdocs.io/ncs5500/tutorials/srv6-transport-on-ncs-part-7"
+        },
+        {
+          "description": "Critical — mandatory for H-QoS on sub-interfaces",
+          "format": "HTML",
+          "title": "NCS5500 Hw-module Profiles",
+          "url": "https://xrdocs.io/ncs5500/tutorials/ncs5500-hw-module-profiles"
+        }
+      ]
+    },
+    {
+      "category": "Multicast",
+      "documents": [
+        {
+          "description": "mVPN during SRv6 migration",
+          "format": "HTML",
+          "title": "XR Multicast VPN with SRv6 — Dual Stack White Paper",
+          "url": "https://www.cisco.com/c/en/us/solutions/collateral/service-provider/xr-multicast-vpn-srv6-dual-stack-wp.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Multicast Config Guide — Cisco 8000 (24.x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/iosxr/cisco8000/multicast/24xx/configuration/guide/b-multicast-cg-cisco8k-r24xx/implementing-layer3-multicast-routing.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Multicast Config Guide — NCS 5500 (7.9.x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/iosxr/ncs5500/multicast/79x/configuration/guide/b-multicast-cg-ncs55k-79x/implementing-multicast.html"
+        }
+      ]
+    },
+    {
+      "category": "NPU Resources Management",
+      "documents": [
+        {
+          "description": "Resource management, scale, operational best practices",
+          "format": "PDF",
+          "title": "BRKSPG-2397: Demystify NCS 5500/5700 Resources",
+          "url": "https://www.ciscolive.com/c/dam/r/ciscolive/emea/docs/2024/pdf/BRKSPG-2397.pdf"
+        }
+      ]
+    }
+  ],
+  "cisco_live_sessions": [
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKSPG-2944: Cisco 8000 Technical Update (Silicon One & IOS XR)",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKSPG-2944.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKSPG-2080: Architectural Best Practices for HA",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKSPG-2080.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "TACSPG-2001: Optimal IOS-XR 8000 NPU Resources Management",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2024/pdf/TACSPG-2001.pdf"
+    },
+    {
+      "description": "2023",
+      "format": "PDF",
+      "title": "BRKSPG-2208: Cisco 8000 Forwarding and QoS Deep Dive",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/apjc/docs/2023/pdf/BRKSPG-2208.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKMSI-2001: QoS and Forwarding with Cisco 8000",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKMSI-2001.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "BRKSPG-2397: Demystify NCS 5500/5700 Resources",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/emea/docs/2024/pdf/BRKSPG-2397.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKSPG-2868: Building Trust in SP Networks",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/emea/docs/2025/pdf/BRKSPG-2868.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "BRKMPL-2135: Preparing for Successful SR Deployment",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2024/pdf/BRKMPL-2135.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "BRKSPG-1569: MPLS to Segment Routing Migration",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/apjc/docs/2024/pdf/BRKSPG-1569.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "BRKMPL-2129: SR IGP Flexible-Algorithm",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2024/pdf/BRKMPL-2129.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKMPL-1207: Introduction to SR and SRv6",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKMPL-1207.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKMPL-2253: EVPN Deep Dive with IOS-XR",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKMPL-2253.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKMPL-2123: Multicast with EVPN, SR, and TE",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKMPL-2123.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKMPL-1123: Multicast with EVPN (Intro)",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/emea/docs/2025/pdf/BRKMPL-1123.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "BRKMPL-2291: Multicast in MPLS Networks",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2024/pdf/BRKMPL-2291.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKMPL-2131: Deploying VPNs over SR Networks",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKMPL-2131.pdf"
+    }
+  ],
+  "confidence": "medium",
+  "notes": [
+    "NCS 5500 does NOT support ISSU — requires traffic-impacting reload",
+    "Cisco 8000 supports ISSU — but FPD auto-upgrade must be disabled during ISSU",
+    "XRdocs (xrdocs.io) is the gold mine for SP operational best practices — maintained by Cisco IOS-XR engineering/TME teams",
+    "No formal CVDs for Cisco 8000/NCS 5500 — the Converged SDN Transport (CST) design series on XRdocs is the equivalent",
+    "IS-IS recommended over OSPFv3 for SRv6 networks"
+  ],
+  "os": "iosxr",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco:best-practices/iosxr/index.json",
+      "title": "cisco knowledge base — best-practices/iosxr/index.json",
+      "type": "documentation"
+    }
+  ],
+  "tags": [
+    "cisco-8000",
+    "ncs-5500",
+    "iosxr",
+    "service-provider"
+  ]
+}

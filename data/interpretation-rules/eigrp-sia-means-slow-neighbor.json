@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "eigrp-sia-means-slow-neighbor",
+  "display_name": "EIGRP Stuck-in-Active (SIA) means a neighbor is not replying to a query, not that EIGRP itself is broken",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "EIGRP logs 'Stuck-in-Active' (SIA) messages and tears down a neighbor adjacency; the operator sees routes being withdrawn and reconverging",
+  "observation": "Syslog shows EIGRP SIA for one or more prefixes, followed by the neighbor relationship being reset; routes flap during reconvergence",
+  "naive_interpretation": "EIGRP has a bug or fundamental protocol issue — the routing process is broken and needs to be restarted or reconfigured",
+  "correct_interpretation": "Stuck-in-Active is EIGRP's safety mechanism for handling unresponsive query paths. When a route is lost and no feasible successor exists, EIGRP sends a query to its neighbors. Each neighbor must reply (either with an alternative path or by confirming the route is gone). If a neighbor does not reply within the SIA timer (default 3 minutes, configurable), EIGRP declares that neighbor Stuck-in-Active and tears down the adjacency. The problem is NOT with EIGRP on the local router — the problem is with the neighbor that failed to reply, or with a neighbor further down the query chain. The non-responding neighbor may be: (1) CPU-constrained and unable to process the query in time, (2) waiting for its own downstream neighbors to reply (query propagation), (3) experiencing packet loss on the link to the local router, or (4) in a query-scoping failure where the query propagates across a very large EIGRP domain. The fix is to investigate the slow/non-responsive neighbor, not the local EIGRP process. Query scoping (stub routers, summarization, distribute-lists) reduces SIA risk by limiting query propagation depth.",
+  "why": [
+    "EIGRP uses a diffusing computation model (DUAL) — when a route has no feasible successor, the router MUST query all neighbors and wait for all replies before selecting a new path; this is by protocol design, not a bug",
+    "The SIA timer exists specifically to prevent indefinite waiting — without it, a single unresponsive neighbor would block route convergence for the entire EIGRP domain forever",
+    "Query propagation is recursive: router A queries neighbor B, B queries its neighbors C and D, and so on — a deep chain means the SIA timer may expire on A before the reply chain completes back from the far end",
+    "The most common real-world SIA cause is not a broken neighbor but a large flat EIGRP network without summarization — queries propagate across hundreds of routers, and the 3-minute timer is not enough for the diffusing computation to complete"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip eigrp topology active",
+      "purpose": "Display prefixes currently in Active state and which neighbors have not yet replied to the query"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip eigrp topology active",
+      "purpose": "Show routes in Active state — the 'replies' line shows how many neighbors have replied vs how many are outstanding"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip eigrp neighbors detail",
+      "purpose": "Check neighbor state, queue counts, and retransmit counters — a neighbor with high retransmit count or stuck queue may be the non-responsive one"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip eigrp neighbors",
+      "purpose": "Display neighbor adjacency state, hold time, and SRTT — a neighbor with high SRTT or low remaining hold time is a candidate for SIA"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show eigrp neighbors",
+      "purpose": "Display EIGRP neighbor status and timers to identify the non-responsive neighbor"
+    }
+  ],
+  "traps": [
+    "Restarting the local EIGRP process when the problem is a remote neighbor — the SIA message appears on the LOCAL router but the fault is on the NEIGHBOR that did not reply",
+    "Increasing the SIA timer to mask the problem — a longer timer delays detection but does not fix the root cause (slow neighbor or unbounded query scope)",
+    "Not checking query scope — in a flat EIGRP network without summarization or stub configuration, a single route loss can trigger queries across the entire domain, making SIA almost inevitable at scale",
+    "Blaming the link between the local router and the SIA neighbor when the actual delay is further down the query chain — the direct neighbor may be waiting for ITS neighbors to reply",
+    "Ignoring the 'active time' in 'show ip eigrp topology active' — a route stuck active for 2+ minutes is approaching the SIA threshold and needs attention before the adjacency is torn down"
+  ],
+  "related_rules": [],
+  "related_protocols": ["eigrp"],
+  "keywords": ["EIGRP", "SIA", "stuck-in-active", "query", "reply", "DUAL", "diffusing computation", "active state", "feasible successor", "convergence", "stub"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

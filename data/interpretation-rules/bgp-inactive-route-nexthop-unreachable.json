@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "bgp-inactive-route-nexthop-unreachable",
+  "display_name": "A BGP route present but not installed is usually an unreachable next-hop, not a missing route",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "A prefix appears in the BGP table but is not selected as best (no '>' marker) and is missing from the routing table",
+  "observation": "show bgp shows the prefix with a valid path but without the best-path marker, and the route is absent from the RIB/FIB",
+  "naive_interpretation": "BGP is not receiving the route, or there is a route filtering / advertisement problem upstream",
+  "correct_interpretation": "The route is being received — the issue is that its BGP next-hop is not resolvable in the IGP/RIB, so BGP marks the path invalid and cannot select it as best. This is extremely common with iBGP, where the next-hop is the original eBGP peer address and the receiving router has no route to it (the classic fix is next-hop-self on the iBGP edge). The route exists; it is unusable because its next-hop has no recursive resolution.",
+  "why": [
+    "RFC 4271 requires the NEXT_HOP be resolvable for a path to be considered valid and eligible for best-path selection",
+    "iBGP does not change the next-hop by default, so an internal router often receives a next-hop it has no IGP route to",
+    "An unresolved next-hop makes the path 'inaccessible'/'not synchronized' and excludes it from best-path, so it never reaches the RIB",
+    "The presence of the prefix in the BGP table proves advertisement worked — the failure is in next-hop reachability, a different layer"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp ipv4 unicast <prefix>",
+      "purpose": "Show the path detail including the next-hop and whether it is marked valid/inaccessible"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route <bgp-next-hop-address>",
+      "purpose": "Verify the BGP next-hop actually resolves in the IGP/RIB — the root check"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp ipv4 unicast <prefix>",
+      "purpose": "Confirm the path is 'not best' due to 'inaccessible' next-hop rather than filtering"
+    }
+  ],
+  "traps": [
+    "Chasing a route-advertisement or filtering problem when the prefix is plainly present but next-hop-unresolvable",
+    "Forgetting that iBGP keeps the eBGP next-hop, so internal routers need next-hop-self or an IGP route to that next-hop",
+    "Not actually resolving the next-hop address in the RIB before theorizing about the cause",
+    "Confusing 'not best' (a usable competing path lost) with 'invalid' (next-hop unreachable) — different reasons a route stays out of the RIB"
+  ],
+  "related_rules": [
+    "bgp-received-not-installed-vs-filtered",
+    "route-table-entry-ad-determines-source",
+    "bgp-established-then-idle-is-not-flap"
+  ],
+  "related_protocols": ["bgp-4"],
+  "keywords": ["BGP", "next-hop", "next-hop-self", "iBGP", "inaccessible", "not best", "best path", "RIB", "unreachable", "recursive"],
+  "sources": [
+    {
+      "id": "rfc-4271",
+      "title": "RFC 4271 — A Border Gateway Protocol 4 (BGP-4)",
+      "type": "rfc",
+      "rfc_number": 4271,
+      "url": "https://www.rfc-editor.org/rfc/rfc4271.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

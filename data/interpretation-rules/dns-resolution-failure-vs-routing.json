@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "dns-resolution-failure-vs-routing",
+  "display_name": "Cannot reach a hostname usually means DNS resolution failed, not that the routing path is broken",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "sonic", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Operator reports connectivity failure to a hostname, or a feature that depends on DNS resolution (NTP server by name, syslog server by name, TACACS by name) is not working",
+  "observation": "Pings or connections to a hostname fail; the operator assumes the destination is unreachable or the routing path is broken",
+  "naive_interpretation": "There is a routing or connectivity problem between the device and the destination — check routes, interfaces, and ACLs along the path",
+  "correct_interpretation": "When a hostname-based operation fails, the first thing to verify is whether the hostname resolves to an IP address at all. Network devices depend on DNS resolution working correctly — if the configured name-server is unreachable, misconfigured, or the DNS record does not exist, every hostname-based operation fails regardless of whether the IP path is functional. Ping the destination by IP address first. If that works, the problem is DNS, not routing. Common causes: no name-server configured, name-server unreachable from the VRF the device is using, DNS server not responding (firewall blocking UDP/53 or TCP/53), stale DNS cache, or the hostname simply has no A/AAAA record. Many network devices do not cache DNS aggressively, so intermittent DNS server availability causes intermittent hostname reachability that looks exactly like flapping connectivity.",
+  "why": [
+    "Network devices resolve hostnames at the time of use, not at configuration time — if DNS fails at query time, the operation fails even if it worked before",
+    "The name-server used by the device may be in a different VRF than the management interface, or the DNS source interface may not be configured, causing the DNS query itself to fail at routing",
+    "Many operators configure NTP, syslog, TACACS/RADIUS servers by hostname — a single DNS outage breaks all of these simultaneously, which looks like a widespread network problem",
+    "Ping by hostname invokes DNS resolution before sending any ICMP — the 'destination unreachable' or timeout error is from the DNS lookup, not from the ICMP path"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show hosts",
+      "purpose": "Display configured name-servers and cached DNS entries to verify DNS is reachable and the hostname has a cached resolution"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show hosts",
+      "purpose": "Display DNS configuration, name-servers, and cached hostname-to-IP mappings"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "ping <ip-address>",
+      "purpose": "Ping the destination by IP to confirm routing works independently of DNS resolution"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip name-server vrf management",
+      "purpose": "Verify name-server is configured and reachable from the correct VRF"
+    },
+    {
+      "os": "junos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show system name-server",
+      "purpose": "Display configured DNS servers and verify they are reachable"
+    }
+  ],
+  "traps": [
+    "Immediately checking routing tables and interface states when a hostname-based connection fails, wasting time on a path that may be perfectly functional",
+    "Not realizing that the device's DNS source interface or VRF context differs from the data-plane path — DNS can fail while IP forwarding works fine",
+    "Treating intermittent hostname reachability as a routing flap when it is actually intermittent DNS server availability",
+    "Configuring management services (NTP, syslog, TACACS) by hostname and then losing all of them simultaneously when the DNS server becomes unreachable — this looks like a major outage but has a single-point cause",
+    "Forgetting that some platforms do not enable DNS resolution by default — 'no ip domain-lookup' on IOS/IOS-XE silently prevents all hostname resolution"
+  ],
+  "related_rules": [
+    "aaa-timeout-vs-reject-in-auth-logs",
+    "ntp-stratum-cascade-trace-upstream"
+  ],
+  "related_protocols": ["dhcp"],
+  "keywords": ["DNS", "name resolution", "hostname", "name-server", "nslookup", "dig", "unreachable", "domain-lookup", "VRF", "management"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

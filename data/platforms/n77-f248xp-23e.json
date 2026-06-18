@@ -1,0 +1,409 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 0,
+      "asic_model": "ClipperCR",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "4x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 4,
+              "label": "Eth-slot/1/1-4",
+              "native_speed": "10G",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 40.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 1,
+      "asic_model": "ClipperCR",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "4x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 8,
+              "label": "Eth-slot/1/5-8",
+              "native_speed": "10G",
+              "start_port": 5
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 40.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 2,
+      "asic_model": "ClipperCR",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "4x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 12,
+              "label": "Eth-slot/1/9-12",
+              "native_speed": "10G",
+              "start_port": 9
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 40.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 3,
+      "asic_model": "ClipperCR",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "4x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 16,
+              "label": "Eth-slot/1/13-16",
+              "native_speed": "10G",
+              "start_port": 13
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 40.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 4,
+      "asic_model": "ClipperCR",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "4x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 20,
+              "label": "Eth-slot/1/17-20",
+              "native_speed": "10G",
+              "start_port": 17
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 40.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 5,
+      "asic_model": "ClipperCR",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "4x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 24,
+              "label": "Eth-slot/1/21-24",
+              "native_speed": "10G",
+              "start_port": 21
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 40.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 6,
+      "asic_model": "ClipperCR",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "4x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 28,
+              "label": "Eth-slot/1/25-28",
+              "native_speed": "10G",
+              "start_port": 25
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 40.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 7,
+      "asic_model": "ClipperCR",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "4x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 32,
+              "label": "Eth-slot/1/29-32",
+              "native_speed": "10G",
+              "start_port": 29
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 40.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 8,
+      "asic_model": "ClipperCR",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "4x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 36,
+              "label": "Eth-slot/1/33-36",
+              "native_speed": "10G",
+              "start_port": 33
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 40.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 9,
+      "asic_model": "ClipperCR",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "4x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 40,
+              "label": "Eth-slot/1/37-40",
+              "native_speed": "10G",
+              "start_port": 37
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 40.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 10,
+      "asic_model": "ClipperCR",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "4x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 44,
+              "label": "Eth-slot/1/41-44",
+              "native_speed": "10G",
+              "start_port": 41
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 40.0
+    },
+    {
+      "asic_family": "asic:f-series",
+      "asic_id": 11,
+      "asic_model": "ClipperCR",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "TCAM",
+        "LPM",
+        "Host Table"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 1,
+          "ifg_serdes": "4x 10G",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP+",
+              "end_port": 48,
+              "label": "Eth-slot/1/45-48",
+              "native_speed": "10G",
+              "start_port": 45
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 40.0
+    }
+  ],
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-7700",
+  "platform_id": "n77-f248xp-23e",
+  "platform_name": "Nexus 7700 N77-F248XP-23E (RicardNG)",
+  "platform_pid": "N77-F248XP-23E",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-n77-f248xp-23e",
+      "title": "Cisco Tech Zone: N7K ASIC Mappings, RicardNG diagram",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-7000/n77-f248xp-23e.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-7000/n77-f248xp-23e.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 0.48,
+  "total_ports": 48
+}

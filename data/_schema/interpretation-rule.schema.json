@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "interpretation-rule.schema.json",
+  "title": "Interpretation Rule",
+  "description": "Experience-based guidance for interpreting ambiguous or misleading output during troubleshooting. Captures what a value or condition actually means in context versus what it appears to mean.",
+
+  "type": "object",
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+    "deprecated": { "type": "boolean", "default": false },
+
+    "rule_id": { "type": "string", "description": "Unique kebab-case identifier" },
+    "display_name": { "type": "string" },
+    "category": {
+      "type": "string",
+      "enum": [
+        "counter-interpretation",
+        "log-analysis",
+        "expected-behavior",
+        "correlation-method",
+        "output-semantics",
+        "baseline-awareness",
+        "timing-context"
+      ]
+    },
+
+    "applicable_os": { "type": "array", "items": { "type": "string" } },
+    "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+
+    "context": { "type": "string", "description": "What the operator is looking at — which command output, log, or state display" },
+    "observation": { "type": "string", "description": "The literal value or condition that triggers misinterpretation" },
+    "naive_interpretation": { "type": "string", "description": "What most operators assume it means" },
+    "correct_interpretation": { "type": "string", "description": "What it actually means in context" },
+    "why": { "type": "array", "items": { "type": "string" }, "description": "Technical rationale for the correct interpretation" },
+
+    "confirmation_commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "os": { "type": "string" },
+          "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+          "command": { "type": "string" },
+          "purpose": { "type": "string" }
+        },
+        "required": ["os", "version_range", "command", "purpose"],
+        "additionalProperties": false
+      }
+    },
+
+    "traps": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Specific mistakes engineers make when misreading this output"
+    },
+
+    "related_rules": { "type": "array", "items": { "type": "string" } },
+    "related_errors": { "type": "array", "items": { "type": "string" } },
+    "related_protocols": { "type": "array", "items": { "type": "string" } },
+    "def_refs": { "type": "array", "items": { "type": "string" } },
+    "keywords": { "type": "array", "items": { "type": "string" } },
+
+    "sources": {
+      "type": "array",
+      "items": { "$ref": "protocol.schema.json#/$defs/source" }
+    }
+  },
+  "required": [
+    "schema_version", "rule_id", "display_name", "category",
+    "applicable_os", "context", "observation",
+    "naive_interpretation", "correct_interpretation"
+  ],
+  "additionalProperties": false
+}

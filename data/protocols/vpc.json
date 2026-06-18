@@ -1,0 +1,1862 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "Both vPC peer switches should run the same NX-OS version to ensure consistent behavior and avoid ISSU complications",
+      "name": "Matching NX-OS version on both peers",
+      "type": "infrastructure"
+    },
+    {
+      "description": "A dedicated port-channel configured as a trunk carrying all vPC VLANs, used for CFS synchronization and data forwarding",
+      "name": "Peer-link (port-channel with trunk)",
+      "type": "infrastructure"
+    },
+    {
+      "description": "A separate Layer 3 path (management VRF or dedicated link) for UDP keepalive messages used in dual-active detection",
+      "name": "Peer-keepalive link",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Both peers must be configured with the same vPC domain ID",
+      "name": "Matching vPC domain ID",
+      "type": "infrastructure"
+    },
+    {
+      "description": "All vPC member port-channels must use LACP (active mode) for reliable multi-chassis link aggregation",
+      "name": "LACP on all vPC member ports",
+      "type": "protocol"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "The peer-link port-channel has failed, breaking CFS synchronization. The secondary switch suspends its vPC member ports to prevent dual-active forwarding.",
+      "resolutions": [
+        {
+          "action": "Verify peer-link port-channel members: 'show port-channel summary' — check all member links",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify peer-link port-channel members: 'show port-channel summary' — check all member links",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify peer-link port-channel members: 'show port-channel summary' — check all member links",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify peer-link STP state: 'show spanning-tree vlan <peer-link-vlans>' — must be forwarding",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify peer-link STP state: 'show spanning-tree vlan <peer-link-vlans>' — must be forwarding",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify peer-link STP state: 'show spanning-tree vlan <peer-link-vlans>' — must be forwarding",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check physical cabling and optics on peer-link members",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check physical cabling and optics on peer-link members",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check physical cabling and optics on peer-link members",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If configuration error, compare peer-link config on both switches",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If configuration error, compare peer-link config on both switches",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If configuration error, compare peer-link config on both switches",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "All member links of peer-link port-channel failed",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "STP blocking peer-link (should never happen — peer-link must be STP forwarding)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Configuration error on peer-link",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "vPC peer-link down",
+      "symptoms": [
+        "show vpc shows peer-link as down",
+        "Secondary switch suspends vPC member ports",
+        "Traffic from hosts dual-homed to secondary is disrupted"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vpc",
+          "confirms_if": "peer-link status shows 'down'",
+          "look_for": "Check peer-link status field",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc",
+          "confirms_if": "peer-link status shows 'down'",
+          "look_for": "Check peer-link status field",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc",
+          "confirms_if": "peer-link status shows 'down'",
+          "look_for": "Check peer-link status field",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show port-channel summary",
+          "confirms_if": "Shows which member links are down or missing from the peer-link port-channel",
+          "look_for": "Look for peer-link port-channel and member link states",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show port-channel summary",
+          "confirms_if": "Shows which member links are down or missing from the peer-link port-channel",
+          "look_for": "Look for peer-link port-channel and member link states",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show port-channel summary",
+          "confirms_if": "Shows which member links are down or missing from the peer-link port-channel",
+          "look_for": "Look for peer-link port-channel and member link states",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree vlan <peer-link-vlan>",
+          "confirms_if": "Peer-link port in BLK state confirms STP is blocking it",
+          "look_for": "Check STP state of peer-link",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree vlan <peer-link-vlan>",
+          "confirms_if": "Peer-link port in BLK state confirms STP is blocking it",
+          "look_for": "Check STP state of peer-link",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree vlan <peer-link-vlan>",
+          "confirms_if": "Peer-link port in BLK state confirms STP is blocking it",
+          "look_for": "Check STP state of peer-link",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A vPC member port is suspended because the Type-1 (global) or interface-level consistency check detected a mismatch between vPC peers.",
+      "resolutions": [
+        {
+          "action": "Identify which parameter is mismatched: 'show vpc consistency-parameters global'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify which parameter is mismatched: 'show vpc consistency-parameters global'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify which parameter is mismatched: 'show vpc consistency-parameters global'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare interface-level parameters: 'show vpc consistency-parameters interface port-channel <N>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare interface-level parameters: 'show vpc consistency-parameters interface port-channel <N>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare interface-level parameters: 'show vpc consistency-parameters interface port-channel <N>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Correct the mismatched configuration on the non-compliant switch",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Correct the mismatched configuration on the non-compliant switch",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Correct the mismatched configuration on the non-compliant switch",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Re-verify: 'show vpc' — consistency status should clear",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Re-verify: 'show vpc' — consistency status should clear",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Re-verify: 'show vpc' — consistency status should clear",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Mismatched STP mode between vPC peers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VLAN mismatch on vPC member ports",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "QoS mismatch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MTU mismatch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "LACP mode mismatch between vPC peers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "vPC consistency check failure",
+      "symptoms": [
+        "vPC member port suspended due to type-1 consistency",
+        "'show vpc' shows consistency status as failed",
+        "Traffic loss on the affected vPC"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vpc consistency-parameters global",
+          "confirms_if": "Mismatched values in any row confirm the consistency check failure cause",
+          "look_for": "Look for parameters where local and peer values differ",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc consistency-parameters global",
+          "confirms_if": "Mismatched values in any row confirm the consistency check failure cause",
+          "look_for": "Look for parameters where local and peer values differ",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc consistency-parameters global",
+          "confirms_if": "Mismatched values in any row confirm the consistency check failure cause",
+          "look_for": "Look for parameters where local and peer values differ",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc consistency-parameters interface port-channel <N>",
+          "confirms_if": "Shows exactly which interface-level parameter is causing the suspension",
+          "look_for": "Look for per-interface parameter mismatches between local and peer",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc consistency-parameters interface port-channel <N>",
+          "confirms_if": "Shows exactly which interface-level parameter is causing the suspension",
+          "look_for": "Look for per-interface parameter mismatches between local and peer",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc consistency-parameters interface port-channel <N>",
+          "confirms_if": "Shows exactly which interface-level parameter is causing the suspension",
+          "look_for": "Look for per-interface parameter mismatches between local and peer",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc",
+          "confirms_if": "Status shows 'failed' for the affected vPC member",
+          "look_for": "Check 'Consistency status' column for each vPC",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc",
+          "confirms_if": "Status shows 'failed' for the affected vPC member",
+          "look_for": "Check 'Consistency status' column for each vPC",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc",
+          "confirms_if": "Status shows 'failed' for the affected vPC member",
+          "look_for": "Check 'Consistency status' column for each vPC",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Both vPC switches are forwarding as if they are primary. Downstream devices see MAC flapping and potential loops.",
+      "resolutions": [
+        {
+          "action": "Restore at least one path: peer-link or peer-keepalive",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Restore at least one path: peer-link or peer-keepalive",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Restore at least one path: peer-link or peer-keepalive",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If peer-keepalive path failed, verify routing and reachability on the management VRF or dedicated keepalive link",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If peer-keepalive path failed, verify routing and reachability on the management VRF or dedicated keepalive link",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If peer-keepalive path failed, verify routing and reachability on the management VRF or dedicated keepalive link",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use separate physical paths for peer-link and peer-keepalive to prevent correlated failures",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use separate physical paths for peer-link and peer-keepalive to prevent correlated failures",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use separate physical paths for peer-link and peer-keepalive to prevent correlated failures",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider 'peer-keepalive destination <IP> source <IP>' over a dedicated link (not the peer-link itself)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider 'peer-keepalive destination <IP> source <IP>' over a dedicated link (not the peer-link itself)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider 'peer-keepalive destination <IP> source <IP>' over a dedicated link (not the peer-link itself)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Peer-link and peer-keepalive both failed simultaneously",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Incorrect cabling causing both paths to fail",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Peer-keepalive path unreachable (routing/firewall issue)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Dual-active (split-brain)",
+      "symptoms": [
+        "Both switches forwarding as primary",
+        "MAC flapping observed on downstream switches",
+        "Potential broadcast storms or duplicate traffic"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vpc",
+          "confirms_if": "Both switches showing as primary or operational vPC primary confirms split-brain",
+          "look_for": "Check vPC role and peer status on both switches",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc",
+          "confirms_if": "Both switches showing as primary or operational vPC primary confirms split-brain",
+          "look_for": "Check vPC role and peer status on both switches",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc",
+          "confirms_if": "Both switches showing as primary or operational vPC primary confirms split-brain",
+          "look_for": "Check vPC role and peer status on both switches",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc peer-keepalive",
+          "confirms_if": "Keepalive status 'failed' or no updates received confirms keepalive path failure",
+          "look_for": "Check peer-keepalive status, last update time, and destination reachability",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc peer-keepalive",
+          "confirms_if": "Keepalive status 'failed' or no updates received confirms keepalive path failure",
+          "look_for": "Check peer-keepalive status, last update time, and destination reachability",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc peer-keepalive",
+          "confirms_if": "Keepalive status 'failed' or no updates received confirms keepalive path failure",
+          "look_for": "Check peer-keepalive status, last update time, and destination reachability",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc role",
+          "confirms_if": "Both switches claiming primary role confirms dual-active condition",
+          "look_for": "Check role status and dual-active detection status",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc role",
+          "confirms_if": "Both switches claiming primary role confirms dual-active condition",
+          "look_for": "Check role status and dual-active detection status",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc role",
+          "confirms_if": "Both switches claiming primary role confirms dual-active condition",
+          "look_for": "Check role status and dual-active detection status",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Hosts connected to orphan ports (single-attached to one vPC switch) lose connectivity when the peer-link fails on the secondary switch, because the secondary suspends all vPCs and SVIs.",
+      "resolutions": [
+        {
+          "action": "Identify orphan ports: 'show vpc orphan-ports'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify orphan ports: 'show vpc orphan-ports'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify orphan ports: 'show vpc orphan-ports'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure 'vpc orphan-ports suspend' on the secondary's orphan port interfaces so they suspend and hosts fail over to an alternate path, or ensure orphan ports are on the primary switch",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure 'vpc orphan-ports suspend' on the secondary's orphan port interfaces so they suspend and hosts fail over to an alternate path, or ensure orphan ports are on the primary switch",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure 'vpc orphan-ports suspend' on the secondary's orphan port interfaces so they suspend and hosts fail over to an alternate path, or ensure orphan ports are on the primary switch",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Best practice: minimize orphan ports by dual-homing all servers via vPC",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Best practice: minimize orphan ports by dual-homing all servers via vPC",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Best practice: minimize orphan ports by dual-homing all servers via vPC",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If orphan ports are unavoidable, attach them to the primary vPC peer for continued reachability during peer-link failure",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If orphan ports are unavoidable, attach them to the primary vPC peer for continued reachability during peer-link failure",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If orphan ports are unavoidable, attach them to the primary vPC peer for continued reachability during peer-link failure",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Secondary suspends all vPCs and SVIs when peer-link is down (by design to prevent dual-active)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Orphan ports on secondary switch not configured with 'vpc orphan-ports suspend'",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No alternative path for orphan port traffic",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Orphan port traffic failure during peer-link down",
+      "symptoms": [
+        "Hosts on orphan ports attached to secondary lose connectivity",
+        "Secondary suspends all vPCs and SVIs when peer-link is down",
+        "Orphan ports on secondary switch become isolated"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vpc orphan-ports",
+          "confirms_if": "Orphan ports listed on the secondary switch confirm traffic at risk during peer-link failure",
+          "look_for": "List of interfaces that are not part of any vPC but carry VLANs active on the vPC domain",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc orphan-ports",
+          "confirms_if": "Orphan ports listed on the secondary switch confirm traffic at risk during peer-link failure",
+          "look_for": "List of interfaces that are not part of any vPC but carry VLANs active on the vPC domain",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc orphan-ports",
+          "confirms_if": "Orphan ports listed on the secondary switch confirm traffic at risk during peer-link failure",
+          "look_for": "List of interfaces that are not part of any vPC but carry VLANs active on the vPC domain",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc",
+          "confirms_if": "Peer-link down with vPC ports suspended on secondary confirms the orphan port isolation scenario",
+          "look_for": "Check peer-link status and vPC member port states",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc",
+          "confirms_if": "Peer-link down with vPC ports suspended on secondary confirms the orphan port isolation scenario",
+          "look_for": "Check peer-link status and vPC member port states",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc",
+          "confirms_if": "Peer-link down with vPC ports suspended on secondary confirms the orphan port isolation scenario",
+          "look_for": "Check peer-link status and vPC member port states",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "In a vPC VXLAN EVPN deployment, mismatched VLAN-to-VNI mapping, missing SVIs for VNI-mapped VLANs, or different BUM transport mechanisms between peers causes the NVE loopback interface to be admin shutdown on the vPC secondary VTEP, killing all VXLAN forwarding on that peer.",
+      "resolutions": [
+        {
+          "action": "Verify VLAN-to-VNI mapping: 'show vxlan' on both peers — must be identical",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN-to-VNI mapping: 'show vxlan' on both peers — must be identical",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN-to-VNI mapping: 'show vxlan' on both peers — must be identical",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure SVI exists on both peers for every VLAN mapped to a VNI",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure SVI exists on both peers for every VLAN mapped to a VNI",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure SVI exists on both peers for every VLAN mapped to a VNI",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure same BUM replication mode for every VNI on both peers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure same BUM replication mode for every VNI on both peers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure same BUM replication mode for every VNI on both peers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using multicast, ensure same multicast group per VNI on both peers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using multicast, ensure same multicast group per VNI on both peers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using multicast, ensure same multicast group per VNI on both peers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check consistency: 'show vpc consistency-parameters global' — look for VXLAN-related parameters",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check consistency: 'show vpc consistency-parameters global' — look for VXLAN-related parameters",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check consistency: 'show vpc consistency-parameters global' — look for VXLAN-related parameters",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Mismatched VLAN-to-VNI mapping between vPC peers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SVI missing for a VNI-mapped VLAN on one peer",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Mixed BUM transport — ingress-replication on one peer, multicast on the other for same VNI",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Different multicast groups for the same VNI across peers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "vPC VXLAN consistency check failure (NVE shutdown on secondary)",
+      "symptoms": [
+        "show nve peers shows no peers on secondary",
+        "NVE interface admin-down on secondary peer",
+        "All VXLAN traffic forced through primary peer only",
+        "show vpc consistency-parameters global shows VXLAN-related mismatches"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vpc consistency-parameters global",
+          "confirms_if": "Mismatched VXLAN parameters confirm the consistency check failure cause",
+          "look_for": "Look for VXLAN-related parameters (NVE, VNI, suppress-arp) with mismatched values",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc consistency-parameters global",
+          "confirms_if": "Mismatched VXLAN parameters confirm the consistency check failure cause",
+          "look_for": "Look for VXLAN-related parameters (NVE, VNI, suppress-arp) with mismatched values",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc consistency-parameters global",
+          "confirms_if": "Mismatched VXLAN parameters confirm the consistency check failure cause",
+          "look_for": "Look for VXLAN-related parameters (NVE, VNI, suppress-arp) with mismatched values",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve vni",
+          "confirms_if": "Differences in VNI list or state confirm mapping mismatch",
+          "look_for": "Compare VNI list and state on both peers — should be identical",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve vni",
+          "confirms_if": "Differences in VNI list or state confirm mapping mismatch",
+          "look_for": "Compare VNI list and state on both peers — should be identical",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve vni",
+          "confirms_if": "Differences in VNI list or state confirm mapping mismatch",
+          "look_for": "Compare VNI list and state on both peers — should be identical",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve interface",
+          "confirms_if": "NVE admin-down on secondary confirms VXLAN consistency check shutdown",
+          "look_for": "Check NVE interface admin state on secondary — admin-down indicates consistency failure",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve interface",
+          "confirms_if": "NVE admin-down on secondary confirms VXLAN consistency check shutdown",
+          "look_for": "Check NVE interface admin state on secondary — admin-down indicates consistency failure",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve interface",
+          "confirms_if": "NVE admin-down on secondary confirms VXLAN consistency check shutdown",
+          "look_for": "Check NVE interface admin state on secondary — admin-down indicates consistency failure",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "After a vPC peer reloads in a VXLAN EVPN fabric, traffic destined to the anycast VTEP (VIP) may be black-holed because the underlay and overlay have not yet converged, but the NVE interface is already up and attracting traffic.",
+      "resolutions": [
+        {
+          "action": "Tune 'delay restore <1-3600>' under vpc domain (default 150s)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune 'delay restore <1-3600>' under vpc domain (default 150s)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune 'delay restore <1-3600>' under vpc domain (default 150s)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune 'delay restore orphan-port <0-300>' under vpc domain",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune 'delay restore orphan-port <0-300>' under vpc domain",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune 'delay restore orphan-port <0-300>' under vpc domain",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune 'delay restore interface-vlan <1-3600>' under vpc domain for anycast gateway SVIs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune 'delay restore interface-vlan <1-3600>' under vpc domain for anycast gateway SVIs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune 'delay restore interface-vlan <1-3600>' under vpc domain for anycast gateway SVIs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune NVE 'source-interface hold-down-timer <1-1500>' (default 180s) — MUST be longer than delay restore",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune NVE 'source-interface hold-down-timer <1-1500>' (default 180s) — MUST be longer than delay restore",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune NVE 'source-interface hold-down-timer <1-1500>' (default 180s) — MUST be longer than delay restore",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS 10.4.1+: consider split loopbacks with 'fabric-ready time' for faster orphan convergence",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS 10.4.1+: consider split loopbacks with 'fabric-ready time' for faster orphan convergence",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS 10.4.1+: consider split loopbacks with 'fabric-ready time' for faster orphan convergence",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "'delay restore' timer too short (default 150s) for underlay/overlay convergence",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NVE 'source-interface hold-down-timer' too short (default 180s) — must be longer than delay restore",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Orphan port delay-restore not configured",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "DAG SVI 'delay restore interface-vlan' too short (default 10s)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "vPC VXLAN post-reload traffic black-hole",
+      "symptoms": [
+        "Intermittent packet loss after peer reload lasting 30-180 seconds",
+        "Hosts behind the reloaded peer lose connectivity temporarily",
+        "NVE peers come up before underlay and overlay are fully converged",
+        "Traceroute shows packets reaching the peer but being dropped"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vpc",
+          "confirms_if": "Shows timer values and whether they have expired post-reload",
+          "look_for": "Check delay restore timer values and current timer state after reload",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc",
+          "confirms_if": "Shows timer values and whether they have expired post-reload",
+          "look_for": "Check delay restore timer values and current timer state after reload",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vpc",
+          "confirms_if": "Shows timer values and whether they have expired post-reload",
+          "look_for": "Check delay restore timer values and current timer state after reload",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve interface",
+          "confirms_if": "NVE coming up before delay restore expires indicates timer misconfiguration",
+          "look_for": "Check NVE hold-down timer state — NVE should remain down until hold-down expires",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve interface",
+          "confirms_if": "NVE coming up before delay restore expires indicates timer misconfiguration",
+          "look_for": "Check NVE hold-down timer state — NVE should remain down until hold-down expires",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve interface",
+          "confirms_if": "NVE coming up before delay restore expires indicates timer misconfiguration",
+          "look_for": "Check NVE hold-down timer state — NVE should remain down until hold-down expires",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve peers",
+          "confirms_if": "Peers showing up with incomplete state indicates premature NVE activation",
+          "look_for": "Check if peers are learned before overlay is fully converged",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve peers",
+          "confirms_if": "Peers showing up with incomplete state indicates premature NVE activation",
+          "look_for": "Check if peers are learned before overlay is fully converged",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve peers",
+          "confirms_if": "Peers showing up with incomplete state indicates premature NVE activation",
+          "look_for": "Check if peers are learned before overlay is fully converged",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "During migration from classic Ethernet (HSRP) to VXLAN EVPN (Distributed Anycast Gateway), the border leaf's DAG SVI sends ARP requests using the anycast gateway MAC/IP, but ARP replies are consumed by the HSRP SVI, resulting in incomplete ARP entries and connectivity failure.",
+      "resolutions": [
+        {
+          "action": "Upgrade to NX-OS 10.2(3) or later which supports HSRP/DAG coexistence",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Upgrade to NX-OS 10.2(3) or later which supports HSRP/DAG coexistence",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Upgrade to NX-OS 10.2(3) or later which supports HSRP/DAG coexistence",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Pre-migration workaround: align HSRP VMAC to DAG MAC ('mac-address 2020.0000.00aa' under HSRP group)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Pre-migration workaround: align HSRP VMAC to DAG MAC ('mac-address 2020.0000.00aa' under HSRP group)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Pre-migration workaround: align HSRP VMAC to DAG MAC ('mac-address 2020.0000.00aa' under HSRP group)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'ip address <secondary> use-bia' on border leaf SVIs for proxy-ARP functionality",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'ip address <secondary> use-bia' on border leaf SVIs for proxy-ARP functionality",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'ip address <secondary> use-bia' on border leaf SVIs for proxy-ARP functionality",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Migrate VLANs one at a time — do not run HSRP and DAG on same VLAN simultaneously on pre-10.2(3)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Migrate VLANs one at a time — do not run HSRP and DAG on same VLAN simultaneously on pre-10.2(3)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Migrate VLANs one at a time — do not run HSRP and DAG on same VLAN simultaneously on pre-10.2(3)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "HSRP and DAG cannot coexist on the same SVI prior to NX-OS 10.2(3)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ARP reply consumed by HSRP SVI before reaching DAG processing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "HSRP VMAC not aligned to DAG MAC (2020.0000.00aa)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "HSRP-DAG coexistence ARP failure during VXLAN migration",
+      "symptoms": [
+        "ARP entries show 'incomplete' on the border leaf for hosts in classic Ethernet segment",
+        "Hosts behind VXLAN fabric cannot reach hosts in classic Ethernet segment",
+        "EVPN Type-2 routes not generated for affected hosts",
+        "Problem only occurs on VLANs where both HSRP and DAG are active"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip arp vrf <name>",
+          "confirms_if": "Incomplete entries confirm ARP reply is being consumed by the wrong SVI",
+          "look_for": "Look for 'incomplete' ARP entries for hosts in the classic Ethernet segment",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp vrf <name>",
+          "confirms_if": "Incomplete entries confirm ARP reply is being consumed by the wrong SVI",
+          "look_for": "Look for 'incomplete' ARP entries for hosts in the classic Ethernet segment",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp vrf <name>",
+          "confirms_if": "Incomplete entries confirm ARP reply is being consumed by the wrong SVI",
+          "look_for": "Look for 'incomplete' ARP entries for hosts in the classic Ethernet segment",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show hsrp brief",
+          "confirms_if": "HSRP active on a VLAN that also has DAG confirms coexistence issue",
+          "look_for": "Check which VLANs have HSRP active on the border leaf",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show hsrp brief",
+          "confirms_if": "HSRP active on a VLAN that also has DAG confirms coexistence issue",
+          "look_for": "Check which VLANs have HSRP active on the border leaf",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show hsrp brief",
+          "confirms_if": "HSRP active on a VLAN that also has DAG confirms coexistence issue",
+          "look_for": "Check which VLANs have HSRP active on the border leaf",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Missing MAC entries confirm the ARP failure prevents EVPN learning",
+          "look_for": "Check if MACs for affected hosts are present — missing entries confirm EVPN not learning",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Missing MAC entries confirm the ARP failure prevents EVPN learning",
+          "look_for": "Check if MACs for affected hosts are present — missing entries confirm EVPN not learning",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Missing MAC entries confirm the ARP failure prevents EVPN learning",
+          "look_for": "Check if MACs for affected hosts are present — missing entries confirm EVPN not learning",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Synchronizes MAC tables, IGMP snooping, ARP tables, HSRP state, and STP management between vPC peers over peer-link. In vPC Fabric Peering mode, CFS runs over the VXLAN fabric and requires DSCP-based QoS prioritization on spine switches.",
+      "key_fields": [
+        "Message Type (MAC sync, IGMP sync, ARP sync, HSRP sync, STP sync, Config sync)",
+        "VLAN",
+        "MAC/IP entries"
+      ],
+      "name": "CFS (Cisco Fabric Services)",
+      "when_sent": "Continuously over peer-link for state synchronization"
+    },
+    {
+      "description": "UDP heartbeat between vPC peers for dual-active detection",
+      "key_fields": [
+        "vPC Domain ID",
+        "Peer Role",
+        "System MAC"
+      ],
+      "name": "Peer-Keepalive",
+      "when_sent": "Every peer-keepalive-interval"
+    }
+  ],
+  "operates_at": "Layer 2",
+  "protocol_family": "vendor",
+  "protocol_id": "vpc",
+  "protocol_name": "vPC",
+  "purpose": "Virtual Port-Channel — allows a pair of Cisco Nexus switches to appear as a single logical switch for LACP and STP",
+  "related_protocols": [
+    "lacp",
+    "rstp",
+    "hsrp",
+    "vxlan",
+    "evpn"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco:vendor/vpc.json",
+      "title": "cisco knowledge base — vendor/vpc.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "Cisco proprietary",
+  "states": [
+    {
+      "description": "Switch elected as vPC primary. Continues forwarding on all vPC member ports and orphan ports under normal operation.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "PRIMARY"
+    },
+    {
+      "description": "Switch elected as vPC secondary. Forwards traffic identically to the primary under normal operation.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "SECONDARY"
+    },
+    {
+      "description": "Primary switch with secondary peer down. Primary continues forwarding but split-brain risk exists if peer is actually still active (prolonged state indicates a failure).",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "PRIMARY_SECONDARY_DOWN"
+    },
+    {
+      "description": "Secondary switch with primary peer down. Secondary takes over primary role and continues forwarding to maintain connectivity.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "SECONDARY_PRIMARY_DOWN"
+    },
+    {
+      "description": "Peer-link has failed but peer-keepalive is still active. The secondary switch suspends its vPC member ports to prevent dual-active; only the primary continues forwarding.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "PEER_LINK_DOWN"
+    }
+  ],
+  "tags": [
+    "vpc",
+    "multi-chassis",
+    "dual-active",
+    "peer-link",
+    "nxos",
+    "cisco-proprietary",
+    "data-center",
+    "vendor"
+  ],
+  "timers": [
+    {
+      "default_rfc": "1s",
+      "description": "Interval between UDP keepalive messages between vPC peers",
+      "name": "peer-keepalive-interval",
+      "on_expiry": "Send peer-keepalive message",
+      "range": "400ms-10s",
+      "tuning_advice": "Default is appropriate for most deployments"
+    },
+    {
+      "default_rfc": "5s",
+      "description": "Time to wait for keepalive before declaring peer dead",
+      "name": "peer-keepalive-timeout",
+      "on_expiry": "Peer declared unreachable; influences dual-active detection",
+      "range": "3-20s"
+    },
+    {
+      "default_rfc": "240s",
+      "description": "Time after reload before vPC auto-recovery activates (allows orphan port traffic when both peers were down)",
+      "name": "auto-recovery-reload-delay",
+      "on_expiry": "vPC auto-recovery activates; switch brings up vPCs even without peer",
+      "range": "60-3600s",
+      "tuning_advice": "Enable for environments where both switches may reload simultaneously"
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "PRIMARY",
+      "to_state": "PRIMARY_SECONDARY_DOWN",
+      "trigger": "Peer-link and peer-keepalive both lost from secondary peer"
+    },
+    {
+      "from_state": "SECONDARY",
+      "to_state": "SECONDARY_PRIMARY_DOWN",
+      "trigger": "Peer-link and peer-keepalive both lost from primary peer"
+    },
+    {
+      "from_state": "PRIMARY_SECONDARY_DOWN",
+      "to_state": "PRIMARY",
+      "trigger": "Secondary peer recovered (peer-keepalive and peer-link restored)"
+    },
+    {
+      "from_state": "SECONDARY_PRIMARY_DOWN",
+      "to_state": "SECONDARY",
+      "trigger": "Primary peer recovered"
+    },
+    {
+      "failure_if_stuck": "Secondary will suspend its vPC member ports; only primary continues forwarding",
+      "from_state": "PRIMARY",
+      "to_state": "PEER_LINK_DOWN",
+      "trigger": "Peer-link failed but peer-keepalive still active"
+    },
+    {
+      "from_state": "SECONDARY",
+      "to_state": "PEER_LINK_DOWN",
+      "trigger": "Peer-link failed but peer-keepalive still active"
+    }
+  ],
+  "transport": "CFS over IP (peer-link) and peer-keepalive (UDP/3200 by default)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "vPC is NX-OS specific. IOS-XE uses StackWise Virtual (SVL) for a similar dual-switch single-logical concept on Catalyst 9000.",
+          "versions": "n/a"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "vPC is NX-OS specific. IOS-XR uses MC-LAG (Multi-Chassis LAG) for dual-homing.",
+          "versions": "n/a"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "vPC requires 'feature vpc'. Configure with 'vpc domain <id>', peer-keepalive, and peer-link. vPC auto-recovery and peer-gateway are recommended best practices. Type-1 consistency checks are enforced (mismatch suspends vPC). 'peer-gateway' needed when downstream device sends traffic with HSRP MAC as destination.",
+          "versions": "all"
+        },
+        {
+          "note": "vPC+ extends vPC into FabricPath domains. For VXLAN fabrics, vPC is still used at the leaf layer with EVPN multi-homing as an alternative.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "CRITICAL: vPC domain IDs must be unique across all vPC pairs in a contiguous L2 domain. The system-MAC is auto-derived from the domain ID and used in STP BPDUs, LACP, and IGMP. Duplicate domain IDs cause MAC collisions and unpredictable forwarding.",
+          "versions": "all"
+        },
+        {
+          "note": "vPC role election: lower priority wins (default 32667). If priority ties, lower system MAC wins. Election is non-preemptive by default — role sticks after election. 'role priority <1-65535>' under vpc domain to influence.",
+          "versions": "all"
+        },
+        {
+          "note": "In vPC VXLAN EVPN: 'system nve infra-vlans <vlan-list>' designates VLANs carried over peer-link for infrastructure purposes (backup routing, BUM traffic transfer). These VLANs must be trunked on the peer-link. Missing infra-VLANs causes silent forwarding failures.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "vPC Fabric Peering (virtual peer-link): Runs peer-link over VXLAN fabric through spines instead of dedicated front-panel ports. Requires 'virtual peer-link destination <IP> source <IP> dscp 56', port-channel with no physical members, and 'port-type fabric' on uplinks. CFS traffic MUST be classified by DSCP and placed into strict priority class on spines — without this, CFS may be dropped under congestion.",
+          "versions": "9.3(5)+"
+        },
+        {
+          "note": "With 'advertise-pip', Type-5 (IP prefix) routes use the individual PIP as next-hop instead of shared VIP. Type-2 (MAC/IP) routes still use VIP. Without advertise-pip, all routes use VIP, which can cause unnecessary traffic through the peer-link for inter-subnet routes.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "In vPC VXLAN orphan port handling: Type-2 and Type-5 routes for orphan ports use the PIP (Primary IP), not the VIP. NX-OS 10.4.1 introduces 'split loopbacks' optimization with 'fabric-ready time' for faster orphan port convergence after peer reload.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "vPC L3 backup routing over peer-link: Use a dedicated transit VLAN with point-to-point routing adjacency (OSPF/EIGRP). All other FHRP SVIs should be 'passive-interface' to prevent routing adjacencies from forming over the peer-link on every SVI.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

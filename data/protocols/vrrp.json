@@ -1,0 +1,795 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "Requires IP reachability between VRRP peers on the same subnet",
+      "name": "IP connectivity",
+      "type": "infrastructure"
+    },
+    {
+      "description": "All VRRP routers for a given VRID must share a common subnet",
+      "name": "Same subnet",
+      "type": "infrastructure"
+    },
+    {
+      "description": "All routers in the VRRP group must be configured with the same Virtual Router ID and virtual IP address",
+      "name": "Matching VRID and virtual IP",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "Both routers claim MASTER for the same VRID, causing duplicate virtual IP and traffic disruption",
+      "resolutions": [
+        {
+          "action": "Check L2 connectivity between VRRP peers: verify VLAN, trunk, and switchport configuration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check L2 connectivity between VRRP peers: verify VLAN, trunk, and switchport configuration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check L2 connectivity between VRRP peers: verify VLAN, trunk, and switchport configuration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify no ACL is blocking IP protocol 112: 'show ip access-lists' on both routers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify no ACL is blocking IP protocol 112: 'show ip access-lists' on both routers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify no ACL is blocking IP protocol 112: 'show ip access-lists' on both routers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm VRID and priority configuration matches intent",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm VRID and priority configuration matches intent",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm VRID and priority configuration matches intent",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify multicast 224.0.0.18 is reachable between peers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify multicast 224.0.0.18 is reachable between peers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify multicast 224.0.0.18 is reachable between peers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "L2 issue preventing advertisements from reaching the other router",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL blocking IP protocol 112",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Preemption and priority misconfiguration",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Dual master (split-brain)",
+      "symptoms": [
+        "show vrrp on both routers shows MASTER state",
+        "ARP table on hosts shows MAC flapping for the virtual IP",
+        "Intermittent connectivity for hosts using the virtual gateway"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vrrp",
+          "confirms_if": "If both show MASTER, confirms split-brain condition",
+          "look_for": "Check state on both routers -- both should NOT show MASTER for the same VRID",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrrp",
+          "confirms_if": "If both show MASTER, confirms split-brain condition",
+          "look_for": "Check state on both routers -- both should NOT show MASTER for the same VRID",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrrp",
+          "confirms_if": "If both show MASTER, confirms split-brain condition",
+          "look_for": "Check state on both routers -- both should NOT show MASTER for the same VRID",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface status",
+          "confirms_if": "Interface down or wrong VLAN confirms L2 isolation",
+          "look_for": "Verify the interface connecting VRRP peers is up and in the correct VLAN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface status",
+          "confirms_if": "Interface down or wrong VLAN confirms L2 isolation",
+          "look_for": "Verify the interface connecting VRRP peers is up and in the correct VLAN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface status",
+          "confirms_if": "Interface down or wrong VLAN confirms L2 isolation",
+          "look_for": "Verify the interface connecting VRRP peers is up and in the correct VLAN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "ACL deny matching protocol 112 confirms advertisements are being dropped",
+          "look_for": "Look for rules blocking IP protocol 112",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "ACL deny matching protocol 112 confirms advertisements are being dropped",
+          "look_for": "Look for rules blocking IP protocol 112",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "ACL deny matching protocol 112 confirms advertisements are being dropped",
+          "look_for": "Look for rules blocking IP protocol 112",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Master fails but backup does not transition to MASTER, causing total gateway outage",
+      "resolutions": [
+        {
+          "action": "Verify VRRP is configured on backup: 'show vrrp' on backup router",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VRRP is configured on backup: 'show vrrp' on backup router",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VRRP is configured on backup: 'show vrrp' on backup router",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VRID matches on both sides",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VRID matches on both sides",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VRID matches on both sides",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify virtual IP address matches on both routers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify virtual IP address matches on both routers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify virtual IP address matches on both routers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for L2 loops that might be forwarding stale advertisements",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for L2 loops that might be forwarding stale advertisements",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for L2 loops that might be forwarding stale advertisements",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface is up on backup router",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface is up on backup router",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface is up on backup router",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "VRRP not configured on backup router",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Advertisements still arriving (L2 loop forwarding old packets)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Wrong virtual router ID (VRID mismatch between peers)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "master_down_interval too high (delayed failover appears as no failover)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Failover not occurring",
+      "symptoms": [
+        "Virtual IP becomes unreachable after master failure",
+        "Backup router remains in BACKUP state despite master being down",
+        "Hosts lose default gateway connectivity"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vrrp",
+          "confirms_if": "Missing or misconfigured VRRP group confirms the issue",
+          "look_for": "Check backup router state and configuration -- VRID, virtual IP, and priority should be configured",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrrp",
+          "confirms_if": "Missing or misconfigured VRRP group confirms the issue",
+          "look_for": "Check backup router state and configuration -- VRID, virtual IP, and priority should be configured",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrrp",
+          "confirms_if": "Missing or misconfigured VRRP group confirms the issue",
+          "look_for": "Check backup router state and configuration -- VRID, virtual IP, and priority should be configured",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrrp brief",
+          "confirms_if": "Shows all VRRP groups at a glance for comparison",
+          "look_for": "Quick check of all VRRP groups -- look for VRID mismatches or missing groups",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrrp brief",
+          "confirms_if": "Shows all VRRP groups at a glance for comparison",
+          "look_for": "Quick check of all VRRP groups -- look for VRID mismatches or missing groups",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrrp brief",
+          "confirms_if": "Shows all VRRP groups at a glance for comparison",
+          "look_for": "Quick check of all VRRP groups -- look for VRID mismatches or missing groups",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Failover occurs but takes too long, causing noticeable traffic disruption",
+      "resolutions": [
+        {
+          "action": "Reduce adver-interval for faster failover (VRRPv3 supports centisecond values)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce adver-interval for faster failover (VRRPv3 supports centisecond values)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce adver-interval for faster failover (VRRPv3 supports centisecond values)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure preemption if higher-priority router should reclaim MASTER role",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure preemption if higher-priority router should reclaim MASTER role",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure preemption if higher-priority router should reclaim MASTER role",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure interface tracking to decrement priority on upstream link failure, triggering faster failover",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure interface tracking to decrement priority on upstream link failure, triggering faster failover",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure interface tracking to decrement priority on upstream link failure, triggering faster failover",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Default timers (1s advertisement = ~3s failover)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No preemption configured (higher-priority router does not reclaim MASTER after recovery)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interface tracking not configured for upstream failure detection",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Slow failover",
+      "symptoms": [
+        "Ping loss during failover exceeds expected duration",
+        "Applications timeout during gateway transition",
+        "Failover takes 3+ seconds with default timers"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vrrp",
+          "confirms_if": "Default timers or missing preemption confirms tuning is needed",
+          "look_for": "Check adver-interval, priority, preemption status, and any configured tracking objects",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrrp",
+          "confirms_if": "Default timers or missing preemption confirms tuning is needed",
+          "look_for": "Check adver-interval, priority, preemption status, and any configured tracking objects",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrrp",
+          "confirms_if": "Default timers or missing preemption confirms tuning is needed",
+          "look_for": "Check adver-interval, priority, preemption status, and any configured tracking objects",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrrp brief",
+          "confirms_if": "Shows whether priority is being decremented by tracking",
+          "look_for": "Check current state and priority of all VRRP groups",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrrp brief",
+          "confirms_if": "Shows whether priority is being decremented by tracking",
+          "look_for": "Check current state and priority of all VRRP groups",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vrrp brief",
+          "confirms_if": "Shows whether priority is being decremented by tracking",
+          "look_for": "Check current state and priority of all VRRP groups",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Announces master status and virtual router parameters",
+      "key_fields": [
+        "Version (2 or 3)",
+        "Type (Advertisement)",
+        "Virtual Router ID",
+        "Priority (0-255; 0=master resign)",
+        "Count IP Addresses",
+        "Advertisement Interval",
+        "IP Address(es)"
+      ],
+      "name": "VRRP Advertisement",
+      "when_sent": "Every adver-interval by MASTER only"
+    }
+  ],
+  "operates_at": "Layer 3",
+  "protocol_family": "fhrp",
+  "protocol_id": "vrrp",
+  "protocol_name": "VRRP",
+  "purpose": "Virtual Router Redundancy Protocol — provides default gateway redundancy with standards-based failover",
+  "related_protocols": [
+    "hsrp"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-5798",
+      "rfc_number": 5798,
+      "title": "RFC 5798",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc5798.txt"
+    },
+    {
+      "id": "cisco:fhrp/vrrp.json",
+      "title": "cisco knowledge base — fhrp/vrrp.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 5798",
+  "states": [
+    {
+      "description": "VRRP starting up",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "INITIALIZE"
+    },
+    {
+      "description": "Standby, monitoring master advertisements. Steady state when this router is intended to be the backup.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "BACKUP"
+    },
+    {
+      "description": "Active, forwarding traffic for virtual IP",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "MASTER"
+    }
+  ],
+  "tags": [
+    "fhrp",
+    "gateway-redundancy",
+    "failover",
+    "vip"
+  ],
+  "timers": [
+    {
+      "default_rfc": "1s",
+      "description": "Master advertisement interval",
+      "name": "adver-interval",
+      "on_expiry": "Master sends advertisement",
+      "range": "100ms-40950ms (VRRPv3), 1-255s (VRRPv2)",
+      "tuning_advice": "Lower for faster failover detection. VRRPv3 supports centisecond granularity for sub-second failover."
+    },
+    {
+      "default_rfc": "3x adver-interval + skew_time",
+      "description": "Time before backup declares master failed",
+      "name": "master_down_interval",
+      "on_expiry": "Backup transitions to MASTER",
+      "tuning_advice": "Derived from adver-interval; tune adver-interval instead. Formula: (3 x adver-interval) + skew_time."
+    },
+    {
+      "default_rfc": "(256 - priority) / 256 x adver-interval",
+      "description": "Priority-based offset to stagger failover. Lower priority = longer wait, ensuring higher priority backup becomes master first.",
+      "name": "skew_time",
+      "on_expiry": "",
+      "tuning_advice": "Not directly configurable. Controlled by priority assignment. Ensures deterministic master election among multiple backups."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "INITIALIZE",
+      "to_state": "MASTER",
+      "trigger": "Priority is 255 (IP owner) or master_down_interval expires with no master advertisement"
+    },
+    {
+      "from_state": "INITIALIZE",
+      "to_state": "BACKUP",
+      "trigger": "Priority < 255 and master advertisement received"
+    },
+    {
+      "failure_if_stuck": "Master still alive but not reachable (split-brain possible)",
+      "from_state": "BACKUP",
+      "to_state": "MASTER",
+      "trigger": "Master_down_interval expires (master failed)"
+    },
+    {
+      "from_state": "MASTER",
+      "to_state": "BACKUP",
+      "trigger": "Received advertisement with higher priority (preemption)"
+    },
+    {
+      "from_state": "MASTER",
+      "to_state": "INITIALIZE",
+      "trigger": "Interface or VRRP shut down"
+    },
+    {
+      "from_state": "BACKUP",
+      "to_state": "INITIALIZE",
+      "trigger": "Interface or VRRP shut down"
+    }
+  ],
+  "transport": "IP protocol 112, multicast 224.0.0.18",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "VRRPv3 supported. 'fhrp version vrrp v3' to enable VRRPv3 mode.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "VRRPv3 natively supported under 'router vrrp'. Interface-level configuration.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "VRRPv3 supported. 'feature vrrp' required. Supports object tracking for priority decrement.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

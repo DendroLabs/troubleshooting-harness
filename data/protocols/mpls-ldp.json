@@ -1,0 +1,1030 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "LDP transport address (typically loopback) must be reachable via an IGP for TCP session establishment",
+      "name": "IGP (OSPF/IS-IS) for transport address reachability",
+      "type": "protocol"
+    },
+    {
+      "description": "Interfaces in the MPLS domain must have MPLS enabled for label switching",
+      "name": "MPLS enabled on interfaces",
+      "type": "infrastructure"
+    },
+    {
+      "description": "LDP must be enabled globally and on each interface that participates in label distribution",
+      "name": "LDP enabled globally and on interfaces",
+      "type": "infrastructure"
+    },
+    {
+      "description": "UDP 646 required for Hello discovery, TCP 646 required for session establishment — must not be blocked by ACLs",
+      "name": "TCP/UDP port 646 not blocked",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "LDP session fails to establish — no neighbor appears in show mpls ldp neighbor",
+      "resolutions": [
+        {
+          "action": "Verify LDP is enabled on the interface: 'show mpls interfaces'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify LDP is enabled on the interface: 'show mpls interfaces'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify LDP is enabled on the interface: 'show mpls interfaces'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check LDP discovery: 'show mpls ldp discovery' — peer must appear in discovery list",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check LDP discovery: 'show mpls ldp discovery' — peer must appear in discovery list",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check LDP discovery: 'show mpls ldp discovery' — peer must appear in discovery list",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify transport address reachability: 'show ip route <peer-transport-addr>' — must be in IGP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify transport address reachability: 'show ip route <peer-transport-addr>' — must be in IGP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify transport address reachability: 'show ip route <peer-transport-addr>' — must be in IGP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for ACL blocking: 'show ip access-lists' on both ends",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for ACL blocking: 'show ip access-lists' on both ends",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for ACL blocking: 'show ip access-lists' on both ends",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure LDP router-id is a reachable loopback address",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure LDP router-id is a reachable loopback address",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure LDP router-id is a reachable loopback address",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "LDP not enabled on interface",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Transport address mismatch — LDP uses loopback by default and loopback must be reachable via IGP",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL blocking TCP/UDP port 646",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "LDP router-id mismatch or unreachable",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "LDP session not forming",
+      "symptoms": [
+        "No LDP neighbor in 'show mpls ldp neighbor'",
+        "MPLS forwarding table empty",
+        "Traffic forwarded as IP instead of MPLS-labeled"
+      ],
+      "verify_commands": [
+        {
+          "command": "show mpls ldp discovery",
+          "confirms_if": "Shows whether LDP Hellos are being received from peer",
+          "look_for": "Look for LDP Hello adjacencies — peer transport address and Hello hold time",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp discovery",
+          "confirms_if": "Shows whether LDP Hellos are being received from peer",
+          "look_for": "Look for LDP Hello adjacencies — peer transport address and Hello hold time",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp discovery",
+          "confirms_if": "Shows whether LDP Hellos are being received from peer",
+          "look_for": "Look for LDP Hello adjacencies — peer transport address and Hello hold time",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp neighbor",
+          "confirms_if": "Confirms whether TCP session has been established with peer",
+          "look_for": "Look for any LDP neighbors and their state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp neighbor",
+          "confirms_if": "Confirms whether TCP session has been established with peer",
+          "look_for": "Look for any LDP neighbors and their state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp neighbor",
+          "confirms_if": "Confirms whether TCP session has been established with peer",
+          "look_for": "Look for any LDP neighbors and their state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <peer-transport-addr>",
+          "confirms_if": "Confirms whether the transport address is reachable via IGP",
+          "look_for": "Look for IGP route to peer's LDP transport address (typically loopback)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <peer-transport-addr>",
+          "confirms_if": "Confirms whether the transport address is reachable via IGP",
+          "look_for": "Look for IGP route to peer's LDP transport address (typically loopback)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <peer-transport-addr>",
+          "confirms_if": "Confirms whether the transport address is reachable via IGP",
+          "look_for": "Look for IGP route to peer's LDP transport address (typically loopback)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls interfaces",
+          "confirms_if": "Confirms MPLS and LDP are enabled on the expected interfaces",
+          "look_for": "Look for MPLS-enabled interfaces and whether LDP is running on them",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls interfaces",
+          "confirms_if": "Confirms MPLS and LDP are enabled on the expected interfaces",
+          "look_for": "Look for MPLS-enabled interfaces and whether LDP is running on them",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls interfaces",
+          "confirms_if": "Confirms MPLS and LDP are enabled on the expected interfaces",
+          "look_for": "Look for MPLS-enabled interfaces and whether LDP is running on them",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "LDP session is up but label bindings are missing or incomplete",
+      "resolutions": [
+        {
+          "action": "Check label bindings: 'show mpls ldp bindings' — look for expected FECs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check label bindings: 'show mpls ldp bindings' — look for expected FECs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check label bindings: 'show mpls ldp bindings' — look for expected FECs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify label allocation: check for 'mpls ldp label allocate' ACL filtering",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify label allocation: check for 'mpls ldp label allocate' ACL filtering",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify label allocation: check for 'mpls ldp label allocate' ACL filtering",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm distribution method matches on both peers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm distribution method matches on both peers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm distribution method matches on both peers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MPLS forwarding: 'show mpls forwarding-table' for expected entries",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MPLS forwarding: 'show mpls forwarding-table' for expected entries",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MPLS forwarding: 'show mpls forwarding-table' for expected entries",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "LDP session up but no label bindings advertised",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Label filtering applied — access-list restricting label advertisement",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Label allocation ACL restricting which prefixes get labels",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Downstream unsolicited vs on-demand mismatch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Labels not being distributed",
+      "symptoms": [
+        "'show mpls ldp bindings' empty or missing expected FECs",
+        "MPLS forwarding broken — packets forwarded as IP",
+        "Traceroute shows IP hops instead of MPLS labels"
+      ],
+      "verify_commands": [
+        {
+          "command": "show mpls ldp bindings",
+          "confirms_if": "Shows whether labels are being assigned and exchanged for FECs",
+          "look_for": "Look for local and remote label bindings for expected prefixes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp bindings",
+          "confirms_if": "Shows whether labels are being assigned and exchanged for FECs",
+          "look_for": "Look for local and remote label bindings for expected prefixes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp bindings",
+          "confirms_if": "Shows whether labels are being assigned and exchanged for FECs",
+          "look_for": "Look for local and remote label bindings for expected prefixes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls forwarding-table",
+          "confirms_if": "Confirms whether MPLS forwarding entries are installed in the data plane",
+          "look_for": "Look for label-switched entries — local label, outgoing label, and next hop",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls forwarding-table",
+          "confirms_if": "Confirms whether MPLS forwarding entries are installed in the data plane",
+          "look_for": "Look for label-switched entries — local label, outgoing label, and next hop",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls forwarding-table",
+          "confirms_if": "Confirms whether MPLS forwarding entries are installed in the data plane",
+          "look_for": "Look for label-switched entries — local label, outgoing label, and next hop",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp neighbor detail",
+          "confirms_if": "Shows session parameters that may explain missing label bindings",
+          "look_for": "Look for session details including label advertisement mode and address families",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp neighbor detail",
+          "confirms_if": "Shows session parameters that may explain missing label bindings",
+          "look_for": "Look for session details including label advertisement mode and address families",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp neighbor detail",
+          "confirms_if": "Shows session parameters that may explain missing label bindings",
+          "look_for": "Look for session details including label advertisement mode and address families",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Traffic sent as IP instead of MPLS-labeled — label imposition not happening",
+      "resolutions": [
+        {
+          "action": "Check for label binding: 'show mpls ldp bindings <prefix>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for label binding: 'show mpls ldp bindings <prefix>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for label binding: 'show mpls ldp bindings <prefix>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MPLS is enabled on egress interface: 'show mpls interfaces'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MPLS is enabled on egress interface: 'show mpls interfaces'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MPLS is enabled on egress interface: 'show mpls interfaces'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check LDP-IGP synchronization: 'show mpls ldp igp sync'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check LDP-IGP synchronization: 'show mpls ldp igp sync'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check LDP-IGP synchronization: 'show mpls ldp igp sync'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PHP behavior: penultimate hop should pop label (implicit-null) — check 'show mpls ldp bindings' for imp-null label (3)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PHP behavior: penultimate hop should pop label (implicit-null) — check 'show mpls ldp bindings' for imp-null label (3)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PHP behavior: penultimate hop should pop label (implicit-null) — check 'show mpls ldp bindings' for imp-null label (3)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "No LDP label for destination prefix",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGP and LDP not converged — LDP-IGP sync issue",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PHP (penultimate hop popping) behavior unexpected",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interface not MPLS-enabled",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "MPLS forwarding failure (label not imposed)",
+      "symptoms": [
+        "Traffic forwarded as IP instead of labeled",
+        "'show mpls forwarding-table' shows no label entry for destination",
+        "Traceroute shows IP hops where MPLS labels are expected"
+      ],
+      "verify_commands": [
+        {
+          "command": "show mpls forwarding-table <prefix>",
+          "confirms_if": "Confirms whether a label-switched path exists for the destination prefix",
+          "look_for": "Look for label entry — local label, outgoing label, and outgoing interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls forwarding-table <prefix>",
+          "confirms_if": "Confirms whether a label-switched path exists for the destination prefix",
+          "look_for": "Look for label entry — local label, outgoing label, and outgoing interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls forwarding-table <prefix>",
+          "confirms_if": "Confirms whether a label-switched path exists for the destination prefix",
+          "look_for": "Look for label entry — local label, outgoing label, and outgoing interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls interfaces",
+          "confirms_if": "Confirms MPLS is enabled on the interfaces in the forwarding path",
+          "look_for": "Look for MPLS-enabled interfaces and operational status",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls interfaces",
+          "confirms_if": "Confirms MPLS is enabled on the interfaces in the forwarding path",
+          "look_for": "Look for MPLS-enabled interfaces and operational status",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls interfaces",
+          "confirms_if": "Confirms MPLS is enabled on the interfaces in the forwarding path",
+          "look_for": "Look for MPLS-enabled interfaces and operational status",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp bindings <prefix>",
+          "confirms_if": "Shows whether LDP has a label for this prefix — imp-null (3) indicates PHP",
+          "look_for": "Look for local and remote label bindings for the specific prefix",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp bindings <prefix>",
+          "confirms_if": "Shows whether LDP has a label for this prefix — imp-null (3) indicates PHP",
+          "look_for": "Look for local and remote label bindings for the specific prefix",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp bindings <prefix>",
+          "confirms_if": "Shows whether LDP has a label for this prefix — imp-null (3) indicates PHP",
+          "look_for": "Look for local and remote label bindings for the specific prefix",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp igp sync",
+          "confirms_if": "Confirms whether LDP and IGP are synchronized — unsynchronized state causes traffic to bypass MPLS",
+          "look_for": "Look for LDP-IGP sync status per interface — sync achieved or not",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp igp sync",
+          "confirms_if": "Confirms whether LDP and IGP are synchronized — unsynchronized state causes traffic to bypass MPLS",
+          "look_for": "Look for LDP-IGP sync status per interface — sync achieved or not",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mpls ldp igp sync",
+          "confirms_if": "Confirms whether LDP and IGP are synchronized — unsynchronized state causes traffic to bypass MPLS",
+          "look_for": "Look for LDP-IGP sync status per interface — sync achieved or not",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Discovers LDP peers on directly connected links or targeted sessions",
+      "key_fields": [
+        "Hold Time",
+        "Transport Address",
+        "Configuration Sequence Number",
+        "Label Space ID"
+      ],
+      "name": "Hello (Discovery)",
+      "when_sent": "Every hello-interval to UDP/646 multicast 224.0.0.2"
+    },
+    {
+      "description": "Negotiates session parameters",
+      "key_fields": [
+        "Protocol Version",
+        "KeepAlive Time",
+        "Label Distribution Method",
+        "Max PDU Length",
+        "Receiver LDP Identifier"
+      ],
+      "name": "Initialization",
+      "when_sent": "After TCP connection established"
+    },
+    {
+      "description": "Maintains session liveness",
+      "key_fields": [
+        "(minimal — just LDP header)"
+      ],
+      "name": "KeepAlive",
+      "when_sent": "Every keepalive-interval over TCP session"
+    },
+    {
+      "description": "Distributes label bindings for FECs",
+      "key_fields": [
+        "FEC (prefix)",
+        "Label",
+        "Optional: Hop Count, Path Vector"
+      ],
+      "name": "Label Mapping",
+      "when_sent": "When new prefix learned (downstream unsolicited) or on request"
+    }
+  ],
+  "operates_at": "Layer 2.5",
+  "protocol_family": "transport",
+  "protocol_id": "mpls-ldp",
+  "protocol_name": "MPLS/LDP",
+  "purpose": "Multiprotocol Label Switching with Label Distribution Protocol — distributes labels for LSP establishment",
+  "related_protocols": [
+    "ospfv2",
+    "isis",
+    "bgp-4"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-3031",
+      "rfc_number": 3031,
+      "title": "RFC 3031",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc3031.txt"
+    },
+    {
+      "id": "rfc-5036",
+      "rfc_number": 5036,
+      "title": "RFC 5036",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc5036.txt"
+    },
+    {
+      "id": "cisco:transport/mpls-ldp.json",
+      "title": "cisco knowledge base — transport/mpls-ldp.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 3031 / RFC 5036",
+  "states": [
+    {
+      "description": "No LDP session exists with this peer",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "NON_EXISTENT"
+    },
+    {
+      "description": "TCP connection established, initialization message sent",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "INITIALIZED"
+    },
+    {
+      "description": "Initialization sent, waiting for peer's initialization message",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "OPENSENT"
+    },
+    {
+      "description": "Peer's initialization received, sending keepalive",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "OPENREC"
+    },
+    {
+      "description": "LDP session fully established, label exchange active",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "OPERATIONAL"
+    }
+  ],
+  "tags": [
+    "mpls",
+    "label-switching",
+    "ldp",
+    "lsp",
+    "transport",
+    "label-distribution"
+  ],
+  "timers": [
+    {
+      "default_rfc": "5s (link), 60s (targeted)",
+      "description": "LDP Hello (discovery) message interval",
+      "name": "hello-interval",
+      "on_expiry": "Send LDP Hello",
+      "range": "1-65535s"
+    },
+    {
+      "default_rfc": "15s (link), 90s (targeted)",
+      "description": "Hold time for LDP Hello adjacency",
+      "name": "hello-hold",
+      "on_expiry": "LDP discovery adjacency removed",
+      "range": "1-65535s"
+    },
+    {
+      "default_rfc": "60s",
+      "description": "LDP session keepalive interval",
+      "name": "keepalive-interval",
+      "on_expiry": "Send KeepAlive"
+    },
+    {
+      "default_rfc": "180s",
+      "description": "LDP session hold time",
+      "name": "keepalive-hold",
+      "on_expiry": "LDP session torn down"
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "NON_EXISTENT",
+      "to_state": "INITIALIZED",
+      "trigger": "LDP Hello received, TCP connection initiated to peer with higher transport address"
+    },
+    {
+      "from_state": "INITIALIZED",
+      "to_state": "OPENSENT",
+      "trigger": "Initialization message sent"
+    },
+    {
+      "from_state": "OPENSENT",
+      "to_state": "OPENREC",
+      "trigger": "Peer's Initialization message received with compatible parameters"
+    },
+    {
+      "from_state": "OPENREC",
+      "to_state": "OPERATIONAL",
+      "trigger": "KeepAlive received from peer"
+    },
+    {
+      "from_state": "OPERATIONAL",
+      "to_state": "NON_EXISTENT",
+      "trigger": "Session timeout (keepalive missed) or notification received"
+    },
+    {
+      "failure_if_stuck": "Label space, session parameters, or transport address mismatch",
+      "from_state": "OPENSENT",
+      "to_state": "NON_EXISTENT",
+      "trigger": "Incompatible parameters in peer's Initialization"
+    }
+  ],
+  "transport": "UDP/646 (Hello discovery), TCP/646 (session)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "MPLS LDP enabled with 'mpls ldp router-id <loopback>' and 'mpls ip' under interfaces. Supports LDP-IGP synchronization with 'mpls ldp sync'.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "MPLS LDP is a core feature. Configured under 'mpls ldp' with interface and address-family sub-modes. Supports LDP-IGP sync, session protection, and graceful restart natively.",
+          "versions": "all"
+        },
+        {
+          "note": "IOS-XR platforms increasingly use Segment Routing (SR-MPLS) instead of LDP for label distribution. SR eliminates the need for LDP sessions. SR uses IGP (IS-IS or OSPF) as the only control plane — prefix-SIDs are encoded as indices from the SRGB base (default 16000-23999). The data plane is identical: 'show mpls forwarding' makes no distinction between LDP and SR labels.",
+          "versions": "7.5+"
+        },
+        {
+          "note": "TRAP: When migrating from LDP to SR, 'sr-prefer' must be enabled under the IGP to prefer SR labels over LDP labels. Without it, LDP labels remain in the forwarding table even when SR labels are available. Verify with 'show cef <prefix>' — check which label source is active.",
+          "versions": "7.5+"
+        },
+        {
+          "note": "TRAP: Enabling Ti-LFA on interfaces that previously used Remote-LFA (R-LFA) will tear down R-LFA targeted LDP sessions. If pseudowires or L2VPN services depend on those targeted sessions, they will be disrupted. Plan Ti-LFA migration carefully and explicitly configure needed targeted LDP sessions before enabling Ti-LFA.",
+          "versions": "7.5+"
+        },
+        {
+          "note": "SR does not support LAN links for SR-TE path computation. All interfaces participating in SR-TE must have 'point-to-point' configured under IS-IS/OSPF. Missing this on a switch-connected link (which appears as a LAN segment) is a common and subtle cause of 'no path found' in SR-TE policies.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "MPLS requires 'feature mpls ldp'. LDP configured under 'mpls ldp configuration'. NX-OS 9.3+ supports MPLS on Nexus 9000 with specific linecards/ASICs. Not all Nexus models support MPLS.",
+          "versions": "9.3+"
+        }
+      ]
+    }
+  }
+}

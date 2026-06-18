@@ -1,0 +1,1336 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "Each node has exactly 2 ring ports forming a closed ring. Break in the ring topology prevents ERPS from functioning.",
+      "name": "Physical Ethernet ring topology",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Used for signal fail detection via CCM (Continuity Check Message) loss. CFM MEPs must be configured on ring ports.",
+      "name": "CFM (IEEE 802.1ag)",
+      "type": "protocol"
+    },
+    {
+      "description": "R-APS control channel VLAN must be configured identically on all ring nodes and allowed on all ring ports.",
+      "name": "Consistent R-APS VLAN on all ring nodes",
+      "type": "infrastructure"
+    },
+    {
+      "description": "One node must be designated as RPL owner (blocks RPL in IDLE state) and its adjacent neighbor as RPL neighbor.",
+      "name": "Exactly one RPL owner and one RPL neighbor per ring instance",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "Ring stays in PROTECTION state after the physical fault is repaired. Traffic continues taking suboptimal path around the ring instead of reverting to normal topology.",
+      "resolutions": [
+        {
+          "action": "Check if revertive mode is enabled on the RPL owner",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check if revertive mode is enabled on the RPL owner",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check if revertive mode is enabled on the RPL owner",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify WTR timer hasn't expired yet — wait for full WTR duration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify WTR timer hasn't expired yet — wait for full WTR duration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify WTR timer hasn't expired yet — wait for full WTR duration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RPL owner and RPL neighbor are correctly configured and adjacent to each other",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RPL owner and RPL neighbor are correctly configured and adjacent to each other",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RPL owner and RPL neighbor are correctly configured and adjacent to each other",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure R-APS VLAN is configured on all ring ports on all nodes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure R-APS VLAN is configured on all ring ports on all nodes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure R-APS VLAN is configured on all ring ports on all nodes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify CFM/CCM is operational on the repaired link: 'show ethernet cfm maintenance-points local'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify CFM/CCM is operational on the repaired link: 'show ethernet cfm maintenance-points local'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify CFM/CCM is operational on the repaired link: 'show ethernet cfm maintenance-points local'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Non-revertive mode configured (by design — no automatic reversion)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "WTR timer still running (wait for it to expire before diagnosing)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RPL owner/neighbor mismatch — incorrect node configured as RPL owner",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "R-APS VLAN not passing on all ring links (pruned or blocked)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "CCM (Continuity Check Messages) not recovering after physical repair",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Ring not recovering after fault clears",
+      "symptoms": [
+        "Ring stays in PROTECTION state after physical fault is repaired",
+        "Traffic taking suboptimal path through the ring",
+        "R-APS messages still showing SF or NR without RB flag"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows ring still in PROTECTION state and whether revertive mode is enabled",
+          "look_for": "Check ring state (IDLE/PROTECTION), RPL owner status, revertive mode, WTR timer remaining",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows ring still in PROTECTION state and whether revertive mode is enabled",
+          "look_for": "Check ring state (IDLE/PROTECTION), RPL owner status, revertive mode, WTR timer remaining",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows ring still in PROTECTION state and whether revertive mode is enabled",
+          "look_for": "Check ring state (IDLE/PROTECTION), RPL owner status, revertive mode, WTR timer remaining",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm maintenance-points local",
+          "confirms_if": "Confirms whether CFM/CCM has recovered on the repaired link",
+          "look_for": "Check MEP status on ring ports — look for CCM defect or peer MEP not learned",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm maintenance-points local",
+          "confirms_if": "Confirms whether CFM/CCM has recovered on the repaired link",
+          "look_for": "Check MEP status on ring ports — look for CCM defect or peer MEP not learned",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet cfm maintenance-points local",
+          "confirms_if": "Confirms whether CFM/CCM has recovered on the repaired link",
+          "look_for": "Check MEP status on ring ports — look for CCM defect or peer MEP not learned",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "More than one node is configured as RPL owner for the same ring instance, resulting in no port being blocked and a Layer 2 loop forming on the ring.",
+      "resolutions": [
+        {
+          "action": "Verify exactly one RPL owner per ring instance across all nodes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify exactly one RPL owner per ring instance across all nodes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify exactly one RPL owner per ring instance across all nodes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify one RPL neighbor (must be adjacent to RPL owner)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify one RPL neighbor (must be adjacent to RPL owner)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify one RPL neighbor (must be adjacent to RPL owner)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ring topology documentation and correct misconfigured nodes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ring topology documentation and correct misconfigured nodes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ring topology documentation and correct misconfigured nodes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Immediately force-switch or shut ring port to stop the loop while correcting configuration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Immediately force-switch or shut ring port to stop the loop while correcting configuration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Immediately force-switch or shut ring port to stop the loop while correcting configuration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "More than one node configured as RPL owner (must be exactly one per ring instance)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Misconfigured ring after node addition or replacement",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Configuration copy/paste error during ring deployment",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Multiple RPL owners causing traffic loop",
+      "symptoms": [
+        "Broadcast storm on ring VLAN",
+        "MAC flapping detected on ring ports",
+        "Traffic duplication or out-of-order delivery",
+        "High CPU from excessive flooding"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows RPL owner status; more than one owner confirms the misconfiguration",
+          "look_for": "Verify single RPL owner — check RPL owner flag on each node in the ring",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows RPL owner status; more than one owner confirms the misconfiguration",
+          "look_for": "Verify single RPL owner — check RPL owner flag on each node in the ring",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows RPL owner status; more than one owner confirms the misconfiguration",
+          "look_for": "Verify single RPL owner — check RPL owner flag on each node in the ring",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "MAC flapping between two ring ports indicates a loop on the ring",
+          "look_for": "Look for MAC addresses flapping between ring ports",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "MAC flapping between two ring ports indicates a loop on the ring",
+          "look_for": "Look for MAC addresses flapping between ring ports",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "MAC flapping between two ring ports indicates a loop on the ring",
+          "look_for": "Look for MAC addresses flapping between ring ports",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "G.8032v2 sub-ring traffic is not switching on fault. Interconnection node is not propagating R-APS or topology change notifications between major ring and sub-ring.",
+      "resolutions": [
+        {
+          "action": "Verify sub-ring configuration including virtual channel and TC (topology change) propagation on interconnection nodes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify sub-ring configuration including virtual channel and TC (topology change) propagation on interconnection nodes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify sub-ring configuration including virtual channel and TC (topology change) propagation on interconnection nodes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure interconnection nodes are properly configured with both major ring and sub-ring instances",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure interconnection nodes are properly configured with both major ring and sub-ring instances",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure interconnection nodes are properly configured with both major ring and sub-ring instances",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify R-APS VLAN for sub-ring is configured on all sub-ring ports including interconnection links",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify R-APS VLAN for sub-ring is configured on all sub-ring ports including interconnection links",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify R-APS VLAN for sub-ring is configured on all sub-ring ports including interconnection links",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that sub-ring instance ID is unique and does not conflict with major ring instance",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that sub-ring instance ID is unique and does not conflict with major ring instance",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that sub-ring instance ID is unique and does not conflict with major ring instance",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Sub-ring not configured with correct virtual channel",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interconnection node not configured for R-APS propagation (topology change propagation disabled)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Sub-ring R-APS VLAN not matching or not carried on interconnection links",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Sub-ring instance ID conflict with major ring",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Sub-ring not protecting traffic",
+      "symptoms": [
+        "Sub-ring traffic not switching on fault",
+        "Interconnection node not propagating R-APS between rings",
+        "Sub-ring stays in failed state while major ring is healthy",
+        "Traffic black-hole on sub-ring protected VLANs"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows sub-ring configuration and whether TC propagation is enabled on interconnection node",
+          "look_for": "Check both major ring and sub-ring instances on interconnection nodes — verify TC propagation setting",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows sub-ring configuration and whether TC propagation is enabled on interconnection node",
+          "look_for": "Check both major ring and sub-ring instances on interconnection nodes — verify TC propagation setting",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows sub-ring configuration and whether TC propagation is enabled on interconnection node",
+          "look_for": "Check both major ring and sub-ring instances on interconnection nodes — verify TC propagation setting",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan",
+          "confirms_if": "Confirms R-APS VLAN is carried across all required ports",
+          "look_for": "Verify R-APS VLAN for sub-ring is present on all ring ports and interconnection links",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan",
+          "confirms_if": "Confirms R-APS VLAN is carried across all required ports",
+          "look_for": "Verify R-APS VLAN for sub-ring is present on all ring ports and interconnection links",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan",
+          "confirms_if": "Confirms R-APS VLAN is carried across all required ports",
+          "look_for": "Verify R-APS VLAN for sub-ring is present on all ring ports and interconnection links",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "After a ring protection switch event, MAC addresses are not flushed. Traffic is black-holed for up to 300 seconds (MAC aging time) because stale MAC entries point to the old path.",
+      "resolutions": [
+        {
+          "action": "Verify FDB flush is enabled for the ring instance",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify FDB flush is enabled for the ring instance",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify FDB flush is enabled for the ring instance",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check guard timer setting — reduce if too long (default 500ms)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check guard timer setting — reduce if too long (default 500ms)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check guard timer setting — reduce if too long (default 500ms)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Manually clear MAC address table as immediate workaround: 'clear mac address-table dynamic'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Manually clear MAC address table as immediate workaround: 'clear mac address-table dynamic'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Manually clear MAC address table as immediate workaround: 'clear mac address-table dynamic'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify R-APS VLAN is correctly configured so flush events are received by all nodes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify R-APS VLAN is correctly configured so flush events are received by all nodes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify R-APS VLAN is correctly configured so flush events are received by all nodes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "FDB flush not triggered — R-APS event not processed (DNF flag incorrectly set)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Flush logic misconfigured — per-ring vs global flush behavior",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Guard timer too long, suppressing R-APS processing and flush",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Node not processing R-APS(Event) messages due to VLAN mismatch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "FDB not flushing after protection switch",
+      "symptoms": [
+        "Traffic black-hole for up to 300s (MAC aging) after ring switch",
+        "Unidirectional traffic after protection switch",
+        "Stale MAC entries pointing to old ring path"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows whether FDB flush is configured and guard timer value",
+          "look_for": "Check ring instance configuration for flush behavior and guard timer value",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows whether FDB flush is configured and guard timer value",
+          "look_for": "Check ring instance configuration for flush behavior and guard timer value",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows whether FDB flush is configured and guard timer value",
+          "look_for": "Check ring instance configuration for flush behavior and guard timer value",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "Stale entries on old ring port confirm FDB was not flushed properly",
+          "look_for": "Look for stale MAC entries pointing to the wrong ring port after a protection switch",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "Stale entries on old ring port confirm FDB was not flushed properly",
+          "look_for": "Look for stale MAC entries pointing to the wrong ring port after a protection switch",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "Stale entries on old ring port confirm FDB was not flushed properly",
+          "look_for": "Look for stale MAC entries pointing to the wrong ring port after a protection switch",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "R-APS control VLAN is not configured identically on all ring nodes, preventing R-APS message exchange. Ring cannot form and no protection switching is possible.",
+      "resolutions": [
+        {
+          "action": "Verify R-APS VLAN is configured on all ring ports on all nodes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify R-APS VLAN is configured on all ring ports on all nodes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify R-APS VLAN is configured on all ring ports on all nodes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure STP does not block R-APS VLAN — ERPS and STP should not run on the same VLANs; exclude R-APS VLAN from STP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure STP does not block R-APS VLAN — ERPS and STP should not run on the same VLANs; exclude R-APS VLAN from STP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure STP does not block R-APS VLAN — ERPS and STP should not run on the same VLANs; exclude R-APS VLAN from STP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN tagging is consistent (tagged/trunk) on all ring ports",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN tagging is consistent (tagged/trunk) on all ring ports",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN tagging is consistent (tagged/trunk) on all ring ports",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check any intermediate switches or patch panels that may be stripping the R-APS VLAN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check any intermediate switches or patch panels that may be stripping the R-APS VLAN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check any intermediate switches or patch panels that may be stripping the R-APS VLAN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "R-APS VLAN not configured identically on all ring nodes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "R-APS VLAN pruned or blocked by STP on a ring port (ERPS and STP should not run on same VLANs)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "R-APS VLAN tagged incorrectly (trunk vs access mismatch)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "R-APS VLAN not allowed on intermediate trunk links between ring nodes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "R-APS VLAN misconfigured — ring cannot form",
+      "symptoms": [
+        "Ring nodes don't see peer R-APS messages",
+        "Ring stays in failed state on one or more nodes",
+        "No protection switching occurs on link failure",
+        "R-APS counters show zero received on affected nodes"
+      ],
+      "verify_commands": [
+        {
+          "command": "show vlan",
+          "confirms_if": "Shows whether R-APS VLAN is present and assigned to the correct ring ports",
+          "look_for": "Verify R-APS VLAN exists and is active on all ring ports",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan",
+          "confirms_if": "Shows whether R-APS VLAN is present and assigned to the correct ring ports",
+          "look_for": "Verify R-APS VLAN exists and is active on all ring ports",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan",
+          "confirms_if": "Shows whether R-APS VLAN is present and assigned to the correct ring ports",
+          "look_for": "Verify R-APS VLAN exists and is active on all ring ports",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows R-APS VLAN configuration per ring instance",
+          "look_for": "Check R-APS VLAN ID configured per ring instance and compare across all ring nodes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows R-APS VLAN configuration per ring instance",
+          "look_for": "Check R-APS VLAN ID configured per ring instance and compare across all ring nodes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ethernet ring g8032",
+          "confirms_if": "Shows R-APS VLAN configuration per ring instance",
+          "look_for": "Check R-APS VLAN ID configured per ring instance and compare across all ring nodes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree vlan <R-APS VLAN>",
+          "confirms_if": "STP blocking on a ring port for the R-APS VLAN would prevent R-APS message exchange",
+          "look_for": "Check if STP is blocking the R-APS VLAN on any ring port",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree vlan <R-APS VLAN>",
+          "confirms_if": "STP blocking on a ring port for the R-APS VLAN would prevent R-APS message exchange",
+          "look_for": "Check if STP is blocking the R-APS VLAN on any ring port",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree vlan <R-APS VLAN>",
+          "confirms_if": "STP blocking on a ring port for the R-APS VLAN would prevent R-APS message exchange",
+          "look_for": "Check if STP is blocking the R-APS VLAN on any ring port",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "No Request. Ring is healthy, all clear. Sent periodically by nodes in IDLE state.",
+      "key_fields": [
+        "Request/State (0000 = NR)",
+        "Node ID",
+        "Status (RB, DNF, BPR flags)"
+      ],
+      "name": "R-APS (NR)",
+      "when_sent": "Periodically in IDLE state (no fault, no request)"
+    },
+    {
+      "description": "Signal Fail. Link failure detected. Triggers protection switching on all ring nodes.",
+      "key_fields": [
+        "Request/State (1011 = SF)",
+        "Node ID",
+        "Status (DNF flag)"
+      ],
+      "name": "R-APS (SF)",
+      "when_sent": "When a ring node detects signal fail (link down or CCM loss) on a ring port"
+    },
+    {
+      "description": "No Request, RPL Blocked. Sent by RPL owner when ring is in IDLE (normal) state. Indicates RPL is blocked and ring is healthy.",
+      "key_fields": [
+        "Request/State (0000 = NR)",
+        "RB flag = 1",
+        "Node ID (RPL owner)"
+      ],
+      "name": "R-APS (NR,RB)",
+      "when_sent": "Periodically by RPL owner in IDLE state to signal that RPL is blocked"
+    },
+    {
+      "description": "Manual Switch request. Operator-initiated switching to block a specific ring port.",
+      "key_fields": [
+        "Request/State (0111 = MS)",
+        "Node ID"
+      ],
+      "name": "R-APS (MS)",
+      "when_sent": "When operator issues manual switch command"
+    },
+    {
+      "description": "Forced Switch request. Highest priority switching request. Overrides all other conditions including existing SF.",
+      "key_fields": [
+        "Request/State (1101 = FS)",
+        "Node ID"
+      ],
+      "name": "R-APS (FS)",
+      "when_sent": "When operator issues forced switch command"
+    },
+    {
+      "description": "Flush FDB notification. Nodes receiving this flush their MAC tables for the affected ring instance to force relearning on the new topology.",
+      "key_fields": [
+        "DNF flag = 0 (Do Not Flush cleared)",
+        "Node ID"
+      ],
+      "name": "R-APS (Event)",
+      "when_sent": "During topology changes — sent alongside SF, NR, or other R-APS messages with the DNF flag cleared"
+    }
+  ],
+  "operates_at": "Layer 2",
+  "protocol_family": "switching",
+  "protocol_id": "g8032-erps",
+  "protocol_name": "G.8032 ERPS",
+  "purpose": "Sub-50ms Ethernet ring protection switching with deterministic failover",
+  "related_protocols": [
+    "rstp",
+    "mst",
+    "cfm-y1731",
+    "lacp",
+    "l2-infrastructure"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "itu-itutg8032y1344v22015",
+      "title": "ITU-T G.8032/Y.1344 (v2, 2015)",
+      "type": "itu_standard"
+    },
+    {
+      "id": "agent-cisco-kb:switching/g8032-erps.json",
+      "title": "agent-cisco-kb knowledge base — switching/g8032-erps.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "ITU-T G.8032/Y.1344 (v2, 2015)",
+  "states": [
+    {
+      "description": "Ring is healthy. RPL (Ring Protection Link) is blocked by the RPL owner, all other ring ports are forwarding. Steady state — traffic flows on the shortest path around the ring, avoiding the RPL.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "IDLE"
+    },
+    {
+      "description": "Signal fail detected on a ring link. RPL is unblocked by the RPL owner, and the failed link is blocked. Traffic is rerouted around the ring in the opposite direction. FDB is flushed.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "PROTECTION"
+    },
+    {
+      "description": "Manual switch request issued by operator. RPL is unblocked, and the requested port is blocked. Behaves similarly to PROTECTION but triggered administratively.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "MANUAL_SWITCH"
+    },
+    {
+      "description": "Forced switch request issued by operator. Overrides all other conditions including existing signal fail. Highest priority switching request.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "FORCED_SWITCH"
+    },
+    {
+      "description": "Waiting for WTR (Wait-to-Restore) timer after fault clears before reverting to IDLE. Only applies in revertive mode. During this period, the ring remains in protection topology.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "PENDING"
+    }
+  ],
+  "tags": [
+    "carrier-ethernet",
+    "ring-protection",
+    "sub-50ms",
+    "layer-2",
+    "service-protection",
+    "deterministic",
+    "switching"
+  ],
+  "timers": [
+    {
+      "default_rfc": "5min",
+      "description": "Time to wait after fault clears before reverting to IDLE. Only applies in revertive mode.",
+      "name": "WTR (Wait-to-Restore)",
+      "on_expiry": "Ring reverts to IDLE, RPL re-blocked",
+      "range": "1-12min",
+      "tuning_advice": "Prevents flapping on intermittent faults. Shorter = faster reversion but more risk of flap. 5min is the standard value per ITU-T recommendation. Only applies in revertive mode."
+    },
+    {
+      "default_rfc": "varies (typically same as WTR)",
+      "description": "Guard timer for manual/forced switch operations. Prevents acting on stale R-APS messages during operator-initiated topology changes.",
+      "name": "WTB (Wait-to-Block)",
+      "on_expiry": "Node proceeds with blocking operation",
+      "range": "1-12min"
+    },
+    {
+      "default_rfc": "500ms",
+      "description": "Prevents acting on outdated R-APS messages during topology change. After a topology event, the node ignores incoming R-APS messages until the guard timer expires.",
+      "name": "Guard Timer",
+      "on_expiry": "Node resumes processing R-APS messages",
+      "range": "10ms-2s",
+      "tuning_advice": "Must be long enough for old R-APS messages to flush from ring but short enough for fast recovery. 500ms is the ITU-T default and works for most ring sizes."
+    },
+    {
+      "default_rfc": "0ms (immediate)",
+      "description": "Delay before reporting SF to ERPS. Allows underlying transport protection (e.g., SONET/SDH) to act first before triggering ring-level protection switching.",
+      "name": "Hold-off Timer",
+      "on_expiry": "SF reported to ERPS, protection switching triggered",
+      "range": "0-10000ms (100ms steps)",
+      "tuning_advice": "Set to underlying protection switch time + margin. E.g., if SONET has 50ms protection, set hold-off to 100ms. Leave at 0ms when no underlying transport protection exists."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "IDLE",
+      "to_state": "PROTECTION",
+      "trigger": "Signal fail (SF) detected on ring link — R-APS(SF) sent, RPL owner unblocks RPL port, other nodes flush FDB"
+    },
+    {
+      "from_state": "PROTECTION",
+      "to_state": "PENDING",
+      "trigger": "Signal fail clears — WTR timer starts (revertive mode) or stays in PROTECTION (non-revertive)"
+    },
+    {
+      "from_state": "PENDING",
+      "to_state": "IDLE",
+      "trigger": "WTR timer expires — R-APS(NR,RB) sent, RPL re-blocked, FDB flush, ring reverts to normal"
+    },
+    {
+      "from_state": "IDLE",
+      "to_state": "MANUAL_SWITCH",
+      "trigger": "Manual switch command issued — similar to SF behavior"
+    },
+    {
+      "from_state": "MANUAL_SWITCH",
+      "to_state": "IDLE",
+      "trigger": "Manual switch cleared"
+    },
+    {
+      "from_state": "IDLE",
+      "to_state": "FORCED_SWITCH",
+      "trigger": "Forced switch command (overrides even existing SF)"
+    },
+    {
+      "from_state": "FORCED_SWITCH",
+      "to_state": "IDLE",
+      "trigger": "Forced switch cleared"
+    },
+    {
+      "failure_if_stuck": "Intermittent fault causing repeated SF/clear cycles; consider increasing hold-off timer",
+      "from_state": "PENDING",
+      "to_state": "PROTECTION",
+      "trigger": "New signal fail during WTR period — WTR cancelled, back to PROTECTION"
+    }
+  ],
+  "transport": "R-APS channel (dedicated VLAN), Ethertype 0x8902 (CFM-based)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "IOS-XE supports G.8032 ERPSv2 on ASR 920, ASR 903, Catalyst 8000. Configured under 'ethernet ring g8032 <name>'. CFM required for fault detection. 'show ethernet ring g8032' commands. Common in SP access/aggregation networks.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "IOS-XR supports G.8032 on ASR 9000, NCS 5500. Configured under 'ethernet ring g8032 <name>'. Full v2 support with sub-rings, multiple instances. 'show ethernet ring g8032' for ring state.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "NX-OS has limited G.8032 support — available on Nexus 7000 series only. Not supported on Nexus 9000/3000. 'feature erps' required. Most NX-OS deployments use vPC or STP instead of ring protection.",
+          "versions": "7.0+ (N7K only)"
+        }
+      ]
+    },
+    "saos": {
+      "notes": [
+        {
+          "note": "G.8032 ERPS is the primary L2 protection mechanism on SAOS — preferred over STP/RSTP for all carrier Ethernet ring deployments. Supports sub-50ms switchover. Full v2 with sub-rings and multiple instances. Hardware-assisted on all platforms. Integrated with CFM for fault detection (3.3ms/10ms CCM). Subject-verb CLI: 'ring-protection show' not 'show ethernet ring'. Supports both revertive and non-revertive modes. RPL owner, RPL neighbor, and interconnection node roles.",
+          "versions": "6.0+"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,5210 @@
+{
+  "confidence": "medium",
+  "def_refs": [
+    "timer:ospf-hello",
+    "timer:ospf-dead",
+    "timer:ospf-lsa-age",
+    "timer:ospf-spf-delay",
+    "daemon:ospfd",
+    "daemon:zebra",
+    "daemon:fpmsyncd",
+    "daemon:frrcfgd",
+    "daemon:orchagent",
+    "daemon:syncd",
+    "db:config_db",
+    "db:appl_db",
+    "db:asic_db",
+    "db:state_db"
+  ],
+  "dependencies": [
+    {
+      "description": "Requires IP reachability between neighbors (multicast or unicast for NBMA)",
+      "name": "IP connectivity",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Requires multicast support for 224.0.0.5/224.0.0.6 on broadcast/P2P networks",
+      "name": "IP multicast",
+      "type": "protocol"
+    },
+    {
+      "description": "Hello/dead intervals, area ID, authentication, and network type must match between neighbors",
+      "name": "Matching OSPF parameters",
+      "type": "infrastructure"
+    },
+    {
+      "description": "OSPF process must be configured with network statements or interface-level 'ip ospf' commands",
+      "name": "OSPF process and network statements",
+      "type": "infrastructure"
+    },
+    {
+      "description": "OSPF uses raw IP (protocol 89), not TCP or UDP. Hellos are multicast to 224.0.0.5 (AllSPFRouters) on broadcast and point-to-point networks, and DR/BDR receive updates via 224.0.0.6 (AllDRouters). In SONiC the interface must have multicast enabled and any ACLs or CoPP policies must permit IP protocol 89.",
+      "name": "IP Protocol 89 multicast to 224.0.0.5 and 224.0.0.6",
+      "type": "infrastructure"
+    },
+    {
+      "description": "OSPF in SONiC runs inside the 'bgp' Docker container via FRR. ospfd handles the OSPF FSM, LSA flooding, and SPF computation. zebra receives computed OSPF routes from ospfd via the FRR inter-process socket and installs them into the Linux kernel RIB. Both must be running for OSPF to function.",
+      "name": "FRR stack (ospfd + zebra)",
+      "type": "daemon"
+    },
+    {
+      "description": "Translates CONFIG_DB OSPF entries into FRR vtysh commands. Required for CONFIG_DB-driven OSPF configuration to reach FRR. Runs inside the bgp container. Note: not all SONiC builds have full OSPF CONFIG_DB support -- some deployments configure OSPF directly via vtysh or frr.conf.",
+      "name": "frrcfgd",
+      "type": "daemon"
+    },
+    {
+      "description": "Subscribes to Linux kernel netlink events for route changes (including OSPF routes installed by zebra) and publishes them to APPL_DB ROUTE_TABLE. Without fpmsyncd, OSPF routes in the kernel RIB never reach orchagent or the ASIC. Runs inside the bgp container alongside ospfd and zebra.",
+      "name": "fpmsyncd",
+      "type": "daemon"
+    },
+    {
+      "description": "Consumes APPL_DB ROUTE_TABLE entries (regardless of source protocol) and translates them into SAI API calls written to ASIC_DB. OSPF routes are not programmed into hardware until orchagent processes them successfully.",
+      "name": "orchagent (swss container)",
+      "type": "daemon"
+    },
+    {
+      "description": "Reads ASIC_DB and calls the vendor SAI library to program the physical ASIC forwarding tables. The final step in the OSPF route programming pipeline.",
+      "name": "syncd (syncd container)",
+      "type": "daemon"
+    },
+    {
+      "description": "Source of truth for OSPF configuration in SONiC deployments that use frrcfgd for OSPF config management. Not all SONiC builds have full OSPF CONFIG_DB table support -- check for DEVICE_METADATA and OSPF-specific tables.",
+      "name": "CONFIG_DB (Redis DB 4)",
+      "type": "database"
+    },
+    {
+      "description": "Route publication bus between fpmsyncd and orchagent. OSPF routes must appear in ROUTE_TABLE here before they can reach the ASIC.",
+      "name": "APPL_DB (Redis DB 0)",
+      "type": "database"
+    },
+    {
+      "description": "Bidirectional Forwarding Detection provides sub-second neighbor failure detection for OSPF. When BFD declares a neighbor down, ospfd tears down the adjacency faster than the Dead Interval. Configured in FRR as 'ip ospf bfd' on the interface.",
+      "name": "BFD (optional)",
+      "type": "protocol"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "A neighbor remains in INIT state indefinitely, indicating that Hellos are being received from the neighbor but the neighbor is not seeing our Hellos (one-way communication).",
+      "resolutions": [
+        {
+          "action": "Check ACLs on both ends: look for 'permit ospf' or 'permit 89'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs on both ends: look for 'permit ospf' or 'permit 89'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs on both ends: look for 'permit ospf' or 'permit 89'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify bidirectional IP connectivity",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify bidirectional IP connectivity",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify bidirectional IP connectivity",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check interface ACL in both directions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check interface ACL in both directions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check interface ACL in both directions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify OSPF is enabled on correct interfaces on both routers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify OSPF is enabled on correct interfaces on both routers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify OSPF is enabled on correct interfaces on both routers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Capture Hellos with packet capture to confirm both sides send and receive",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Capture Hellos with packet capture to confirm both sides send and receive",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Capture Hellos with packet capture to confirm both sides send and receive",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area ID matches: 'show ip ospf interface' on both sides",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area ID matches: 'show ip ospf interface' on both sides",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area ID matches: 'show ip ospf interface' on both sides",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check authentication: 'show ip ospf interface' — verify auth type/key match",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check authentication: 'show ip ospf interface' — verify auth type/key match",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check authentication: 'show ip ospf interface' — verify auth type/key match",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: check for interface-level area override that conflicts with network statement",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: check for interface-level area override that conflicts with network statement",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: check for interface-level area override that conflicts with network statement",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "ACL blocking OSPF (protocol 89) in one direction",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Firewall/NAT between OSPF neighbors",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Asymmetric routing causing return Hellos to take different path",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MTU issue preventing Hello delivery (rare)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "OSPF network type mismatch causing Hello to not be recognized",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Mismatched area ID between neighbors (Hellos received but not processed)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Mismatched authentication type or key between neighbors",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IOS-XE: interface-level OSPF override (ip ospf area) conflicting with router-level network statement",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Stuck in INIT (one-way communication)",
+      "symptoms": [
+        "show ip ospf neighbor shows INIT state that doesn't progress",
+        "One side sees neighbor, other side doesn't"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Confirms one-way communication problem",
+          "look_for": "Look for neighbors stuck in INIT state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Confirms one-way communication problem",
+          "look_for": "Look for neighbors stuck in INIT state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Confirms one-way communication problem",
+          "look_for": "Look for neighbors stuck in INIT state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface",
+          "confirms_if": "Confirms OSPF interface configuration",
+          "look_for": "Check OSPF is enabled on the correct interface with correct area",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface",
+          "confirms_if": "Confirms OSPF interface configuration",
+          "look_for": "Check OSPF is enabled on the correct interface with correct area",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface",
+          "confirms_if": "Confirms OSPF interface configuration",
+          "look_for": "Check OSPF is enabled on the correct interface with correct area",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Identifies ACL blocking OSPF",
+          "look_for": "Look for deny rules matching protocol 89 or OSPF multicast addresses",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Identifies ACL blocking OSPF",
+          "look_for": "Look for deny rules matching protocol 89 or OSPF multicast addresses",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Identifies ACL blocking OSPF",
+          "look_for": "Look for deny rules matching protocol 89 or OSPF multicast addresses",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf traffic",
+          "confirms_if": "Confirms whether Hellos are being received",
+          "look_for": "Look for Hello sent/received counters — zero received indicates one-way",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf traffic",
+          "confirms_if": "Confirms whether Hellos are being received",
+          "look_for": "Look for Hello sent/received counters — zero received indicates one-way",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf traffic",
+          "confirms_if": "Confirms whether Hellos are being received",
+          "look_for": "Look for Hello sent/received counters — zero received indicates one-way",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Neighbor adjacency fails to progress past the database exchange phase. The neighbor oscillates between EXSTART and EXCHANGE or remains stuck in EXSTART. This is the most common OSPF adjacency failure in production.",
+      "resolutions": [
+        {
+          "action": "Verify MTU matches on both ends: 'show interface <intf>' — check MTU",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU matches on both ends: 'show interface <intf>' — check MTU",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU matches on both ends: 'show interface <intf>' — check MTU",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check authentication config: 'show ip ospf interface' — verify auth type and key",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check authentication config: 'show ip ospf interface' — verify auth type and key",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check authentication config: 'show ip ospf interface' — verify auth type and key",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify unique Router IDs: 'show ip ospf' on both routers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify unique Router IDs: 'show ip ospf' on both routers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify unique Router IDs: 'show ip ospf' on both routers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for path MTU issues: try 'ip ospf mtu-ignore' as workaround (not fix)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for path MTU issues: try 'ip ospf mtu-ignore' as workaround (not fix)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for path MTU issues: try 'ip ospf mtu-ignore' as workaround (not fix)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area configuration matches on both ends",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area configuration matches on both ends",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area configuration matches on both ends",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMPORTANT: The MTU value in the DBD header is what gets compared, not the physical MTU. On NX-OS, check 'show ip ospf interface' for 'MTU mismatch detected' message",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMPORTANT: The MTU value in the DBD header is what gets compared, not the physical MTU. On NX-OS, check 'show ip ospf interface' for 'MTU mismatch detected' message",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IMPORTANT: The MTU value in the DBD header is what gets compared, not the physical MTU. On NX-OS, check 'show ip ospf interface' for 'MTU mismatch detected' message",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area type matches: stub/non-stub, NSSA/non-NSSA must agree",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area type matches: stub/non-stub, NSSA/non-NSSA must agree",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area type matches: stub/non-stub, NSSA/non-NSSA must agree",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "MTU mismatch between interfaces (most common cause)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "OSPF authentication mismatch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Duplicate Router IDs in the OSPF domain",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IP fragmentation blocked between neighbors (DF bit + smaller MTU path)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Area type mismatch (stub vs non-stub)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "DBD packet too large for interface MTU — MTU in DBD header is checked by receiver",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "OSPF stub/NSSA flag mismatch in Hello options field",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Stuck in EXSTART/EXCHANGE",
+      "symptoms": [
+        "Neighbor oscillates between EXSTART and EXCHANGE",
+        "show ip ospf neighbor shows EXSTART for extended time",
+        "Log messages: 'OSPF-5-ADJCHG: ... went from EXSTART to DOWN'"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Confirms adjacency formation is failing at DB exchange",
+          "look_for": "Look for neighbors stuck in EXSTART or cycling EXSTART/EXCHANGE",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Confirms adjacency formation is failing at DB exchange",
+          "look_for": "Look for neighbors stuck in EXSTART or cycling EXSTART/EXCHANGE",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Confirms adjacency formation is failing at DB exchange",
+          "look_for": "Look for neighbors stuck in EXSTART or cycling EXSTART/EXCHANGE",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Identifies MTU mismatch (most common cause)",
+          "look_for": "Compare MTU values on both ends of the link",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Identifies MTU mismatch (most common cause)",
+          "look_for": "Compare MTU values on both ends of the link",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Identifies MTU mismatch (most common cause)",
+          "look_for": "Compare MTU values on both ends of the link",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface <intf>",
+          "confirms_if": "Shows OSPF interface parameters for comparison",
+          "look_for": "Check authentication type, area, and network type",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface <intf>",
+          "confirms_if": "Shows OSPF interface parameters for comparison",
+          "look_for": "Check authentication type, area, and network type",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface <intf>",
+          "confirms_if": "Shows OSPF interface parameters for comparison",
+          "look_for": "Check authentication type, area, and network type",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf",
+          "confirms_if": "Confirms Router ID is unique",
+          "look_for": "Check Router ID for duplicates",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf",
+          "confirms_if": "Confirms Router ID is unique",
+          "look_for": "Check Router ID for duplicates",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf",
+          "confirms_if": "Confirms Router ID is unique",
+          "look_for": "Check Router ID for duplicates",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug ip ospf adj",
+          "confirms_if": "Reveals exact reason for adjacency failure (use briefly, high CPU)",
+          "look_for": "Look for 'Nbr has larger interface MTU' or authentication errors",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug ip ospf adj",
+          "confirms_if": "Reveals exact reason for adjacency failure (use briefly, high CPU)",
+          "look_for": "Look for 'Nbr has larger interface MTU' or authentication errors",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug ip ospf adj",
+          "confirms_if": "Reveals exact reason for adjacency failure (use briefly, high CPU)",
+          "look_for": "Look for 'Nbr has larger interface MTU' or authentication errors",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "OSPF neighbor adjacency repeatedly tears down and re-establishes, causing route instability, SPF churn, and potential traffic blackholes during convergence.",
+      "resolutions": [
+        {
+          "action": "Check physical layer: 'show interface' for errors, CRC, carrier transitions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check physical layer: 'show interface' for errors, CRC, carrier transitions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check physical layer: 'show interface' for errors, CRC, carrier transitions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CPU: 'show processes cpu' for high utilization",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CPU: 'show processes cpu' for high utilization",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CPU: 'show processes cpu' for high utilization",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider BFD instead of aggressive OSPF timers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider BFD instead of aggressive OSPF timers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider BFD instead of aggressive OSPF timers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for L2 issues: STP convergence, LACP flapping on transit switches",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for L2 issues: STP convergence, LACP flapping on transit switches",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for L2 issues: STP convergence, LACP flapping on transit switches",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize the underlying transport before tuning OSPF timers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize the underlying transport before tuning OSPF timers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize the underlying transport before tuning OSPF timers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify DSCP marking is preserved end-to-end: OSPF marks Hellos CS6 (DSCP 48) — if transit QoS policy remarks or deprioritizes, Hellos may be dropped",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify DSCP marking is preserved end-to-end: OSPF marks Hellos CS6 (DSCP 48) — if transit QoS policy remarks or deprioritizes, Hellos may be dropped",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify DSCP marking is preserved end-to-end: OSPF marks Hellos CS6 (DSCP 48) — if transit QoS policy remarks or deprioritizes, Hellos may be dropped",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: check punt policer: 'show platform software punt-policer' — OSPF may be rate-limited",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: check punt policer: 'show platform software punt-policer' — OSPF may be rate-limited",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: check punt policer: 'show platform software punt-policer' — OSPF may be rate-limited",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Unstable underlying link (physical or L2 issue)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "CPU overload causing missed Hello processing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Aggressive hello/dead timers without BFD",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interface flapping (carrier transitions)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Packet loss on the link exceeding dead-interval tolerance",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Transit L2 switch STP reconvergence causing Hello loss (common in campus networks)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "DSCP remarking on transit infrastructure — OSPF uses CS6 by default; if remarked and then deprioritized, Hellos may be dropped under congestion",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Punt policer rate-limiting OSPF packets on high-scale platforms",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Neighbor flapping (FULL -> DOWN -> FULL cycles)",
+      "symptoms": [
+        "Repeated syslog messages about adjacency changes",
+        "Route instability, traffic blackholes during convergence",
+        "High SPF run count in 'show ip ospf'"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Shows current adjacency state",
+          "look_for": "Check for neighbors with recent state changes or short uptime",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Shows current adjacency state",
+          "look_for": "Check for neighbors with recent state changes or short uptime",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Shows current adjacency state",
+          "look_for": "Check for neighbors with recent state changes or short uptime",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Identifies physical layer issues causing flaps",
+          "look_for": "Look for input/output errors, CRC errors, resets, carrier transitions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Identifies physical layer issues causing flaps",
+          "look_for": "Look for input/output errors, CRC errors, resets, carrier transitions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <intf>",
+          "confirms_if": "Identifies physical layer issues causing flaps",
+          "look_for": "Look for input/output errors, CRC errors, resets, carrier transitions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf statistics",
+          "confirms_if": "Confirms OSPF instability",
+          "look_for": "Look for high SPF run count and frequent SPF triggers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf statistics",
+          "confirms_if": "Confirms OSPF instability",
+          "look_for": "Look for high SPF run count and frequent SPF triggers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf statistics",
+          "confirms_if": "Confirms OSPF instability",
+          "look_for": "Look for high SPF run count and frequent SPF triggers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include OSPF",
+          "confirms_if": "Shows pattern of OSPF neighbor state changes",
+          "look_for": "Look for adjacency change messages and timestamps",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include OSPF",
+          "confirms_if": "Shows pattern of OSPF neighbor state changes",
+          "look_for": "Look for adjacency change messages and timestamps",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include OSPF",
+          "confirms_if": "Shows pattern of OSPF neighbor state changes",
+          "look_for": "Look for adjacency change messages and timestamps",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Expected OSPF-learned routes are not present in the routing table despite the LSDB containing the relevant LSAs. This can be caused by filtering, area type restrictions, or administrative distance conflicts.",
+      "resolutions": [
+        {
+          "action": "Check OSPF database: 'show ip ospf database' — verify LSA exists",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check OSPF database: 'show ip ospf database' — verify LSA exists",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check OSPF database: 'show ip ospf database' — verify LSA exists",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check route filtering: 'show ip protocols' for distribute-lists",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check route filtering: 'show ip protocols' for distribute-lists",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check route filtering: 'show ip protocols' for distribute-lists",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area types: stub areas don't have external LSAs by design",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area types: stub areas don't have external LSAs by design",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area types: stub areas don't have external LSAs by design",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check admin distance: 'show ip route' — another protocol may be preferred",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check admin distance: 'show ip route' — another protocol may be preferred",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check admin distance: 'show ip route' — another protocol may be preferred",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify redistribution config if expecting external routes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify redistribution config if expecting external routes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify redistribution config if expecting external routes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Route filtered by distribute-list or route-map",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ABR not propagating summary LSAs between areas",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Stub area filtering external routes (expected behavior)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "OSPF process not redistributing connected/static as expected",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Administrative distance conflict — another protocol preferred",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Distribute-list with ACL that has implicit deny at end — only explicitly permitted routes are installed",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SPF calculation not running or delayed — check 'show ip ospf statistics' for last SPF time",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "OSPF routes missing from routing table",
+      "symptoms": [
+        "Expected routes not in 'show ip route ospf'",
+        "Ping to remote OSPF network fails",
+        "show ip ospf database shows LSAs but routes not installed"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip route ospf",
+          "confirms_if": "Confirms which OSPF routes are installed in RIB",
+          "look_for": "Look for presence/absence of expected OSPF routes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route ospf",
+          "confirms_if": "Confirms which OSPF routes are installed in RIB",
+          "look_for": "Look for presence/absence of expected OSPF routes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route ospf",
+          "confirms_if": "Confirms which OSPF routes are installed in RIB",
+          "look_for": "Look for presence/absence of expected OSPF routes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf database",
+          "confirms_if": "Confirms whether LSA exists in LSDB",
+          "look_for": "Look for LSAs corresponding to missing routes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf database",
+          "confirms_if": "Confirms whether LSA exists in LSDB",
+          "look_for": "Look for LSAs corresponding to missing routes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf database",
+          "confirms_if": "Confirms whether LSA exists in LSDB",
+          "look_for": "Look for LSAs corresponding to missing routes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows OSPF process configuration including filters",
+          "look_for": "Look for route filtering, distribute-lists, admin distance",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows OSPF process configuration including filters",
+          "look_for": "Look for route filtering, distribute-lists, admin distance",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows OSPF process configuration including filters",
+          "look_for": "Look for route filtering, distribute-lists, admin distance",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf border-routers",
+          "confirms_if": "Confirms inter-area and external route path availability",
+          "look_for": "Look for reachability to ABRs and ASBRs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf border-routers",
+          "confirms_if": "Confirms inter-area and external route path availability",
+          "look_for": "Look for reachability to ABRs and ASBRs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf border-routers",
+          "confirms_if": "Confirms inter-area and external route path availability",
+          "look_for": "Look for reachability to ABRs and ASBRs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The Designated Router or Backup Designated Router on a broadcast/NBMA segment is not the intended router, causing suboptimal flooding topology or unexpected adjacency patterns.",
+      "resolutions": [
+        {
+          "action": "Set OSPF priority explicitly: 'ip ospf priority' — higher wins",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set OSPF priority explicitly: 'ip ospf priority' — higher wins",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set OSPF priority explicitly: 'ip ospf priority' — higher wins",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set priority 0 on routers that should never be DR",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set priority 0 on routers that should never be DR",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set priority 0 on routers that should never be DR",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Understand non-preemptive behavior: existing DR keeps role even if higher priority router comes online",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Understand non-preemptive behavior: existing DR keeps role even if higher priority router comes online",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Understand non-preemptive behavior: existing DR keeps role even if higher priority router comes online",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize interfaces to prevent repeated elections",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize interfaces to prevent repeated elections",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize interfaces to prevent repeated elections",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "OSPF priority not configured (default 1 on all routers)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Router with highest Router ID becoming DR unexpectedly",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Preemption: OSPF DR election is non-preemptive — first router up wins",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interface flapping causing repeated elections",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "DR/BDR election issues",
+      "symptoms": [
+        "Unexpected router is DR on broadcast segment",
+        "Multiple DR elections happening (logs show DR changes)",
+        "Non-optimal DR placement causing traffic to traverse slow path"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Shows current DR election results",
+          "look_for": "Look for DR/BDR/DROther roles",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Shows current DR election results",
+          "look_for": "Look for DR/BDR/DROther roles",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Shows current DR election results",
+          "look_for": "Look for DR/BDR/DROther roles",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface <intf>",
+          "confirms_if": "Shows DR election parameters for this interface",
+          "look_for": "Check DR/BDR IP, network type, and local priority",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface <intf>",
+          "confirms_if": "Shows DR election parameters for this interface",
+          "look_for": "Check DR/BDR IP, network type, and local priority",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface <intf>",
+          "confirms_if": "Shows DR election parameters for this interface",
+          "look_for": "Check DR/BDR IP, network type, and local priority",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "OSPF is configured but no neighbors are discovered on an interface. 'show ip ospf neighbor' returns empty for that interface. Hellos are being sent but no replies received. This differs from INIT (one-way) — here, no Hello is received at all.",
+      "resolutions": [
+        {
+          "action": "Verify OSPF enabled on both ends: 'show ip ospf interface' on both routers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify OSPF enabled on both ends: 'show ip ospf interface' on both routers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify OSPF enabled on both ends: 'show ip ospf interface' on both routers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check L2 connectivity: can you ping the neighbor? ARP resolve?",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check L2 connectivity: can you ping the neighbor? ARP resolve?",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check L2 connectivity: can you ping the neighbor? ARP resolve?",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify network/area statements match interface IP: 'show ip protocols'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify network/area statements match interface IP: 'show ip protocols'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify network/area statements match interface IP: 'show ip protocols'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check multicast: verify 224.0.0.5 is reachable between routers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check multicast: verify 224.0.0.5 is reachable between routers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check multicast: verify 224.0.0.5 is reachable between routers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: verify process name — 'router ospf 1' (with space) vs 'router ospf1' (no space) are different processes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: verify process name — 'router ospf 1' (with space) vs 'router ospf1' (no space) are different processes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE: verify process name — 'router ospf 1' (with space) vs 'router ospf1' (no space) are different processes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "OSPF not enabled on the remote side's interface (most common)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Network statement or 'ip ospf area' not matching the interface IP/mask",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Wrong OSPF process — interface in different OSPF process than expected",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "L2 connectivity issue — switch port VLAN mismatch, STP blocking, or cable issue",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Multicast not working — 224.0.0.5 not reaching remote side (common with some virtualization or cloud environments)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IOS-XE: 'router ospf1' (no space) creates a different process than 'router ospf 1'",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Neighbor not forming / OSPF table empty on interface",
+      "symptoms": [
+        "show ip ospf neighbor returns empty for the interface",
+        "show ip ospf interface shows OSPF enabled but 'Neighbor Count is 0'",
+        "No OSPF adjacency-related syslog messages",
+        "Routing table empty for OSPF routes"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip ospf interface",
+          "confirms_if": "Confirms OSPF is active on the interface",
+          "look_for": "Verify the interface shows as OSPF-enabled with correct area and process",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface",
+          "confirms_if": "Confirms OSPF is active on the interface",
+          "look_for": "Verify the interface shows as OSPF-enabled with correct area and process",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface",
+          "confirms_if": "Confirms OSPF is active on the interface",
+          "look_for": "Verify the interface shows as OSPF-enabled with correct area and process",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows which interfaces are matched by OSPF network/area config",
+          "look_for": "Check network statements and which interfaces are included",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows which interfaces are matched by OSPF network/area config",
+          "look_for": "Check network statements and which interfaces are included",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows which interfaces are matched by OSPF network/area config",
+          "look_for": "Check network statements and which interfaces are included",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf traffic",
+          "confirms_if": "Confirms Hellos are being sent but not received",
+          "look_for": "Check Hello sent/received counters — non-zero sent but zero received confirms no neighbor",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf traffic",
+          "confirms_if": "Confirms Hellos are being sent but not received",
+          "look_for": "Check Hello sent/received counters — non-zero sent but zero received confirms no neighbor",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf traffic",
+          "confirms_if": "Confirms Hellos are being sent but not received",
+          "look_for": "Check Hello sent/received counters — non-zero sent but zero received confirms no neighbor",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show cdp neighbors",
+          "confirms_if": "Confirms L2 reachability to the neighboring device",
+          "look_for": "Verify L2 connectivity and that the expected device is on the other end",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show cdp neighbors",
+          "confirms_if": "Confirms L2 reachability to the neighboring device",
+          "look_for": "Verify L2 connectivity and that the expected device is on the other end",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show cdp neighbors",
+          "confirms_if": "Confirms L2 reachability to the neighboring device",
+          "look_for": "Verify L2 connectivity and that the expected device is on the other end",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "OSPF adjacency flaps correlate with STP reconvergence events on intermediate L2 switches. The L2 infrastructure between OSPF neighbors experiences brief forwarding disruptions during STP topology changes, causing OSPF Hellos to be lost and dead timer to expire.",
+      "resolutions": [
+        {
+          "action": "Check STP events on transit switches: 'show spanning-tree detail' for topology change timestamps",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check STP events on transit switches: 'show spanning-tree detail' for topology change timestamps",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check STP events on transit switches: 'show spanning-tree detail' for topology change timestamps",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Correlate OSPF flap times with STP topology change times",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Correlate OSPF flap times with STP topology change times",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Correlate OSPF flap times with STP topology change times",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize L2 infrastructure: proper STP root placement, BPDU guard on access ports",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize L2 infrastructure: proper STP root placement, BPDU guard on access ports",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Stabilize L2 infrastructure: proper STP root placement, BPDU guard on access ports",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider P2P links or routed interfaces to eliminate L2 dependency",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider P2P links or routed interfaces to eliminate L2 dependency",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider P2P links or routed interfaces to eliminate L2 dependency",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If L2 segment is required, use BFD for faster detection and tune dead-interval",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If L2 segment is required, use BFD for faster detection and tune dead-interval",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If L2 segment is required, use BFD for faster detection and tune dead-interval",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "STP reconvergence on intermediate switches causing forwarding blackout",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RSTP proposal/agreement phase on transit links blocking OSPF multicast",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Unidirectional link on transit switch causing STP instability",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Transit switch uplink failure causing STP root bridge change",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "OSPF neighbor flapping due to transit L2 infrastructure",
+      "symptoms": [
+        "OSPF neighbor flaps correlate with STP events on intermediate switches",
+        "show spanning-tree on transit switches shows recent topology changes",
+        "OSPF flaps last exactly dead-interval duration (40s default)",
+        "Multiple OSPF neighbors on same L2 segment all flap simultaneously"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Shows current neighbor state and uptime",
+          "look_for": "Check neighbor uptime — short uptime on multiple neighbors indicates recent flap",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Shows current neighbor state and uptime",
+          "look_for": "Check neighbor uptime — short uptime on multiple neighbors indicates recent flap",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf neighbor",
+          "confirms_if": "Shows current neighbor state and uptime",
+          "look_for": "Check neighbor uptime — short uptime on multiple neighbors indicates recent flap",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree detail",
+          "confirms_if": "Correlates STP events with OSPF flap timeline",
+          "look_for": "Check 'Number of topology changes' and 'Time since last topology change' on transit switches",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree detail",
+          "confirms_if": "Correlates STP events with OSPF flap timeline",
+          "look_for": "Check 'Number of topology changes' and 'Time since last topology change' on transit switches",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show spanning-tree detail",
+          "confirms_if": "Correlates STP events with OSPF flap timeline",
+          "look_for": "Check 'Number of topology changes' and 'Time since last topology change' on transit switches",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf statistics",
+          "confirms_if": "Confirms OSPF instability pattern",
+          "look_for": "Check SPF run count and last SPF trigger — multiple recent SPF runs indicate instability",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf statistics",
+          "confirms_if": "Confirms OSPF instability pattern",
+          "look_for": "Check SPF run count and last SPF trigger — multiple recent SPF runs indicate instability",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf statistics",
+          "confirms_if": "Confirms OSPF instability pattern",
+          "look_for": "Check SPF run count and last SPF trigger — multiple recent SPF runs indicate instability",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "When OSPF and another IGP (typically EIGRP) are mutually redistributed at two or more boundary routers, routes can be learned back from the wrong protocol with a better administrative distance or metric, creating routing loops or black holes. Routes redistributed from OSPF into EIGRP at Router A may be redistributed back into OSPF at Router B with a different metric, potentially overriding the original OSPF route.",
+      "resolutions": [
+        {
+          "action": "Use route tags: tag routes during redistribution into OSPF ('set tag <N>'), then filter on re-entry: 'deny tag <N>' in the redistribution from OSPF back to the other IGP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use route tags: tag routes during redistribution into OSPF ('set tag <N>'), then filter on re-entry: 'deny tag <N>' in the redistribution from OSPF back to the other IGP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use route tags: tag routes during redistribution into OSPF ('set tag <N>'), then filter on re-entry: 'deny tag <N>' in the redistribution from OSPF back to the other IGP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Adjust administrative distance: make native OSPF routes (AD 110) preferred over OSPF external routes redistributed from another protocol",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Adjust administrative distance: make native OSPF routes (AD 110) preferred over OSPF external routes redistributed from another protocol",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Adjust administrative distance: make native OSPF routes (AD 110) preferred over OSPF external routes redistributed from another protocol",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply prefix-lists at redistribution points: only redistribute specific prefixes that belong in each domain",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply prefix-lists at redistribution points: only redistribute specific prefixes that belong in each domain",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Apply prefix-lists at redistribution points: only redistribute specific prefixes that belong in each domain",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider one-way redistribution where possible — redistribute INTO OSPF but use default route for return traffic",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider one-way redistribution where possible — redistribute INTO OSPF but use default route for return traffic",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider one-way redistribution where possible — redistribute INTO OSPF but use default route for return traffic",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce redistribution points: if possible, redistribute at only one boundary router and use the other as backup with higher metrics",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce redistribution points: if possible, redistribute at only one boundary router and use the other as backup with higher metrics",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce redistribution points: if possible, redistribute at only one boundary router and use the other as backup with higher metrics",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Mutual redistribution at two or more boundary routers without loop prevention",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No route tags configured to identify and filter redistributed routes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Administrative distance not adjusted — redistributed routes may have better AD than native routes at certain points in the topology",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Missing prefix-list or route-map at redistribution points to prevent routes from being redistributed back into their source protocol",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Seed metric mismatch causing the redistributed path to appear better than the native path",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Route redistribution loop (mutual redistribution with another IGP)",
+      "symptoms": [
+        "Traceroute shows routing loop (same hops repeating)",
+        "Suboptimal routing — traffic taking a longer path through the other IGP instead of the direct OSPF path",
+        "Routes appearing as OSPF external (E1/E2) when they should be intra-area or inter-area",
+        "Route metric keeps changing or oscillating",
+        "'show ip route <prefix>' shows the route learned via redistribution instead of the native IGP"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip route <prefix>",
+          "confirms_if": "Shows whether the route is learned natively or via redistribution",
+          "look_for": "Check the source protocol and AD — is the route learned via the expected protocol? Is it showing as O E2 when it should be O (intra-area)?",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <prefix>",
+          "confirms_if": "Shows whether the route is learned natively or via redistribution",
+          "look_for": "Check the source protocol and AD — is the route learned via the expected protocol? Is it showing as O E2 when it should be O (intra-area)?",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <prefix>",
+          "confirms_if": "Shows whether the route is learned natively or via redistribution",
+          "look_for": "Check the source protocol and AD — is the route learned via the expected protocol? Is it showing as O E2 when it should be O (intra-area)?",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf database external",
+          "confirms_if": "Shows all redistributed external routes in OSPF",
+          "look_for": "Look for external LSAs (Type-5) for prefixes that should be internal — these indicate redistribution has occurred",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf database external",
+          "confirms_if": "Shows all redistributed external routes in OSPF",
+          "look_for": "Look for external LSAs (Type-5) for prefixes that should be internal — these indicate redistribution has occurred",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf database external",
+          "confirms_if": "Shows all redistributed external routes in OSPF",
+          "look_for": "Look for external LSAs (Type-5) for prefixes that should be internal — these indicate redistribution has occurred",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows redistribution configuration and any filters applied",
+          "look_for": "Check redistribution configuration, route-maps applied, and administrative distances for OSPF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows redistribution configuration and any filters applied",
+          "look_for": "Check redistribution configuration, route-maps applied, and administrative distances for OSPF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows redistribution configuration and any filters applied",
+          "look_for": "Check redistribution configuration, route-maps applied, and administrative distances for OSPF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show route-map <name>",
+          "confirms_if": "Confirms tag-based loop prevention is configured",
+          "look_for": "Check tag-based filtering: deny clauses should block routes with tags from the other protocol",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show route-map <name>",
+          "confirms_if": "Confirms tag-based loop prevention is configured",
+          "look_for": "Check tag-based filtering: deny clauses should block routes with tags from the other protocol",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show route-map <name>",
+          "confirms_if": "Confirms tag-based loop prevention is configured",
+          "look_for": "Check tag-based filtering: deny clauses should block routes with tags from the other protocol",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Traffic takes different forward and return paths through the network due to ECMP, unequal IGP costs, or multi-exit routing. While asymmetric routing is not inherently a routing problem, it breaks stateful inspection devices (firewalls, NAT, IPS, load balancers) that expect to see both directions of a flow. The firewall drops return traffic because it never saw the initial SYN, causing application failures.",
+      "resolutions": [
+        {
+          "action": "Identify the asymmetric path: traceroute in BOTH directions and compare",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the asymmetric path: traceroute in BOTH directions and compare",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the asymmetric path: traceroute in BOTH directions and compare",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align routing: ensure OSPF costs are consistent so both directions use the same path through stateful devices",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align routing: ensure OSPF costs are consistent so both directions use the same path through stateful devices",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Align routing: ensure OSPF costs are consistent so both directions use the same path through stateful devices",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For dual-firewall: use firewall clustering or state synchronization between active/standby",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For dual-firewall: use firewall clustering or state synchronization between active/standby",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For dual-firewall: use firewall clustering or state synchronization between active/standby",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For ECMP: use per-flow load balancing (not per-packet) to keep both directions of a flow on the same path",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For ECMP: use per-flow load balancing (not per-packet) to keep both directions of a flow on the same path",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For ECMP: use per-flow load balancing (not per-packet) to keep both directions of a flow on the same path",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For dual-ISP: configure policy-based routing to ensure return traffic exits via the same ISP that carried the inbound traffic",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For dual-ISP: configure policy-based routing to ensure return traffic exits via the same ISP that carried the inbound traffic",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For dual-ISP: configure policy-based routing to ensure return traffic exits via the same ISP that carried the inbound traffic",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider OSPF cost manipulation to prefer one path for specific subnets",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider OSPF cost manipulation to prefer one path for specific subnets",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider OSPF cost manipulation to prefer one path for specific subnets",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "ECMP load balancing across multiple firewalls — forward and return flows hashed to different devices",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Dual-homed site with two ISP connections — outbound via ISP-A, inbound via ISP-B",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Multiple routing protocol paths with different metrics in each direction",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Hot Standby/VRRP failover with routing not aligned — FHRP active on one router but routing prefers a different exit",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Policy-based routing (PBR) applied only in one direction",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Asymmetric routing breaking stateful devices (firewalls/NAT/IPS)",
+      "symptoms": [
+        "TCP connections fail to establish through stateful firewalls — SYN goes through one path, SYN-ACK returns through another",
+        "Firewall logs show 'denied by ACL' or 'no matching connection' for return traffic",
+        "Traceroute from A to B shows a different path than traceroute from B to A",
+        "Intermittent connectivity — some flows work (symmetric by chance), others fail",
+        "NAT translations fail — return traffic arrives at a different NAT device that has no translation entry"
+      ],
+      "verify_commands": [
+        {
+          "command": "traceroute <dest>",
+          "confirms_if": "Different paths in each direction confirm asymmetric routing",
+          "look_for": "Run from both endpoints — compare the paths. Different intermediate hops indicate asymmetric routing",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "traceroute <dest>",
+          "confirms_if": "Different paths in each direction confirm asymmetric routing",
+          "look_for": "Run from both endpoints — compare the paths. Different intermediate hops indicate asymmetric routing",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "traceroute <dest>",
+          "confirms_if": "Different paths in each direction confirm asymmetric routing",
+          "look_for": "Run from both endpoints — compare the paths. Different intermediate hops indicate asymmetric routing",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface",
+          "confirms_if": "Shows OSPF cost per interface for path cost comparison",
+          "look_for": "Check OSPF cost on each interface — unequal costs in different directions cause asymmetric paths",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface",
+          "confirms_if": "Shows OSPF cost per interface for path cost comparison",
+          "look_for": "Check OSPF cost on each interface — unequal costs in different directions cause asymmetric paths",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf interface",
+          "confirms_if": "Shows OSPF cost per interface for path cost comparison",
+          "look_for": "Check OSPF cost on each interface — unequal costs in different directions cause asymmetric paths",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <dest>",
+          "confirms_if": "Multiple next-hops for the same prefix indicate ECMP",
+          "look_for": "Check if multiple equal-cost paths exist (ECMP) — traffic may be split across paths",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <dest>",
+          "confirms_if": "Multiple next-hops for the same prefix indicate ECMP",
+          "look_for": "Check if multiple equal-cost paths exist (ECMP) — traffic may be split across paths",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <dest>",
+          "confirms_if": "Multiple next-hops for the same prefix indicate ECMP",
+          "look_for": "Check if multiple equal-cost paths exist (ECMP) — traffic may be split across paths",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip cef <dest>",
+          "confirms_if": "Shows actual forwarding path for specific traffic flows",
+          "look_for": "Check CEF load-sharing — shows which next-hop is selected for specific flow hashes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip cef <dest>",
+          "confirms_if": "Shows actual forwarding path for specific traffic flows",
+          "look_for": "Check CEF load-sharing — shows which next-hop is selected for specific flow hashes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip cef <dest>",
+          "confirms_if": "Shows actual forwarding path for specific traffic flows",
+          "look_for": "Check CEF load-sharing — shows which next-hop is selected for specific flow hashes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "An OSPF distribute-list references an ACL that permits specific prefixes but the implicit deny at the end of the ACL blocks all other OSPF routes from being installed in the routing table. The LSDB contains all LSAs but the RIB is missing routes that were filtered.",
+      "resolutions": [
+        {
+          "action": "Check distribute-list: 'show ip protocols' — look for 'Incoming update filter list'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check distribute-list: 'show ip protocols' — look for 'Incoming update filter list'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check distribute-list: 'show ip protocols' — look for 'Incoming update filter list'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review ACL/prefix-list: verify it has an explicit permit for all desired routes or a terminal permit-all",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review ACL/prefix-list: verify it has an explicit permit for all desired routes or a terminal permit-all",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review ACL/prefix-list: verify it has an explicit permit for all desired routes or a terminal permit-all",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider adding 'permit any' at end of ACL to allow all non-matched routes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider adding 'permit any' at end of ACL to allow all non-matched routes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider adding 'permit any' at end of ACL to allow all non-matched routes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove distribute-list if filtering is not needed: 'no distribute-list' under OSPF process",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove distribute-list if filtering is not needed: 'no distribute-list' under OSPF process",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove distribute-list if filtering is not needed: 'no distribute-list' under OSPF process",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Distribute-list in uses ACL with implicit deny at end",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL intended to filter specific routes but accidentally blocking others",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Distribute-list applied per-interface filtering more broadly than intended",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Prefix-list or route-map used with distribute-list missing a terminal permit",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Routes missing due to distribute-list with implicit deny",
+      "symptoms": [
+        "Some OSPF routes present but many expected routes missing",
+        "show ip ospf database shows LSAs for missing routes",
+        "show ip route ospf missing specific prefixes",
+        "show ip protocols shows distribute-list configured"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows whether distribute-list is configured and which ACL/prefix-list",
+          "look_for": "Look for 'Incoming update filter list for all interfaces' or per-interface filter",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows whether distribute-list is configured and which ACL/prefix-list",
+          "look_for": "Look for 'Incoming update filter list for all interfaces' or per-interface filter",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip protocols",
+          "confirms_if": "Shows whether distribute-list is configured and which ACL/prefix-list",
+          "look_for": "Look for 'Incoming update filter list for all interfaces' or per-interface filter",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Shows ACL entries and the implicit deny behavior",
+          "look_for": "Review the referenced ACL — check if it has an explicit permit for the missing routes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Shows ACL entries and the implicit deny behavior",
+          "look_for": "Review the referenced ACL — check if it has an explicit permit for the missing routes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Shows ACL entries and the implicit deny behavior",
+          "look_for": "Review the referenced ACL — check if it has an explicit permit for the missing routes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf database",
+          "confirms_if": "Confirms LSAs exist but routes are being filtered before RIB",
+          "look_for": "LSAs for missing routes exist in LSDB — confirms routes are filtered at RIB installation, not at flooding",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf database",
+          "confirms_if": "Confirms LSAs exist but routes are being filtered before RIB",
+          "look_for": "LSAs for missing routes exist in LSDB — confirms routes are filtered at RIB installation, not at flooding",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ospf database",
+          "confirms_if": "Confirms LSAs exist but routes are being filtered before RIB",
+          "look_for": "LSAs for missing routes exist in LSDB — confirms routes are filtered at RIB installation, not at flooding",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route ospf",
+          "confirms_if": "Shows which OSPF routes are actually installed in the RIB",
+          "look_for": "Compare installed OSPF routes against expected — missing ones are filtered by distribute-list",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route ospf",
+          "confirms_if": "Shows which OSPF routes are actually installed in the RIB",
+          "look_for": "Compare installed OSPF routes against expected — missing ones are filtered by distribute-list",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route ospf",
+          "confirms_if": "Shows which OSPF routes are actually installed in the RIB",
+          "look_for": "Compare installed OSPF routes against expected — missing ones are filtered by distribute-list",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Two OSPF routers on the same segment have different Hello Interval or Dead Interval values configured. When Hello packets are received, the intervals in the received Hello are compared against the local interface configuration. A mismatch causes the Hello to be silently ignored -- no error message is generated, no adjacency forms, and the neighbor never advances past Down state. This is one of the most common OSPF misconfiguration errors and is especially subtle because ospfd logs do not always surface the mismatch reason.",
+      "resolutions": [
+        {
+          "action": "Capture Hello packets on both sides: 'sudo tcpdump -i <interface> proto ospf -c 20' and compare Hello Interval and Dead Interval fields",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check local OSPF interface config: 'docker exec bgp vtysh -c \"show ip ospf interface <ifname>\"' -- shows configured hello-interval and dead-interval",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check peer's OSPF interface config via out-of-band or console access",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Align Hello and Dead intervals: 'ip ospf hello-interval <N>' and 'ip ospf dead-interval <N>' on both interfaces in vtysh (or via frrcfgd/config)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify change took effect: 'docker exec bgp vtysh -c \"show ip ospf interface <ifname>\"'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Hello Interval configured differently on the two ends of the link",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Dead Interval configured differently on the two ends of the link",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "One side uses 'ip ospf dead-interval minimal hello-multiplier' fast timers and the other uses standard timers",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Configuration applied to wrong interface or missing on one side",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "frrcfgd rendered different timer values from CONFIG_DB due to template issue",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Hello/Dead interval mismatch -- adjacency never forms",
+      "symptoms": [
+        "'show ip ospf neighbor' shows no neighbor entry for the expected peer IP",
+        "Neighbor is permanently in Down state or never appears",
+        "Interface shows ospf enabled but neighbor count is 0",
+        "tcpdump on the interface shows OSPF Hello packets arriving from the peer",
+        "ospfd logs may show 'Packet[Hello:RECV]: NetworkMask mismatch' or interval mismatch message"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf interface <ifname>'",
+          "confirms_if": "Different Hello or Dead Interval values between the two ends confirms the mismatch",
+          "look_for": "Timer intervals configured: Hello <N>s, Dead <N>s -- compare with expected peer values",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo tcpdump -i <interface> proto ospf -nn -c 20",
+          "confirms_if": "Peer Hello shows different HelloInt or DeadInt than local interface config confirms interval mismatch",
+          "look_for": "Hello packets from peer showing HelloInt and DeadInt fields; compare against local values",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf neighbor'",
+          "confirms_if": "Missing neighbor entry with active OSPF on both sides and Hellos being sent confirms a parameter mismatch causing Hello rejection",
+          "look_for": "Absence of expected neighbor or neighbor stuck in Down state",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker logs bgp 2>&1 | grep -i 'ospf\\|hello\\|interval' | tail -30",
+          "confirms_if": "Log messages mentioning Hello Interval or Dead Interval mismatch confirm the cause",
+          "look_for": "Interval mismatch log messages from ospfd",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "OSPF routers on the same physical segment have different Area IDs configured on their interfaces. OSPF Hello packets contain the Area ID in their IP header (technically, in the OSPF common header). If the Area ID in a received Hello does not match the receiving interface's configured Area ID, the packet is silently discarded. The neighbor never appears and the adjacency never starts. Unlike Hello/Dead interval mismatch, there is usually no log message for Area ID mismatch in default FRR logging level.",
+      "resolutions": [
+        {
+          "action": "Enable OSPF packet debugging temporarily: 'docker exec bgp vtysh -c \"debug ospf packet hello recv\"'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check logs for area mismatch: 'docker logs bgp 2>&1 | grep -i \"area\" | tail -20'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify area assignment on interface: 'docker exec bgp vtysh -c \"show ip ospf interface <ifname>\"' -- shows 'Area <id>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Confirm peer's area assignment via out-of-band or by reading their Hello packet (area field is in OSPF common header)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Correct the area assignment: 'interface <ifname>' then 'ip ospf area <correct-area>' in vtysh",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Disable debug after confirmation: 'docker exec bgp vtysh -c \"no debug ospf packet hello recv\"'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Interface on one router configured in area 0.0.0.0 (backbone) and the other in area 0.0.0.1 (or any non-matching area)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Mistyped area ID in the 'network <prefix> area <id>' command under 'router ospf'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Area ID entered as dotted-decimal on one side and as integer on the other (area 1 vs area 0.0.0.1 -- these are equivalent in FRR, but area 0.0.0.10 is different from area 10)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Interface-level 'ip ospf area <id>' overrides the router-level 'network' statement and was configured incorrectly",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Area ID mismatch -- neighbors ignore each other's Hellos",
+      "symptoms": [
+        "No OSPF neighbor relationship forms despite both routers having OSPF enabled on the interface",
+        "'show ip ospf neighbor' shows no entry for the peer",
+        "'show ip ospf interface' shows the interface as 'OSPF is enabled' with correct network statement",
+        "tcpdump confirms Hellos are arriving from the peer",
+        "ospfd debug logs (debug ospf packet hello recv) show 'area id mismatch'"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf interface <ifname>'",
+          "confirms_if": "Area ID differs from what is configured on the peer's interface confirms area mismatch",
+          "look_for": "Area field -- shows which OSPF area this interface belongs to",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf'",
+          "confirms_if": "Expected area ID absent from the OSPF process confirms the interface was not assigned to the correct area",
+          "look_for": "All areas listed under 'Number of areas in this router'; verify the correct area exists",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo tcpdump -i <interface> proto ospf -c 10 -v",
+          "confirms_if": "Peer's Hello shows different Area ID than local interface's configured area confirms mismatch",
+          "look_for": "Area ID field in OSPF common header of peer's Hello packets",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "OSPF adjacency reaches Full state successfully (Hello/Dead intervals and Area IDs match), but routes from external sources or from other areas are missing. This happens when routers on the same area have inconsistent area type configuration: one router treats the area as a stub and another as a normal area, or one treats it as NSSA and another as stub. The adjacency itself forms because area type is not checked during Hello exchange on some FRR versions, but external LSAs (Type-5) are dropped by the stub router, causing route black-holes.",
+      "resolutions": [
+        {
+          "action": "Check area type on all routers in the area: 'docker exec bgp vtysh -c \"show ip ospf\"' -- look for area type in output",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check OSPF database for LSA types: 'docker exec bgp vtysh -c \"show ip ospf database\"' -- stub areas should have no Type-5 LSAs",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Align area type configuration on all ABRs and internal routers for the area",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "For NSSA: ensure ABR has 'area <id> nssa' and internal routers also have 'area <id> nssa'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Restart ospfd after area type change: 'docker exec bgp supervisorctl restart ospfd' (disrupts all OSPF adjacencies briefly)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "One router has 'area <id> stub' and another has no stub configuration (normal area) -- stub router drops Type-5 LSAs",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "One router has 'area <id> stub no-summary' (totally stubby) and another has plain 'area <id> stub' -- inter-area routes missing",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "One router has 'area <id> nssa' and another has 'area <id> stub' -- incompatible area type flags in Hello N-bit/E-bit",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "ABR configured as NSSA but internal routers not configured as NSSA -- Type-7 LSAs not generated or translated",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Area type mismatch -- adjacency forms but routes not exchanged correctly",
+      "symptoms": [
+        "OSPF adjacency shows Full state for the neighbor",
+        "Routes from redistributed sources (BGP, static, connected) are missing in the stub area",
+        "Type-5 (AS External) or Type-7 (NSSA External) LSAs absent from 'show ip ospf database' on stub/NSSA routers",
+        "Routers in stub area have only a default route but no external routes",
+        "ospfd logs may show LSA type filtering messages"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf'",
+          "confirms_if": "Different area types on routers in the same area confirms the mismatch causing LSA filtering",
+          "look_for": "Area description -- 'Stub', 'NSSA', or normal; all routers in area must show same type",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf database'",
+          "confirms_if": "Type-5 LSAs present on a router configured as stub confirms area type mismatch with the ABR",
+          "look_for": "Presence or absence of 'AS External Link States' section; stub areas must not have Type-5 LSAs",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf database summary'",
+          "confirms_if": "Missing LSA types that should be present (or unexpected LSAs that should be filtered) confirms area type inconsistency",
+          "look_for": "LSA counts by type per area; Type-3 Summary LSAs absent in totally-stubby areas",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Two OSPF neighbors successfully exchange Hello packets (reaching 2-Way) and begin database exchange, but the adjacency never advances past ExStart or Exchange state. The MTU field in Database Description (DBD) packets defaults to the interface MTU. If one side's interface MTU is smaller than the other's DBD packet, the DBD is silently dropped. The sending side retransmits indefinitely; the receiving side discards packets larger than its MTU. This is the second most common OSPF failure mode in SONiC environments where interface MTU may differ between different NIC types or configurations.",
+      "resolutions": [
+        {
+          "action": "Check local interface MTU: 'ip link show <interface>' -- look for mtu value",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check peer interface MTU out-of-band or via LLDP: 'show lldp neighbors detail | grep -A5 <port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Option 1 (preferred): Align MTUs on both interfaces to the same value",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Option 2 (workaround): Configure 'ip ospf mtu-ignore' on the interface in vtysh to skip MTU check in DBD: 'interface <ifname>' then 'ip ospf mtu-ignore'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify neighbor advances: after MTU fix, 'show ip ospf neighbor' should reach Full within a few seconds",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Interface MTU configured differently on the two ends of the link (common in SONiC with jumbo frames on some ports)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "One interface has jumbo MTU (9100 or 9000) and the other has default Ethernet MTU (1500)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "MTU mismatch introduced by VLAN tagging adding overhead not accounted for in OSPF MTU field",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "VxLAN or GRE tunnel overhead reduces effective MTU but OSPF does not account for the encapsulation",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Hardware asymmetry: two different NIC types with different default MTUs in a SONiC chassis",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "MTU mismatch -- adjacency stuck in ExStart or Exchange",
+      "symptoms": [
+        "'show ip ospf neighbor' shows ExStart or Exchange state that never advances to Loading or Full",
+        "'show ip ospf neighbor detail' shows increasing 'Retransmit' count and zero 'Database Summary List' progress",
+        "Neighbor has been in ExStart/Exchange for minutes without advancing",
+        "tcpdump shows DBD packets being sent from one side but no corresponding DBD ACKs from the other",
+        "Interface MTU values differ between the two connected interfaces"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf neighbor detail'",
+          "confirms_if": "Neighbor stuck in ExStart/Exchange with growing retransmit count confirms DBD exchange failure",
+          "look_for": "State is ExStart or Exchange; high Retransmit count; Database Summary List length not decreasing",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "ip link show <interface>",
+          "confirms_if": "MTU values differ between the two ends of the link confirms the root cause",
+          "look_for": "mtu value -- compare local MTU against peer's interface MTU",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo tcpdump -i <interface> proto ospf -nn -c 30",
+          "confirms_if": "One-way DBD traffic with no acknowledgment confirms DBD packets are being silently dropped by the peer",
+          "look_for": "DBD packets being sent but no DBD ACK in return; retransmitted DBD sequences (same DD sequence number resent)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show lldp neighbors detail",
+          "confirms_if": "LLDP-advertised MTU differs from local MTU confirms the link has asymmetric MTU configuration",
+          "look_for": "Peer's port MTU (if advertised via LLDP); compare against local interface MTU",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "OSPF authentication (MD5 or plain-text) is configured on one side of a link but not the other, or both sides have authentication enabled but with different keys. OSPF treats authentication failures as silent drops -- no error is sent to the peer. The router discards the Hello without processing it, so the neighbor never advances past Down state. This is extremely difficult to diagnose without packet capture because ospfd does not log authentication failures at default log levels.",
+      "resolutions": [
+        {
+          "action": "Enable OSPF authentication debugging temporarily: 'docker exec bgp vtysh -c \"debug ospf packet all recv\"'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check logs for authentication failure: 'docker logs bgp 2>&1 | grep -i \"auth\\|password\\|key\" | tail -20'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify authentication config on interface: 'docker exec bgp vtysh -c \"show ip ospf interface <ifname>\"' -- shows authentication type",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check FRR running-config for key strings: 'docker exec bgp vtysh -c \"show running-config\"' | grep -A3 'ip ospf authentication'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Align authentication type and key on both sides; use MD5 with matching key-id and key string",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "After aligning, disable debug: 'docker exec bgp vtysh -c \"no debug ospf packet all recv\"'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Authentication enabled on one interface but not the other (type mismatch: null vs MD5 or plain-text)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Correct authentication type on both sides but different MD5 key-id or key string",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Key rolled over on one side during a maintenance window but not the other",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Plain-text password changed on one side and not replicated",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "frrcfgd applied authentication config from CONFIG_DB to wrong interface",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Authentication key configured via direct vtysh on one side and via frrcfgd on the other, causing divergence",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Authentication mismatch -- Hellos rejected silently",
+      "symptoms": [
+        "No OSPF neighbor forms despite correct Hello/Dead intervals and area configuration",
+        "tcpdump shows Hellos arriving from peer but neighbor stays in Down state",
+        "'show ip ospf interface' shows authentication type configured but no neighbors",
+        "ospfd debug authentication logs show 'authentication failed' messages",
+        "Hellos are being sent out but no 2-Way or higher state is reached"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf interface <ifname>'",
+          "confirms_if": "Authentication type differs from expected or from peer configuration confirms auth type mismatch",
+          "look_for": "Authentication type field: None, Simple Password, or Cryptographic; key-id if MD5",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "sudo tcpdump -i <interface> proto ospf -c 20 -v",
+          "confirms_if": "Different Auth Type values in sent and received Hello packets confirms authentication mismatch",
+          "look_for": "Auth Type field in OSPF Hello header: 0=None, 1=Simple, 2=MD5; compare sent vs received",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show running-config' | grep -A5 'ip ospf authentication'",
+          "confirms_if": "Different authentication settings than the peer confirms the mismatch; absence of authentication when peer has it confirms type mismatch",
+          "look_for": "Authentication type and key-id configured on the interface",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "On multi-access broadcast networks (Ethernet), OSPF elects a Designated Router (DR) and Backup Designated Router (BDR) to reduce the number of full adjacencies required. All routers form Full adjacency only with the DR and BDR. If the DR/BDR election produces unexpected results (wrong router elected, no DR, or priority misconfigured), non-DR routers may not form full adjacencies with each other and routing may be suboptimal or broken. In SONiC deployments, multi-access OSPF is common on management VLANs and server-facing segments.",
+      "resolutions": [
+        {
+          "action": "Check current DR/BDR and priorities: 'docker exec bgp vtysh -c \"show ip ospf neighbor detail\"' and 'show ip ospf interface <ifname>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Set router priority: 'interface <ifname>' then 'ip ospf priority <0-255>' (higher = more likely to be DR; 0 = ineligible)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check for duplicate Router IDs: 'docker exec bgp vtysh -c \"show ip ospf database router\"' -- each router should have unique advertising Router ID",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "To force new DR election on a segment, clear OSPF process: 'docker exec bgp vtysh -c \"clear ip ospf process\"' (disrupts all adjacencies)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "For spine-leaf fabrics, consider using point-to-point network type to avoid DR/BDR entirely: 'ip ospf network point-to-point' on the interface",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "OSPF router priority not configured -- all routers default to priority 1 and the router with highest Router ID wins (may not be the desired router)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Priority set to 0 on the intended DR making it ineligible for election",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "DR non-preemption: once a DR is elected, it stays DR even if a higher-priority router joins; router must be restarted to trigger new election",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Multiple routers on same segment have duplicate Router IDs -- election produces inconsistent results",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Partially connected broadcast segment (not all routers can hear each other) causing split DR/BDR views",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "DR/BDR election issues on broadcast networks -- suboptimal or failed election",
+      "symptoms": [
+        "'show ip ospf neighbor' shows some neighbors in 2-Way instead of Full (DROther-to-DROther, expected)",
+        "Wrong router is acting as DR (not the intended one with highest priority)",
+        "Adjacency count is lower than expected -- some routers not reaching Full with DR/BDR",
+        "DR or BDR role changes frequently, causing SPF recalculations",
+        "'show ip ospf interface' shows router as DROther when it should be DR"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf interface <ifname>'",
+          "confirms_if": "Unexpected DR IP or wrong role for local router confirms DR/BDR election issue",
+          "look_for": "DR and BDR IP addresses, local router's role (DR/BDR/DROther), router priority",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf neighbor'",
+          "confirms_if": "Fewer Full adjacencies than expected DR/BDR count confirms election problem or adjacency formation failure with DR",
+          "look_for": "Neighbors in 2-Way state (DROther to DROther is normal); any Full adjacency should be with DR or BDR only on broadcast segments",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf'",
+          "confirms_if": "Duplicate Router IDs across routers in the area confirms the election will be unpredictable",
+          "look_for": "Router ID -- check for duplicate Router IDs across all OSPF routers in the area",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The OSPF LSDB is being flooded with rapidly changing LSAs, causing ospfd to run SPF (Dijkstra) repeatedly and consuming high CPU. This happens when a link or router is unstable (flapping), causing it to repeatedly originate and withdraw its Router-LSA. Each LSA change triggers a new SPF run. In SONiC, a high ospfd CPU load can also impact other processes in the bgp container including zebra and fpmsyncd, potentially causing OSPF-adjacent issues upstream.",
+      "resolutions": [
+        {
+          "action": "Identify the flapping LSA source: 'docker exec bgp vtysh -c \"show ip ospf database\"' -- look for LSAs with rapidly incrementing LS Sequence Numbers",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Find the unstable router: the Advertising Router field of the rapidly-changing LSA identifies the source",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check that router's interface stability: 'show interfaces status' or check syslog for link-down events",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Configure SPF throttling if not set: 'timers throttle spf 200 1000 10000' under 'router ospf'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "For redistribution storms: add route-map filters to OSPF redistribution to suppress unstable prefixes",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check ospfd container stability: 'docker inspect bgp | grep RestartCount' -- ospfd crash-restart generates new LSA sequence numbers",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "A link or interface is flapping, causing the connected router to repeatedly originate new Router-LSAs",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "ospfd process on a neighbor is oscillating (crash-restart cycle generating new self-originate LSAs each time)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "LSA maxage flushing storm: a router is originating many LSAs and the LSRefreshTime is close to a network change cycle",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Route redistribution instability: external routes being redistributed into OSPF are flapping (e.g., BGP prefixes flapping cause OSPF Type-5 LSA churn)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "ospfd SPF throttle timers not configured, causing immediate SPF on every LSA arrival",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "LSA flooding storm -- excessive SPF recalculations and high CPU",
+      "symptoms": [
+        "ospfd or bgp container CPU usage is high: 'docker stats bgp --no-stream' shows elevated CPU",
+        "'docker exec bgp vtysh -c \"show ip ospf spf-calculation\"' shows high SPF run count or rapid last-run timestamps",
+        "Frequent log messages: 'SPF: Scheduled' or 'OSPF-5-ADJCHG' in syslog",
+        "Routing table instability -- routes flapping in and out",
+        "High OSPF packet rate visible in interface counters"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker stats bgp --no-stream",
+          "confirms_if": "High bgp container CPU during OSPF convergence events confirms excessive SPF recalculation",
+          "look_for": "CPU % for the bgp container -- ospfd flooding storm typically pushes CPU above 50-80%",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf database'",
+          "confirms_if": "High sequence numbers (0x80000100+ means 256+ originations) on a specific router's LSA identifies the flapping source",
+          "look_for": "LSA Sequence Numbers -- rapidly incrementing sequence numbers for the same LSA indicate the originating router is repeatedly re-originating it",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf spf-calculation'",
+          "confirms_if": "Very high SPF run count or frequent last-run timestamps confirms excessive SPF recalculation",
+          "look_for": "SPF run count and timestamp of last SPF; multiple SPFs per minute indicates a flooding storm",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker logs bgp 2>&1 | grep -E 'SPF|ADJCHG|ospf' | tail -50",
+          "confirms_if": "Repeated SPF and adjacency events within seconds of each other confirms routing instability driven by LSA flooding",
+          "look_for": "Rapid repeated SPF schedule messages or adjacency change events",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "OSPF and BGP are both running and routes are being redistributed in both directions -- OSPF routes into BGP and BGP routes into OSPF. Without proper filtering, a route learned from BGP gets redistributed into OSPF as an external route, then re-learned by BGP as an OSPF-sourced route, then redistributed back into OSPF with a different metric, creating a churn loop. Each redistribution cycle increments the OSPF LS Sequence Number on the external LSA, driving an LSA flooding storm and potentially causing route metric inflation.",
+      "resolutions": [
+        {
+          "action": "Add OSPF route tagging to prevent re-import: use a route-map to tag BGP routes when redistributing into OSPF, then deny tagged routes when redistributing OSPF back into BGP",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Example: in 'redistribute bgp' into OSPF, add 'route-map tag-bgp-routes' that sets tag 100; in BGP's 'redistribute ospf', add 'route-map deny-tag-100' that denies routes with tag 100",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Use prefix-lists to explicitly define which prefixes should be redistributed in each direction",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check current redistribution config: 'docker exec bgp vtysh -c \"show running-config\"' -- look for 'redistribute' lines under both 'router ospf' and 'router bgp'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Remove bidirectional redistribution if not needed and replace with manual network statements",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Mutual redistribution configured: 'redistribute bgp' under 'router ospf' AND 'redistribute ospf' under 'router bgp' without filtering",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Missing route-map to tag redistributed routes and filter tagged routes on re-import",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Incorrect administrative distance allowing OSPF external routes to win over directly learned BGP routes",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Multiple redistribution points (more than one ABR or ASBR redistributing the same prefixes)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Route redistribution loop -- mutual redistribution between OSPF and BGP",
+      "symptoms": [
+        "OSPF Type-5 or Type-7 external LSA database is very large and growing",
+        "Routes appear with unexpected OSPF external metrics or oscillating metrics",
+        "BGP and OSPF RIBs show routes with alternating source protocols",
+        "ospfd CPU is high due to frequent LSA re-origination",
+        "Routes that should be BGP-only appear in 'show ip ospf database external' with OSPF External type"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf database external'",
+          "confirms_if": "Large and growing external LSA database with BGP-originated routes confirms redistribution loop",
+          "look_for": "Large number of Type-5 LSAs; LSAs with rapidly incrementing sequence numbers; routes that should be internal appearing as external",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show running-config' | grep -A2 redistribute",
+          "confirms_if": "Mutual redistribution without filtering tags confirms the loop configuration exists",
+          "look_for": "Presence of 'redistribute bgp' under 'router ospf' AND 'redistribute ospf' under 'router bgp' without route-maps",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf database external' | grep -c 'Link State ID'",
+          "confirms_if": "Unexpectedly large external LSA count confirms route redistribution is generating excessive entries",
+          "look_for": "Count of external LSAs -- should be small (tens to low hundreds in a normal network); thousands indicates redistribution explosion",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ip route ospf'",
+          "confirms_if": "BGP-originated prefixes showing as OSPF External routes on the redistributing router confirms the loop",
+          "look_for": "OSPF external (O E1/E2) routes that correspond to BGP prefixes -- if BGP prefixes appear as OSPF external routes on the local router, the loop is active",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "OSPF adjacency is Full and OSPF routes appear in 'show ip route ospf' in the FRR/zebra RIB, but traffic to OSPF-learned destinations is dropped. The routes have been installed into the Linux kernel routing table by zebra but fpmsyncd has not published them to APPL_DB ROUTE_TABLE, so orchagent never programs them into the ASIC. This is the same pipeline failure as with BGP routes but manifests in OSPF deployments. In SONiC, all routes (regardless of protocol) must flow through fpmsyncd to reach the ASIC.",
+      "resolutions": [
+        {
+          "action": "Check fpmsyncd status: 'docker exec bgp supervisorctl status fpmsyncd'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check FPM connection: 'docker exec bgp vtysh -c \"show zebra fpm stats\"' -- should show 'connected' and message counts",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check fpmsyncd logs: 'docker logs bgp 2>&1 | grep -i fpmsyncd | tail -30'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Restart fpmsyncd (safe, does not affect OSPF adjacencies): 'docker exec bgp supervisorctl restart fpmsyncd'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "After restart, verify APPL_DB is populated: 'redis-cli -n 0 KEYS \"ROUTE_TABLE:*\" | wc -l'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "If APPL_DB shows routes but ASIC_DB does not, the failure is in orchagent: 'docker logs swss 2>&1 | grep -E \"ERROR|route\" | tail -30'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "fpmsyncd process has crashed or stalled inside the bgp container",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "FPM socket between zebra and fpmsyncd is broken -- zebra has installed routes in kernel but FPM notification was not sent",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "fpmsyncd Redis connection to APPL_DB is broken",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "zebra FPM module not loaded or misconfigured -- check 'show zebra fpm stats'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "fpmsyncd restart without full kernel route resync -- routes added to kernel before fpmsyncd restarted are not re-pushed",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "OSPF routes not reaching ASIC -- fpmsyncd not syncing OSPF routes from zebra",
+      "symptoms": [
+        "'docker exec bgp vtysh -c \"show ip route ospf\"' shows OSPF routes in zebra RIB",
+        "Traffic to OSPF-learned prefixes is dropped or sent to wrong next-hop",
+        "APPL_DB ROUTE_TABLE is missing OSPF-learned prefixes: 'redis-cli -n 0 KEYS \"ROUTE_TABLE:*\"' shows incomplete table",
+        "ASIC_DB has no route entry for the OSPF prefix: 'redis-cli -n 1 KEYS \"ASIC_STATE:SAI_OBJECT_TYPE_ROUTE_ENTRY*\" | grep <prefix>'",
+        "fpmsyncd logs show errors or process is in failed state"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec bgp vtysh -c 'show ip route ospf'",
+          "confirms_if": "Routes present in zebra RIB but absent in APPL_DB confirms fpmsyncd pipeline failure",
+          "look_for": "OSPF routes (marked 'O' for intra-area, 'O IA' for inter-area, 'O E1'/'O E2' for external) in zebra RIB",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp supervisorctl status fpmsyncd",
+          "confirms_if": "STOPPED or FATAL state confirms fpmsyncd is not publishing OSPF routes to APPL_DB",
+          "look_for": "fpmsyncd process state: RUNNING expected",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show zebra fpm stats'",
+          "confirms_if": "Disconnected state or zero message count confirms zebra's FPM socket to fpmsyncd is broken",
+          "look_for": "FPM connection status (connected/disconnected), messages sent/received count",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 0 KEYS 'ROUTE_TABLE:*' | wc -l",
+          "confirms_if": "Count significantly lower than number of routes in zebra RIB confirms fpmsyncd is not publishing routes",
+          "look_for": "Count of routes in APPL_DB -- should include OSPF routes visible in zebra RIB",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_ROUTE_ENTRY*' | grep <prefix>",
+          "confirms_if": "Key absent in ASIC_DB while present in APPL_DB confirms orchagent or syncd failure; key absent in both confirms fpmsyncd failure",
+          "look_for": "Matching key for the OSPF route prefix in ASIC_DB",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "description": "OSPF requires all non-backbone areas (area != 0.0.0.0) to connect directly to the backbone area (area 0). When an area's only connection to the backbone is via a transit area, a virtual link through that transit area must be configured. If the virtual link fails (transit area loses connectivity, virtual link neighbor goes down, or virtual link is misconfigured), the attached area loses backbone connectivity and loses all inter-area routes. This manifests as the virtual link neighbor disappearing from 'show ip ospf virtual-links'.",
+      "resolutions": [
+        {
+          "action": "Check virtual link state: 'docker exec bgp vtysh -c \"show ip ospf virtual-links\"' -- should show 'Full' state",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify transit area reachability: check that a path exists through the transit area to the remote ABR",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify transit area is not stub/NSSA: 'docker exec bgp vtysh -c \"show ip ospf\"' -- transit area must be a normal area",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Check virtual link configuration matches on both ABRs: same transit area ID and correct remote router IDs",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Verify remote ABR Router ID: 'docker exec bgp vtysh -c \"show ip ospf\"' on the remote ABR -- Router ID must match what is configured in 'area <transit> virtual-link <router-id>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "action": "Clear virtual link to force re-establishment: 'docker exec bgp vtysh -c \"clear ip ospf process\"' on the ABR (disrupts all adjacencies)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Transit area lost its connection to one or both virtual link endpoints",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Virtual link endpoint router ID changed (ospfd restart with different Router ID) and virtual link config not updated",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Authentication mismatch on the virtual link",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Hello/Dead interval mismatch specifically for the virtual link interface",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "Transit area configured as stub or NSSA -- virtual links cannot traverse stub or NSSA areas (RFC 2328 requirement)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "cause": "ospfd on the ABR restarted and virtual link state was not re-established",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "scenario": "Virtual link failure -- backbone continuity broken",
+      "symptoms": [
+        "'show ip ospf virtual-links' shows virtual link neighbor in Down state or absent",
+        "Routers in the non-backbone area lose all inter-area (O IA) routes from 'show ip route'",
+        "Only intra-area routes remain in the disconnected area",
+        "ospfd logs show virtual link adjacency down events",
+        "Connectivity from the isolated area to other areas and external routes is lost"
+      ],
+      "verify_commands": [
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf virtual-links'",
+          "confirms_if": "Virtual link in Down state confirms backbone connectivity is broken for the attached non-backbone area",
+          "look_for": "Virtual link state: Full is operational; Down means the virtual link has failed",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ip ospf'",
+          "confirms_if": "Transit area shown as stub or NSSA confirms the virtual link cannot function through it per RFC 2328",
+          "look_for": "Virtual link neighbor count; transit area type (must be normal, not stub/NSSA)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ip route ospf'",
+          "confirms_if": "Missing inter-area routes confirms the area has lost backbone connectivity via the virtual link",
+          "look_for": "Absence of 'O IA' (inter-area) routes in the isolated area's routing table",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker logs bgp 2>&1 | grep -i 'virtual\\|vlink' | tail -20",
+          "confirms_if": "Virtual link down log messages confirm the virtual link failure event and timing",
+          "look_for": "Virtual link adjacency down or configuration error messages from ospfd",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Discovers neighbors, negotiates parameters, elects DR/BDR",
+      "key_fields": [
+        "Router ID",
+        "Area ID",
+        "Authentication Type",
+        "Network Mask",
+        "Hello Interval",
+        "Dead Interval",
+        "DR",
+        "BDR",
+        "Neighbor List",
+        "Options (E, MC, N/P, DC, O)"
+      ],
+      "name": "Hello",
+      "when_sent": "Every hello-interval on OSPF-enabled interfaces"
+    },
+    {
+      "description": "Exchanges LSDB summary during adjacency formation",
+      "key_fields": [
+        "Interface MTU",
+        "Options",
+        "I/M/MS flags",
+        "DD Sequence Number",
+        "LSA Headers"
+      ],
+      "name": "Database Description (DBD)",
+      "when_sent": "During EXSTART/EXCHANGE states"
+    },
+    {
+      "description": "Requests specific LSAs from neighbor",
+      "key_fields": [
+        "LS Type",
+        "Link State ID",
+        "Advertising Router"
+      ],
+      "name": "Link State Request (LSR)",
+      "when_sent": "After DBD exchange when missing LSAs are identified"
+    },
+    {
+      "description": "Carries one or more LSAs — the core flooding mechanism",
+      "key_fields": [
+        "Number of LSAs",
+        "LSA Type (1-7)",
+        "LSA Header",
+        "LSA Body"
+      ],
+      "name": "Link State Update (LSU)",
+      "when_sent": "In response to LSR, or when LSA originates/changes"
+    },
+    {
+      "description": "Acknowledges received LSUs",
+      "key_fields": [
+        "LSA Headers (acknowledged)"
+      ],
+      "name": "Link State Acknowledgment (LSAck)",
+      "when_sent": "After receiving an LSU"
+    },
+    {
+      "description": "Used during the ExStart and Exchange states to synchronize LSDBs. Contains LSA headers (without full LSA data) summarizing the sender's LSDB. The master sends DBDs with incrementing sequence numbers; the slave echoes each sequence number to acknowledge. The M (More) bit indicates more DBD packets to follow.",
+      "key_fields": [
+        "Interface MTU: must not exceed neighbor's interface MTU or DBD is rejected (key field causing ExStart stuck)",
+        "Options: capability bits (same as Hello)",
+        "Flags: I (Init), M (More), MS (Master/Slave)",
+        "DD Sequence Number: monotonically increasing; used for reliable exchange",
+        "LSA Headers: Type-1 through Type-5/7 LSA headers describing LSDB contents"
+      ],
+      "name": "DBD (Database Description)",
+      "when_sent": "During ExStart (to negotiate master/slave) and Exchange (to describe LSDB contents)"
+    },
+    {
+      "description": "Sent during Loading state to request specific LSAs from the neighbor that were identified as missing or newer during the DBD exchange. A router sends LSRs for every LSA it needs; the neighbor responds with LSU packets containing the full LSA data.",
+      "key_fields": [
+        "LS Type: type of requested LSA (1=Router, 2=Network, 3=Summary, 4=ASBR Summary, 5=AS External, 7=NSSA External)",
+        "Link State ID: identifies the LSA within its type",
+        "Advertising Router: Router ID of the LSA's originator"
+      ],
+      "name": "LSR (Link State Request)",
+      "when_sent": "During Loading state after DBD exchange identifies LSAs needed from the neighbor"
+    },
+    {
+      "description": "Carries one or more complete LSAs in response to LSR packets, or as part of link-state flooding when a topology change occurs. LSUs are sent as unicast in response to LSRs, and multicast (224.0.0.5 or 224.0.0.6) during flooding. The receiving router must send an LSAck.",
+      "key_fields": [
+        "Number of LSAs: count of LSAs in this packet",
+        "LSAs: one or more complete LSAs (Router-LSA, Network-LSA, Summary-LSA, AS External-LSA, etc.)",
+        "LSA Header: LS Age, Options, LS Type, Link State ID, Advertising Router, LS Sequence Number, LS Checksum, Length"
+      ],
+      "name": "LSU (Link State Update)",
+      "when_sent": "In response to LSR during Loading state; during flooding when a new or updated LSA is received or originated locally"
+    },
+    {
+      "description": "Acknowledges receipt of LSU packets. OSPF uses reliable flooding -- every LSU must be acknowledged or the sender retransmits. LSAcks can be immediate (unicast) or delayed (multicast, batched). Missing LSAcks cause retransmission floods. High retransmission counts visible in 'show ip ospf neighbor detail' indicate LSAck loss.",
+      "key_fields": [
+        "LSA Headers: list of LSA headers being acknowledged (same format as LSA header in LSU)"
+      ],
+      "name": "LSAck (Link State Acknowledgment)",
+      "when_sent": "After receiving LSU packets during flooding or Loading state; can be delayed to batch multiple ACKs"
+    }
+  ],
+  "operates_at": "Layer 3",
+  "protocol_family": "routing",
+  "protocol_id": "ospfv2",
+  "protocol_name": "OSPFv2",
+  "purpose": "Open Shortest Path First version 2 — link-state IGP for IPv4 routing",
+  "related_protocols": [
+    "ospfv3",
+    "bfd",
+    "isis",
+    "bgp-4",
+    "static-routing"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-2328",
+      "rfc_number": 2328,
+      "title": "RFC 2328",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc2328.txt"
+    },
+    {
+      "id": "cisco:routing/ospfv2.json",
+      "title": "cisco knowledge base — routing/ospfv2.json",
+      "type": "documentation"
+    },
+    {
+      "id": "sonic:protocols/ospfv2.json",
+      "title": "sonic knowledge base — protocols/ospfv2.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 2328",
+  "states": [
+    {
+      "description": "No Hello received from neighbor. Initial state for all neighbors. On NBMA networks, Hellos may be sent to this neighbor at a reduced rate (PollInterval).",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "DOWN"
+    },
+    {
+      "description": "(NBMA only) Unicast Hello sent to a manually configured neighbor, but no Hello has been received in reply yet. This state applies only to NBMA and Point-to-Multipoint non-broadcast network types.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "ATTEMPT"
+    },
+    {
+      "description": "Hello received from neighbor but own Router ID is not listed in the neighbor's Hello packet. This means communication is one-way. Stuck in INIT indicates a one-way communication problem — return Hellos are not reaching the neighbor.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "INIT"
+    },
+    {
+      "description": "Bidirectional communication established — own Router ID has been seen in the neighbor's Hello. DR/BDR election occurs in this state on broadcast and NBMA networks. This is the steady state for DROther-to-DROther adjacencies on multi-access segments (no full adjacency needed).",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "2-WAY"
+    },
+    {
+      "description": "Master/slave negotiation for Database Description (DBD) exchange. The router with the higher Router ID becomes master. Sequence numbers are synchronized. Stuck in EXSTART almost always indicates MTU mismatch or authentication failure.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "EXSTART"
+    },
+    {
+      "description": "Database Description packets are being exchanged. Each DBD contains LSA headers summarizing the sender's LSDB. The receiver builds a list of LSAs it needs to request.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "EXCHANGE"
+    },
+    {
+      "description": "Link State Requests (LSRs) have been sent for LSAs identified during EXCHANGE. Waiting for Link State Updates (LSUs) in response.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "LOADING"
+    },
+    {
+      "description": "Fully adjacent — LSDBs are synchronized between neighbors. This is the normal steady state for DR/BDR adjacencies, point-to-point links, and virtual links. Routes are computed from the synchronized LSDB.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "FULL"
+    }
+  ],
+  "tags": [
+    "igp",
+    "link-state",
+    "spf",
+    "ipv4",
+    "routing",
+    "area",
+    "lsa",
+    "adjacency",
+    "redistribution",
+    "asymmetric-routing",
+    "frr",
+    "ospf"
+  ],
+  "timers": [
+    {
+      "default_rfc": "10s (broadcast/P2P), 30s (NBMA)",
+      "description": "Interval between Hello packets",
+      "name": "hello-interval",
+      "on_expiry": "Send Hello on this interface",
+      "os_defaults": [
+        {
+          "config_path": "Not in CONFIG_DB; configured via frrcfgd or vtysh: 'ip ospf hello-interval <seconds>' on interface",
+          "default": "10s (FRR ospfd default)",
+          "frr_path": "ospfd: oi->v_hello (FRR source: ospfd/ospf_interface.c)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "range": "1-65535s",
+      "tuning_advice": "Must match all neighbors on a segment; lower for faster detection but more overhead"
+    },
+    {
+      "default_rfc": "40s (4x hello)",
+      "description": "Time without a Hello before declaring neighbor down",
+      "name": "dead-interval",
+      "on_expiry": "Neighbor declared dead; adjacency torn down; routes removed",
+      "os_defaults": [
+        {
+          "config_path": "Not in CONFIG_DB; configured via frrcfgd or vtysh: 'ip ospf dead-interval <seconds>' on interface",
+          "default": "40s (FRR ospfd default)",
+          "frr_path": "ospfd: oi->v_wait (FRR source: ospfd/ospf_interface.c)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "range": "1-65535s",
+      "tuning_advice": "Must match all neighbors; consider BFD for sub-second detection instead"
+    },
+    {
+      "default_rfc": "5s",
+      "description": "Interval to retransmit unacknowledged LSAs",
+      "name": "retransmit-interval",
+      "on_expiry": "Retransmit LSA/DBD to neighbor",
+      "range": "1-65535s"
+    },
+    {
+      "default_rfc": "Equal to dead-interval (40s)",
+      "description": "Time to wait before DR/BDR election on broadcast/NBMA",
+      "name": "wait-timer",
+      "on_expiry": "Proceed with DR/BDR election"
+    },
+    {
+      "default_rfc": "1800s (30min)",
+      "description": "Interval to re-originate LSAs",
+      "name": "LSA refresh",
+      "on_expiry": "LSA refreshed with incremented sequence number"
+    },
+    {
+      "default_rfc": "3600s (60min)",
+      "description": "Maximum age before LSA is flushed",
+      "name": "LSA max-age",
+      "on_expiry": "LSA purged from LSDB and flooded with max-age"
+    },
+    {
+      "default_rfc": "5s initial, exponential backoff",
+      "description": "Delay before running SPF calculation after a topology change",
+      "name": "SPF delay",
+      "on_expiry": "SPF algorithm runs",
+      "os_defaults": [
+        {
+          "default": "200ms/1000ms/5000ms",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "5000ms/10000ms/10000ms (older defaults)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "5ms/200ms/5000ms",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "config_path": "Not in CONFIG_DB; configured via frrcfgd or vtysh: 'timers throttle spf <delay> <initial-hold> <max-hold>' under 'router ospf'",
+          "default": "FRR ospfd default exponential backoff timers",
+          "frr_path": "ospfd: t_spf_calc (FRR source: ospfd/ospf_spf.c)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "tuning_advice": "Tune SPF timers (initial-delay, hold-time, max-wait) for faster convergence: e.g., 1ms/5ms/5000ms"
+    },
+    {
+      "default_rfc": "0ms/5000ms/5000ms (start/hold/max)",
+      "description": "Throttle for LSA origination",
+      "name": "LSA throttle",
+      "on_expiry": "LSA can be re-originated",
+      "tuning_advice": "Tune for faster convergence in large networks"
+    },
+    {
+      "default_rfc": "MaxAge=3600s; LSRefreshTime=1800s (30 minutes)",
+      "description": "Every LSA carries an age field that starts at 0 and increments by 1 per second as it propagates and ages in the LSDB. When LSA age reaches MaxAge (3600s = 1 hour), the LSA is flushed from the LSDB and re-flooded as a MaxAge LSA. LSAs are refreshed by the originating router every LSRefreshTime (30 minutes) before they reach MaxAge.",
+      "name": "LSA Age / MaxAge",
+      "on_expiry": "LSA with age=MaxAge is re-flooded to signal deletion; all routers remove it from LSDB and re-run SPF",
+      "os_defaults": [
+        {
+          "config_path": "Not in CONFIG_DB; FRR defaults apply; not typically changed in SONiC deployments",
+          "default": "MaxAge=3600s, LSRefreshTime=1800s (FRR ospfd defaults; RFC 2328 standard values)",
+          "frr_path": "ospfd: OSPF_LSA_MAXAGE=3600, OSPF_LS_REFRESH_TIME=1800 (FRR source: ospfd/ospf_lsa.h)",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "range": "0-3600s (LSA age field)",
+      "tuning_advice": "Do not change MaxAge or LSRefreshTime in production. An LSDB flooded with MaxAge LSAs indicates an unstable topology or a router repeatedly originating and flushing LSAs."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "DOWN",
+      "to_state": "INIT",
+      "trigger": "Hello received from neighbor"
+    },
+    {
+      "from_state": "INIT",
+      "to_state": "2-WAY",
+      "trigger": "Own Router ID seen in neighbor's Hello (bidirectional)"
+    },
+    {
+      "from_state": "2-WAY",
+      "to_state": "EXSTART",
+      "trigger": "Adjacency decision — at least one side is DR/BDR, or point-to-point link"
+    },
+    {
+      "from_state": "EXSTART",
+      "to_state": "EXCHANGE",
+      "trigger": "Master/slave agreed, sequence numbers synchronized"
+    },
+    {
+      "from_state": "EXCHANGE",
+      "to_state": "LOADING",
+      "trigger": "All DBDs exchanged, LSRs needed"
+    },
+    {
+      "from_state": "EXCHANGE",
+      "to_state": "FULL",
+      "trigger": "All DBDs exchanged, no LSRs needed (databases already in sync)"
+    },
+    {
+      "from_state": "LOADING",
+      "to_state": "FULL",
+      "trigger": "All LSAs received and acknowledged"
+    },
+    {
+      "from_state": "FULL",
+      "to_state": "DOWN",
+      "trigger": "Dead timer expired — no Hellos received"
+    },
+    {
+      "from_state": "2-WAY",
+      "to_state": "DOWN",
+      "trigger": "Dead timer expired"
+    },
+    {
+      "failure_if_stuck": "MTU mismatch or authentication failure preventing DBD exchange",
+      "from_state": "EXSTART",
+      "to_state": "DOWN",
+      "trigger": "Dead timer expired"
+    },
+    {
+      "failure_if_stuck": "One-way communication — ACL, NAT, or asymmetric routing blocking return Hellos",
+      "from_state": "INIT",
+      "to_state": "DOWN",
+      "trigger": "Dead timer expired"
+    },
+    {
+      "from_state": "FULL",
+      "to_state": "INIT",
+      "trigger": "Received Hello without own Router ID (neighbor restarted or misconfiguration)"
+    },
+    {
+      "from_state": "DOWN",
+      "to_state": "ATTEMPT",
+      "trigger": "(NBMA only) Neighbor manually configured, unicast Hello sent"
+    },
+    {
+      "from_state": "ATTEMPT",
+      "to_state": "INIT",
+      "trigger": "Hello received from NBMA neighbor"
+    },
+    {
+      "from_state": "Down",
+      "to_state": "Init",
+      "trigger": "Hello packet received from neighbor; the neighbor's Router ID is noted but our Router ID is not yet in their Hello neighbor list"
+    },
+    {
+      "from_state": "Down",
+      "to_state": "Attempt",
+      "trigger": "NBMA network only: Hello sent to configured neighbor IP, waiting for response"
+    },
+    {
+      "failure_if_stuck": "Asymmetric link: our Hellos reach the neighbor but their Hellos do not reach us (or vice versa). Check ACLs, multicast group join (224.0.0.5), interface MTU mismatch for Hello packets, or OSPF disabled on the neighbor's interface.",
+      "from_state": "Init",
+      "to_state": "2-Way",
+      "trigger": "Hello received with local Router ID in the neighbor list -- bidirectional communication confirmed"
+    },
+    {
+      "from_state": "2-Way",
+      "to_state": "ExStart",
+      "trigger": "DR/BDR election complete (broadcast networks) or adjacency decision made (point-to-point); master/slave negotiation begins"
+    },
+    {
+      "failure_if_stuck": "MTU mismatch: one side drops DBD packets that exceed its interface MTU. Check 'ip ospf mtu-ignore' and interface MTU on both sides. Also check authentication mismatch causing DBD rejection.",
+      "from_state": "ExStart",
+      "to_state": "Exchange",
+      "trigger": "Master/slave relationship established via DBD with I/M/MS bits; initial sequence number agreed upon"
+    },
+    {
+      "failure_if_stuck": "MTU mismatch causing large DBD packets to be dropped. Authentication issues. Check 'show ip ospf neighbor detail' for retransmission counts.",
+      "from_state": "Exchange",
+      "to_state": "Loading",
+      "trigger": "All DBD packets exchanged; routers have complete lists of LSA headers; LSR packets sent for missing LSAs"
+    },
+    {
+      "failure_if_stuck": "LSR/LSU packet loss; corrupted LSA causing repeated request-response cycle; neighbor does not originate the requested LSA. Check retransmit queue: 'show ip ospf neighbor detail'.",
+      "from_state": "Loading",
+      "to_state": "Full",
+      "trigger": "All requested LSAs received via LSU; LSDB is fully synchronized"
+    },
+    {
+      "from_state": "Full",
+      "to_state": "Down",
+      "trigger": "Dead Interval expires (no Hello received within dead-interval seconds), interface goes down, or 'clear ip ospf' issued"
+    },
+    {
+      "from_state": "Full",
+      "to_state": "2-Way",
+      "trigger": "On broadcast network: DR or BDR failure causes DROther to lose Full adjacency with DR/BDR; 2-Way maintained with other DROthers"
+    },
+    {
+      "from_state": "2-Way",
+      "to_state": "Down",
+      "trigger": "Dead Interval expires or interface goes down"
+    }
+  ],
+  "transport": "IP protocol 89, multicast 224.0.0.5 (AllSPFRouters) and 224.0.0.6 (AllDRouters)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "OSPF available without feature enable. Supports both network statements and 'ip ospf <process> area <area>' under interface. Reference bandwidth default is 100 Mbps. NSF/NSR supported.",
+          "versions": "16.12+"
+        },
+        {
+          "note": "TRAP: 'router ospf1' (no space before process number) and 'router ospf 1' (with space) create DIFFERENT OSPF processes in IOS-XE. The typo 'router ospf1' creates a process literally named 'ospf1', which silently succeeds but runs as a separate process from the intended 'ospf 1'. Always verify process names with 'show ip ospf'.",
+          "versions": "all"
+        },
+        {
+          "note": "IOS-XE interface-level 'ip ospf <process> area <area>' overrides the global 'network' statement. If both are configured for the same interface, the interface-level command takes precedence. This can cause confusion when the interface appears in a different area than the network statement suggests.",
+          "versions": "all"
+        },
+        {
+          "note": "OSPF marks Hello packets with DSCP CS6 (48) by default. If transit infrastructure QoS policies remark or deprioritize CS6, OSPF Hellos may be dropped under congestion, causing neighbor flapping. Verify DSCP preservation end-to-end when OSPF runs over QoS-managed infrastructure.",
+          "versions": "all"
+        },
+        {
+          "note": "IOS-XE supports Embedded Packet Capture (EPC) for capturing OSPF packets at wire level: 'monitor capture <name> interface <intf> both' with ACL filtering for protocol 89. Complement with 'debug platform packet-trace' for FIA-level processing visibility. EPC exports to PCAP for Wireshark analysis.",
+          "versions": "16.12+"
+        },
+        {
+          "note": "IOS-XE punt policer may rate-limit OSPF packets on high-scale platforms. If many OSPF adjacencies are forming simultaneously (e.g., after reload), the control-plane punt policer may drop OSPF packets. Check with 'show platform software punt-policer' and verify OSPF queue is not being rate-limited.",
+          "versions": "17.9+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "OSPF configured under 'router ospf <process>' with area and interface hierarchy. No network statements — interfaces explicitly listed under area. Reference bandwidth default is 100 Mbps (should set to 'auto-cost reference-bandwidth 100000' for modern speeds). NSR supported.",
+          "versions": "all"
+        },
+        {
+          "note": "IOS-XR OSPF supports segment routing natively under the OSPF process. Prefix-SID configured under interface.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "OSPF requires 'feature ospf' to enable. Supports 'ip ospf bfd' for BFD integration. Reference bandwidth default is 40 Gbps. Graceful restart (NSF) supported.",
+          "versions": "all"
+        },
+        {
+          "note": "NX-OS uses 'ip router ospf <process> area <area>' under interface instead of network statements under router ospf. Both methods work but interface-level is recommended.",
+          "versions": "all"
+        }
+      ]
+    },
+    "sonic": {
+      "config_db_tables": [
+        {
+          "key_pattern": "DEVICE_METADATA|localhost",
+          "redis_command": "redis-cli -n 4 KEYS 'DEVICE_METADATA*'",
+          "relevant_fields": [
+            "hostname: device hostname, used as reference for OSPF router identity",
+            "mac: system MAC address",
+            "type: device type (LeafRouter, SpineRouter, etc.)"
+          ],
+          "table": "DEVICE_METADATA",
+          "verify_command": "redis-cli -n 4 HGETALL 'DEVICE_METADATA|localhost'"
+        },
+        {
+          "key_pattern": "INTERFACE|<ifname>  or  INTERFACE|<ifname>|<ip/prefix>",
+          "redis_command": "redis-cli -n 4 KEYS 'INTERFACE|*'",
+          "relevant_fields": [
+            "NULL: presence indicates interface is managed by SONiC",
+            "ip: IP address and prefix length assigned to interface",
+            "vrf_name: VRF assignment for the interface"
+          ],
+          "table": "INTERFACE",
+          "verify_command": "redis-cli -n 4 HGETALL 'INTERFACE|<ifname>|<ip/prefix>'"
+        },
+        {
+          "key_pattern": "LOOPBACK_INTERFACE|<loopback>|<ip/prefix>",
+          "redis_command": "redis-cli -n 4 KEYS 'LOOPBACK_INTERFACE*'",
+          "relevant_fields": [
+            "NULL: presence indicates loopback is managed",
+            "ip: loopback IP used as OSPF router-id if it is the highest configured loopback"
+          ],
+          "table": "LOOPBACK_INTERFACE",
+          "verify_command": "redis-cli -n 4 HGETALL 'LOOPBACK_INTERFACE|Loopback0|<ip/prefix>'"
+        },
+        {
+          "key_pattern": "ROUTE_TABLE:<prefix/len>",
+          "redis_command": "redis-cli -n 0 KEYS 'ROUTE_TABLE:*' | wc -l",
+          "relevant_fields": [
+            "nexthop: comma-separated list of next-hop IPs",
+            "ifname: egress interface name(s)",
+            "distance: administrative distance (OSPF intra=110, inter=110, external=150)",
+            "metric: route metric",
+            "nexthop-vrf: VRF for the nexthop"
+          ],
+          "table": "ROUTE_TABLE (APPL_DB)",
+          "verify_command": "redis-cli -n 0 HGETALL 'ROUTE_TABLE:<prefix/len>'"
+        }
+      ],
+      "frr_mapping": {
+        "config_managed_by": "frrcfgd (if OSPF CONFIG_DB templates exist) or direct FRR config file",
+        "container": "bgp",
+        "fpm_port": "localhost:2620 (zebra FPM module to fpmsyncd -- shared with BGP routes)",
+        "frr_config_file": "/etc/frr/frr.conf or /etc/frr/ospfd.conf (may be managed by frrcfgd or edited directly depending on SONiC build)",
+        "frr_process": "ospfd",
+        "frr_socket": "/var/run/frr/ospfd.vty",
+        "frrcfgd_source": "sonic-buildimage:src/sonic-frr/frrcfgd/ (check for OSPF template support in build)",
+        "supervisor_config": "/etc/supervisor/conf.d/ospfd.conf (inside bgp container)"
+      },
+      "key_commands": [
+        "docker exec bgp vtysh -c 'show ip ospf'",
+        "docker exec bgp vtysh -c 'show ip ospf neighbor'",
+        "docker exec bgp vtysh -c 'show ip ospf neighbor detail'",
+        "docker exec bgp vtysh -c 'show ip ospf interface'",
+        "docker exec bgp vtysh -c 'show ip ospf interface <ifname>'",
+        "docker exec bgp vtysh -c 'show ip ospf database'",
+        "docker exec bgp vtysh -c 'show ip ospf database router'",
+        "docker exec bgp vtysh -c 'show ip ospf database external'",
+        "docker exec bgp vtysh -c 'show ip ospf database summary'",
+        "docker exec bgp vtysh -c 'show ip ospf virtual-links'",
+        "docker exec bgp vtysh -c 'show ip ospf spf-calculation'",
+        "docker exec bgp vtysh -c 'show ip route ospf'",
+        "docker exec bgp vtysh -c 'show zebra fpm stats'",
+        "docker exec bgp vtysh -c 'show running-config'",
+        "docker exec bgp supervisorctl status",
+        "docker exec bgp supervisorctl status fpmsyncd",
+        "docker exec bgp supervisorctl restart fpmsyncd",
+        "docker stats bgp --no-stream",
+        "sudo tcpdump -i <interface> proto ospf -nn -c 20",
+        "redis-cli -n 0 KEYS 'ROUTE_TABLE:*' | wc -l",
+        "redis-cli -n 0 HGETALL 'ROUTE_TABLE:<prefix/len>'",
+        "redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_ROUTE_ENTRY*' | wc -l",
+        "redis-cli -n 4 KEYS 'INTERFACE*'",
+        "docker logs bgp 2>&1 | grep -E 'ospf|OSPF' | tail -30",
+        "docker logs swss 2>&1 | grep -E 'ERROR|route' | tail -30",
+        "ip link show <interface>"
+      ],
+      "notes": [
+        {
+          "human_error_risk": "MEDIUM",
+          "note": "OSPF in SONiC runs inside the 'bgp' Docker container via FRR (Free Range Routing), the same container as bgpd and zebra. ospfd handles the OSPF FSM, LSA database, and SPF computation. zebra receives OSPF routes and installs them into the Linux kernel RIB. The OSPF route programming pipeline (ospfd -> zebra -> fpmsyncd -> APPL_DB -> orchagent -> ASIC_DB -> syncd) is identical to the BGP route pipeline -- all routes converge at zebra and fpmsyncd.",
+          "source_ref": "sonic-buildimage:src/sonic-frr/ and FRR ospfd"
+        },
+        {
+          "human_error_risk": "HIGH",
+          "note": "SONiC's CONFIG_DB support for OSPF is less complete than for BGP. Many SONiC deployments configure OSPF directly in /etc/frr/frr.conf or via vtysh, rather than through CONFIG_DB + frrcfgd. Check whether frrcfgd has OSPF template support in your SONiC build. In builds without frrcfgd OSPF support, direct FRR config changes persist across ospfd restarts but may be overwritten by a full 'config reload'. Always verify with 'docker exec bgp vtysh -c show running-config'.",
+          "source_ref": "sonic-buildimage:src/sonic-frr/frrcfgd/ -- check for ospf template files"
+        },
+        {
+          "human_error_risk": "MEDIUM",
+          "note": "OSPF and BGP share the same 'bgp' container and the same zebra process in SONiC. Routes from both protocols are stored in zebra's RIB and forwarded to fpmsyncd. Administrative distance determines which protocol's route wins when both have a route to the same prefix: OSPF intra-area=110, OSPF inter-area=110, OSPF external E1/E2=150, BGP eBGP=20, BGP iBGP=200. Be aware of these interactions when both protocols are running simultaneously.",
+          "source_ref": "FRR zebra administrative distance defaults and SONiC bgp container architecture"
+        },
+        {
+          "human_error_risk": "HIGH",
+          "note": "OSPF hello and dead interval configuration in SONiC/FRR is done at the interface level, not globally. Every interface participating in OSPF can have independent timer values. This is both a feature (optimization per link type) and a trap -- engineers often configure timers globally expecting them to apply everywhere, but FRR requires explicit per-interface configuration. Always verify with 'docker exec bgp vtysh -c show ip ospf interface <ifname>' after configuring timers.",
+          "source_ref": "FRR ospfd interface configuration: ospfd/ospf_interface.c"
+        },
+        {
+          "human_error_risk": "MEDIUM",
+          "note": "On SONiC data-center switches with point-to-point links between routers, configure 'ip ospf network point-to-point' on each routed interface. This disables DR/BDR election (which is unnecessary on point-to-point links) and speeds up adjacency formation from 2-Way directly to ExStart without waiting for DR/BDR election. This is a best practice for spine-leaf SONiC fabrics using OSPF as the underlay IGP.",
+          "source_ref": "RFC 2328 Section 9.1 and FRR ospfd network type configuration"
+        },
+        {
+          "human_error_risk": "HIGH",
+          "note": "OSPF external route redistribution from BGP into OSPF ('redistribute bgp' under 'router ospf') should always include a route-map. Without a route-map, ALL BGP routes -- including BGP default routes and potentially thousands of prefixes -- are injected into the OSPF LSDB as Type-5 external LSAs. This can cause OSPF to flood thousands of LSAs to all routers in the OSPF domain and severely impact CPU and convergence time.",
+          "source_ref": "FRR ospfd redistribution and RFC 2328 AS External LSA flooding"
+        },
+        {
+          "human_error_risk": "MEDIUM",
+          "note": "The OSPF Router ID in FRR is selected automatically from the highest configured IP address on any interface, preferring loopback interfaces. In SONiC, Loopback0 is the standard management loopback -- configure it first before enabling OSPF to ensure a stable Router ID. A Router ID change (due to loopback removal or ospfd restart without a configured loopback) causes ospfd to flush and re-originate all its LSAs, temporarily breaking all adjacencies.",
+          "source_ref": "FRR ospfd Router ID selection: ospfd/ospf_main.c"
+        },
+        {
+          "human_error_risk": "LOW",
+          "note": "BFD integration with OSPF in SONiC/FRR requires both ospfd and bfdd to be running. BFD for OSPF is configured per-interface ('ip ospf bfd') in vtysh. When BFD detects a link failure, it notifies ospfd which immediately tears down the OSPF adjacency -- much faster than waiting for the OSPF Dead Interval. Verify BFD sessions: 'docker exec bgp vtysh -c show bfd peers'. Note that BFD echo mode may not be supported on all SONiC ASIC platforms.",
+          "source_ref": "FRR bfdd and ospfd BFD integration: ospfd/ospf_bfd.c"
+        }
+      ]
+    }
+  }
+}

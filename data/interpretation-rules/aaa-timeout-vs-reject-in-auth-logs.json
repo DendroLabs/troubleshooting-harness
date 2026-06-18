@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "aaa-timeout-vs-reject-in-auth-logs",
+  "display_name": "AAA authentication failure — timeout means server unreachable, reject means bad credentials, but logs say the same thing",
+  "category": "log-analysis",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Syslog or AAA debug output showing authentication failures for user logins, 802.1X, or device administration",
+  "observation": "Logs show authentication failed for a user or session; the AAA server (RADIUS or TACACS+) appears to be rejecting credentials",
+  "naive_interpretation": "The credentials are wrong or the user account is locked/expired on the AAA server — investigate the account configuration on the server",
+  "correct_interpretation": "AAA authentication failures have two fundamentally different causes that produce similar syslog messages: (1) TIMEOUT — the AAA server never responded, meaning the server is down, unreachable, or a firewall is blocking the RADIUS/TACACS+ port; (2) REJECT — the server responded with Access-Reject, meaning the credentials, authorization policy, or account state is wrong. The fix for a timeout is network/infrastructure (reachability, firewall rules, server health); the fix for a reject is credential/policy configuration on the server. Most NOS platforms distinguish these in debug output or detailed AAA counters, but the high-level syslog message often just says 'authentication failed' for both. Always check whether the server responded at all before investigating credentials.",
+  "why": [
+    "RADIUS uses UDP — a timeout produces no error response, just silence; the NAS (network access server) logs this as a failure after the retry timer expires",
+    "TACACS+ uses TCP — a connection refused or timeout is distinguishable from a successful TCP connection that returns a FAIL status, but syslog may collapse both into 'authentication failed'",
+    "When multiple AAA servers are configured, a timeout on the primary causes failover to the secondary; if both timeout, the device may fall back to local auth — this can look like intermittent 'wrong password' when the real problem is server reachability",
+    "NOS AAA counters (requests sent, timeouts, rejects) separate the two failure modes definitively; syslog alone does not"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show radius-server statistics",
+      "purpose": "Compare access-requests sent vs timeouts vs access-rejects to determine if the server is responding at all"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show tacacs-server statistics",
+      "purpose": "Check TACACS+ request/response counters to distinguish timeout from explicit reject"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show aaa servers",
+      "purpose": "Display per-server transaction counts including timeouts, failures, and successful authentications"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "test aaa group radius server <ip> <username> <password> legacy",
+      "purpose": "Test RADIUS authentication to a specific server to see if it responds or times out"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show radius accounting",
+      "purpose": "Check RADIUS server response statistics to identify timeouts vs actual rejections"
+    }
+  ],
+  "traps": [
+    "Reading 'authentication failed' in syslog and immediately investigating credentials on the AAA server without checking if the server even responded",
+    "Not checking AAA server statistics (timeouts vs rejects) which definitively distinguish the two failure modes",
+    "Confusing RADIUS timeout behavior (silent UDP drop) with an explicit rejection — RADIUS timeouts produce no response packet at all",
+    "Overlooking firewall rules blocking UDP 1812/1813 (RADIUS) or TCP 49 (TACACS+) after a network change, which causes timeouts that look like auth failures",
+    "Assuming local auth fallback means the AAA server is working — it may mean all remote servers timed out and the device fell through to local"
+  ],
+  "related_rules": [
+    "copp-drops-mimic-protocol-failure",
+    "debug-no-output-is-not-proof-of-absence"
+  ],
+  "related_protocols": ["radius", "tacacs"],
+  "keywords": ["AAA", "RADIUS", "TACACS+", "authentication", "timeout", "reject", "Access-Reject", "credentials", "login", "802.1X", "syslog"],
+  "sources": [
+    {
+      "id": "rfc-2865",
+      "title": "RFC 2865 — Remote Authentication Dial In User Service (RADIUS)",
+      "type": "rfc",
+      "rfc_number": 2865,
+      "url": "https://www.rfc-editor.org/rfc/rfc2865.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

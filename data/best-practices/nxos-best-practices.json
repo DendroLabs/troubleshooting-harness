@@ -1,0 +1,277 @@
+{
+  "best_practice_id": "nxos-best-practices",
+  "categories": [
+    {
+      "category": "General / Architecture",
+      "documents": [
+        {
+          "description": "Spine-leaf, 3-tier, hyperscale, AI networking designs",
+          "format": "HTML",
+          "title": "MSDC Network Fabric Design and Operation",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/switches/nexus-9000-series-switches/white-paper-c11-743245.html"
+        },
+        {
+          "description": "Central index for all Nexus 9000 white papers",
+          "format": "HTML",
+          "title": "Nexus 9000 White Papers Master Listing (51 papers)",
+          "url": "https://www.cisco.com/c/en/us/products/switches/nexus-9000-series-switches/white-paper-listing.html"
+        },
+        {
+          "description": "Per-SKU recommended release matrix",
+          "format": "HTML",
+          "title": "Recommended NX-OS Releases",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/recommended_release/b_Minimum_and_Recommended_Cisco_NX-OS_Releases_for_Cisco_Nexus_9000_Series_Switches.html"
+        },
+        {
+          "description": "High-level DC architecture patterns",
+          "format": "PDF",
+          "title": "Data Center Design Playbook",
+          "url": "https://www.cisco.com/c/dam/en/us/solutions/collateral/enterprise-networks/enterprise-network-security/data-center-design-playbook.pdf"
+        }
+      ]
+    },
+    {
+      "category": "vPC",
+      "documents": [
+        {
+          "description": "Canonical guide: peer-link sizing, keepalive, orphan ports, consistency params",
+          "format": "PDF",
+          "title": "vPC Best Practices Design Guide",
+          "url": "https://www.cisco.com/c/dam/en/us/td/docs/switches/datacenter/sw/design/vpc_design/vpc_best_practices_design_guide.pdf"
+        },
+        {
+          "description": "N9K-specific config walkthrough and common pitfalls",
+          "format": "HTML",
+          "title": "Understand and Configure Nexus 9000 vPC (TAC TechNote)",
+          "url": "https://www.cisco.com/c/en/us/support/docs/switches/nexus-9000-series-switches/218333-understand-and-configure-nexus-9000-vpc.html"
+        }
+      ]
+    },
+    {
+      "category": "VXLAN / EVPN",
+      "documents": [
+        {
+          "description": "THE primary reference — single-fabric underlay/overlay, DAG, ARP suppression, multi-tenancy",
+          "format": "HTML",
+          "title": "VXLAN BGP EVPN Design and Implementation Guide",
+          "url": "https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/cisco-vxlan-bgp-evpn-design-and-implementation-guide.html"
+        },
+        {
+          "description": "DCI interconnect, L2/L3 extension, legacy integration",
+          "format": "HTML",
+          "title": "VXLAN EVPN Multi-Site Design",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/switches/nexus-9000-series-switches/white-paper-c11-739942.html"
+        },
+        {
+          "description": "Redundant DCI with vPC BGW in EVPN Multi-Site",
+          "format": "HTML",
+          "title": "NextGen DCI with vPC Border Gateways",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/switches/nexus-9000-series-switches/whitepaper-c11-742114.html"
+        },
+        {
+          "description": "FW/LB integration into VXLAN EVPN fabrics",
+          "format": "HTML",
+          "title": "VXLAN Multi-Site and Service Node Integration",
+          "url": "https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/cisco-vxlan-multi-site-and-service-node-integration.html"
+        },
+        {
+          "description": "Executive/architecture summary",
+          "format": "PDF",
+          "title": "VXLAN EVPN Overview",
+          "url": "https://www.cisco.com/c/dam/en/us/td/docs/switches/datacenter/nexus9000/sw/vxlan_evpn/VXLAN_EVPN.pdf"
+        }
+      ]
+    },
+    {
+      "category": "Security Hardening",
+      "documents": [
+        {
+          "description": "AAA, SSH, SNMP, NTP auth, CoPP — applies to all NX-OS platforms",
+          "format": "HTML",
+          "title": "NX-OS Software Hardening Guide",
+          "url": "https://sec.cloudapps.cisco.com/security/center/resources/securing_nx_os.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Security Config Guide 7.x",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/7-x/security/configuration/guide/b_Cisco_Nexus_9000_Series_NX-OS_Security_Configuration_Guide_7x.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Security Config Guide 9.3(x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/93x/security/configuration/guide/b-cisco-nexus-9000-nx-os-security-configuration-guide-93x.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Security Config Guide 10.4(x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/dcn/nx-os/nexus9000/104x/configuration/security/cisco-nexus-9000-series-nx-os-security-configuration-guide-release-104x.html"
+        }
+      ]
+    },
+    {
+      "category": "Upgrade / Maintenance",
+      "documents": [
+        {
+          "description": "Key doc — ISSU, SMU patching, EPLD, pre-upgrade checks, rollback",
+          "format": "HTML",
+          "title": "Nondisruptive Maintenance Best Practices",
+          "url": "https://www.cisco.com/c/en/us/products/collateral/switches/nexus-9000-series-switches/white-paper-c11-743731.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Upgrade/Downgrade Guide 7.x",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/7-x/upgrade/guide/b_Cisco_Nexus_9000_Series_NX-OS_Software_Upgrade_and_Downgrade_Guide_Release_7x.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Upgrade/Downgrade Guide 9.3(x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/93x/upgrade/guide/b-cisco-nexus-9000-nx-os-software-upgrade-downgrade-guide-93x.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Upgrade/Downgrade Guide 10.3(x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/dcn/nx-os/nexus9000/103x/upgrade/cisco-nexus-9000-nx-os-software-upgrade-downgrade-guide-103x.html"
+        }
+      ]
+    },
+    {
+      "category": "QoS",
+      "documents": [
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "QoS Config Guide 7.x",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/7-x/qos/configuration/guide/b_Cisco_Nexus_9000_Series_NX-OS_Quality_of_Service_Configuration_Guide_7x.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "QoS Config Guide 9.3(x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/93x/qos/configuration/guide/b-cisco-nexus-9000-nx-os-quality-of-service-configuration-guide-93x.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "QoS Config Guide 10.6(x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/dcn/nx-os/nexus9000/106x/configuration/qos/cisco-nexus-9000-series-nx-os-quality-of-service-configuration-guide-106x.html"
+        }
+      ]
+    },
+    {
+      "category": "Multicast",
+      "documents": [
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Multicast Config Guide 7.x (PIM)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/7-x/multicast/configuration/guide/b_Cisco_Nexus_9000_Series_NX-OS_Multicast_Routing_Configuration_Guide_7x/b_Cisco_Nexus_9000_Series_NX-OS_Multicast_Routing_Configuration_Guide_7x_chapter_0100.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Multicast Config Guide 9.3(x) (PIM)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/93x/multicast/b-cisco-nexus-9000-series-nx-os-multicast-routing-configuration-guide-93x/b-cisco-nexus-9000-series-nx-os-multicast-routing-configuration-guide-93x_chapter_0101.html"
+        },
+        {
+          "description": "",
+          "format": "HTML",
+          "title": "Multicast Config Guide 10.4(x) (PIM)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/dcn/nx-os/nexus9000/104x/configuration/multicast/cisco-nexus-9000-series-nx-os-multicast-routing-configuration-guide-104x/m-configuring-pim-and-pimm6.html"
+        }
+      ]
+    },
+    {
+      "category": "Troubleshooting",
+      "documents": [
+        {
+          "description": "Ethanalyzer, ELAM, SPAN, show tech",
+          "format": "HTML",
+          "title": "NX-OS Troubleshooting Guide 10.4(x)",
+          "url": "https://www.cisco.com/c/en/us/td/docs/dcn/nx-os/nexus9000/104x/troubleshooting/cisco-nexus-9000-series-nx-os-troubleshooting-guide-104x/m-troubleshooting-tools-and-methodology.html"
+        }
+      ]
+    },
+    {
+      "category": "CVDs",
+      "documents": [
+        {
+          "description": "RoCEv2 lossless fabric, QoS for AI/ML",
+          "format": "HTML",
+          "title": "CVD: DC Networking Blueprint for AI/ML",
+          "url": "https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/cvd-for-data-center-networking-blueprint-for-ai.html"
+        },
+        {
+          "description": "Microsegmentation patterns",
+          "format": "PDF",
+          "title": "SAFE Design Guide: Secure Data Center",
+          "url": "https://www.cisco.com/c/dam/en/us/solutions/collateral/design-zone/cisco-validated-profiles/secure-dc-design-guide-cvd.pdf"
+        }
+      ]
+    }
+  ],
+  "cisco_live_sessions": [
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKDCN-3939: Nexus 9000 Architecture",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKDCN-3939.pdf"
+    },
+    {
+      "description": "2025",
+      "format": "PDF",
+      "title": "BRKDCN-3924: Day2Ops: Troubleshooting & Visibility with Nexus Insights",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/global-event/docs/2025/pdf/BRKDCN-3924.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "BRKDCN-2912: vPC Best Practices in VXLAN",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/emea/docs/2024/pdf/BRKDCN-2912.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "BRKDCN-3966: VXLAN EVPN Packet Walks",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/emea/docs/2024/pdf/BRKDCN-3966.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "BRKDCN-3953: End-to-End QoS with Nexus",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/emea/docs/2024/pdf/BRKDCN-3953.pdf"
+    },
+    {
+      "description": "2024",
+      "format": "PDF",
+      "title": "BRKDCN-2945: Storage and Nexus 9000 (RoCEv2/QoS)",
+      "url": "https://www.ciscolive.com/c/dam/r/ciscolive/emea/docs/2024/pdf/BRKDCN-2945.pdf"
+    },
+    {
+      "description": "community",
+      "format": "PDF",
+      "title": "BRKDCN-2458: Nexus Operations & Maintenance Best Practices",
+      "url": "https://community.cisco.com/kxiwq67737/attachments/kxiwq67737/6016-discussions-lan-switching-routing/521537/1/BRKDCN-2458.pdf"
+    }
+  ],
+  "confidence": "medium",
+  "os": "nxos",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco:best-practices/nxos/index.json",
+      "title": "cisco knowledge base — best-practices/nxos/index.json",
+      "type": "documentation"
+    }
+  ],
+  "tags": [
+    "nexus-9000",
+    "nxos",
+    "data-center"
+  ]
+}

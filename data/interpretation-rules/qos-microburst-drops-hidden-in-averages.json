@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "qos-microburst-drops-hidden-in-averages",
+  "display_name": "Output drops with low average utilization mean microbursts — the average is hiding the burst",
+  "category": "counter-interpretation",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "An interface shows output/queue drops yet the reported utilization (averaged over the polling interval) is well below line rate",
+  "observation": "Egress drops are incrementing while 5-minute or even 30-second average utilization looks comfortable (e.g. 30-40%)",
+  "naive_interpretation": "The drops must be a counter bug or a hardware fault, because the link clearly is not congested",
+  "correct_interpretation": "Averaged utilization smooths out short, intense bursts. A microburst can fill the egress buffer at line rate for a few milliseconds, causing tail drops, while the average over a 30-300 second window stays low. The interface is momentarily congested even though it looks idle on average. The drops are real and the cause is instantaneous buffer exhaustion, not a faulty counter. Buffer/queue depth telemetry, not average bandwidth, is what reveals it.",
+  "why": [
+    "Interface utilization counters are averages over the polling interval; sub-second bursts are invisible at 30s-5min granularity",
+    "Egress buffers are small and fill at line rate during a burst, so a few milliseconds of over-rate causes tail drops",
+    "The mismatch between non-zero drops and low average utilization is the classic signature of microbursting, not a counter error",
+    "Detecting it requires high-resolution queue-depth or buffer-latency telemetry rather than averaged bandwidth"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show queuing interface Ethernet1/1",
+      "purpose": "Show per-queue buffer usage and tail-drop counts that reveal momentary congestion the average hides"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show hardware qos burst-detect",
+      "purpose": "Surface microburst events captured at high resolution on platforms that support burst detection"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface GigabitEthernet1/0/1 | include drops|rate|load",
+      "purpose": "Compare output drops against the averaged load to confirm drops persist while the average stays low"
+    }
+  ],
+  "traps": [
+    "Dismissing real egress drops as a counter bug because the averaged utilization looks low",
+    "Trusting 5-minute averages to rule out congestion when bursts last milliseconds",
+    "Adding bandwidth without buffer/QoS tuning when the issue is burst shape, not sustained rate",
+    "Not collecting high-resolution queue telemetry, the only view that shows the burst"
+  ],
+  "related_rules": [
+    "interface-counter-rate-vs-absolute",
+    "interface-drops-input-vs-output-queue",
+    "qos-shaper-buffers-policer-drops"
+  ],
+  "related_protocols": [],
+  "keywords": ["microburst", "output drops", "queue drops", "buffer", "average utilization", "tail drop", "congestion", "telemetry", "burst"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

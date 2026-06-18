@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "isis-p2p-vs-broadcast-mismatch",
+  "display_name": "IS-IS adjacency failure on a point-to-point link may be a network type mismatch — one side P2P, the other broadcast",
+  "category": "expected-behavior",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "IS-IS adjacency does not form on a point-to-point link (physical or logical) between two routers; both sides show IS-IS enabled on the interface but the adjacency stays down or in Init state",
+  "observation": "IS-IS adjacency will not come up on a link; one side may show the neighbor in Init state, the other may show no neighbor at all; IS-IS hello packets are being sent but the adjacency never progresses to Up",
+  "naive_interpretation": "There is a Layer 2 or Layer 3 connectivity issue on the link, or IS-IS authentication is misconfigured, or area/level mismatches are preventing adjacency formation",
+  "correct_interpretation": "IS-IS supports two network types: broadcast (LAN) and point-to-point. On broadcast interfaces, IS-IS elects a Designated Intermediate System (DIS) and forms adjacencies using 3-way LAN hellos. On point-to-point interfaces, IS-IS uses a different hello format (P2P IIH) with a 3-way handshake defined in RFC 5303. If one side of a link is configured as point-to-point and the other as broadcast, the hello packets are incompatible — each side sends its network-type-specific hello and silently discards the other side's hellos because they are a different PDU type. The adjacency never forms, and there is typically no error log or explicit rejection message. This is a silent failure. The fix is to ensure both sides use the same network type. On physical point-to-point links (serial, P2P Ethernet), both sides should use 'isis network point-to-point' (or the equivalent). The mismatch is especially common when one side is a Cisco device (which defaults to broadcast on Ethernet) and the other is Junos (which defaults to point-to-point on many interface types).",
+  "why": [
+    "IS-IS P2P hellos (IIH type 20) and LAN hellos (IIH type 15/16) are different PDU types at the IS-IS protocol level — a router expecting one type silently drops the other",
+    "Unlike OSPF, which logs a network type mismatch explicitly, IS-IS does not generate a clear error message when the hello types don't match — the adjacency simply stays in Init or Down with no diagnostic output",
+    "Ethernet interfaces default to broadcast network type on most Cisco platforms but default to point-to-point on Junos and some SONiC configurations — cross-vendor links are the most common scenario for this mismatch",
+    "The RFC 5303 three-way handshake (P2P adjacency) is carried inside P2P IIH packets only — a broadcast-side router never processes this TLV because it never parses the P2P IIH"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show isis interface <interface>",
+      "purpose": "Display the IS-IS network type (point-to-point or broadcast/LAN) configured on the local interface — compare with the remote side"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show isis interface <interface>",
+      "purpose": "Check the IS-IS circuit type and network type to verify it matches the remote end"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show isis interface <interface>",
+      "purpose": "Display IS-IS interface parameters including network type (point-to-point vs LAN)"
+    },
+    {
+      "os": "junos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show isis interface <interface> detail",
+      "purpose": "Verify the IS-IS interface type (point-to-point or LAN) and check for adjacency state"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show isis neighbors detail",
+      "purpose": "Display adjacency state — an adjacency stuck in Init with no error typically indicates a hello type mismatch"
+    }
+  ],
+  "traps": [
+    "Debugging IS-IS hellos and seeing packets sent but no adjacency forming — the hellos ARE being sent, they are just the wrong PDU type for the other side to process",
+    "Checking authentication, area IDs, and MTU (all valid troubleshooting steps) while missing the network type mismatch — this is especially frustrating because all other parameters can be correct and the adjacency still won't form",
+    "Assuming that because both sides show 'IS-IS enabled' on the interface, the configuration is compatible — the network type is a separate parameter from IS-IS enablement",
+    "Not checking the remote side's configuration — the mismatch is only visible when you compare both sides; each side's local config looks valid in isolation",
+    "On multi-vendor links, assuming both sides have the same default network type for Ethernet — Cisco defaults to broadcast, Junos often defaults to P2P"
+  ],
+  "related_rules": [
+    "ospf-exstart-stuck-is-mtu-mismatch"
+  ],
+  "related_protocols": ["isis"],
+  "keywords": ["IS-IS", "ISIS", "point-to-point", "broadcast", "network type", "adjacency", "IIH", "hello", "P2P", "LAN", "DIS", "Init", "RFC 5303"],
+  "sources": [
+    {
+      "id": "rfc-5303",
+      "title": "RFC 5303 - Three-Way Handshake for IS-IS Point-to-Point Adjacencies",
+      "type": "rfc"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

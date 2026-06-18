@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "ospf-exstart-stuck-is-mtu-mismatch",
+  "display_name": "OSPF neighbor stuck in EXSTART/EXCHANGE almost always means MTU mismatch",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "show ip ospf neighbor showing a neighbor stuck in EXSTART or EXCHANGE state, cycling between those states without reaching FULL",
+  "observation": "OSPF neighbor state alternates between EXSTART and EXCHANGE but never reaches LOADING or FULL",
+  "naive_interpretation": "There is a routing protocol problem, authentication issue, or network instability",
+  "correct_interpretation": "A neighbor stuck in EXSTART/EXCHANGE is the classic symptom of an MTU mismatch between the two OSPF interfaces. During database exchange, OSPF includes the interface MTU in its Database Description (DD) packets. If the received MTU does not match, the neighbor rejects the DD packet and resets to EXSTART. This creates an endless cycle. Authentication failures present differently (neighbor never appears at all or gets stuck at INIT).",
+  "why": [
+    "RFC 2328 Section 10.6: the DD packet includes the interface MTU; if it exceeds the receiving interface's MTU, the packet is rejected",
+    "The EXSTART->EXCHANGE->EXSTART cycle is deterministic when MTU differs — both sides keep trying and failing at the same point",
+    "This is the single most common cause of OSPF neighbors stuck in EXSTART and should be checked first before investigating anything else"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip ospf interface Ethernet1/1",
+      "purpose": "Check the MTU reported on the local OSPF interface"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface Ethernet1/1 | include MTU",
+      "purpose": "Check the actual interface MTU value"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip ospf interface GigabitEthernet1/0/1",
+      "purpose": "Check the MTU on the OSPF interface — compare with the remote side"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "debug ip ospf adj",
+      "purpose": "Shows the received DD MTU value vs local — confirms mismatch (use briefly, disable after)"
+    }
+  ],
+  "traps": [
+    "Investigating authentication, area type, or network type when the EXSTART/EXCHANGE pattern points to MTU mismatch",
+    "Checking MTU at the interface level but forgetting that subinterfaces, tunnels, or VLAN SVIs may have different MTU values",
+    "On NX-OS, the ip ospf mtu-ignore command can mask the issue but does not fix the underlying MTU inconsistency",
+    "Not checking both sides — the MTU must match on both ends of the link"
+  ],
+  "related_rules": [
+    "ospf-neighbor-full-vs-2way"
+  ],
+  "related_protocols": ["ospfv2", "ospfv3"],
+  "keywords": ["OSPF", "EXSTART", "EXCHANGE", "MTU", "mismatch", "neighbor", "adjacency", "stuck"],
+  "sources": [
+    {
+      "id": "rfc-2328",
+      "title": "RFC 2328 — OSPF Version 2",
+      "type": "rfc",
+      "rfc_number": 2328,
+      "url": "https://www.rfc-editor.org/rfc/rfc2328.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

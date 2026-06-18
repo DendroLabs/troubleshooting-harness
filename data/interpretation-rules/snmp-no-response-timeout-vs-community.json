@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "snmp-no-response-timeout-vs-community",
+  "display_name": "SNMP poll returns no response — device unreachable and community/credential mismatch produce the same silence",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "An NMS or monitoring tool reports SNMP timeout / device unreachable for a managed device",
+  "observation": "SNMP GET or WALK requests time out with no response from the target device; the NMS shows the device as down or unreachable",
+  "naive_interpretation": "The device is unreachable — there is a network connectivity problem between the NMS and the device, or the device is down",
+  "correct_interpretation": "SNMP v1/v2c silently drops requests with the wrong community string — the agent receives the packet, sees a community mismatch, and discards it without sending any error response. This is identical in behavior to the device being unreachable (no response either way). SNMPv3 with wrong credentials also produces no response (the agent silently drops unauthenticated PDUs per RFC 3414). Before troubleshooting reachability, verify the community string or SNMPv3 credentials match between the NMS and the device. A simple ping or SSH to the device rules out reachability instantly, isolating the problem to SNMP configuration.",
+  "why": [
+    "RFC 3584 Section 2.5 specifies that SNMPv1/v2c agents discard messages with unknown community strings without sending a response — this is by design to avoid leaking information about valid community names",
+    "SNMPv3 agents drop unauthenticated or incorrectly authenticated messages silently (RFC 3414 Section 3.2) — same no-response symptom",
+    "SNMP uses UDP, so there is no connection establishment that would fail fast on misconfiguration — the request simply goes unanswered",
+    "NMS tools typically cannot distinguish 'no route to host', 'firewall blocking UDP 161', and 'community mismatch' — all three look like a timeout"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show snmp community",
+      "purpose": "Verify the community string configured on the device matches what the NMS is sending"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show snmp stats",
+      "purpose": "Check for inBadCommunityNames counter — if incrementing, the device is receiving polls but dropping them due to community mismatch"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show snmp",
+      "purpose": "Display SNMP statistics including bad community name counters and packet counts to distinguish silent drops from no-traffic"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show snmp group",
+      "purpose": "For SNMPv3, verify the group and security model configuration matches the NMS settings"
+    },
+    {
+      "os": "sonic",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show runningconfiguration snmp",
+      "purpose": "Check SNMP community and ACL configuration on SONiC to verify what the device expects"
+    }
+  ],
+  "traps": [
+    "Spending time troubleshooting routing, firewalls, and ACLs when the community string simply doesn't match — a ping to the device would have ruled out reachability in seconds",
+    "Not checking SNMP agent counters (inBadCommunityNames) on the device itself — this counter proves the device received the request but rejected it",
+    "Assuming SNMPv3 will return an authentication error to the NMS — it silently drops, just like v2c community mismatch",
+    "Changing the community string on the device to 'fix' the problem without updating the NMS, or vice versa — creating a split-brain misconfiguration",
+    "Not checking SNMP ACLs — even with the correct community, an ACL restricting SNMP access to specific source IPs will cause the same silent drop"
+  ],
+  "related_rules": [
+    "aaa-timeout-vs-reject-in-auth-logs",
+    "snmp-polling-gaps-during-high-cpu"
+  ],
+  "related_protocols": ["snmp"],
+  "keywords": ["SNMP", "community string", "timeout", "no response", "NMS", "monitoring", "UDP 161", "inBadCommunityNames", "SNMPv3", "credentials"],
+  "sources": [
+    {
+      "id": "rfc-3584",
+      "title": "RFC 3584 — Coexistence between Version 1, Version 2, and Version 3 of the Internet-standard Network Management Framework",
+      "type": "rfc",
+      "rfc_number": 3584,
+      "url": "https://www.rfc-editor.org/rfc/rfc3584.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

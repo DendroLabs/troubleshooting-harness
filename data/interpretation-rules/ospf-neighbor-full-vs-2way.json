@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "ospf-neighbor-full-vs-2way",
+  "display_name": "OSPF neighbor in 2WAY state on a multi-access segment is normal, not stuck",
+  "category": "expected-behavior",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "show ip ospf neighbor output on a broadcast or NBMA segment with more than two routers",
+  "observation": "One or more OSPF neighbors show state 2WAY/DROTHER instead of FULL",
+  "naive_interpretation": "The OSPF adjacency is stuck or failing to reach FULL state — there is a problem",
+  "correct_interpretation": "On broadcast and NBMA network types, only the DR and BDR form FULL adjacencies with all neighbors. Non-DR/BDR routers (DROTHERs) remain in 2WAY state with each other by design. This is normal OSPF behavior per RFC 2328. Only worry if a neighbor that should be FULL (DR or BDR relationship) is stuck in a lower state.",
+  "why": [
+    "RFC 2328 Section 10.4 specifies that adjacencies are only formed with the DR and BDR on multi-access segments",
+    "2WAY state means bidirectional hello exchange is working — the routers see each other, they just are not exchanging LSAs directly",
+    "Forming full adjacencies between all N routers on a segment would create O(N^2) adjacencies, which does not scale",
+    "DROTHERs receive their LSA updates via the DR, so they do not need direct FULL adjacencies with each other"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip ospf neighbor",
+      "purpose": "Check the DR/BDR role column — 2WAY is expected between DROTHERs"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip ospf interface brief",
+      "purpose": "Verify the network type (broadcast vs point-to-point) and this router's DR/BDR role"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip ospf neighbor",
+      "purpose": "Check neighbor states and roles"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip ospf interface",
+      "purpose": "Check network type and DR/BDR election results"
+    }
+  ],
+  "traps": [
+    "Troubleshooting a 2WAY adjacency on a broadcast segment as if it were stuck",
+    "Trying to force FULL adjacency between DROTHERs by changing OSPF priority or network type without understanding the implications",
+    "Not checking the interface network type — point-to-point should always be FULL, broadcast is expected to have 2WAY between DROTHERs",
+    "Confusing 2WAY (normal on broadcast) with EXSTART/EXCHANGE (actually stuck — usually an MTU mismatch)"
+  ],
+  "related_rules": [],
+  "related_protocols": ["ospfv2", "ospfv3"],
+  "keywords": ["OSPF", "2WAY", "FULL", "DROTHER", "DR", "BDR", "adjacency", "neighbor state", "broadcast"],
+  "sources": [
+    {
+      "id": "rfc-2328",
+      "title": "RFC 2328 — OSPF Version 2",
+      "type": "rfc",
+      "rfc_number": 2328,
+      "url": "https://www.rfc-editor.org/rfc/rfc2328.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "interface-counter-rate-vs-absolute",
+  "display_name": "Error rates matter more than absolute counter values",
+  "category": "counter-interpretation",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Evaluating interface error counters from show interface or similar output",
+  "observation": "Large absolute error counter values on an interface",
+  "naive_interpretation": "A high absolute number of errors means the interface is in bad shape",
+  "correct_interpretation": "The error rate (errors per second or errors relative to total packets) is what matters, not the absolute count. An interface passing 10 billion packets with 1000 errors over 30 days has a 0.00001% error rate — essentially clean. The same 1000 errors in 5 minutes on a lightly loaded link is a serious problem.",
+  "why": [
+    "Absolute counters grow indefinitely with uptime — a 6-month-old counter set will always look large",
+    "Error significance is relative to traffic volume and time window",
+    "Industry standard for acceptable bit error rate on Ethernet is 10^-12 or better"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface Ethernet1/1 counters",
+      "purpose": "Get total packet counts to calculate error rate as a percentage of total traffic"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show system uptime",
+      "purpose": "Determine how long counters have been accumulating to calculate errors per unit time"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces GigabitEthernet1/0/1 | include packets input|packets output|errors",
+      "purpose": "Get total packets and errors for rate calculation"
+    }
+  ],
+  "traps": [
+    "Panicking over a counter showing 50000 errors without checking that the interface has passed 500 billion packets",
+    "Comparing absolute counters across interfaces with different traffic loads or uptimes",
+    "Not normalizing error counts by time period to get an error rate"
+  ],
+  "related_rules": [
+    "interface-crc-counters-without-clearing",
+    "system-uptime-as-counter-context"
+  ],
+  "related_protocols": [],
+  "keywords": ["error rate", "counters", "packet count", "interface errors", "bit error rate"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

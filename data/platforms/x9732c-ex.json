@@ -1,0 +1,170 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:cloud-scale",
+      "asic_id": 0,
+      "asic_model": "Sugarbowl",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "8x 100G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 8,
+              "label": "Eth-slot/1/1-8",
+              "native_speed": "100G",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 900.0
+    },
+    {
+      "asic_family": "asic:cloud-scale",
+      "asic_id": 1,
+      "asic_model": "Sugarbowl",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "8x 100G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 16,
+              "label": "Eth-slot/1/9-16",
+              "native_speed": "100G",
+              "start_port": 9
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 900.0
+    },
+    {
+      "asic_family": "asic:cloud-scale",
+      "asic_id": 2,
+      "asic_model": "Sugarbowl",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "8x 100G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 24,
+              "label": "Eth-slot/1/17-24",
+              "native_speed": "100G",
+              "start_port": 17
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 900.0
+    },
+    {
+      "asic_family": "asic:cloud-scale",
+      "asic_id": 3,
+      "asic_model": "Sugarbowl",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "8x 100G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 32,
+              "label": "Eth-slot/1/25-32",
+              "native_speed": "100G",
+              "start_port": 25
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 900.0
+    }
+  ],
+  "chassis_type": "modular",
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9500",
+  "platform_id": "x9732c-ex",
+  "platform_name": "Nexus 9500 X9732C-EX (Tacoma)",
+  "platform_pid": "N9K-X9732C-EX",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-x9732c-ex",
+      "title": "Tech Zone: Nexus 9k ASIC Mappings, Tacoma diagram",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-9500/x9732c-ex.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-9500/x9732c-ex.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 3.2,
+  "total_ports": 32
+}

@@ -1,0 +1,160 @@
+{
+  "confidence": "medium",
+  "os": "iosxr",
+  "platform_family": "cisco-8000",
+  "platform_id": "cisco-8000",
+  "platform_name": "Cisco 8000 Series",
+  "scalability": {
+    "iosxr-asic-driven": {
+      "os": "iosxr",
+      "sections": [
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "FIB IPv4",
+                  "value": "~2M"
+                },
+                {
+                  "notes": "",
+                  "resource": "FIB IPv6",
+                  "value": "~512K"
+                },
+                {
+                  "notes": "large encap mode",
+                  "resource": "MPLS Labels",
+                  "value": "32K/slice-pair"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP",
+                  "value": "256-way BGP"
+                }
+              ],
+              "profile_name": "Silicon One Q100"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "3M with hw-module profile, IOS-XR 7.9.1+",
+                  "resource": "FIB IPv4",
+                  "value": "2M"
+                },
+                {
+                  "notes": "1M with hw-module profile",
+                  "resource": "FIB IPv6",
+                  "value": "512K"
+                },
+                {
+                  "notes": "52K effective due to GRID constraint",
+                  "resource": "MPLS Labels",
+                  "value": "192K/NPU"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP",
+                  "value": "256-way BGP"
+                },
+                {
+                  "notes": "trades to 7,500 with FIB expansion profile",
+                  "resource": "IPv4 ACE (default)",
+                  "value": "9,500"
+                },
+                {
+                  "notes": "trades to 4,000 with FIB expansion profile",
+                  "resource": "IPv6 ACE (default)",
+                  "value": "5,000"
+                }
+              ],
+              "profile_name": "Silicon One Q200"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "unidimensional max",
+                  "resource": "FIB IPv4",
+                  "value": "6M"
+                },
+                {
+                  "notes": "unidimensional max",
+                  "resource": "FIB IPv6",
+                  "value": "3M"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP",
+                  "value": "256-way BGP"
+                },
+                {
+                  "notes": "",
+                  "resource": "LPM Efficiency",
+                  "value": "31% less consumption vs Q200"
+                },
+                {
+                  "notes": "",
+                  "resource": "Subscriber Scale",
+                  "value": "1.75x more vs Q200 at same LPM utilization"
+                }
+              ],
+              "profile_name": "Silicon One P100"
+            }
+          ],
+          "section_name": "FIB Scale by ASIC"
+        },
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "Large Encap Entries",
+                  "value": "32K/slice-pair"
+                }
+              ],
+              "profile_name": "Q100 MPLS"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "Large Encap Entries (standalone)",
+                  "value": "192K/NPU"
+                },
+                {
+                  "notes": "",
+                  "resource": "Large Encap Entries (distributed)",
+                  "value": "128K/NPU"
+                },
+                {
+                  "notes": "",
+                  "resource": "GRID Limit (effective system-wide)",
+                  "value": "~52K"
+                }
+              ],
+              "profile_name": "Q200 MPLS"
+            }
+          ],
+          "section_name": "MPLS Encap Scale"
+        }
+      ],
+      "source_url": "https://xrdocs.io/8000/tutorials/cisco-8000-fib-scale",
+      "version": "asic-driven"
+    }
+  },
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco:verified-scalability/iosxr/cisco-8000-asic-driven.json",
+      "title": "cisco knowledge base — verified-scalability/iosxr/cisco-8000-asic-driven.json",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco-scale-iosxr-asic-driven",
+      "title": "Cisco Verified Scalability Guide — Cisco 8000 Series asic-driven",
+      "type": "vendor_doc",
+      "url": "https://xrdocs.io/8000/tutorials/cisco-8000-fib-scale"
+    }
+  ]
+}

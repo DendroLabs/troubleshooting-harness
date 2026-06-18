@@ -1,0 +1,1361 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "L2 mode uses Ethertype 0x88F7 — requires VLAN reachability. L3 mode uses UDP ports 319 (event) and 320 (general) — requires IP routing.",
+      "name": "Physical Ethernet connectivity (L2) or IP connectivity (L3)",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Sub-microsecond accuracy requires PHY-level hardware timestamps. Software timestamping adds variable delay that degrades accuracy to milliseconds.",
+      "name": "Hardware timestamping capability",
+      "type": "infrastructure"
+    },
+    {
+      "description": "PTP domain number must match on all devices in the timing domain. Mismatched domains cause devices to ignore each other's Announce messages.",
+      "name": "PTP domain match between master and slave",
+      "type": "infrastructure"
+    },
+    {
+      "description": "SyncE requires PHY-level support for recovering clock from the received Ethernet signal. Not available on all interfaces — check platform datasheet.",
+      "name": "SyncE PHY support for recovered clock",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "PTP port stays in LISTENING or UNCALIBRATED state, unable to lock to a master clock. Local clock runs free, causing time drift on downstream clients.",
+      "resolutions": [
+        {
+          "action": "Verify Announce messages are received: 'show ptp clock' or equivalent — check for master info",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify Announce messages are received: 'show ptp clock' or equivalent — check for master info",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify Announce messages are received: 'show ptp clock' or equivalent — check for master info",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check PTP domain matches on both ends",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check PTP domain matches on both ends",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check PTP domain matches on both ends",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify transport: L2 VLAN reachability or UDP port 319/320 not blocked by ACL",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify transport: L2 VLAN reachability or UDP port 319/320 not blocked by ACL",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify transport: L2 VLAN reachability or UDP port 319/320 not blocked by ACL",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check BMC priority settings: lower priority1 = better — master should have lower value than slave",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check BMC priority settings: lower priority1 = better — master should have lower value than slave",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check BMC priority settings: lower priority1 = better — master should have lower value than slave",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify one-step vs two-step mode consistency",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify one-step vs two-step mode consistency",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify one-step vs two-step mode consistency",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "No Announce messages reaching slave (VLAN/ACL/firewall blocking Ethertype 0x88F7 or UDP 319/320)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BMC priority misconfigured — slave has better clock attributes than intended master (lower priority1 = better)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "One-step/two-step mode mismatch between master and slave",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PTP domain mismatch between master and slave",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "PTP slave not locking to master — clock free-running",
+      "symptoms": [
+        "PTP port stays in LISTENING or UNCALIBRATED",
+        "Time offset increasing (clock free-running)",
+        "Downstream clients showing holdover or alarm"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ptp port",
+          "confirms_if": "Shows current port state and whether a master has been selected",
+          "look_for": "Look for port state (should be SLAVE if locked), master info, and offset value",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp port",
+          "confirms_if": "Shows current port state and whether a master has been selected",
+          "look_for": "Look for port state (should be SLAVE if locked), master info, and offset value",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp port",
+          "confirms_if": "Shows current port state and whether a master has been selected",
+          "look_for": "Look for port state (should be SLAVE if locked), master info, and offset value",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp clock",
+          "confirms_if": "Shows whether the local clock has locked to a grandmaster and current offset",
+          "look_for": "Look for clock state, GM identity, domain number, and clock quality",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp clock",
+          "confirms_if": "Shows whether the local clock has locked to a grandmaster and current offset",
+          "look_for": "Look for clock state, GM identity, domain number, and clock quality",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp clock",
+          "confirms_if": "Shows whether the local clock has locked to a grandmaster and current offset",
+          "look_for": "Look for clock state, GM identity, domain number, and clock quality",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "SyncE reference loop causes unstable frequency. ESMC QL-DNU (Do Not Use) is not being sent on the port where SyncE is received, allowing a timing loop.",
+      "resolutions": [
+        {
+          "action": "Verify ESMC is enabled on all SyncE interfaces",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ESMC is enabled on all SyncE interfaces",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ESMC is enabled on all SyncE interfaces",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that QL-DNU is sent on the port where SyncE is received (standard loop prevention mechanism)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that QL-DNU is sent on the port where SyncE is received (standard loop prevention mechanism)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that QL-DNU is sent on the port where SyncE is received (standard loop prevention mechanism)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SyncE clock selection algorithm is consistent across all nodes in the chain/ring",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SyncE clock selection algorithm is consistent across all nodes in the chain/ring",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SyncE clock selection algorithm is consistent across all nodes in the chain/ring",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for SyncE on all intermediate nodes — a gap breaks frequency distribution",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for SyncE on all intermediate nodes — a gap breaks frequency distribution",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for SyncE on all intermediate nodes — a gap breaks frequency distribution",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "QL-DNU not sent on ports receiving SyncE from the same source (loop prevention failure)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ESMC not enabled on all ring/chain interfaces",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SyncE not configured on intermediate nodes in the path",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "SyncE quality level loop — QL-DNU not propagating",
+      "symptoms": [
+        "SyncE reference loop detected",
+        "Unstable frequency — clock quality flapping",
+        "ESMC QL values flapping between valid QL and DNU"
+      ],
+      "verify_commands": [
+        {
+          "command": "show network-clock synchronization",
+          "confirms_if": "Shows which interface is the active SyncE source and QL values on all interfaces",
+          "look_for": "Look for SyncE source selection, current QL per interface, and loop prevention status",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show network-clock synchronization",
+          "confirms_if": "Shows which interface is the active SyncE source and QL values on all interfaces",
+          "look_for": "Look for SyncE source selection, current QL per interface, and loop prevention status",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show network-clock synchronization",
+          "confirms_if": "Shows which interface is the active SyncE source and QL values on all interfaces",
+          "look_for": "Look for SyncE source selection, current QL per interface, and loop prevention status",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show esmc",
+          "confirms_if": "Confirms whether ESMC is running and what QL values are being exchanged",
+          "look_for": "Look for ESMC PDU counters and QL-TLV values received/transmitted per interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show esmc",
+          "confirms_if": "Confirms whether ESMC is running and what QL values are being exchanged",
+          "look_for": "Look for ESMC PDU counters and QL-TLV values received/transmitted per interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show esmc",
+          "confirms_if": "Confirms whether ESMC is running and what QL values are being exchanged",
+          "look_for": "Look for ESMC PDU counters and QL-TLV values received/transmitted per interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "PTP is locked to a master but the time offset or PDV (Packet Delay Variation) is too high for the application. Telecom applications require sub-microsecond accuracy.",
+      "resolutions": [
+        {
+          "action": "Use PTP-aware (boundary clock or transparent clock) switches on the entire path — no non-PTP hops",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use PTP-aware (boundary clock or transparent clock) switches on the entire path — no non-PTP hops",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use PTP-aware (boundary clock or transparent clock) switches on the entire path — no non-PTP hops",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable hardware timestamping on all PTP nodes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable hardware timestamping on all PTP nodes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable hardware timestamping on all PTP nodes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure one-step mode where hardware supports it (eliminates Follow_Up jitter)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure one-step mode where hardware supports it (eliminates Follow_Up jitter)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure one-step mode where hardware supports it (eliminates Follow_Up jitter)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure PTP packets get highest QoS priority (DSCP CS7 or queue priority)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure PTP packets get highest QoS priority (DSCP CS7 or queue priority)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure PTP packets get highest QoS priority (DSCP CS7 or queue priority)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use G.8275.1 profile for telecom — requires full on-path PTP support",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use G.8275.1 profile for telecom — requires full on-path PTP support",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use G.8275.1 profile for telecom — requires full on-path PTP support",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Non-PTP-aware switches in path adding variable delay (PDV) — breaks end-to-end timing budget",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Software timestamping instead of hardware timestamping",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Asymmetric path delay not compensated",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Congestion causing packet delay on PTP path — PTP packets not getting highest QoS priority",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "One-step vs two-step mode mismatch causing timestamp inaccuracy",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "PTP timing accuracy degraded — high offset/jitter",
+      "symptoms": [
+        "Time offset >1us (for telecom/G.8275.1 applications)",
+        "PDV (Packet Delay Variation) too high",
+        "Boundary clock not compensating for asymmetry",
+        "Downstream timing alarms on mobile base stations"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ptp clock",
+          "confirms_if": "Offset >1us or freerun state indicates timing accuracy problem",
+          "look_for": "Look for offset-from-master, mean-path-delay, and clock state (locked/acquiring/freerun)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp clock",
+          "confirms_if": "Offset >1us or freerun state indicates timing accuracy problem",
+          "look_for": "Look for offset-from-master, mean-path-delay, and clock state (locked/acquiring/freerun)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp clock",
+          "confirms_if": "Offset >1us or freerun state indicates timing accuracy problem",
+          "look_for": "Look for offset-from-master, mean-path-delay, and clock state (locked/acquiring/freerun)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp platform servo",
+          "confirms_if": "Shows whether the servo loop has converged and current correction values",
+          "look_for": "Look for servo state, offset, drift, and correction values",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp platform servo",
+          "confirms_if": "Shows whether the servo loop has converged and current correction values",
+          "look_for": "Look for servo state, offset, drift, and correction values",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp platform servo",
+          "confirms_if": "Shows whether the servo loop has converged and current correction values",
+          "look_for": "Look for servo state, offset, drift, and correction values",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "SyncE provides stable frequency but PTP phase/time offset is increasing. Common in hybrid deployments where the PTP path has non-PTP-aware hops.",
+      "resolutions": [
+        {
+          "action": "Ensure PTP boundary clock mode on all intermediate nodes — no non-PTP hops",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure PTP boundary clock mode on all intermediate nodes — no non-PTP hops",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure PTP boundary clock mode on all intermediate nodes — no non-PTP hops",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SyncE and PTP trace to the same grandmaster (consistent reference)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SyncE and PTP trace to the same grandmaster (consistent reference)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SyncE and PTP trace to the same grandmaster (consistent reference)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider G.8275.1 profile requiring full on-path PTP support for phase alignment",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider G.8275.1 profile requiring full on-path PTP support for phase alignment",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider G.8275.1 profile requiring full on-path PTP support for phase alignment",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that SyncE frequency source feeds PTP servo as a frequency reference (hybrid mode configuration)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that SyncE frequency source feeds PTP servo as a frequency reference (hybrid mode configuration)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check that SyncE frequency source feeds PTP servo as a frequency reference (hybrid mode configuration)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "SyncE providing frequency but PTP not locking for phase — common when PTP path has non-PTP-aware hops",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PTP boundary clock not configured on intermediate nodes between GM and slave",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PTP and SyncE using different reference sources — should both trace to the same grandmaster",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "PTP/SyncE hybrid mode — frequency locked but time drifting",
+      "symptoms": [
+        "SyncE frequency stable but PTP phase/time offset increasing",
+        "Mobile sites showing timing alarms despite SyncE frequency lock",
+        "show ptp clock shows increasing offset while SyncE reports locked"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ptp clock",
+          "confirms_if": "Increasing offset with locked SyncE confirms hybrid mode phase issue",
+          "look_for": "Look for offset-from-master trend — if increasing while SyncE is locked, phase alignment is failing",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp clock",
+          "confirms_if": "Increasing offset with locked SyncE confirms hybrid mode phase issue",
+          "look_for": "Look for offset-from-master trend — if increasing while SyncE is locked, phase alignment is failing",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp clock",
+          "confirms_if": "Increasing offset with locked SyncE confirms hybrid mode phase issue",
+          "look_for": "Look for offset-from-master trend — if increasing while SyncE is locked, phase alignment is failing",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show network-clock synchronization",
+          "confirms_if": "Confirms SyncE frequency is locked while PTP phase is drifting",
+          "look_for": "Look for SyncE lock status and QL — should show locked with valid QL",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show network-clock synchronization",
+          "confirms_if": "Confirms SyncE frequency is locked while PTP phase is drifting",
+          "look_for": "Look for SyncE lock status and QL — should show locked with valid QL",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show network-clock synchronization",
+          "confirms_if": "Confirms SyncE frequency is locked while PTP phase is drifting",
+          "look_for": "Look for SyncE lock status and QL — should show locked with valid QL",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "When the primary grandmaster fails, the BMC algorithm selects the wrong clock as the new grandmaster, causing a time jump or degraded accuracy.",
+      "resolutions": [
+        {
+          "action": "Configure priority1/priority2 to enforce correct GM hierarchy (lower = better): primary GM priority1=128, backup GM priority1=129",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure priority1/priority2 to enforce correct GM hierarchy (lower = better): primary GM priority1=128, backup GM priority1=129",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure priority1/priority2 to enforce correct GM hierarchy (lower = better): primary GM priority1=128, backup GM priority1=129",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set backup GM clock class to appropriate holdover value (Class 7 for locked, Class 52 for holdover) to indicate degraded accuracy during failover",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set backup GM clock class to appropriate holdover value (Class 7 for locked, Class 52 for holdover) to indicate degraded accuracy during failover",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set backup GM clock class to appropriate holdover value (Class 7 for locked, Class 52 for holdover) to indicate degraded accuracy during failover",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune Announce timeout for faster failover if application requires it (reduce from default 3 to 2)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune Announce timeout for faster failover if application requires it (reduce from default 3 to 2)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune Announce timeout for faster failover if application requires it (reduce from default 3 to 2)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Deploy redundant GM with GNSS receivers at geographically diverse locations",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Deploy redundant GM with GNSS receivers at geographically diverse locations",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Deploy redundant GM with GNSS receivers at geographically diverse locations",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "BMC priority misconfigured — priority1/priority2 not set to enforce correct GM hierarchy",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Backup GM clock class not set correctly (Class 6 for locked vs Class 7/52 for holdover/freerun)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Announce timeout too long — slow failover leaves slaves in holdover too long",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No redundant GM deployed — single point of failure",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Grandmaster failover — BMCA not selecting correct backup",
+      "symptoms": [
+        "On GM failure, wrong clock selected as new grandmaster",
+        "Time jump on failover — downstream slaves re-lock with offset",
+        "Downstream slaves temporarily free-running during GM re-election"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ptp clock",
+          "confirms_if": "Shows which clock the BMC selected as grandmaster and its quality attributes",
+          "look_for": "Look for grandmaster identity, clock class, and priority values — verify correct GM is selected",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp clock",
+          "confirms_if": "Shows which clock the BMC selected as grandmaster and its quality attributes",
+          "look_for": "Look for grandmaster identity, clock class, and priority values — verify correct GM is selected",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp clock",
+          "confirms_if": "Shows which clock the BMC selected as grandmaster and its quality attributes",
+          "look_for": "Look for grandmaster identity, clock class, and priority values — verify correct GM is selected",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp port",
+          "confirms_if": "Shows whether ports have correctly transitioned after GM failover",
+          "look_for": "Look for port state (MASTER/SLAVE/PASSIVE) and Announce receipt timeout status",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp port",
+          "confirms_if": "Shows whether ports have correctly transitioned after GM failover",
+          "look_for": "Look for port state (MASTER/SLAVE/PASSIVE) and Announce receipt timeout status",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ptp port",
+          "confirms_if": "Shows whether ports have correctly transitioned after GM failover",
+          "look_for": "Look for port state (MASTER/SLAVE/PASSIVE) and Announce receipt timeout status",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Carries clock quality information for the BMC algorithm (grandmaster identity, priority, accuracy, class)",
+      "key_fields": [
+        "Grandmaster Identity",
+        "Grandmaster Clock Quality (class, accuracy, variance)",
+        "Priority1 (user-configurable, lower = better)",
+        "Priority2 (tie-breaker)",
+        "Steps Removed (hop count from GM)",
+        "Domain Number"
+      ],
+      "name": "Announce",
+      "when_sent": "Periodically at Announce Interval by master ports"
+    },
+    {
+      "description": "Timestamped message from master carrying t1 (departure time) for time transfer to slave",
+      "key_fields": [
+        "Origin Timestamp (t1 in one-step mode)",
+        "Sequence ID",
+        "Two-Step Flag (if set, precise t1 follows in Follow_Up)"
+      ],
+      "name": "Sync",
+      "when_sent": "Periodically at Sync Interval by master"
+    },
+    {
+      "description": "Carries the precise t1 timestamp when operating in two-step mode (hardware timestamp captured after Sync)",
+      "key_fields": [
+        "Precise Origin Timestamp (hardware-captured t1)",
+        "Sequence ID (matches corresponding Sync)"
+      ],
+      "name": "Follow_Up",
+      "when_sent": "Immediately after Sync in two-step mode only"
+    },
+    {
+      "description": "Sent by slave to master for delay measurement — slave records departure time t3",
+      "key_fields": [
+        "Origin Timestamp (t3)",
+        "Sequence ID"
+      ],
+      "name": "Delay_Req",
+      "when_sent": "Periodically at Min Delay Request Interval by slave"
+    },
+    {
+      "description": "Master responds with t4 (arrival time of Delay_Req) — completes the four-timestamp delay measurement",
+      "key_fields": [
+        "Receive Timestamp (t4 — when Delay_Req arrived at master)",
+        "Requesting Port Identity",
+        "Sequence ID (matches Delay_Req)"
+      ],
+      "name": "Delay_Resp",
+      "when_sent": "In response to each Delay_Req"
+    },
+    {
+      "description": "Ethernet Synchronization Messaging Channel — carries Quality Level (QL) for SyncE clock source selection",
+      "key_fields": [
+        "QL-TLV (Quality Level): PRC/PRS (primary reference), SSU-A/SSU-B (secondary), SEC/EEC (equipment clock), DNU (Do Not Use)",
+        "Extended QL-TLV (enhanced SSM per G.8264)",
+        "Flag (Event vs Information)"
+      ],
+      "name": "ESMC (SyncE)",
+      "when_sent": "Every 1s on SyncE-enabled interfaces"
+    }
+  ],
+  "operates_at": "Layer 2 / Layer 3",
+  "protocol_family": "transport",
+  "protocol_id": "ptp-synce",
+  "protocol_name": "PTP / SyncE",
+  "purpose": "Network time/frequency synchronization — PTP for phase/time, SyncE for frequency. Critical for mobile backhaul (LTE/5G), carrier Ethernet, and financial trading.",
+  "related_protocols": [
+    "bfd",
+    "lldp",
+    "l2-infrastructure"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "ieee-ieee15882008ptpv2itutg82751g8261g8262",
+      "title": "IEEE 1588-2008 (PTPv2), ITU-T G.8275.1, G.8261/G.8262",
+      "type": "ieee_standard"
+    },
+    {
+      "id": "agent-cisco-kb:transport/ptp-synce.json",
+      "title": "agent-cisco-kb knowledge base — transport/ptp-synce.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "IEEE 1588-2008 (PTPv2), ITU-T G.8275.1, G.8261/G.8262",
+  "states": [
+    {
+      "description": "Port starting up, not yet participating in BMC algorithm or sending messages",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "INITIALIZING"
+    },
+    {
+      "description": "Port listening for Announce messages, participating in BMC (Best Master Clock) algorithm",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "LISTENING"
+    },
+    {
+      "description": "Port selected as best clock source, sending Sync and Announce messages to slaves",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "MASTER"
+    },
+    {
+      "description": "Port locked to a master clock, receiving Sync messages and adjusting local clock",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "SLAVE"
+    },
+    {
+      "description": "Port sees a better path to grandmaster, standing by (not acting as master or slave)",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "PASSIVE"
+    },
+    {
+      "description": "Port has selected a master but the servo loop has not yet locked to it — transitional state",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "UNCALIBRATED"
+    },
+    {
+      "description": "Port has detected a fault condition",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "FAULTY"
+    },
+    {
+      "description": "Port administratively disabled for PTP",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "DISABLED"
+    }
+  ],
+  "tags": [
+    "synchronization",
+    "timing",
+    "frequency",
+    "mobile-backhaul",
+    "carrier-ethernet",
+    "5g",
+    "telecom",
+    "transport"
+  ],
+  "timers": [
+    {
+      "default_rfc": "2s (logAnnounceInterval=1)",
+      "description": "Interval between Announce messages carrying clock quality information for the BMC algorithm",
+      "name": "Announce Interval",
+      "on_expiry": "Announce sent (master) or timeout checked (slave)",
+      "range": "1-16s (logAnnounceInterval -3 to 4)",
+      "tuning_advice": "Shorter intervals give faster GM failover but increase control-plane load. G.8275.1 recommends 1s or 2s."
+    },
+    {
+      "default_rfc": "3 (= 3 x Announce Interval = 6s)",
+      "description": "Number of missed Announce intervals before declaring master lost",
+      "name": "Announce Receipt Timeout",
+      "on_expiry": "Master declared lost, BMC re-election triggered",
+      "range": "2-10",
+      "tuning_advice": "Lower values give faster GM failover but risk false triggers on congested networks. Typical: 3."
+    },
+    {
+      "default_rfc": "1s (logSyncInterval=0)",
+      "description": "Interval between Sync messages from master to slave for time transfer",
+      "name": "Sync Interval",
+      "on_expiry": "Sync message sent by master",
+      "range": "7.8ms to 16s (logSyncInterval -7 to 4)",
+      "tuning_advice": "Shorter = better accuracy but more CPU/bandwidth. Mobile backhaul typically 125ms (logSyncInterval=-3). G.8275.1 recommends 62.5ms to 1s."
+    },
+    {
+      "default_rfc": "matches Sync interval",
+      "description": "Minimum interval between Delay_Req messages sent by the slave for path delay measurement",
+      "name": "Min Delay Request Interval",
+      "on_expiry": "Delay_Req sent by slave",
+      "range": "same as Sync interval",
+      "tuning_advice": "Should match or be slower than Sync interval. Faster rates improve delay measurement but add load."
+    },
+    {
+      "default_rfc": "1s",
+      "description": "Ethernet Synchronization Messaging Channel interval for SyncE quality level signaling",
+      "name": "SyncE ESMC Interval",
+      "on_expiry": "ESMC PDU sent with current Quality Level (QL) value",
+      "range": "fixed (1s per ITU-T G.8264)",
+      "tuning_advice": "Not tunable — fixed at 1s per standard. ESMC timeout is typically 5s (5 missed ESMCs)."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "INITIALIZING",
+      "to_state": "LISTENING",
+      "trigger": "Port initialization complete"
+    },
+    {
+      "from_state": "LISTENING",
+      "to_state": "MASTER",
+      "trigger": "BMC determines this port should be master (best clock on this segment)"
+    },
+    {
+      "from_state": "LISTENING",
+      "to_state": "SLAVE",
+      "trigger": "BMC determines a better master exists on this segment"
+    },
+    {
+      "from_state": "LISTENING",
+      "to_state": "PASSIVE",
+      "trigger": "BMC determines another path to grandmaster is better"
+    },
+    {
+      "failure_if_stuck": "Master clock lost but BMC not promoting this port — check priority and clock class settings",
+      "from_state": "SLAVE",
+      "to_state": "MASTER",
+      "trigger": "Current master fails (Announce receipt timeout), this port becomes master"
+    },
+    {
+      "from_state": "MASTER",
+      "to_state": "SLAVE",
+      "trigger": "Better clock source appears (superior Announce received)"
+    },
+    {
+      "from_state": "SLAVE",
+      "to_state": "UNCALIBRATED",
+      "trigger": "Master changes, servo needs to re-lock to new master"
+    },
+    {
+      "failure_if_stuck": "Servo unable to lock — check offset/jitter, hardware timestamping, and path delay variation",
+      "from_state": "UNCALIBRATED",
+      "to_state": "SLAVE",
+      "trigger": "Servo has locked to new master clock"
+    },
+    {
+      "from_state": "*",
+      "to_state": "FAULTY",
+      "trigger": "Hardware fault or PTP clock failure"
+    },
+    {
+      "from_state": "*",
+      "to_state": "DISABLED",
+      "trigger": "Port administratively disabled"
+    }
+  ],
+  "transport": "Ethertype 0x88F7 (L2 mode) or UDP ports 319 (event) / 320 (general)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "IOS-XE supports PTP (1588v2) and SyncE on ASR 920/903, Catalyst 9000. G.8275.1 telecom profile supported. Hardware timestamping on all supported platforms. 'ptp clock boundary/ordinary' configuration. 'show ptp clock', 'show ptp port'. SyncE with ESMC for frequency distribution.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "IOS-XR full PTP + SyncE on ASR 9000, NCS 5500, Cisco 8000. G.8275.1/G.8275.2 profiles. Hardware timestamps with sub-100ns accuracy on NCS platforms. 'ptp clock profile g.8275.1'. 'show ptp platform servo'. SyncE with SSM/ESMC. Critical for mobile backhaul deployments.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "NX-OS supports PTP on Nexus 9000 with hardware timestamping. 'feature ptp' required. Supports boundary clock and transparent clock modes. SyncE supported on select Nexus 9300/9500 line cards. 'show ptp clock', 'show ptp port' commands.",
+          "versions": "9.3+"
+        }
+      ]
+    },
+    "saos": {
+      "notes": [
+        {
+          "note": "PTP/SyncE is a core feature of SAOS — all 5170/5171/8000/WaveRouter platforms include integrated GNSS receivers for grandmaster capability. IEEE 1588v2, G.8275.1, G.8275.2 profiles. Hardware timestamping on all ports. SyncE G.8262/G.8262.1 with ESMC. Hybrid mode (SyncE frequency + PTP phase). ToD (Time of Day) output for legacy equipment. Subject-verb CLI: 'ptp show clock' not 'show ptp clock'. Supports boundary clock, ordinary clock, and grandmaster with GNSS. BITS/T1/E1 timing interfaces on 5000/8000-series.",
+          "versions": "6.0+"
+        }
+      ]
+    }
+  }
+}

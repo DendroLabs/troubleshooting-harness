@@ -1,0 +1,824 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "Requires IP reachability between HSRP peers on the same subnet",
+      "name": "IP connectivity",
+      "type": "infrastructure"
+    },
+    {
+      "description": "All HSRP routers for a given group must share a common subnet",
+      "name": "Same subnet",
+      "type": "infrastructure"
+    },
+    {
+      "description": "All routers in the HSRP group must be configured with the same group number and virtual IP address",
+      "name": "Matching HSRP group and virtual IP",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "Both routers claim ACTIVE for the same HSRP group, causing duplicate virtual IP and traffic black-holing",
+      "resolutions": [
+        {
+          "action": "Check L2 connectivity between HSRP peers: verify VLAN, trunk, and switchport configuration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check L2 connectivity between HSRP peers: verify VLAN, trunk, and switchport configuration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check L2 connectivity between HSRP peers: verify VLAN, trunk, and switchport configuration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify no ACL is blocking UDP 1985/2029: 'show ip access-lists' on both routers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify no ACL is blocking UDP 1985/2029: 'show ip access-lists' on both routers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify no ACL is blocking UDP 1985/2029: 'show ip access-lists' on both routers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure HSRP version matches on both peers: 'show standby' and check version field",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure HSRP version matches on both peers: 'show standby' and check version field",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure HSRP version matches on both peers: 'show standby' and check version field",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify multicast reachability between peers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify multicast reachability between peers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify multicast reachability between peers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "L2 issue preventing Hellos from reaching the other router",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL blocking UDP 1985 (HSRPv1) or UDP 2029 (HSRPv2)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VLAN mismatch between HSRP peers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "HSRP version mismatch (v1 vs v2 use different multicast addresses: 224.0.0.2 vs 224.0.0.102)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Dual active (split-brain)",
+      "symptoms": [
+        "show standby on both routers shows ACTIVE state for the same group",
+        "ARP table on hosts shows MAC flapping for the virtual IP",
+        "Intermittent connectivity for hosts using the virtual gateway",
+        "Duplicate IP address syslog messages"
+      ],
+      "verify_commands": [
+        {
+          "command": "show standby",
+          "confirms_if": "If both show Active, confirms split-brain condition",
+          "look_for": "Check state on both routers -- both should NOT show Active for the same group",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby",
+          "confirms_if": "If both show Active, confirms split-brain condition",
+          "look_for": "Check state on both routers -- both should NOT show Active for the same group",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby",
+          "confirms_if": "If both show Active, confirms split-brain condition",
+          "look_for": "Check state on both routers -- both should NOT show Active for the same group",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby brief",
+          "confirms_if": "Shows group state, priority, and active/standby addresses",
+          "look_for": "Quick overview of all HSRP groups -- check for duplicate Active roles",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby brief",
+          "confirms_if": "Shows group state, priority, and active/standby addresses",
+          "look_for": "Quick overview of all HSRP groups -- check for duplicate Active roles",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby brief",
+          "confirms_if": "Shows group state, priority, and active/standby addresses",
+          "look_for": "Quick overview of all HSRP groups -- check for duplicate Active roles",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface status",
+          "confirms_if": "Interface down or wrong VLAN confirms L2 isolation",
+          "look_for": "Verify the interface connecting HSRP peers is up and in the correct VLAN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface status",
+          "confirms_if": "Interface down or wrong VLAN confirms L2 isolation",
+          "look_for": "Verify the interface connecting HSRP peers is up and in the correct VLAN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface status",
+          "confirms_if": "Interface down or wrong VLAN confirms L2 isolation",
+          "look_for": "Verify the interface connecting HSRP peers is up and in the correct VLAN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Active router fails but standby does not transition to ACTIVE, causing total gateway outage",
+      "resolutions": [
+        {
+          "action": "Verify HSRP group and virtual IP match on both sides: 'show standby' on both routers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify HSRP group and virtual IP match on both sides: 'show standby' on both routers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify HSRP group and virtual IP match on both sides: 'show standby' on both routers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check the standby router is actually in STANDBY state, not LISTEN or LEARN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check the standby router is actually in STANDBY state, not LISTEN or LEARN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check the standby router is actually in STANDBY state, not LISTEN or LEARN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify hold timer has expired: default 10s from last Hello",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify hold timer has expired: default 10s from last Hello",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify hold timer has expired: default 10s from last Hello",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check interface is up on standby router",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check interface is up on standby router",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check interface is up on standby router",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Hold timer not expired yet (default 10s can feel slow)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "HSRP group number mismatch between peers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Virtual IP address mismatch between peers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Standby router not in STANDBY state (might be in LISTEN)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Failover not occurring",
+      "symptoms": [
+        "Virtual IP becomes unreachable after active router failure",
+        "Standby router remains in STANDBY state despite active being down",
+        "Hosts lose default gateway connectivity"
+      ],
+      "verify_commands": [
+        {
+          "command": "show standby",
+          "confirms_if": "Mismatch in group or VIP, or state stuck in LISTEN/LEARN confirms the issue",
+          "look_for": "Check standby router state, group number, virtual IP, and timer values",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby",
+          "confirms_if": "Mismatch in group or VIP, or state stuck in LISTEN/LEARN confirms the issue",
+          "look_for": "Check standby router state, group number, virtual IP, and timer values",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby",
+          "confirms_if": "Mismatch in group or VIP, or state stuck in LISTEN/LEARN confirms the issue",
+          "look_for": "Check standby router state, group number, virtual IP, and timer values",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby brief",
+          "confirms_if": "Shows all HSRP groups at a glance for comparison",
+          "look_for": "Quick check of all HSRP groups -- look for group mismatches or unexpected states",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby brief",
+          "confirms_if": "Shows all HSRP groups at a glance for comparison",
+          "look_for": "Quick check of all HSRP groups -- look for group mismatches or unexpected states",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby brief",
+          "confirms_if": "Shows all HSRP groups at a glance for comparison",
+          "look_for": "Quick check of all HSRP groups -- look for group mismatches or unexpected states",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Higher priority router does not take over as ACTIVE after recovering, leaving a lower-priority router as ACTIVE",
+      "resolutions": [
+        {
+          "action": "Configure 'standby <group> preempt' on the router that should reclaim active role",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure 'standby <group> preempt' on the router that should reclaim active role",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure 'standby <group> preempt' on the router that should reclaim active role",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If preempt delay is configured, verify delay timer and wait or adjust: 'standby <group> preempt delay minimum <sec>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If preempt delay is configured, verify delay timer and wait or adjust: 'standby <group> preempt delay minimum <sec>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If preempt delay is configured, verify delay timer and wait or adjust: 'standby <group> preempt delay minimum <sec>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check object tracking: 'show track' to see if tracked objects are decrementing priority",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check object tracking: 'show track' to see if tracked objects are decrementing priority",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check object tracking: 'show track' to see if tracked objects are decrementing priority",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "'standby preempt' not configured (off by default in HSRP)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Preempt delay configured and delay period has not expired",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interface tracking decrementing priority below active router's priority (tracking an upstream failure)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Preemption not working",
+      "symptoms": [
+        "Higher-priority router is in STANDBY but should be ACTIVE",
+        "show standby shows higher priority on standby router than active router",
+        "After recovery, original active remains as standby"
+      ],
+      "verify_commands": [
+        {
+          "command": "show standby",
+          "confirms_if": "Preemption disabled or priority decremented by tracking confirms the issue",
+          "look_for": "Check 'Preemption' field -- should show 'enabled' on the higher-priority router. Also check active and configured priority values.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby",
+          "confirms_if": "Preemption disabled or priority decremented by tracking confirms the issue",
+          "look_for": "Check 'Preemption' field -- should show 'enabled' on the higher-priority router. Also check active and configured priority values.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby",
+          "confirms_if": "Preemption disabled or priority decremented by tracking confirms the issue",
+          "look_for": "Check 'Preemption' field -- should show 'enabled' on the higher-priority router. Also check active and configured priority values.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby brief",
+          "confirms_if": "Higher priority on standby with preemption disabled confirms the issue",
+          "look_for": "Compare priority values between active and standby routers across all groups",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby brief",
+          "confirms_if": "Higher priority on standby with preemption disabled confirms the issue",
+          "look_for": "Compare priority values between active and standby routers across all groups",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show standby brief",
+          "confirms_if": "Higher priority on standby with preemption disabled confirms the issue",
+          "look_for": "Compare priority values between active and standby routers across all groups",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Announces HSRP state and parameters",
+      "key_fields": [
+        "Version (1 or 2)",
+        "Op Code (Hello/Coup/Resign)",
+        "State",
+        "Hello Timer",
+        "Hold Timer",
+        "Priority",
+        "Group",
+        "Virtual IP"
+      ],
+      "name": "Hello",
+      "when_sent": "Every hello-timer by active and standby routers"
+    },
+    {
+      "description": "Announces that sender is taking over as active (preemption)",
+      "key_fields": [
+        "Priority",
+        "Group"
+      ],
+      "name": "Coup",
+      "when_sent": "When a higher-priority router with preemption wants to become active"
+    },
+    {
+      "description": "Active router voluntarily gives up active role",
+      "key_fields": [
+        "Priority",
+        "Group"
+      ],
+      "name": "Resign",
+      "when_sent": "When active router is shutting down or being preempted"
+    }
+  ],
+  "operates_at": "Layer 3",
+  "protocol_family": "fhrp",
+  "protocol_id": "hsrp",
+  "protocol_name": "HSRP",
+  "purpose": "Hot Standby Router Protocol — provides default gateway redundancy (Cisco-specific)",
+  "related_protocols": [
+    "vrrp",
+    "rstp"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-2281",
+      "rfc_number": 2281,
+      "title": "RFC 2281",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc2281.txt"
+    },
+    {
+      "id": "cisco:fhrp/hsrp.json",
+      "title": "cisco knowledge base — fhrp/hsrp.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "Cisco proprietary (RFC 2281 informational)",
+  "states": [
+    {
+      "description": "HSRP not running on interface",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "DISABLED"
+    },
+    {
+      "description": "HSRP starting, waiting for config or interface up",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "INIT"
+    },
+    {
+      "description": "Waiting to hear from active router (no virtual IP known yet)",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "LEARN"
+    },
+    {
+      "description": "Knows virtual IP, neither active nor standby. Normal steady state for routers that are not the active or standby router.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "LISTEN"
+    },
+    {
+      "description": "Candidate to become active if the active router fails",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "STANDBY"
+    },
+    {
+      "description": "Forwarding traffic for virtual IP",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "ACTIVE"
+    }
+  ],
+  "tags": [
+    "fhrp",
+    "gateway-redundancy",
+    "failover",
+    "cisco-proprietary",
+    "vip"
+  ],
+  "timers": [
+    {
+      "default_rfc": "3s",
+      "description": "Hello message interval",
+      "name": "hello-timer",
+      "on_expiry": "Send Hello",
+      "range": "1-254s or 15ms-999ms (msec)",
+      "tuning_advice": "Lower for faster failover detection. Millisecond timers available with 'standby timers msec'. Common aggressive setting: 200ms hello / 750ms hold."
+    },
+    {
+      "default_rfc": "10s (approximately 3x hello)",
+      "description": "Time before declaring active/standby down",
+      "name": "hold-timer",
+      "on_expiry": "Active/standby declared down",
+      "range": "1-255s or 50ms-3000ms (msec)",
+      "tuning_advice": "Must be >= 3x hello-timer. Lower for faster failover. Both active and standby must agree on timer values (advertised in Hello messages)."
+    },
+    {
+      "default_rfc": "same as hold-timer",
+      "description": "Internal timers tracking active and standby router liveness",
+      "name": "active-timer/standby-timer",
+      "on_expiry": "",
+      "tuning_advice": "Not directly configurable. Controlled by the hold-timer values received in Hello messages from the active and standby routers."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "INIT",
+      "to_state": "LISTEN",
+      "trigger": "Interface up, HSRP configured"
+    },
+    {
+      "from_state": "LISTEN",
+      "to_state": "STANDBY",
+      "trigger": "No standby router detected and this router has highest priority among listeners"
+    },
+    {
+      "from_state": "LISTEN",
+      "to_state": "ACTIVE",
+      "trigger": "No active router detected and standby timer expires"
+    },
+    {
+      "failure_if_stuck": "Active still reachable but hellos not arriving",
+      "from_state": "STANDBY",
+      "to_state": "ACTIVE",
+      "trigger": "Active timer expires (active router failed)"
+    },
+    {
+      "from_state": "ACTIVE",
+      "to_state": "LISTEN",
+      "trigger": "Received higher priority Hello with preemption (or 'standby preempt' on higher-priority peer)"
+    },
+    {
+      "from_state": "ACTIVE",
+      "to_state": "INIT",
+      "trigger": "Interface shut down or HSRP removed"
+    }
+  ],
+  "transport": "UDP port 1985 (HSRPv1) / UDP port 2029 (HSRPv2), multicast 224.0.0.2 (v1) / 224.0.0.102 (v2)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "HSRP available without feature enable. HSRPv1 default; 'standby version 2' for HSRPv2. Supports BFD-triggered failover.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "HSRP supported but VRRP is generally preferred on IOS-XR. Configured under 'router hsrp' with interface-level groups.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "HSRP requires 'feature hsrp'. HSRPv2 is default. Supports object tracking for priority adjustment. HSRP commonly used with vPC for L3 gateway redundancy.",
+          "versions": "all"
+        },
+        {
+          "note": "CRITICAL DESIGN: HSRP active gateway and STP root bridge MUST be aligned per VLAN. If HSRP active is Switch A but STP root is Switch B, traffic hits Switch A (gateway) then traverses the peer-link/ISL to reach Switch B (root) — wasting bandwidth and adding latency. Set 'spanning-tree vlan <X> priority 4096' and 'standby <group> priority 110' + 'standby <group> preempt' on the same switch per VLAN.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

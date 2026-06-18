@@ -1,0 +1,1227 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "Switch must be able to reach the RADIUS server via IP (UDP 1812 for authentication, UDP 1813 for accounting)",
+      "name": "RADIUS server reachability",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Requires 'aaa new-model', RADIUS server definition, and AAA method list configuration on the switch",
+      "name": "AAA configuration",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Client-side: endpoint must run an 802.1X supplicant (e.g. Windows native, AnyConnect NAM, wpa_supplicant)",
+      "name": "802.1X supplicant on endpoint",
+      "type": "infrastructure"
+    },
+    {
+      "description": "VLANs referenced in RADIUS attributes must exist on the switch and be allowed on trunks to the access layer",
+      "name": "VLAN infrastructure for dynamic VLAN assignment",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "Device cannot access the network; port remains in unauthorized state despite supplicant being connected",
+      "resolutions": [
+        {
+          "action": "Verify supplicant has 802.1X client enabled and configured",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify supplicant has 802.1X client enabled and configured",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify supplicant has 802.1X client enabled and configured",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check Layer 1/2 connectivity and VLAN assignment on port",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check Layer 1/2 connectivity and VLAN assignment on port",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check Layer 1/2 connectivity and VLAN assignment on port",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RADIUS server is reachable: 'test aaa group radius server'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RADIUS server is reachable: 'test aaa group radius server'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RADIUS server is reachable: 'test aaa group radius server'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm RADIUS shared secret matches on switch and server",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm RADIUS shared secret matches on switch and server",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm RADIUS shared secret matches on switch and server",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure EAP method configured on RADIUS matches supplicant capability",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure EAP method configured on RADIUS matches supplicant capability",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure EAP method configured on RADIUS matches supplicant capability",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Supplicant not running 802.1X client",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "EAPoL frames not reaching switch (VLAN mismatch on trunk)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RADIUS server unreachable",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RADIUS shared secret mismatch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "EAP method mismatch between supplicant and RADIUS",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Port stuck in UNAUTHORIZED",
+      "symptoms": [
+        "Device cannot access network",
+        "show authentication sessions shows unauthorized"
+      ],
+      "verify_commands": [
+        {
+          "command": "show authentication sessions",
+          "confirms_if": "Confirms port is stuck in unauthorized state",
+          "look_for": "Check session status for the interface — look for 'Unauthorized'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions",
+          "confirms_if": "Confirms port is stuck in unauthorized state",
+          "look_for": "Check session status for the interface — look for 'Unauthorized'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions",
+          "confirms_if": "Confirms port is stuck in unauthorized state",
+          "look_for": "Check session status for the interface — look for 'Unauthorized'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show dot1x interface",
+          "confirms_if": "Confirms dot1x is enabled and in correct mode on the interface",
+          "look_for": "Check port control mode and supplicant detection",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show dot1x interface",
+          "confirms_if": "Confirms dot1x is enabled and in correct mode on the interface",
+          "look_for": "Check port control mode and supplicant detection",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show dot1x interface",
+          "confirms_if": "Confirms dot1x is enabled and in correct mode on the interface",
+          "look_for": "Check port control mode and supplicant detection",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "test aaa group radius server",
+          "confirms_if": "Confirms whether RADIUS server is reachable and accepting credentials",
+          "look_for": "Look for successful or failed authentication attempt",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "test aaa group radius server",
+          "confirms_if": "Confirms whether RADIUS server is reachable and accepting credentials",
+          "look_for": "Look for successful or failed authentication attempt",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "test aaa group radius server",
+          "confirms_if": "Confirms whether RADIUS server is reachable and accepting credentials",
+          "look_for": "Look for successful or failed authentication attempt",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Confirms RADIUS server responsiveness and shared secret validity",
+          "look_for": "Check transaction counters: requests, timeouts, failures",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Confirms RADIUS server responsiveness and shared secret validity",
+          "look_for": "Check transaction counters: requests, timeouts, failures",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Confirms RADIUS server responsiveness and shared secret validity",
+          "look_for": "Check transaction counters: requests, timeouts, failures",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Authentication takes too long then fails due to RADIUS server being unreachable or overloaded",
+      "resolutions": [
+        {
+          "action": "Verify RADIUS server IP is reachable: 'ping <radius-ip>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RADIUS server IP is reachable: 'ping <radius-ip>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RADIUS server IP is reachable: 'ping <radius-ip>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check firewall rules for UDP 1812 (auth) and 1813 (accounting)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check firewall rules for UDP 1812 (auth) and 1813 (accounting)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check firewall rules for UDP 1812 (auth) and 1813 (accounting)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RADIUS shared secret matches on both sides",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RADIUS shared secret matches on both sides",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RADIUS shared secret matches on both sides",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RADIUS server load and availability",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RADIUS server load and availability",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RADIUS server load and availability",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "RADIUS server IP unreachable",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Firewall blocking UDP 1812/1813",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RADIUS shared secret mismatch (server silently drops)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RADIUS server overloaded",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "RADIUS server timeout",
+      "symptoms": [
+        "Authentication takes too long then fails",
+        "show aaa servers shows timeouts incrementing"
+      ],
+      "verify_commands": [
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Confirms RADIUS server is not responding to requests",
+          "look_for": "Check timeout/request counters — high timeout ratio indicates reachability issue",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Confirms RADIUS server is not responding to requests",
+          "look_for": "Check timeout/request counters — high timeout ratio indicates reachability issue",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa servers",
+          "confirms_if": "Confirms RADIUS server is not responding to requests",
+          "look_for": "Check timeout/request counters — high timeout ratio indicates reachability issue",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <radius-ip>",
+          "confirms_if": "Confirms basic IP connectivity to RADIUS server",
+          "look_for": "Look for ICMP reachability to RADIUS server",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <radius-ip>",
+          "confirms_if": "Confirms basic IP connectivity to RADIUS server",
+          "look_for": "Look for ICMP reachability to RADIUS server",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <radius-ip>",
+          "confirms_if": "Confirms basic IP connectivity to RADIUS server",
+          "look_for": "Look for ICMP reachability to RADIUS server",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Confirms no ACL is blocking RADIUS traffic",
+          "look_for": "Look for ACL entries that might block UDP 1812/1813",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Confirms no ACL is blocking RADIUS traffic",
+          "look_for": "Look for ACL entries that might block UDP 1812/1813",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Confirms no ACL is blocking RADIUS traffic",
+          "look_for": "Look for ACL entries that might block UDP 1812/1813",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Device authenticated successfully but placed in wrong VLAN or missing expected access permissions",
+      "resolutions": [
+        {
+          "action": "Check RADIUS policy — verify VLAN and ACL attributes returned",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RADIUS policy — verify VLAN and ACL attributes returned",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RADIUS policy — verify VLAN and ACL attributes returned",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN exists on the switch: 'show vlan'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN exists on the switch: 'show vlan'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VLAN exists on the switch: 'show vlan'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm dACL is defined on switch if RADIUS references it",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm dACL is defined on switch if RADIUS references it",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm dACL is defined on switch if RADIUS references it",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show authentication sessions interface <intf> details' for applied policy",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show authentication sessions interface <intf> details' for applied policy",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show authentication sessions interface <intf> details' for applied policy",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "RADIUS returning incorrect VLAN attributes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RADIUS not sending downloadable ACL",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "dACL not configured on switch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VLAN doesn't exist on switch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Authorized but wrong VLAN/ACL",
+      "symptoms": [
+        "Device authenticated but in wrong VLAN",
+        "Device authenticated but missing network access"
+      ],
+      "verify_commands": [
+        {
+          "command": "show authentication sessions interface <intf> details",
+          "confirms_if": "Confirms what VLAN and ACL were applied by RADIUS",
+          "look_for": "Check authorized VLAN, applied ACL, and policy attributes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions interface <intf> details",
+          "confirms_if": "Confirms what VLAN and ACL were applied by RADIUS",
+          "look_for": "Check authorized VLAN, applied ACL, and policy attributes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions interface <intf> details",
+          "confirms_if": "Confirms what VLAN and ACL were applied by RADIUS",
+          "look_for": "Check authorized VLAN, applied ACL, and policy attributes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Confirms whether the downloadable ACL exists and has correct entries",
+          "look_for": "Look for the dACL name referenced in authentication session",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Confirms whether the downloadable ACL exists and has correct entries",
+          "look_for": "Look for the dACL name referenced in authentication session",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip access-lists",
+          "confirms_if": "Confirms whether the downloadable ACL exists and has correct entries",
+          "look_for": "Look for the dACL name referenced in authentication session",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan",
+          "confirms_if": "Confirms the RADIUS-assigned VLAN exists on the switch",
+          "look_for": "Look for the VLAN ID assigned by RADIUS",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan",
+          "confirms_if": "Confirms the RADIUS-assigned VLAN exists on the switch",
+          "look_for": "Look for the VLAN ID assigned by RADIUS",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show vlan",
+          "confirms_if": "Confirms the RADIUS-assigned VLAN exists on the switch",
+          "look_for": "Look for the VLAN ID assigned by RADIUS",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Non-802.1X devices (printers, IP phones) cannot authenticate because MAB fallback is not functioning",
+      "resolutions": [
+        {
+          "action": "Enable MAB on the interface: 'mab' under interface config",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable MAB on the interface: 'mab' under interface config",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable MAB on the interface: 'mab' under interface config",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set correct authentication order: 'authentication order dot1x mab'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set correct authentication order: 'authentication order dot1x mab'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set correct authentication order: 'authentication order dot1x mab'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add device MAC address to RADIUS database",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add device MAC address to RADIUS database",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add device MAC address to RADIUS database",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Lower tx-period to reduce wait before MAB fallback",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Lower tx-period to reduce wait before MAB fallback",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Lower tx-period to reduce wait before MAB fallback",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "MAB not configured on port",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MAB order/priority misconfigured",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MAC address not in RADIUS database",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "EAP timeout too long before MAB kicks in",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "MAB fallback not working",
+      "symptoms": [
+        "Non-802.1X devices (printers, IP phones) can't authenticate",
+        "Port stays unauthorized for devices without supplicant"
+      ],
+      "verify_commands": [
+        {
+          "command": "show authentication sessions",
+          "confirms_if": "Confirms whether MAB is being used as the authentication method",
+          "look_for": "Check method — should show 'mab' if MAB is being attempted",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions",
+          "confirms_if": "Confirms whether MAB is being used as the authentication method",
+          "look_for": "Check method — should show 'mab' if MAB is being attempted",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show authentication sessions",
+          "confirms_if": "Confirms whether MAB is being used as the authentication method",
+          "look_for": "Check method — should show 'mab' if MAB is being attempted",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show dot1x interface",
+          "confirms_if": "Confirms MAB configuration and order/priority on the port",
+          "look_for": "Check if MAB is enabled and what the authentication order is",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show dot1x interface",
+          "confirms_if": "Confirms MAB configuration and order/priority on the port",
+          "look_for": "Check if MAB is enabled and what the authentication order is",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show dot1x interface",
+          "confirms_if": "Confirms MAB configuration and order/priority on the port",
+          "look_for": "Check if MAB is enabled and what the authentication order is",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface",
+          "confirms_if": "Confirms MAB is configured and ordered correctly on the interface",
+          "look_for": "Look for 'mab', 'authentication order', 'authentication priority'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface",
+          "confirms_if": "Confirms MAB is configured and ordered correctly on the interface",
+          "look_for": "Look for 'mab', 'authentication order', 'authentication priority'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config interface",
+          "confirms_if": "Confirms MAB is configured and ordered correctly on the interface",
+          "look_for": "Look for 'mab', 'authentication order', 'authentication priority'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Supplicant initiates authentication",
+      "key_fields": [
+        "(minimal — just EAPoL header)"
+      ],
+      "name": "EAPoL-Start",
+      "when_sent": "When supplicant connects or detects authenticator"
+    },
+    {
+      "description": "Authenticator requests identity from supplicant",
+      "key_fields": [
+        "EAP Code (Request)",
+        "EAP Type (Identity)"
+      ],
+      "name": "EAP-Request/Identity",
+      "when_sent": "On EAPoL-Start or periodically (tx-period)"
+    },
+    {
+      "description": "Supplicant provides identity (username)",
+      "key_fields": [
+        "EAP Code (Response)",
+        "EAP Type (Identity)",
+        "Username"
+      ],
+      "name": "EAP-Response/Identity",
+      "when_sent": "In response to EAP-Request/Identity"
+    },
+    {
+      "description": "Authentication result from RADIUS relayed to supplicant",
+      "key_fields": [
+        "EAP Code (Success or Failure)"
+      ],
+      "name": "EAP-Success/Failure",
+      "when_sent": "After RADIUS responds with Accept or Reject"
+    }
+  ],
+  "operates_at": "Layer 2",
+  "protocol_family": "adjacency",
+  "protocol_id": "dot1x",
+  "protocol_name": "802.1X",
+  "purpose": "Port-based network access control — authenticates devices before granting network access via EAP over LAN",
+  "related_protocols": [
+    "lldp"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "ieee-ieee8021x2020",
+      "title": "IEEE 802.1X-2020",
+      "type": "ieee_standard"
+    },
+    {
+      "id": "cisco:adjacency/dot1x.json",
+      "title": "cisco knowledge base — adjacency/dot1x.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "IEEE 802.1X-2020",
+  "states": [
+    {
+      "description": "Port blocked, no traffic allowed except EAPoL (default state)",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "UNAUTHORIZED"
+    },
+    {
+      "description": "EAP exchange in progress, authenticating",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "CONNECTING"
+    },
+    {
+      "description": "Credentials sent to RADIUS server, waiting for response",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "AUTHENTICATING"
+    },
+    {
+      "description": "Authentication succeeded, port allows traffic",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "AUTHORIZED"
+    },
+    {
+      "description": "Authentication failed, held before allowing retry — indicates bad credentials or config",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "HELD"
+    }
+  ],
+  "tags": [
+    "security",
+    "authentication",
+    "nac",
+    "radius",
+    "eap",
+    "port-security",
+    "identity",
+    "adjacency"
+  ],
+  "timers": [
+    {
+      "default_rfc": "30s",
+      "description": "Interval between EAP-Request/Identity retransmissions to supplicant",
+      "name": "tx-period",
+      "on_expiry": "Retransmit EAP-Request/Identity",
+      "range": "1-65535s"
+    },
+    {
+      "default_rfc": "60s",
+      "description": "Time to wait after authentication failure before retrying",
+      "name": "quiet-period",
+      "on_expiry": "Port returns to CONNECTING state",
+      "range": "1-65535s",
+      "tuning_advice": "Lower for faster retry in environments with transient RADIUS issues"
+    },
+    {
+      "default_rfc": "30s",
+      "description": "Time to wait for RADIUS server response",
+      "name": "server-timeout",
+      "on_expiry": "Authentication attempt times out",
+      "range": "1-65535s",
+      "tuning_advice": "Must be long enough for RADIUS round-trip; too short causes false failures"
+    },
+    {
+      "default_rfc": "3600s",
+      "description": "Interval between re-authentication attempts for authorized sessions",
+      "name": "reauth-period",
+      "on_expiry": "Re-authentication initiated",
+      "range": "1-65535s"
+    },
+    {
+      "default_rfc": "30s",
+      "description": "Time to wait for supplicant response",
+      "name": "supp-timeout",
+      "on_expiry": "EAP exchange times out for this supplicant",
+      "range": "1-65535s"
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "UNAUTHORIZED",
+      "to_state": "CONNECTING",
+      "trigger": "EAPoL-Start received from supplicant or authenticator initiates"
+    },
+    {
+      "from_state": "CONNECTING",
+      "to_state": "AUTHENTICATING",
+      "trigger": "EAP-Identity received from supplicant, forwarded to RADIUS"
+    },
+    {
+      "from_state": "AUTHENTICATING",
+      "to_state": "AUTHORIZED",
+      "trigger": "RADIUS Access-Accept received"
+    },
+    {
+      "failure_if_stuck": "Check RADIUS server reachability and shared secret",
+      "from_state": "AUTHENTICATING",
+      "to_state": "HELD",
+      "trigger": "RADIUS Access-Reject received"
+    },
+    {
+      "from_state": "HELD",
+      "to_state": "CONNECTING",
+      "trigger": "Quiet period expires, retry authentication"
+    },
+    {
+      "from_state": "AUTHORIZED",
+      "to_state": "UNAUTHORIZED",
+      "trigger": "Re-authentication failed or session timeout or link down"
+    },
+    {
+      "from_state": "AUTHORIZED",
+      "to_state": "AUTHENTICATING",
+      "trigger": "Re-authentication timer expires, re-authentication initiated"
+    },
+    {
+      "from_state": "UNAUTHORIZED",
+      "to_state": "AUTHORIZED",
+      "trigger": "MAB (MAC Authentication Bypass) or guest VLAN assignment (fallback)"
+    }
+  ],
+  "transport": "EAPoL (EAP over LAN), EtherType 0x888E",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "802.1X is the most feature-rich on IOS-XE. Supports C3PL (Common Classification Policy Language) with 'authentication' commands, policy-maps for identity. IBN (Identity-Based Networking) with ISE integration. Supports Change of Authorization (CoA) for dynamic policy changes.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "IOS-XR has limited 802.1X support — primarily a routing platform. Basic port-based auth available on some platforms.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "802.1X requires 'feature dot1x'. Supports single-host, multi-host, multi-auth, and multi-domain modes. MAB supported as fallback. Limited compared to IOS-XE feature set.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "arp-incomplete-not-always-host-down",
+  "display_name": "ARP incomplete entries do not always mean the host is down — check VLAN, subnet, proxy-ARP, and VRF assignment",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "sonic", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "ARP table shows 'Incomplete' for a destination IP, and the operator cannot reach the host from the network device",
+  "observation": "The ARP entry for a directly connected host shows Incomplete (no MAC address resolved); pings to the host time out from the network device",
+  "naive_interpretation": "The host is powered off, disconnected, or has a NIC failure — it is not responding to ARP requests",
+  "correct_interpretation": "An Incomplete ARP entry means the device sent an ARP request and received no ARP reply within the timeout. While a dead or disconnected host is one possibility, there are several common network-side causes that produce the same symptom: (1) The host is in a different VLAN than the device's SVI — the ARP request never reaches the host because they are in different broadcast domains. (2) The host's IP is in a different subnet than the device's interface — the device sends ARP on its directly-connected interface, but the host's IP is not in that subnet's range, so the ARP broadcast goes to the wrong segment. (3) Proxy-ARP is disabled on the gateway — hosts in a different subnet that rely on proxy-ARP to reach the device will not get ARP replies. (4) The host is in a different VRF — the ARP request is sent in one VRF but the host's interface is in another. (5) A firewall or port security rule is dropping ARP frames. (6) Duplicate IP — another device answered first and the host's gratuitous ARP was suppressed. Always verify Layer 2 reachability (same VLAN, same broadcast domain) before concluding the host is down.",
+  "why": [
+    "ARP operates at Layer 2 — it requires the source and destination to be in the same broadcast domain (VLAN); if they are not, the ARP request never reaches the host regardless of the host's state",
+    "Many operators configure SVIs and access ports independently, creating opportunities for VLAN mismatch — the SVI is in VLAN 100 but the host's port is in VLAN 200",
+    "Proxy-ARP is enabled by default on many Cisco platforms but disabled by default on others (SONiC, Junos, some EOS profiles) — disabling it silently breaks hosts that rely on it for default-gateway behavior in mismatched subnets",
+    "In VRF-lite or EVPN VXLAN environments, the ARP request may be sourced from a VRF that does not have the host's interface — the ARP goes out the wrong L3 context entirely"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip arp <ip-address>",
+      "purpose": "Check the ARP entry state and which interface/VLAN the ARP request was sent on"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip arp <ip-address>",
+      "purpose": "Verify the ARP state and the interface where the device expects to reach this IP"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show mac address-table dynamic | include <host-mac>",
+      "purpose": "If the host MAC is known from another source, check whether it appears in the MAC table and on which VLAN/port — a VLAN mismatch will be visible here"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip interface <interface> | include proxy-arp",
+      "purpose": "Verify whether proxy-ARP is enabled on the gateway interface — if disabled, hosts in mismatched subnets will not get ARP replies"
+    },
+    {
+      "os": "sonic",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show arp",
+      "purpose": "Display ARP table entries and their interface bindings to verify the ARP request is going out the correct interface and VLAN"
+    },
+    {
+      "os": "junos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show arp no-resolve",
+      "purpose": "Display ARP entries without DNS resolution to check for incomplete or failed entries and their associated interfaces"
+    }
+  ],
+  "traps": [
+    "Immediately blaming the host or its NIC when the real problem is a VLAN or subnet mismatch on the network side",
+    "Not checking which VLAN the SVI is in vs which VLAN the host's access port is in — they must match for ARP to work",
+    "Assuming proxy-ARP is enabled when it was explicitly or implicitly disabled — this breaks any host that relies on it for cross-subnet communication",
+    "In EVPN/VXLAN fabrics, forgetting that ARP suppression may be answering on behalf of remote hosts — an incomplete entry in this context may mean the EVPN control plane has not learned the host's MAC yet, not that the host is unreachable",
+    "Not considering duplicate IP addresses — if two hosts claim the same IP, ARP behavior becomes unpredictable and one of them will show stale or incomplete entries"
+  ],
+  "related_rules": [
+    "evpn-arp-suppression-hides-arp",
+    "vrf-route-leak-asymmetric-return-path",
+    "vlan-trunk-pruning-blocks-traffic"
+  ],
+  "related_protocols": ["evpn", "vxlan-evpn"],
+  "keywords": ["ARP", "incomplete", "no MAC", "host down", "VLAN mismatch", "subnet mismatch", "proxy-ARP", "VRF", "broadcast domain", "Layer 2"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

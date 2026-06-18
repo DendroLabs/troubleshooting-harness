@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "snmp-polling-gaps-during-high-cpu",
+  "display_name": "Flat lines or gaps in NMS graphs during CPU spikes mean SNMP polling failed, not that counters stopped incrementing",
+  "category": "counter-interpretation",
+  "applicable_os": ["nxos", "iosxe", "iosxr"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "NMS graphs (Grafana, Cacti, PRTG, LibreNMS) show flat lines, gaps, or missing data points during a period when the device experienced high CPU utilization",
+  "observation": "Interface traffic graphs show a flat line at zero (or at the last polled value) during a period that correlates with a CPU spike on the device. After the CPU spike subsides, the graphs resume with a jump to a new value. Some NMS tools interpolate across the gap, hiding it entirely.",
+  "naive_interpretation": "Traffic actually stopped flowing during the CPU spike — the flat line or gap represents a real traffic outage on that interface",
+  "correct_interpretation": "The device's data plane continued forwarding traffic during the CPU spike. What stopped was the SNMP agent's ability to RESPOND to the NMS poll. When the control-plane CPU is saturated (by a routing event, config push, memory compaction, or any other CPU-intensive task), the SNMP process is deprioritized or starved. The NMS sends its SNMP GET request, the request times out (no response), and the NMS either records a null/gap or holds the last known value. The counters on the device were incrementing the entire time — the NMS just could not read them. When the CPU recovers and the next SNMP poll succeeds, the counter value jumps by the accumulated delta, which the NMS may display as a spike. This spike represents the TOTAL traffic during the gap period, not an actual burst.",
+  "why": [
+    "SNMP runs as a user-space process on the control plane — it competes for CPU with routing protocols, CLI, and other management processes; during high CPU, SNMP responses are delayed or dropped entirely",
+    "The data plane (ASIC/hardware forwarding) operates independently of the control-plane CPU on most modern platforms — traffic continues to be forwarded even when the CPU is at 100%",
+    "NMS tools have a fixed poll interval (typically 60-300 seconds) and a timeout (typically 5-15 seconds) — if the SNMP response does not arrive within the timeout, the poll is recorded as failed",
+    "The 'spike after gap' pattern is a telltale sign: the counter accumulated normally during the gap, and the first successful poll after recovery reports the full delta, which divided by one poll interval appears as a massive rate increase"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show processes cpu history",
+      "purpose": "Correlate CPU utilization history with the time window where NMS graphs show gaps — if they align, the gaps are caused by SNMP timeout"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show snmp stats",
+      "purpose": "Check for SNMP timeout and dropped-packet counters — high values confirm the SNMP agent was unable to respond"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show processes cpu history",
+      "purpose": "View CPU utilization over time to correlate with NMS graph gaps"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show snmp stats oid",
+      "purpose": "Check SNMP request and timeout statistics"
+    },
+    {
+      "os": "iosxr",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show processes cpu",
+      "purpose": "Check CPU history to correlate with NMS polling gaps"
+    }
+  ],
+  "traps": [
+    "Declaring a traffic outage based on NMS graphs alone — the gap represents a monitoring failure, not a forwarding failure",
+    "Not correlating the NMS gap with device CPU history — this is the key diagnostic step that distinguishes polling failure from real traffic loss",
+    "Interpreting the post-gap traffic spike as a DDoS or traffic burst — it is the accumulated counter delta from the entire gap period, divided by one poll interval",
+    "Trusting NMS interpolation — some tools draw a straight line across gaps, masking the polling failure entirely and making it look like steady low-rate traffic",
+    "Blaming SNMP itself and disabling monitoring — the fix is to tune CoPP to protect SNMP, increase SNMP timeout on the NMS, or use streaming telemetry (gNMI/gRPC) which is push-based and less CPU-dependent"
+  ],
+  "related_rules": ["snmp-poll-high-cpu-is-the-poll", "snmp-no-response-timeout-vs-community", "copp-drops-mimic-protocol-failure"],
+  "related_protocols": ["snmp"],
+  "keywords": ["SNMP", "polling", "gap", "flat line", "NMS", "CPU", "timeout", "Grafana", "Cacti", "monitoring", "counter", "spike", "interpolation", "streaming telemetry"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

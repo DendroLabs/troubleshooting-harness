@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "stp-convergence-traffic-loss-is-normal",
+  "display_name": "Traffic loss during STP convergence (30-50s legacy, 1-3s RSTP) is expected behavior, not a switch or link failure",
+  "category": "expected-behavior",
+  "applicable_os": ["nxos", "iosxe", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Brief traffic outage (seconds to tens of seconds) observed after a topology change — link up/down, switch reboot, or spanning-tree topology change notification (TCN)",
+  "observation": "Traffic loss lasting 30-50 seconds after a topology change event in a Layer 2 domain; all switches and links appear healthy before and after the outage",
+  "naive_interpretation": "A switch or link failed and recovered, or there is a loop in the network causing the outage — investigate hardware failures, cable issues, or misconfigurations",
+  "correct_interpretation": "Spanning tree convergence inherently causes traffic disruption while ports transition through their states. With legacy STP (802.1D), ports must pass through Listening (15s) and Learning (15s) states before reaching Forwarding — this is a 30-second minimum blackout by design, plus additional time for MAC table repopulation. With RSTP (802.1w), convergence is typically 1-6 seconds but can still cause noticeable traffic loss during the transition. The traffic loss IS the convergence process working correctly — STP must temporarily block ports to prevent loops before allowing traffic on the new topology. The right response is not to investigate what 'failed' but to verify that convergence completed correctly (all ports in expected states) and to consider whether the convergence time can be reduced by migrating from legacy STP to RSTP/MST, enabling features like PortFast/edge-port on access ports, or tuning timers. Repeated convergence events (multiple times per day) DO warrant investigation — not for the convergence itself, but for what is triggering it.",
+  "why": [
+    "Legacy 802.1D STP uses fixed timers: Forward Delay (default 15s) governs both Listening→Learning and Learning→Forwarding transitions, creating a minimum 30-second outage for any topology change affecting a port",
+    "RSTP (802.1w) reduces convergence to 1-6 seconds by using proposal/agreement handshakes instead of timers, but still causes brief traffic loss during the port role change",
+    "During convergence, MAC address tables are flushed (TCN triggers a short aging timer) — even after ports reach Forwarding, traffic is flooded until MAC addresses are relearned, which can cause brief broadcast storms on large L2 domains",
+    "Access ports without PortFast/edge-port go through the full STP state machine on link-up — a server NIC bouncing triggers a 30-second (legacy) or 4-second (RSTP) outage for that port, which is normal but avoidable with PortFast"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree detail | include topology|from|occur",
+      "purpose": "Show topology change counters and timestamps to correlate the traffic loss with a specific STP convergence event"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree detail | include ieee|occur|from|is executing",
+      "purpose": "Display STP mode (legacy vs rapid), topology change history, and current port states"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree summary",
+      "purpose": "Verify STP mode (RSTP/MST vs legacy) and count of topology changes — frequent topology changes indicate an underlying trigger to investigate"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree interface <interface> detail",
+      "purpose": "Check port state, role, and whether PortFast is enabled — access ports without PortFast trigger full convergence on every link bounce"
+    },
+    {
+      "os": "eos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree topology-changes",
+      "purpose": "Display recent topology change events and the ports that triggered them"
+    },
+    {
+      "os": "junos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree interface",
+      "purpose": "Verify port roles and states, and check whether edge-port is configured on access-facing interfaces"
+    }
+  ],
+  "traps": [
+    "Treating a 30-50 second outage as a failure when running legacy 802.1D — this duration IS the designed convergence time, not a symptom of a problem",
+    "Investigating hardware or cable issues when the traffic loss perfectly correlates with a topology change event — the convergence is expected, the question is whether the trigger was expected",
+    "Not distinguishing between 'convergence happened' (expected) and 'convergence keeps happening' (investigate the trigger) — a single convergence after a planned change is normal; dozens per day indicate flapping links, misconfigured BPDUGuard, or unstable uplinks",
+    "Assuming RSTP eliminates all convergence traffic loss — RSTP is much faster but still causes 1-6 seconds of disruption, which is noticeable for real-time applications (VoIP, video, trading)",
+    "Not enabling PortFast/edge-port on access ports — every server NIC bounce triggers full STP convergence on that port, causing unnecessary outages that operators investigate as 'network issues'"
+  ],
+  "related_rules": [
+    "stp-port-role-vs-port-state",
+    "stp-bpduguard-errdisable-is-not-loop",
+    "stp-tcn-during-convergence-is-normal"
+  ],
+  "related_protocols": ["stp", "rstp", "mst"],
+  "keywords": ["STP", "spanning tree", "convergence", "topology change", "TCN", "forward delay", "listening", "learning", "forwarding", "PortFast", "edge-port", "802.1D", "802.1w", "RSTP"],
+  "sources": [
+    {
+      "id": "ieee-802.1D",
+      "title": "IEEE 802.1D - MAC Bridges",
+      "type": "standard"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

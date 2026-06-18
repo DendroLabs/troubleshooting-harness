@@ -1,0 +1,214 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:cloud-scale-fx",
+      "asic_id": 0,
+      "asic_model": "LS1800FX",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "9x 100G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 7,
+              "label": "Eth-slot/1/1-7",
+              "native_speed": "100G",
+              "start_port": 1
+            },
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 30,
+              "label": "Eth-slot/1/29-30 (MACsec)",
+              "native_speed": "100G",
+              "start_port": 29
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 900.0
+    },
+    {
+      "asic_family": "asic:cloud-scale-fx",
+      "asic_id": 1,
+      "asic_model": "LS1800FX",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "9x 100G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 14,
+              "label": "Eth-slot/1/8-14",
+              "native_speed": "100G",
+              "start_port": 8
+            },
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 32,
+              "label": "Eth-slot/1/31-32 (MACsec)",
+              "native_speed": "100G",
+              "start_port": 31
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 900.0
+    },
+    {
+      "asic_family": "asic:cloud-scale-fx",
+      "asic_id": 2,
+      "asic_model": "LS1800FX",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "9x 100G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 21,
+              "label": "Eth-slot/1/15-21",
+              "native_speed": "100G",
+              "start_port": 15
+            },
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 34,
+              "label": "Eth-slot/1/33-34 (MACsec)",
+              "native_speed": "100G",
+              "start_port": 33
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 900.0
+    },
+    {
+      "asic_family": "asic:cloud-scale-fx",
+      "asic_id": 3,
+      "asic_model": "LS1800FX",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 2,
+          "ifg_serdes": "9x 100G",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 28,
+              "label": "Eth-slot/1/22-28",
+              "native_speed": "100G",
+              "start_port": 22
+            },
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 36,
+              "label": "Eth-slot/1/35-36 (MACsec)",
+              "native_speed": "100G",
+              "start_port": 35
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 900.0
+    }
+  ],
+  "chassis_type": "modular",
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9500",
+  "platform_id": "x9736c-fx",
+  "platform_name": "Nexus 9500 X9736C-FX",
+  "platform_pid": "N9K-X9736C-FX",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-x9736c-fx",
+      "title": "Tech Zone: Nexus 9k ASIC Mappings, X9736C-FX Architecture",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-9500/x9736c-fx.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-9500/x9736c-fx.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 3.6,
+  "total_ports": 36
+}

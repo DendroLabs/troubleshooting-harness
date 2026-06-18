@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "stp-port-role-vs-port-state",
+  "display_name": "STP port role (root/designated/alternate) and port state (forwarding/blocking) are different things",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Reading 'show spanning-tree' output and seeing a port listed as Alternate/Blocking or Root/Forwarding",
+  "observation": "A port shows role=Alternate with state=Blocking, or role=Designated with state=Forwarding",
+  "naive_interpretation": "A port in Blocking state is broken or misconfigured and should be fixed to reach Forwarding; any non-forwarding port is a problem",
+  "correct_interpretation": "Role describes WHY the port is in a given state; state describes WHAT the port is doing with frames. An Alternate port in Blocking state is STP working correctly — it is a redundant path being suppressed to prevent loops. A Designated port in Forwarding state is the elected forwarder for that segment. Blocking is not a fault; it is the mechanism that prevents L2 loops. The role determines whether blocking is intentional (Alternate/Backup = expected) or indicates a problem (Designated port stuck in Blocking/Learning = convergence issue). Fix convergence problems, not intentional blocking.",
+  "why": [
+    "RSTP (802.1w) separated the concept of role (root, designated, alternate, backup) from state (discarding, learning, forwarding) to clarify STP behavior",
+    "An Alternate port is a backup path to the root bridge — it blocks by design and takes over if the Root port fails, providing sub-second failover",
+    "A Backup port is a redundant path on the same segment (same switch, two ports to same hub/shared segment) — extremely rare in modern networks",
+    "Only when a Designated or Root port is NOT in Forwarding state is there a potential convergence problem worth investigating"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree brief",
+      "purpose": "See role and state side by side for all ports to identify which blocking ports are Alternate (expected) vs problematic"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree summary",
+      "purpose": "Get a count of forwarding/blocking/listening/learning ports across all VLANs for a quick health check"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree detail",
+      "purpose": "See topology change counts and last change time to identify convergence issues vs stable blocking"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show spanning-tree interface GigabitEthernet1/0/1 detail",
+      "purpose": "Check a specific port's role, state, cost, and designated bridge to understand why it is blocking"
+    }
+  ],
+  "traps": [
+    "Trying to 'fix' an Alternate/Blocking port by lowering cost or changing priority when it is correctly preventing a loop",
+    "Counting total blocking ports as a problem metric — a well-designed redundant L2 network SHOULD have Alternate ports in Blocking",
+    "Confusing legacy STP states (Blocking/Listening/Learning/Forwarding) with RSTP roles — legacy STP merged role and state into one concept",
+    "Not investigating when a Designated or Root port is stuck in Learning or Discarding — this IS a convergence problem, unlike Alternate/Blocking which is healthy"
+  ],
+  "related_rules": [
+    "stp-tcn-during-convergence-is-normal",
+    "stp-bpduguard-errdisable-is-not-loop"
+  ],
+  "related_protocols": ["stp", "rstp", "mst"],
+  "keywords": ["STP", "RSTP", "port role", "port state", "blocking", "forwarding", "alternate", "designated", "root port", "spanning-tree", "convergence"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

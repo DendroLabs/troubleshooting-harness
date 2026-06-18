@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "snmp-poll-high-cpu-is-the-poll",
+  "display_name": "High CPU during SNMP bulk walks is caused by the poll itself, not an underlying problem",
+  "category": "expected-behavior",
+  "applicable_os": ["nxos", "iosxe", "iosxr"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Monitoring shows high CPU on the SNMP process, often triggered by NMS polling cycles",
+  "observation": "SNMP process consuming significant CPU percentage, correlating with NMS poll intervals",
+  "naive_interpretation": "The device has a CPU problem or is overloaded",
+  "correct_interpretation": "Large SNMP walks (especially full MIB walks or interface counter polls on devices with hundreds of interfaces) are inherently CPU-intensive. The high CPU IS the poll — it is the device responding to the request. If CPU spikes correlate exactly with NMS polling intervals and return to normal between polls, the root cause is the poll frequency or scope, not a device defect. Reduce poll frequency, use SNMP bulk operations, or limit the OID scope.",
+  "why": [
+    "SNMP GET-NEXT and GET-BULK operations require the device to walk internal data structures and serialize responses — this is CPU work",
+    "A full interface table walk on a device with 500+ interfaces generates thousands of SNMP responses per poll",
+    "NMS tools often poll every 60-300 seconds; if each poll takes 30 seconds of elevated CPU, it looks like constant high CPU"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show processes cpu sort | head 10",
+      "purpose": "Confirm SNMP is the top CPU consumer and check if it correlates with poll timing"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show snmp stats",
+      "purpose": "Check SNMP request rates — high GetBulk counts confirm heavy polling"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show processes cpu sorted | head 10",
+      "purpose": "Identify if SNMP Engine is the top CPU consumer"
+    }
+  ],
+  "traps": [
+    "Opening a TAC case for high CPU when the NMS polling is the cause",
+    "Not correlating CPU spikes with NMS poll intervals to identify the pattern",
+    "Trying to fix the device when the fix is to tune the NMS polling scope or frequency",
+    "Disabling SNMP entirely instead of adjusting the poll to be less aggressive"
+  ],
+  "related_rules": ["snmp-polling-gaps-during-high-cpu"],
+  "related_protocols": ["snmp"],
+  "keywords": ["SNMP", "CPU", "polling", "NMS", "bulk walk", "MIB", "monitoring"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

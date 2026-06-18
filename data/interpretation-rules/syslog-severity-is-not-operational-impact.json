@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "syslog-severity-is-not-operational-impact",
+  "display_name": "Syslog severity level reflects the message class the developer assigned, not real-world impact",
+  "category": "log-analysis",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Triaging device logs and prioritizing events by their syslog severity number/keyword",
+  "observation": "Log messages carry severity levels (0 emergency through 7 debug) and the engineer is using the level to decide what matters",
+  "naive_interpretation": "Lower severity numbers are always the urgent problems and higher numbers are always safe to ignore",
+  "correct_interpretation": "The severity is a static label the developer chose for a message class, not a measure of current operational impact. A level-5 notification such as BGP-5-ADJCHANGE marks a routing neighbor going down, which can be a major outage. Conversely, some level-3 errors are transient or cosmetic. Severity is useful for coarse filtering, but triage must read what the message actually says and correlate it with symptoms, not rank purely by the number.",
+  "why": [
+    "Syslog severity (RFC 5424) is assigned per message at code-authoring time and does not adapt to the runtime context",
+    "Many high-impact state changes are logged as notifications (level 5) or informational (level 6) by convention, e.g. adjacency and link transitions",
+    "Some error-level (level 3) messages are recoverable or benign in the observed scenario, so the number overstates urgency",
+    "Effective triage correlates message content and timing with the reported symptom rather than sorting solely by severity"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show logging last 200",
+      "purpose": "Read the actual message text and timestamps around the incident rather than filtering on severity alone"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show logging | include ADJCHANGE|LINK|UPDOWN",
+      "purpose": "Surface high-impact state changes that are logged at notification/informational levels despite their importance"
+    }
+  ],
+  "traps": [
+    "Filtering out level 5-6 messages and missing the BGP/OSPF adjacency or link-down events that explain the outage",
+    "Escalating every level-3 error without reading whether it is transient or cosmetic in context",
+    "Sorting logs purely by severity instead of correlating message content with the reported symptom and timeline",
+    "Assuming severity is consistent across vendors — the same condition can be logged at different levels on different platforms"
+  ],
+  "related_rules": [
+    "single-log-message-not-causation",
+    "bgp-established-then-idle-is-not-flap"
+  ],
+  "related_protocols": ["system-management"],
+  "keywords": ["syslog", "severity", "level", "logging", "ADJCHANGE", "notification", "triage", "priority", "RFC 5424"],
+  "sources": [
+    {
+      "id": "rfc-5424",
+      "title": "RFC 5424 — The Syslog Protocol",
+      "type": "rfc",
+      "rfc_number": 5424,
+      "url": "https://www.rfc-editor.org/rfc/rfc5424.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

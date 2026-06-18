@@ -1,0 +1,1544 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "DHCP relay requires Layer 3 reachability between the relay agent (client VLAN SVI) and the DHCP server. Without a routed path, relayed DHCPDISCOVER packets cannot reach the server.",
+      "name": "IP routing for relay",
+      "type": "infrastructure"
+    },
+    {
+      "description": "A reachable DHCP server (IOS DHCP, Windows DHCP, ISC DHCP, Infoblox, etc.) must be operational and configured with pools/scopes for the client subnets.",
+      "name": "DHCP server infrastructure",
+      "type": "protocol"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "The relay agent (router or L3 switch at the client VLAN gateway) is not forwarding DHCPDISCOVER broadcasts to the DHCP server. Clients fall back to 169.254.x.x (APIPA) self-assigned addresses and have no connectivity beyond the local segment. This is the most common DHCP failure in routed campus and data center networks where the DHCP server is not on the same VLAN as the clients.",
+      "resolutions": [
+        {
+          "action": "Verify and configure relay on the correct SVI: 'ip helper-address <server-ip>' (IOS-XE) or 'ip dhcp relay address <server-ip>' (NX-OS)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify and configure relay on the correct SVI: 'ip helper-address <server-ip>' (IOS-XE) or 'ip dhcp relay address <server-ip>' (NX-OS)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify and configure relay on the correct SVI: 'ip helper-address <server-ip>' (IOS-XE) or 'ip dhcp relay address <server-ip>' (NX-OS)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'feature dhcp' is enabled on NX-OS",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'feature dhcp' is enabled on NX-OS",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure 'feature dhcp' is enabled on NX-OS",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify server reachability: ping the DHCP server from the relay source interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify server reachability: ping the DHCP server from the relay source interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify server reachability: ping the DHCP server from the relay source interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VRF: if server is in a different VRF, use 'ip helper-address vrf <vrf> <server-ip>' (IOS-XE) or 'ip dhcp relay address <server-ip> use-vrf <vrf>' (NX-OS)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VRF: if server is in a different VRF, use 'ip helper-address vrf <vrf> <server-ip>' (IOS-XE) or 'ip dhcp relay address <server-ip> use-vrf <vrf>' (NX-OS)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VRF: if server is in a different VRF, use 'ip helper-address vrf <vrf> <server-ip>' (IOS-XE) or 'ip dhcp relay address <server-ip> use-vrf <vrf>' (NX-OS)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs and firewalls for UDP 67/68 in both directions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs and firewalls for UDP 67/68 in both directions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs and firewalls for UDP 67/68 in both directions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Missing 'ip helper-address' (IOS-XE) or 'ip dhcp relay address' (NX-OS) on the client VLAN SVI",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Relay interface is in a different VRF than the DHCP server — VRF mismatch causes packets to be dropped",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "DHCP server IP is unreachable from the relay (routing issue, server down, firewall blocking)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL on the relay interface or in the path blocking UDP ports 67/68",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "DHCP relay feature not enabled — NX-OS requires 'feature dhcp' before relay works",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Helper-address configured on the wrong interface (physical instead of SVI, or wrong SVI)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "DHCP relay not forwarding — clients get APIPA addresses",
+      "symptoms": [
+        "Clients receive 169.254.x.x (APIPA) addresses instead of valid DHCP leases",
+        "No DHCP offers are received by clients",
+        "DHCP relay statistics show zero forwarded packets or incrementing drops",
+        "'show ip dhcp relay statistics' shows no BOOTREQUEST forwarded counters",
+        "Server-side DHCP logs show no DISCOVER from the affected subnet"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip helper-address",
+          "confirms_if": "Missing or incorrect helper-address confirms relay misconfiguration",
+          "look_for": "Check that the helper-address is configured on the correct SVI/interface for the client VLAN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip helper-address",
+          "confirms_if": "Missing or incorrect helper-address confirms relay misconfiguration",
+          "look_for": "Check that the helper-address is configured on the correct SVI/interface for the client VLAN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip helper-address",
+          "confirms_if": "Missing or incorrect helper-address confirms relay misconfiguration",
+          "look_for": "Check that the helper-address is configured on the correct SVI/interface for the client VLAN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp relay statistics",
+          "confirms_if": "Zero forwarded + non-zero drops confirms relay is blocking DHCP traffic",
+          "look_for": "Check BOOTREQUEST/BOOTREPLY forwarded vs. dropped counters — drops indicate relay is receiving but not forwarding",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp relay statistics",
+          "confirms_if": "Zero forwarded + non-zero drops confirms relay is blocking DHCP traffic",
+          "look_for": "Check BOOTREQUEST/BOOTREPLY forwarded vs. dropped counters — drops indicate relay is receiving but not forwarding",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp relay statistics",
+          "confirms_if": "Zero forwarded + non-zero drops confirms relay is blocking DHCP traffic",
+          "look_for": "Check BOOTREQUEST/BOOTREPLY forwarded vs. dropped counters — drops indicate relay is receiving but not forwarding",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug ip dhcp relay",
+          "confirms_if": "Debug shows DISCOVER received but not relayed, or no DISCOVER seen at all",
+          "look_for": "Watch for incoming DISCOVER on the client-facing interface and whether it is forwarded to the server IP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug ip dhcp relay",
+          "confirms_if": "Debug shows DISCOVER received but not relayed, or no DISCOVER seen at all",
+          "look_for": "Watch for incoming DISCOVER on the client-facing interface and whether it is forwarded to the server IP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug ip dhcp relay",
+          "confirms_if": "Debug shows DISCOVER received but not relayed, or no DISCOVER seen at all",
+          "look_for": "Watch for incoming DISCOVER on the client-facing interface and whether it is forwarded to the server IP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "DHCP snooping is enabled but the trust boundary is wrong — the uplink or server-facing port is untrusted, causing the switch to drop legitimate DHCPOFFER and DHCPACK packets from the server. Clients send DISCOVER but never receive offers. This also occurs when the snooping rate limit is set too low on access ports, causing legitimate client DISCOVER packets to be rate-limited and dropped.",
+      "resolutions": [
+        {
+          "action": "Trust all ports facing the DHCP server or upstream relay: 'ip dhcp snooping trust' on the interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Trust all ports facing the DHCP server or upstream relay: 'ip dhcp snooping trust' on the interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Trust all ports facing the DHCP server or upstream relay: 'ip dhcp snooping trust' on the interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify snooping is enabled for the correct VLANs: 'ip dhcp snooping vlan <vlan-list>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify snooping is enabled for the correct VLANs: 'ip dhcp snooping vlan <vlan-list>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify snooping is enabled for the correct VLANs: 'ip dhcp snooping vlan <vlan-list>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase rate limit on access ports if needed: 'ip dhcp snooping limit rate <pps>' (default is often 15 pps)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase rate limit on access ports if needed: 'ip dhcp snooping limit rate <pps>' (default is often 15 pps)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase rate limit on access ports if needed: 'ip dhcp snooping limit rate <pps>' (default is often 15 pps)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Trust inter-switch trunk ports that carry DHCP traffic",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Trust inter-switch trunk ports that carry DHCP traffic",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Trust inter-switch trunk ports that carry DHCP traffic",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "After STP changes, verify the new active uplink is trusted for snooping",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "After STP changes, verify the new active uplink is trusted for snooping",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "After STP changes, verify the new active uplink is trusted for snooping",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Uplink port toward the DHCP server is not configured as 'ip dhcp snooping trust'",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VLAN not included in 'ip dhcp snooping vlan <list>' — snooping not active for that VLAN",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Rate limit on access port set too low — legitimate traffic from multiple clients behind an IP phone or AP exceeds the limit",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Trunk port to another switch carrying DHCP traffic is not trusted — offers from server on remote switch are dropped",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "After a topology change (STP reconvergence), the new uplink path goes through an untrusted port",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "DHCP snooping dropping valid traffic — trust boundary misconfigured",
+      "symptoms": [
+        "DHCP offers from the server are blocked — clients timeout waiting for offers",
+        "'show ip dhcp snooping statistics' shows incrementing drops on the server-facing port",
+        "DHCP works on some VLANs but not others — snooping not enabled on the working VLANs",
+        "Rate-limit drops on access ports during peak hours (many clients booting simultaneously)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip dhcp snooping",
+          "confirms_if": "Server-facing or uplink port shown as 'untrusted' confirms the trust boundary issue",
+          "look_for": "Check global snooping status, which VLANs are enabled, and which interfaces are trusted vs. untrusted",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp snooping",
+          "confirms_if": "Server-facing or uplink port shown as 'untrusted' confirms the trust boundary issue",
+          "look_for": "Check global snooping status, which VLANs are enabled, and which interfaces are trusted vs. untrusted",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp snooping",
+          "confirms_if": "Server-facing or uplink port shown as 'untrusted' confirms the trust boundary issue",
+          "look_for": "Check global snooping status, which VLANs are enabled, and which interfaces are trusted vs. untrusted",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp snooping statistics",
+          "confirms_if": "Non-zero drop counters on the server-facing port confirm snooping is the cause",
+          "look_for": "Check for 'DHCP Offers dropped' or 'source MAC validation failures' — incrementing counters confirm snooping is blocking traffic",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp snooping statistics",
+          "confirms_if": "Non-zero drop counters on the server-facing port confirm snooping is the cause",
+          "look_for": "Check for 'DHCP Offers dropped' or 'source MAC validation failures' — incrementing counters confirm snooping is blocking traffic",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp snooping statistics",
+          "confirms_if": "Non-zero drop counters on the server-facing port confirm snooping is the cause",
+          "look_for": "Check for 'DHCP Offers dropped' or 'source MAC validation failures' — incrementing counters confirm snooping is blocking traffic",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp snooping binding",
+          "confirms_if": "Empty or stale binding table for the affected VLAN confirms clients are not getting leases",
+          "look_for": "Check the snooping binding table — missing entries for affected clients indicate offers never reached them",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp snooping binding",
+          "confirms_if": "Empty or stale binding table for the affected VLAN confirms clients are not getting leases",
+          "look_for": "Check the snooping binding table — missing entries for affected clients indicate offers never reached them",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp snooping binding",
+          "confirms_if": "Empty or stale binding table for the affected VLAN confirms clients are not getting leases",
+          "look_for": "Check the snooping binding table — missing entries for affected clients indicate offers never reached them",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The relay agent or snooping switch inserts DHCP Option 82 (Relay Agent Information) into the DISCOVER/REQUEST, but the DHCP server does not understand or is not configured to handle Option 82. The server drops packets with the unrecognized option instead of ignoring it, or a downstream relay strips/re-inserts Option 82 causing circuit-id/remote-id mismatches.",
+      "resolutions": [
+        {
+          "action": "Configure the DHCP server to accept and process Option 82, or configure it to ignore unknown options",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure the DHCP server to accept and process Option 82, or configure it to ignore unknown options",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure the DHCP server to accept and process Option 82, or configure it to ignore unknown options",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE relay: 'ip dhcp relay information option' enables insertion — verify server compatibility first",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE relay: 'ip dhcp relay information option' enables insertion — verify server compatibility first",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE relay: 'ip dhcp relay information option' enables insertion — verify server compatibility first",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: 'ip dhcp relay information option' under the interface — use 'ip dhcp relay sub-option type cisco' if the server expects Cisco format",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: 'ip dhcp relay information option' under the interface — use 'ip dhcp relay sub-option type cisco' if the server expects Cisco format",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: 'ip dhcp relay information option' under the interface — use 'ip dhcp relay sub-option type cisco' if the server expects Cisco format",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If multiple relays in the path, configure only one to insert Option 82 and set others to 'ip dhcp relay information option allow-untrusted'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If multiple relays in the path, configure only one to insert Option 82 and set others to 'ip dhcp relay information option allow-untrusted'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If multiple relays in the path, configure only one to insert Option 82 and set others to 'ip dhcp relay information option allow-untrusted'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test by temporarily disabling Option 82 insertion to confirm it is the cause",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test by temporarily disabling Option 82 insertion to confirm it is the cause",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test by temporarily disabling Option 82 insertion to confirm it is the cause",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "DHCP server does not support or is not configured for Option 82 — drops packets with unknown options",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Multiple relay agents in the path each inserting or modifying Option 82 — resulting in malformed or duplicate sub-options",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Option 82 format mismatch between relay and server (circuit-id or remote-id encoding differs from server expectation)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Server configured to validate Option 82 circuit-id against a specific format that doesn't match the relay's output",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Option 82 insertion causing server to drop DHCP packets",
+      "symptoms": [
+        "DHCP relay statistics show packets forwarded to server but no replies come back",
+        "Server logs show dropped or rejected DHCP packets",
+        "Removing Option 82 insertion (temporarily) restores DHCP functionality",
+        "Clients behind one switch get addresses but clients behind another do not — different Option 82 formats"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip dhcp relay information option",
+          "confirms_if": "Option 82 enabled on relay but server rejecting packets confirms incompatibility",
+          "look_for": "Check if Option 82 insertion is enabled and what format (circuit-id, remote-id) is being used",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp relay information option",
+          "confirms_if": "Option 82 enabled on relay but server rejecting packets confirms incompatibility",
+          "look_for": "Check if Option 82 insertion is enabled and what format (circuit-id, remote-id) is being used",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp relay information option",
+          "confirms_if": "Option 82 enabled on relay but server rejecting packets confirms incompatibility",
+          "look_for": "Check if Option 82 insertion is enabled and what format (circuit-id, remote-id) is being used",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug ip dhcp server packet",
+          "confirms_if": "Debug shows server dropping packets specifically because of Option 82 content",
+          "look_for": "Watch for incoming DISCOVER/REQUEST with Option 82 sub-options — look for server drop or reject messages",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug ip dhcp server packet",
+          "confirms_if": "Debug shows server dropping packets specifically because of Option 82 content",
+          "look_for": "Watch for incoming DISCOVER/REQUEST with Option 82 sub-options — look for server drop or reject messages",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug ip dhcp server packet",
+          "confirms_if": "Debug shows server dropping packets specifically because of Option 82 content",
+          "look_for": "Watch for incoming DISCOVER/REQUEST with Option 82 sub-options — look for server drop or reject messages",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "All addresses in the DHCP pool are consumed and the server responds with DHCPNAK or simply has no addresses to offer. This can be caused by legitimate growth (pool too small), orphaned leases (clients left but leases not expired), or a deliberate starvation attack where a rogue device requests many leases with spoofed MAC addresses.",
+      "resolutions": [
+        {
+          "action": "Expand the DHCP pool or add additional pools for the subnet",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Expand the DHCP pool or add additional pools for the subnet",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Expand the DHCP pool or add additional pools for the subnet",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce lease duration to reclaim orphaned addresses faster",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce lease duration to reclaim orphaned addresses faster",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce lease duration to reclaim orphaned addresses faster",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure DHCP snooping with rate limiting to mitigate starvation attacks: 'ip dhcp snooping limit rate <pps>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure DHCP snooping with rate limiting to mitigate starvation attacks: 'ip dhcp snooping limit rate <pps>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure DHCP snooping with rate limiting to mitigate starvation attacks: 'ip dhcp snooping limit rate <pps>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable port security or 802.1X to prevent MAC spoofing for starvation attacks",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable port security or 802.1X to prevent MAC spoofing for starvation attacks",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable port security or 802.1X to prevent MAC spoofing for starvation attacks",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear orphaned leases: 'clear ip dhcp binding *' (IOS-XE) or 'clear ip dhcp binding vrf <vrf>' (NX-OS)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear orphaned leases: 'clear ip dhcp binding *' (IOS-XE) or 'clear ip dhcp binding vrf <vrf>' (NX-OS)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear orphaned leases: 'clear ip dhcp binding *' (IOS-XE) or 'clear ip dhcp binding vrf <vrf>' (NX-OS)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add exclusion ranges for statically assigned IPs: 'ip dhcp excluded-address <start> <end>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add exclusion ranges for statically assigned IPs: 'ip dhcp excluded-address <start> <end>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add exclusion ranges for statically assigned IPs: 'ip dhcp excluded-address <start> <end>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Address pool is too small for the number of clients — organic growth exceeded capacity",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Orphaned leases — clients disconnected without releasing their lease, and the lease duration is long",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Starvation attack — rogue device floods DISCOVER with random MAC addresses to consume all addresses",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Multiple scopes/pools overlap or are misconfigured, reducing available addresses",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Static IP assignments within the DHCP range without exclusions — server thinks the addresses are available but they conflict",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "DHCP starvation / address pool exhaustion",
+      "symptoms": [
+        "New clients cannot get IP addresses — DHCP timeout",
+        "Server responds with DHCPNAK to new requests",
+        "'show ip dhcp pool' shows pool utilization at or near 100%",
+        "Existing clients with leases continue to work (renewals succeed), but new clients fail",
+        "Sudden exhaustion may indicate a starvation attack"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip dhcp pool",
+          "confirms_if": "Zero available addresses in the pool confirms exhaustion as the cause",
+          "look_for": "Check total addresses, leased count, and available count — pool at 100% utilization confirms exhaustion",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp pool",
+          "confirms_if": "Zero available addresses in the pool confirms exhaustion as the cause",
+          "look_for": "Check total addresses, leased count, and available count — pool at 100% utilization confirms exhaustion",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp pool",
+          "confirms_if": "Zero available addresses in the pool confirms exhaustion as the cause",
+          "look_for": "Check total addresses, leased count, and available count — pool at 100% utilization confirms exhaustion",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp binding",
+          "confirms_if": "Many bindings from unknown MACs or a single port indicate a starvation attack",
+          "look_for": "Check for suspicious patterns — many leases from unknown MACs, leases on ports with no real clients, or leases with very recent timestamps all from the same port",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp binding",
+          "confirms_if": "Many bindings from unknown MACs or a single port indicate a starvation attack",
+          "look_for": "Check for suspicious patterns — many leases from unknown MACs, leases on ports with no real clients, or leases with very recent timestamps all from the same port",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp binding",
+          "confirms_if": "Many bindings from unknown MACs or a single port indicate a starvation attack",
+          "look_for": "Check for suspicious patterns — many leases from unknown MACs, leases on ports with no real clients, or leases with very recent timestamps all from the same port",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp conflict",
+          "confirms_if": "Multiple conflicts suggest addresses are being used outside of DHCP (static assignments in the pool range)",
+          "look_for": "Check for conflicting addresses — addresses detected as in-use but not in the binding table",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp conflict",
+          "confirms_if": "Multiple conflicts suggest addresses are being used outside of DHCP (static assignments in the pool range)",
+          "look_for": "Check for conflicting addresses — addresses detected as in-use but not in the binding table",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp conflict",
+          "confirms_if": "Multiple conflicts suggest addresses are being used outside of DHCP (static assignments in the pool range)",
+          "look_for": "Check for conflicting addresses — addresses detected as in-use but not in the binding table",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Two or more clients end up with the same IP address, causing intermittent connectivity for both. This can happen when multiple DHCP servers serve the same subnet without proper exclusion ranges, when a rogue DHCP server assigns addresses from an overlapping pool, or when the server's lease database becomes corrupted and loses track of active leases.",
+      "resolutions": [
+        {
+          "action": "Configure non-overlapping address ranges across all DHCP servers for the same subnet, using exclusion ranges",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure non-overlapping address ranges across all DHCP servers for the same subnet, using exclusion ranges",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure non-overlapping address ranges across all DHCP servers for the same subnet, using exclusion ranges",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable DHCP snooping to block rogue DHCP servers — only trust ports facing legitimate servers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable DHCP snooping to block rogue DHCP servers — only trust ports facing legitimate servers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable DHCP snooping to block rogue DHCP servers — only trust ports facing legitimate servers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable server-side duplicate address detection: 'ip dhcp ping packets <count>' (IOS-XE) to ping before offering",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable server-side duplicate address detection: 'ip dhcp ping packets <count>' (IOS-XE) to ping before offering",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable server-side duplicate address detection: 'ip dhcp ping packets <count>' (IOS-XE) to ping before offering",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add exclusion ranges for all statically assigned IPs within the DHCP scope",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add exclusion ranges for all statically assigned IPs within the DHCP scope",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add exclusion ranges for all statically assigned IPs within the DHCP scope",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Investigate and remove rogue DHCP servers — check 'show ip dhcp snooping' for untrusted offers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Investigate and remove rogue DHCP servers — check 'show ip dhcp snooping' for untrusted offers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Investigate and remove rogue DHCP servers — check 'show ip dhcp snooping' for untrusted offers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Multiple DHCP servers for the same subnet with overlapping address ranges and no exclusion ranges",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Rogue DHCP server on the network assigning addresses from an uncoordinated pool",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "DHCP server lease database corruption — server lost track of active leases and re-assigned an in-use address",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Static IP configured on a device that falls within the DHCP pool range without an exclusion",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Server's duplicate address detection (ping check before offer) disabled or failing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Duplicate IP from DHCP — same address assigned to two clients",
+      "symptoms": [
+        "IP conflict notifications on client workstations",
+        "Intermittent connectivity — ARP table flaps between two MAC addresses for the same IP",
+        "Duplicate IP address detected in syslog: '%DHCP-4-DUPLICATE_ADDRESS' or similar",
+        "'show ip arp' shows the MAC for an IP changing rapidly (ARP flapping)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip dhcp conflict",
+          "confirms_if": "Addresses in the conflict list confirm duplicate assignment has been detected by the server",
+          "look_for": "Check for addresses flagged as conflicting — these are IPs the server detected as already in use",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp conflict",
+          "confirms_if": "Addresses in the conflict list confirm duplicate assignment has been detected by the server",
+          "look_for": "Check for addresses flagged as conflicting — these are IPs the server detected as already in use",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip dhcp conflict",
+          "confirms_if": "Addresses in the conflict list confirm duplicate assignment has been detected by the server",
+          "look_for": "Check for addresses flagged as conflicting — these are IPs the server detected as already in use",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp",
+          "confirms_if": "Two MACs resolving to the same IP confirm a duplicate IP condition",
+          "look_for": "Look for the conflicting IP address — if two different MAC addresses appear for the same IP (or the MAC flaps), it confirms duplicate assignment",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp",
+          "confirms_if": "Two MACs resolving to the same IP confirm a duplicate IP condition",
+          "look_for": "Look for the conflicting IP address — if two different MAC addresses appear for the same IP (or the MAC flaps), it confirms duplicate assignment",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip arp",
+          "confirms_if": "Two MACs resolving to the same IP confirm a duplicate IP condition",
+          "look_for": "Look for the conflicting IP address — if two different MAC addresses appear for the same IP (or the MAC flaps), it confirms duplicate assignment",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Broadcast from client to locate available DHCP servers. Sent when client has no lease or previous lease has expired.",
+      "key_fields": [
+        "Client MAC address (chaddr)",
+        "Requested IP (option 50, if previous lease known)",
+        "Client identifier (option 61)",
+        "Parameter request list (option 55)"
+      ],
+      "name": "DHCPDISCOVER",
+      "when_sent": "Client in INIT state — no IP address assigned"
+    },
+    {
+      "description": "Unicast or broadcast from server to client offering an IP address and lease parameters. Multiple servers may respond with offers.",
+      "key_fields": [
+        "Offered IP address (yiaddr)",
+        "Lease time (option 51)",
+        "Server identifier (option 54)",
+        "Subnet mask (option 1)",
+        "Default gateway (option 3)"
+      ],
+      "name": "DHCPOFFER",
+      "when_sent": "Server receives DHCPDISCOVER and has available addresses"
+    },
+    {
+      "description": "Client-to-server message used in three contexts: (1) selecting a server after OFFER, (2) renewing a lease at T1, (3) rebinding at T2. In selection, it is broadcast so all servers know which offer was accepted.",
+      "key_fields": [
+        "Requested IP address (option 50)",
+        "Server identifier (option 54, only during selection)",
+        "Client identifier (option 61)"
+      ],
+      "name": "DHCPREQUEST",
+      "when_sent": "After selecting an offer, or when T1/T2 timer expires for renewal"
+    },
+    {
+      "description": "Server-to-client acknowledgment confirming the lease. Contains all configuration parameters (IP, mask, gateway, DNS, lease time). Client transitions to BOUND upon receipt.",
+      "key_fields": [
+        "Assigned IP address (yiaddr)",
+        "Lease time (option 51)",
+        "Subnet mask (option 1)",
+        "Default gateway (option 3)",
+        "DNS servers (option 6)"
+      ],
+      "name": "DHCPACK",
+      "when_sent": "Server approves a DHCPREQUEST (initial or renewal)"
+    }
+  ],
+  "operates_at": "Layer 7 (Application)",
+  "protocol_family": "services",
+  "protocol_id": "dhcp",
+  "protocol_name": "DHCP Relay/Snooping",
+  "purpose": "Dynamic Host Configuration Protocol — automatic IP address assignment, relay agent forwarding across VLANs, and snooping for rogue server prevention and binding table security",
+  "related_protocols": [
+    "dot1x",
+    "l2-infrastructure",
+    "static-routing"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-2131",
+      "rfc_number": 2131,
+      "title": "RFC 2131",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc2131.txt"
+    },
+    {
+      "id": "rfc-3046",
+      "rfc_number": 3046,
+      "title": "RFC 3046",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc3046.txt"
+    },
+    {
+      "id": "agent-cisco-kb:services/dhcp.json",
+      "title": "agent-cisco-kb knowledge base — services/dhcp.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 2131/2132 (DHCP), RFC 3046 (Option 82)",
+  "states": [
+    {
+      "description": "Client has no IP address. Sends DHCPDISCOVER broadcast to locate available DHCP servers. This is the starting state after boot or after a lease expires without renewal.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "INIT"
+    },
+    {
+      "description": "Client has sent DHCPDISCOVER and is waiting for DHCPOFFER responses from one or more servers. Client collects offers and selects one (typically the first received). Stuck in SELECTING indicates DISCOVER is not reaching any server — check relay configuration, VLAN, and UDP 67/68 ACLs.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "SELECTING"
+    },
+    {
+      "description": "Client has selected an offer and sent DHCPREQUEST to the chosen server. Waiting for DHCPACK to confirm the lease. Stuck in REQUESTING means the server received the REQUEST but is not sending ACK — possible address conflict or server-side pool exhaustion.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "REQUESTING"
+    },
+    {
+      "description": "Client has a valid IP lease. Normal operational state. Client uses the assigned IP address until T1 timer fires to initiate renewal. No DHCP traffic is generated in this state until T1 expires.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "BOUND"
+    },
+    {
+      "description": "T1 timer (50% of lease) has expired. Client sends unicast DHCPREQUEST directly to the leasing server to extend the lease. If the server responds with DHCPACK, client returns to BOUND. If no response by T2 (87.5%), client broadcasts DHCPREQUEST. If lease expires entirely, client returns to INIT and loses its IP address.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "RENEWING"
+    }
+  ],
+  "tags": [
+    "dhcp",
+    "relay",
+    "snooping",
+    "option-82",
+    "helper-address",
+    "lease",
+    "ip-assignment",
+    "services"
+  ],
+  "timers": [
+    {
+      "default_rfc": "50% of lease duration",
+      "description": "Renewal timer — set to 50% of the lease duration. When T1 expires, the client sends a unicast DHCPREQUEST to the leasing server to renew the lease.",
+      "name": "T1 renewal",
+      "on_expiry": "Client enters RENEWING state and sends unicast DHCPREQUEST to server",
+      "range": "Server-assigned (client cannot override)",
+      "tuning_advice": "Controlled by the server via the lease duration. Shorter leases increase DHCP traffic but reclaim addresses faster. For stable networks, 8-24 hour leases are typical."
+    },
+    {
+      "default_rfc": "87.5% of lease duration",
+      "description": "Rebinding timer — set to 87.5% of the lease duration. If the client has not renewed by T2, it broadcasts DHCPREQUEST to ANY server (not just the original). This is the fallback when the original server is unreachable.",
+      "name": "T2 rebinding",
+      "on_expiry": "Client broadcasts DHCPREQUEST to any available server",
+      "range": "Server-assigned (client cannot override)",
+      "tuning_advice": "Not directly tunable — derived from lease duration. The gap between T1 and T2 is the window for unicast renewal before broadcast fallback."
+    },
+    {
+      "default_rfc": "86400s (server-configured, commonly 24 hours)",
+      "description": "Total lease time assigned by the DHCP server. When the full lease expires without renewal, the client must release the IP address and return to INIT state. Commonly 86400s (24 hours) for wired, 3600s-28800s for wireless.",
+      "name": "lease-duration",
+      "on_expiry": "Client loses IP address and returns to INIT — must re-DISCOVER",
+      "range": "60s-4294967295s (server-configured)",
+      "tuning_advice": "Balance address reclamation vs. DHCP traffic. Short leases (1-4h) for guest/wireless/BYOD. Long leases (8-24h) for stable wired hosts. Very short leases (<1h) stress the server and increase broadcast traffic."
+    }
+  ],
+  "transitions": [
+    {
+      "failure_if_stuck": "Client cannot send DISCOVER — check interface is up, VLAN assignment is correct, and DHCP snooping is not blocking the port",
+      "from_state": "INIT",
+      "to_state": "SELECTING",
+      "trigger": "DHCPDISCOVER sent — client broadcasts to find DHCP servers"
+    },
+    {
+      "failure_if_stuck": "No OFFER received — DISCOVER not reaching server. Check relay agent (ip helper-address), VLAN, ACLs blocking UDP 67/68, snooping trust on uplink port",
+      "from_state": "SELECTING",
+      "to_state": "REQUESTING",
+      "trigger": "DHCPOFFER received — client selects a server and sends DHCPREQUEST"
+    },
+    {
+      "failure_if_stuck": "Server not sending ACK — possible address conflict detected by server (ping check), pool exhausted, or DHCPNAK sent",
+      "from_state": "REQUESTING",
+      "to_state": "BOUND",
+      "trigger": "DHCPACK received — server confirms the lease assignment"
+    },
+    {
+      "from_state": "BOUND",
+      "to_state": "RENEWING",
+      "trigger": "T1 timer expired (50% of lease duration)"
+    },
+    {
+      "failure_if_stuck": "Server not responding to renewal — server down, path broken, or server no longer owns the lease. Client will escalate to broadcast at T2 and eventually lose the lease",
+      "from_state": "RENEWING",
+      "to_state": "BOUND",
+      "trigger": "DHCPACK received — server renews the lease"
+    },
+    {
+      "from_state": "RENEWING",
+      "to_state": "INIT",
+      "trigger": "Lease expired — no renewal ACK received by lease end"
+    }
+  ],
+  "transport": "UDP 67/68",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "ip dhcp snooping\nip dhcp snooping vlan 100-200\ninterface Vlan100\n ip helper-address 10.1.1.10\ninterface GigabitEthernet1/0/1\n ip dhcp snooping trust"
+      ],
+      "notes": [
+        {
+          "note": "IOS-XE uses 'ip helper-address <server-ip>' for relay (not 'ip dhcp relay'). DHCP snooping: 'ip dhcp snooping' global + 'ip dhcp snooping vlan <list>'. Trust on uplinks: 'ip dhcp snooping trust' on the interface. VRF-aware relay: 'ip helper-address vrf <server-vrf> <server-ip>'. Option 82: 'ip dhcp relay information option' (global).",
+          "versions": "all"
+        }
+      ]
+    },
+    "iosxr": {
+      "config_examples": [
+        "dhcp ipv4\n profile RELAY-PROFILE relay\n  helper-address vrf default 10.1.1.10\n!\ninterface GigabitEthernet0/0/0/1\n ipv4 dhcp relay profile RELAY-PROFILE"
+      ],
+      "notes": [
+        {
+          "note": "IOS-XR uses 'dhcp ipv4' configuration with relay profiles. Relay configured under the interface: 'ipv4 dhcp relay profile <name>'. Profiles defined under 'dhcp ipv4 profile <name> relay'. DHCP snooping is not supported in the same way as NX-OS/IOS-XE — IOS-XR relies on subscriber management and BNG features for DHCP security.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "feature dhcp\nip dhcp snooping\nip dhcp snooping vlan 100-200\ninterface Vlan100\n  ip dhcp relay address 10.1.1.10\n  ip dhcp relay information option\ninterface Ethernet1/1\n  ip dhcp snooping trust"
+      ],
+      "notes": [
+        {
+          "note": "NX-OS uses 'ip dhcp relay address <server-ip>' under the interface (not 'ip helper-address'). Requires 'feature dhcp' to be enabled globally. DHCP snooping is per-VLAN: 'ip dhcp snooping vlan <list>'. Option 82 insertion with 'ip dhcp relay information option' under the interface. VRF-aware relay: 'ip dhcp relay address <ip> use-vrf <vrf>'.",
+          "versions": "all"
+        }
+      ]
+    },
+    "sonic": {
+      "config_examples": [
+        "config dhcp_relay add Vlan100 10.1.1.10\nconfig dhcp_relay add Vlan100 10.1.1.11"
+      ],
+      "notes": [
+        {
+          "note": "SONiC runs DHCP relay via the dhcp_relay container. Configuration in CONFIG_DB DHCP_RELAY table. CLI: 'config dhcp_relay add <vlan> <server-ip>' and 'config dhcp_relay del <vlan> <server-ip>'. Status: 'show dhcp_relay'. DHCP snooping not natively supported — relies on upstream switch for snooping trust boundaries.",
+          "versions": "202311+"
+        }
+      ]
+    }
+  }
+}

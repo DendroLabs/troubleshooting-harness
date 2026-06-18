@@ -1,0 +1,360 @@
+{
+  "applicable_os": [
+    "sonic"
+  ],
+  "category": "system-operations",
+  "confidence": "medium",
+  "def_refs": [
+    "daemon:orchagent",
+    "daemon:syncd",
+    "daemon:bgpd",
+    "daemon:redis-server",
+    "daemon:teammgrd",
+    "daemon:lldpsyncd",
+    "daemon:xcvrd",
+    "db:config_db",
+    "db:appl_db",
+    "db:state_db"
+  ],
+  "prerequisites": [
+    "Identify the exact container name: docker ps --format '{{.Names}}'",
+    "Confirm the database container is healthy before restarting any other container",
+    "If restarting swss or syncd, plan for a 60-120s recovery window and ASIC reprogram",
+    "If restarting bgp container, notify peers/NOC of expected session drops",
+    "Backup running config before restarting any critical container: sudo sonic-cfggen -d --print-data > /tmp/pre_restart_config.json",
+    "Confirm systemd service name matches container: systemctl list-units | grep docker"
+  ],
+  "procedure_id": "container-restart",
+  "procedure_name": "Container Restart",
+  "purpose": "Safely restart a specific SONiC Docker container with impact assessment",
+  "risk_level": "high",
+  "rollback": [
+    {
+      "action": "If systemctl restart fails or container enters a crash loop, attempt a forced stop and manual start",
+      "commands": [
+        {
+          "command": "sudo systemctl stop <container>; sleep 5; sudo systemctl start <container>; systemctl status <container>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "notes": "If the container keeps crashing (ExitCode != 0), do NOT keep restarting it. Investigate root cause first: journalctl -u <container> -n 100 --no-pager; docker logs <container> 2>&1 | tail -50. Common causes: missing config files, Redis connection failure, SAI adapter init failure. If Redis is down, the database container must be restored first before any other container can start cleanly.",
+      "step_id": "rollback-1"
+    },
+    {
+      "action": "If post-restart state does not match baseline (missing routes, BGP sessions down, interfaces flapped), reload config from backup",
+      "commands": [
+        {
+          "command": "sudo config load /tmp/pre_restart_config.json -y",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "notes": "Config load pushes CONFIG_DB entries back to Redis; orchagent will reconcile APPL_DB and reprogram the ASIC. After config load, run: sudo config reload -y if a full service restart is needed. Monitor with: show bgp summary; show interfaces status. If the issue is ARP/NDP table not repopulating, try: docker exec swss supervisorctl restart neighsyncd",
+      "step_id": "rollback-2"
+    },
+    {
+      "action": "Emergency: if swss or syncd cannot recover and forwarding is completely black-holed, perform a fast-reboot to restore a clean state",
+      "commands": [
+        {
+          "command": "sudo fast-reboot",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "notes": "Fast-reboot performs a warm-restart-assisted reboot with sub-30s forwarding disruption on most platforms. Use this only if individual container restart attempts have failed repeatedly and the ASIC is in an inconsistent state. Capture logs before rebooting: sudo tar czf /tmp/sonic_diag_$(date +%Y%m%d_%H%M%S).tar.gz /var/log/swss /var/log/syslog",
+      "step_id": "rollback-3"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "sonic:procedures/container-restart.json",
+      "title": "sonic knowledge base — procedures/container-restart.json",
+      "type": "documentation"
+    }
+  ],
+  "steps": [
+    {
+      "action": "Identify the target container and confirm it is the one causing issues",
+      "commands": [
+        {
+          "command": "docker ps --format '{{.Names}}\\t{{.Status}}\\t{{.RunningFor}}'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "next_step_id": "step-2",
+      "notes": "Replace <container> with the actual container name (e.g. swss, bgp, syncd). If the container is in a restart loop, check: docker inspect <container> | grep -A5 RestartPolicy; journalctl -u docker@<container> --no-pager -n 50",
+      "step": 1,
+      "step_id": "step-1",
+      "verification": [
+        {
+          "command": "docker inspect --format '{{.State.Status}} {{.State.ExitCode}} {{.State.StartedAt}}' <container>",
+          "confirms_if": "Container is identified and its current state is understood before proceeding",
+          "look_for": "Container status (running/exited/restarting), exit code (0=clean, non-zero=crash), and start time",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "action": "Assess container criticality and determine forwarding impact using the impact reference table",
+      "commands": [
+        {
+          "command": "docker stats --no-stream --format '{{.Name}}\\t{{.CPUPerc}}\\t{{.MemUsage}}'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "next_step_id": "step-3",
+      "notes": "Check container CPU/memory consumption — if a container is pegging CPU it may be in a tight loop and restart will reproduce the same behavior after a brief recovery.",
+      "step": 2,
+      "step_id": "step-2",
+      "verification": [
+        {
+          "command": "sonic-db-cli CONFIG_DB keys 'DEVICE_METADATA|localhost' | xargs -I{} sonic-db-cli CONFIG_DB HGETALL {}",
+          "confirms_if": "You understand whether this is a spine/leaf/ToR, traffic volume, and whether a maintenance window is needed",
+          "look_for": "Platform, hwsku, and deployment context to gauge blast radius",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "warning": "If the target container is database or syncd, STOP and treat this as a high-risk change requiring a maintenance window. If container is swss, confirm with NOC before proceeding."
+    },
+    {
+      "action": "Capture pre-restart state snapshot for post-restart comparison",
+      "commands": [
+        {
+          "command": "show bgp summary; show interfaces status; show ip route summary; show vlan brief; show mac address-table count",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "next_step_id": "step-4",
+      "notes": "Save output to a timestamped file: show bgp summary > /tmp/pre_restart_bgp_$(date +%H%M%S).txt. For teamd containers also run: show teamd status. For pmon: show interface transceiver eeprom | head -30.",
+      "step": 3,
+      "step_id": "step-3",
+      "verification": [
+        {
+          "command": "show bgp summary | grep -cE 'Estab|Idle|Active'; show ip route summary | grep 'Total'",
+          "confirms_if": "Baseline captured and saved for comparison after restart",
+          "look_for": "BGP peer count and state, total route count, interface up/down counts",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "action": "Check for in-progress reconciliation or warm restart state that would be disrupted",
+      "commands": [
+        {
+          "command": "redis-cli -n 6 keys 'WARM_RESTART*'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "next_step_id": "step-5",
+      "notes": "Also check for pending config loads: redis-cli -n 4 HGETALL 'CONFIG_MIGRATION|status'. If a migration is running, abort the restart and investigate.",
+      "step": 4,
+      "step_id": "step-4",
+      "verification": [
+        {
+          "command": "redis-cli -n 6 keys 'WARM_RESTART_TABLE|*' | xargs -I{} redis-cli -n 6 HGETALL {}",
+          "confirms_if": "No warm restart in progress; safe to proceed with container restart",
+          "look_for": "Any component showing state != 'reconciled' or still in 'replayed/initialized' — restarting now would interrupt reconciliation",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "warning": "If a warm restart reconciliation is in progress, wait for it to complete (state=reconciled) before restarting any container. Interrupting reconciliation can leave ASIC state inconsistent."
+    },
+    {
+      "action": "Restart the container using systemctl to respect service dependencies",
+      "commands": [
+        {
+          "command": "sudo systemctl restart <container>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "daemon_impact": [
+        {
+          "daemon": "orchagent",
+          "impact": "Exits and restarts when swss container restarts; re-reads APPL_DB and reprograms ASIC"
+        },
+        {
+          "daemon": "syncd",
+          "impact": "Disconnects SAI adapter on restart; ASIC programming halted until reconnection"
+        },
+        {
+          "daemon": "bgpd",
+          "impact": "All peering sessions drop on bgp container restart; BGP hold timer expires on peers"
+        },
+        {
+          "daemon": "teammgrd",
+          "impact": "LAG configuration pushed from CONFIG_DB on swss or teamd container restart"
+        },
+        {
+          "daemon": "lldpsyncd",
+          "impact": "LLDP neighbor table cleared on lldp container restart; repopulates after tx-interval"
+        },
+        {
+          "daemon": "xcvrd",
+          "impact": "Transceiver DOM readings unavailable during pmon container restart"
+        }
+      ],
+      "next_step_id": "step-6",
+      "notes": "Container names map 1:1 to systemd service names in SONiC 202511. If systemctl restart fails with 'Unit not found', check: systemctl list-units --type=service | grep <container>. Some platforms use docker@<container>.service as the unit name.",
+      "rollback_step_id": "rollback-1",
+      "step": 5,
+      "step_id": "step-5",
+      "verification": [
+        {
+          "command": "systemctl is-active <container>; docker ps --filter name=<container> --format '{{.Names}} {{.Status}}'",
+          "confirms_if": "Container process started and systemd considers it active",
+          "look_for": "systemctl reports 'active (running)'; docker ps shows container Up with recent timestamp",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "warning": "Use 'sudo systemctl restart <container>' NOT 'docker restart <container>'. Docker restart bypasses systemd dependency ordering and can leave orchagent/syncd in a split-brain state."
+    },
+    {
+      "action": "Monitor container startup and health during the recovery window",
+      "commands": [
+        {
+          "command": "watch -n 2 'docker ps --format \"{{.Names}}\\t{{.Status}}\" | grep -E \"database|swss|syncd|bgp|teamd\"'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "next_step_id": "step-7",
+      "notes": "Expected startup times by container: database ~5s, swss ~30-90s (ASIC reprogram), syncd ~30-60s, bgp ~10-20s, teamd ~10s, lldp ~5s, pmon ~5s. If swss is taking >120s, check orchagent reconciliation: docker exec swss supervisorctl status",
+      "rollback_step_id": "rollback-2",
+      "step": 6,
+      "step_id": "step-6",
+      "verification": [
+        {
+          "command": "docker ps --filter name=<container> --format '{{.Status}}'; journalctl -u <container> --no-pager -n 30 --since '2 minutes ago'",
+          "confirms_if": "Container started cleanly without crash loop and initialization sequence completed",
+          "look_for": "Container shows 'Up X seconds' with no 'Restarting' or 'Exited' state; logs show initialization complete messages",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "action": "Post-restart verification: compare state against pre-restart snapshot",
+      "commands": [
+        {
+          "command": "show bgp summary; show interfaces status; show ip route summary",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "next_step_id": "step-8",
+      "notes": "If BGP session count is lower than baseline, check: show bgp neighbors <peer> | grep 'BGP state'. If routes are missing: show ip route | grep -c 'B>'. For swss restarts, also verify: redis-cli -n 0 hlen NEIGH_TABLE:Ethernet0 to confirm ARP/NDP entries repopulated.",
+      "rollback_step_id": "rollback-2",
+      "step": 7,
+      "step_id": "step-7",
+      "verification": [
+        {
+          "command": "show bgp summary | grep -cE 'Estab'; show ip route summary | grep 'Total'; show interfaces status | grep -c ' up '",
+          "confirms_if": "Protocol state fully restored to pre-restart levels",
+          "look_for": "BGP established peer count matches pre-restart baseline; route count matches; interface up count unchanged",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    },
+    {
+      "action": "Verify end-to-end forwarding is restored",
+      "commands": [
+        {
+          "command": "ping -c 5 <gateway-ip>; show interfaces counters rate | head -20",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "notes": "For deeper forwarding verification after swss/syncd restart: sudo vtysh -c 'show ip fib' to compare FIB entries vs RIB; use 'show arp' and 'show ndp' to verify ARP/NDP table repopulated in ASIC via orchagent. If counters show RX but no TX, suspect ASIC programming incomplete — check orchagent logs: docker exec swss cat /var/log/swss/orchagent.log | tail -50",
+      "rollback_step_id": "rollback-2",
+      "step": 8,
+      "step_id": "step-8",
+      "verification": [
+        {
+          "command": "show interfaces counters rate | awk '$5 > 0 || $6 > 0' | head -20",
+          "confirms_if": "Data plane is forwarding traffic normally after container restart",
+          "look_for": "Interfaces with expected traffic show non-zero TX/RX packet rates; ping to gateway succeeds",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    "NEVER restart the database container in production — it holds CONFIG_DB, APPL_DB, and STATE_DB in Redis; a crash or failed restart loses all runtime state and requires a full config reload.",
+    "Restarting swss triggers a full ASIC reprogram via orchagent/syncd reconciliation — expect 30-120s of forwarding disruption on the impacted ASIC.",
+    "Restarting syncd alone is rarely safe; it disconnects from the ASIC SAI layer and leaves orchagent without a programming backend until syncd reconnects.",
+    "Restarting teamd causes LACP PDU transmission to stop; remote switches will age out the LAG after actor-timeout (default 90s), causing link bundle failure.",
+    "Container restart via 'docker restart' does NOT reinitialize systemd dependencies — always use 'sudo systemctl restart <container>' to respect service ordering.",
+    "If a container OOM-killed repeatedly, restarting it will reproduce the OOM — investigate memory pressure first with 'docker stats' and 'free -m'."
+  ]
+}

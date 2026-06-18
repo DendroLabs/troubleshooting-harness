@@ -1,0 +1,188 @@
+{
+  "applicable_os": [
+    "nxos"
+  ],
+  "category": "system-operations",
+  "confidence": "medium",
+  "prerequisites": [
+    "Verify current image: show version",
+    "Check available disk space: dir bootflash: (NX-OS/IOS-XE) or show media (IOS-XR)",
+    "Backup running configuration to external server",
+    "Verify new image integrity (MD5/SHA512 checksum against cisco.com)",
+    "Review release notes for target version — check for known caveats and ISSU support",
+    "Confirm hardware compatibility (image must support installed line cards / supervisors)",
+    "Schedule maintenance window with change control approval",
+    "Ensure console access is available (not just SSH/VTY)",
+    "For dual-sup systems: verify standby sup is online and in sync"
+  ],
+  "procedure_id": "software-install-nxos",
+  "procedure_name": "Software Installation / Image Upgrade (nxos)",
+  "purpose": "Upgrade, downgrade, or patch the OS image on a network device [nxos — method: install all (ISSU or disruptive); platforms: Nexus 9000, Nexus 3000, Nexus 7000]",
+  "risk_level": "high",
+  "rollback": [
+    {
+      "action": "install all nxos bootflash:<previous_image>",
+      "commands": [],
+      "step_id": "rollback-1"
+    },
+    {
+      "action": "If device fails to boot: from loader prompt, use 'boot nxos bootflash:<previous_image>'",
+      "commands": [],
+      "step_id": "rollback-2"
+    },
+    {
+      "action": "If ISSU fails mid-process: system automatically rolls back to previous image",
+      "commands": [],
+      "step_id": "rollback-3"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco:procedures/software-install.json",
+      "title": "cisco knowledge base — procedures/software-install.json",
+      "type": "documentation"
+    }
+  ],
+  "steps": [
+    {
+      "action": "Copy image to bootflash",
+      "commands": [
+        {
+          "command": "copy scp://user@server/path/nxos64-cs.10.4.3.F.bin bootflash:",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "Use SCP, SFTP, or USB. Verify MD5 after copy: show file bootflash:<image> md5sum",
+      "step": 1,
+      "step_id": "step-1"
+    },
+    {
+      "action": "Check ISSU compatibility",
+      "commands": [
+        {
+          "command": "show install all impact nxos bootflash:<image>",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "Shows whether ISSU or disruptive upgrade will occur. Look for 'non-disruptive' in output. If not supported, plan for disruptive reload.",
+      "step": 2,
+      "step_id": "step-2"
+    },
+    {
+      "action": "Run the install",
+      "commands": [
+        {
+          "command": "install all nxos bootflash:<image>",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "This is the preferred method. Handles boot variable, compatibility checks, and ISSU if supported. Do NOT use 'boot nxos' unless directed by TAC.",
+      "step": 3,
+      "step_id": "step-3"
+    },
+    {
+      "action": "Monitor upgrade progress",
+      "commands": [
+        {
+          "command": "show install all status",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "Watch for 'Install has been successful' or error messages. On ISSU: supervisor failover occurs mid-process — do not interrupt.",
+      "step": 4,
+      "step_id": "step-4"
+    },
+    {
+      "action": "Verify post-upgrade",
+      "commands": [
+        {
+          "command": "show version",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "Confirm new version is running. Also check: show module, show vpc (if applicable), show ip route summary, show bgp ipv4 unicast summary.",
+      "step": 5,
+      "step_id": "step-5"
+    },
+    {
+      "action": "Verify the procedure completed successfully",
+      "commands": [],
+      "step": 6,
+      "step_id": "verify",
+      "verification": [
+        {
+          "command": "show version",
+          "confirms_if": "New image is running",
+          "look_for": "System image file is: bootflash:///<new_image>",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show boot",
+          "confirms_if": "Boot variable points to new image (survives reload)",
+          "look_for": "NXOS variable = bootflash:/<new_image>",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show module",
+          "confirms_if": "All line cards and supervisors are operational",
+          "look_for": "All modules show 'ok' status",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show install all status",
+          "confirms_if": "Install completed without errors",
+          "look_for": "Install has been successful",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    "ISSU is NOT supported on all platforms or between all version combinations — always verify the ISSU compatibility matrix",
+    "Always have console access before starting an upgrade — if the device fails to boot you need console to recover",
+    "Verify boot variables after upgrade to prevent boot loop on next reload",
+    "On dual-sup systems, upgrade BOTH supervisors — mismatched versions cause unpredictable behavior",
+    "SMU/GISO patches may have dependencies — install in the order specified by release notes",
+    "Never delete the currently running image until the new image is confirmed stable",
+    "On vPC domains: upgrade one peer at a time, verify vPC is stable between upgrades",
+    "NX-OS requires 'feature' re-enablement after some major version jumps — check release notes",
+    "Compact images (compact-) are smaller but don't support ISSU"
+  ]
+}

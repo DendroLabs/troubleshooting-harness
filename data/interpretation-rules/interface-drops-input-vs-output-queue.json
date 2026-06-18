@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "interface-drops-input-vs-output-queue",
+  "display_name": "Output queue drops indicate congestion, not interface errors — different root cause than input drops",
+  "category": "counter-interpretation",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "show interface output showing drops in the output queue or total output drops counter",
+  "observation": "Non-zero output drops or output queue drops on an interface",
+  "naive_interpretation": "The interface has a hardware problem or is failing — similar to input errors",
+  "correct_interpretation": "Output drops almost always indicate traffic congestion — more traffic is being sent to the interface than its line rate can handle. This is a traffic engineering or QoS problem, not a physical layer problem. Input drops/errors (CRC, runts, giants) indicate physical layer issues. Output drops indicate the egress queue is full because the aggregate ingress traffic destined for this interface exceeds its bandwidth.",
+  "why": [
+    "Output drops occur when the egress ASIC queue for an interface overflows — this is a normal backpressure mechanism",
+    "The distinction maps to completely different troubleshooting paths: input errors -> check cables/optics/PHY, output drops -> check traffic patterns/QoS/link utilization",
+    "Output drops on a 1G interface receiving aggregate traffic from multiple 10G interfaces is expected behavior under load, not a defect"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show queuing interface Ethernet1/1",
+      "purpose": "See per-queue drop counts to identify which traffic class is being dropped"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface Ethernet1/1 | include rate",
+      "purpose": "Check if the interface is running at or near line rate — confirms congestion as the cause"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show policy-map interface GigabitEthernet1/0/1",
+      "purpose": "Check QoS policy drops per class to identify the congested traffic class"
+    }
+  ],
+  "traps": [
+    "Treating output drops the same as input errors and investigating physical layer",
+    "Replacing optics or cables to fix output drops — this will never help",
+    "Not checking interface utilization to confirm the congestion hypothesis",
+    "Ignoring output drops because the interface shows no input errors — output drops are a real problem, just a different kind"
+  ],
+  "related_rules": [
+    "interface-crc-counters-without-clearing",
+    "interface-counter-rate-vs-absolute"
+  ],
+  "related_protocols": [],
+  "keywords": ["output drops", "input drops", "queue drops", "congestion", "QoS", "interface errors", "counters"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

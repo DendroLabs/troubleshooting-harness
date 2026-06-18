@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "psu-fan-transient-alert-vs-failure",
+  "display_name": "A logged PSU/fan alert is historical — check the current state before declaring a hardware failure",
+  "category": "expected-behavior",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "A power-supply or fan alert appears in the log or in an environment summary and the engineer is assessing hardware health",
+  "observation": "A PSU or fan fault/alert message exists in the logs, or an environment field shows a past fault flag",
+  "naive_interpretation": "The power supply or fan has failed and the hardware needs immediate replacement",
+  "correct_interpretation": "Environmental alerts are frequently transient: a PSU briefly losing input during a feed switchover, an OIR insertion/removal, a fan ramping during a thermal spike, or a momentary sensor read. The log records that an event happened, not that the component is currently bad. Always read the current operational state of the PSU/fan, not just the historical log entry. A component that alerted once and is now 'ok/present/powered' usually experienced a transient, whereas a sustained or repeating fault is the real failure.",
+  "why": [
+    "Environmental logging captures discrete events; a single past entry does not reflect present state",
+    "Power feed switchovers, online insertion/removal, and thermal ramps generate legitimate transient alerts during normal operation",
+    "The current environment status (present/ok/powered, fan RPM in range) is the authoritative health signal, not the log history",
+    "A real failure is distinguished by a sustained fault state or a repeating pattern, not a lone historical alert"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show environment power",
+      "purpose": "Read the current PSU operational state rather than relying on a past log entry"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show environment fan",
+      "purpose": "Confirm current fan presence and status to tell a transient ramp from a real failure"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show environment all",
+      "purpose": "Show present power and cooling state to compare against the historical alert"
+    }
+  ],
+  "traps": [
+    "RMAing a PSU or fan on a single historical log entry without checking that it is currently faulted",
+    "Treating a transient alert from a feed switchover or OIR as a component failure",
+    "Reading only the log and never the current environment status, the authoritative signal",
+    "Missing the distinction between a one-time event and a sustained or repeating fault pattern"
+  ],
+  "related_rules": [
+    "optic-dom-warning-vs-alarm",
+    "single-log-message-not-causation",
+    "syslog-severity-is-not-operational-impact"
+  ],
+  "related_protocols": ["system-management"],
+  "keywords": ["PSU", "power supply", "fan", "environment", "transient", "alert", "OIR", "thermal", "hardware", "failure"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

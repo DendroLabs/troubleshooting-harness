@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "single-log-message-not-causation",
+  "display_name": "A single log message does not prove causation — look for patterns and correlation",
+  "category": "log-analysis",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Reviewing device logs during an incident and finding a syslog message that appears related",
+  "observation": "A syslog message or event log entry appears around the same time as the reported issue",
+  "naive_interpretation": "This log message is the cause of (or directly related to) the problem being investigated",
+  "correct_interpretation": "Temporal proximity does not equal causation. Network devices generate many log messages continuously. Finding one near the incident time proves nothing by itself. Establish causation by checking: does the message repeat in a pattern that correlates with symptom onset/offset? Does the message indicate a condition that would mechanistically produce the observed symptoms? Have you ruled out that the message is routine background noise?",
+  "why": [
+    "Network devices can generate hundreds of log messages per minute during normal operation",
+    "Human pattern matching is biased toward finding connections — seeing a log near an incident time feels causal even when it is coincidental",
+    "Many log messages are informational or relate to routine operations (OSPF hello processing, NTP sync, SNMP polls) that have nothing to do with the issue",
+    "The actual root cause may not generate a log message at all, or the log may appear earlier than expected due to buffering"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show logging last 100",
+      "purpose": "Review broader log context around the incident — look for clusters of related messages, not single entries"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show logging logfile | include <pattern> | count",
+      "purpose": "Check how frequently the suspect message appears — if it occurs every 5 minutes normally, its presence during the incident is meaningless"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show logging | include <pattern>",
+      "purpose": "Check message frequency and pattern to distinguish signal from noise"
+    }
+  ],
+  "traps": [
+    "Fixating on the first interesting-looking log message near the incident timestamp",
+    "Not checking whether the same log message appears regularly during normal operation",
+    "Assuming the log timestamp exactly matches when the event occurred — syslog can be delayed by buffering or rate-limiting",
+    "Treating a log message as root cause without a mechanistic explanation of how that event produces the observed symptoms"
+  ],
+  "related_rules": [
+    "bgp-high-cpu-after-topology-change",
+    "adjacency-log-is-point-in-time-not-current"
+  ],
+  "related_protocols": [],
+  "keywords": ["syslog", "logging", "causation", "correlation", "log analysis", "timestamp", "incident"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

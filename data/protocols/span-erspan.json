@@ -1,0 +1,1246 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "ERSPAN requires IP reachability between the source switch and the remote destination collector. The ERSPAN destination IP must be routable from the source device.",
+      "name": "IP routing (ERSPAN)",
+      "type": "infrastructure"
+    },
+    {
+      "description": "The SPAN destination port must have enough bandwidth to receive all mirrored traffic. Oversubscription causes packet drops and incomplete captures.",
+      "name": "Sufficient bandwidth on destination",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "A local SPAN session is configured but the destination port receives no mirrored packets. Packet captures on the destination port are empty. This can be caused by incorrect source port or VLAN selection, wrong direction filter (rx/tx/both), hitting the platform's session limit, or an overly restrictive ACL filter that excludes the traffic of interest.",
+      "resolutions": [
+        {
+          "action": "Verify source interface/VLAN and direction match the traffic you want to capture: 'show monitor session <id>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify source interface/VLAN and direction match the traffic you want to capture: 'show monitor session <id>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify source interface/VLAN and direction match the traffic you want to capture: 'show monitor session <id>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform session limits — remove unused sessions if at maximum",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform session limits — remove unused sessions if at maximum",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check platform session limits — remove unused sessions if at maximum",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove or adjust ACL filter to include the traffic of interest",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove or adjust ACL filter to include the traffic of interest",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove or adjust ACL filter to include the traffic of interest",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure source interface is up: 'show interface <source>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure source interface is up: 'show interface <source>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure source interface is up: 'show interface <source>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Try 'both' direction if unsure whether traffic is ingress or egress",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Try 'both' direction if unsure whether traffic is ingress or egress",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Try 'both' direction if unsure whether traffic is ingress or egress",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: verify 'no shut' on the monitor session (sessions can be admin-shut)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: verify 'no shut' on the monitor session (sessions can be admin-shut)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: verify 'no shut' on the monitor session (sessions can be admin-shut)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Source port or VLAN is incorrect — mirroring the wrong traffic",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Direction misconfigured — set to 'rx' but need 'tx', or vice versa",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Session limit reached — platform supports a maximum number of SPAN sessions and all slots are consumed",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL filter too restrictive — 'filter access-group' is dropping the traffic of interest",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Source interface is down or in err-disabled state",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SPAN destination port is in the wrong VLAN or has STP blocking",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Source is a port-channel but only the logical interface was specified (some platforms require member ports)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "SPAN session not capturing traffic — destination port shows no mirrored traffic",
+      "symptoms": [
+        "Packet capture on SPAN destination port is empty",
+        "Wireshark/tcpdump shows no traffic on the monitor port",
+        "'show monitor session' shows session as operational but no counters incrementing",
+        "SPAN destination port link is up but no traffic received"
+      ],
+      "verify_commands": [
+        {
+          "command": "show monitor session all",
+          "confirms_if": "Shows session configuration and operational status — confirms if session is active and correctly configured",
+          "look_for": "Check session status (Up/Down), source/destination ports, direction (rx/tx/both), and any filters applied",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session all",
+          "confirms_if": "Shows session configuration and operational status — confirms if session is active and correctly configured",
+          "look_for": "Check session status (Up/Down), source/destination ports, direction (rx/tx/both), and any filters applied",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session all",
+          "confirms_if": "Shows session configuration and operational status — confirms if session is active and correctly configured",
+          "look_for": "Check session status (Up/Down), source/destination ports, direction (rx/tx/both), and any filters applied",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session <id>",
+          "confirms_if": "Confirms the exact source/destination/direction configuration for the session in question",
+          "look_for": "Verify specific session: source interface, destination interface, direction, filter, and operational status",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session <id>",
+          "confirms_if": "Confirms the exact source/destination/direction configuration for the session in question",
+          "look_for": "Verify specific session: source interface, destination interface, direction, filter, and operational status",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session <id>",
+          "confirms_if": "Confirms the exact source/destination/direction configuration for the session in question",
+          "look_for": "Verify specific session: source interface, destination interface, direction, filter, and operational status",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <destination-port>",
+          "confirms_if": "Non-zero input counters on the destination port confirm mirrored traffic is arriving",
+          "look_for": "Check that destination port is up/up and look at input/output counters for incrementing traffic",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <destination-port>",
+          "confirms_if": "Non-zero input counters on the destination port confirm mirrored traffic is arriving",
+          "look_for": "Check that destination port is up/up and look at input/output counters for incrementing traffic",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <destination-port>",
+          "confirms_if": "Non-zero input counters on the destination port confirm mirrored traffic is arriving",
+          "look_for": "Check that destination port is up/up and look at input/output counters for incrementing traffic",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "An ERSPAN source session is configured but the remote destination collector receives no mirrored traffic. ERSPAN encapsulates mirrored traffic in GRE (IP protocol 47) and sends it to a remote IP. Failures are typically caused by the ERSPAN destination IP being unreachable, GRE being blocked by ACLs or firewalls along the path, the source interface being down, or MTU issues since ERSPAN adds 50+ bytes of overhead (GRE + ERSPAN header).",
+      "resolutions": [
+        {
+          "action": "Verify ERSPAN destination IP is reachable: ping from the source device",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ERSPAN destination IP is reachable: ping from the source device",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ERSPAN destination IP is reachable: ping from the source device",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for GRE/ACL blocks along the path — ERSPAN uses IP protocol 47 (GRE)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for GRE/ACL blocks along the path — ERSPAN uses IP protocol 47 (GRE)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for GRE/ACL blocks along the path — ERSPAN uses IP protocol 47 (GRE)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU end-to-end: original frame + 50 bytes ERSPAN overhead must fit within path MTU; increase MTU or use truncation",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU end-to-end: original frame + 50 bytes ERSPAN overhead must fit within path MTU; increase MTU or use truncation",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU end-to-end: original frame + 50 bytes ERSPAN overhead must fit within path MTU; increase MTU or use truncation",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure ERSPAN ID matches on source and destination sessions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure ERSPAN ID matches on source and destination sessions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure ERSPAN ID matches on source and destination sessions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using VRF, specify the correct VRF in the ERSPAN source configuration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using VRF, specify the correct VRF in the ERSPAN source configuration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If using VRF, specify the correct VRF in the ERSPAN source configuration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ERSPAN type compatibility (Type II vs Type III) between source and collector",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ERSPAN type compatibility (Type II vs Type III) between source and collector",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ERSPAN type compatibility (Type II vs Type III) between source and collector",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "ERSPAN destination IP is unreachable from the source device — no route or next-hop ARP failure",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "GRE (IP protocol 47) blocked by ACL or firewall along the routed path",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Source interface is down or not generating traffic",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MTU issue — ERSPAN adds 50+ bytes overhead (original frame + GRE + ERSPAN header), causing drops if path MTU is insufficient",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ERSPAN ID mismatch between source and destination configuration",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VRF misconfiguration — ERSPAN destination IP is in a different VRF than the tunnel source",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Incorrect ERSPAN type — source configured as Type II but destination expects Type III, or vice versa",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "ERSPAN tunnel not delivering packets — remote capture device receives nothing",
+      "symptoms": [
+        "ERSPAN source session configured but remote collector receives no traffic",
+        "Wireshark on the remote collector shows no GRE/ERSPAN packets",
+        "'show monitor session' shows ERSPAN source as operational but destination receives nothing",
+        "Intermittent ERSPAN delivery — some packets arrive, others are lost (MTU issue)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show monitor session <id>",
+          "confirms_if": "Shows ERSPAN session details — confirms if the tunnel endpoint configuration is correct",
+          "look_for": "Check ERSPAN source session status, destination IP, ERSPAN ID, origin IP, and operational state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session <id>",
+          "confirms_if": "Shows ERSPAN session details — confirms if the tunnel endpoint configuration is correct",
+          "look_for": "Check ERSPAN source session status, destination IP, ERSPAN ID, origin IP, and operational state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session <id>",
+          "confirms_if": "Shows ERSPAN session details — confirms if the tunnel endpoint configuration is correct",
+          "look_for": "Check ERSPAN source session status, destination IP, ERSPAN ID, origin IP, and operational state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <erspan-destination-ip>",
+          "confirms_if": "Successful ping confirms IP reachability; failure points to routing or ACL issue on the path",
+          "look_for": "Verify reachability to the ERSPAN destination IP from the source switch",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <erspan-destination-ip>",
+          "confirms_if": "Successful ping confirms IP reachability; failure points to routing or ACL issue on the path",
+          "look_for": "Verify reachability to the ERSPAN destination IP from the source switch",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "ping <erspan-destination-ip>",
+          "confirms_if": "Successful ping confirms IP reachability; failure points to routing or ACL issue on the path",
+          "look_for": "Verify reachability to the ERSPAN destination IP from the source switch",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <erspan-destination-ip>",
+          "confirms_if": "Route present confirms L3 reachability exists; missing route confirms the destination is unreachable",
+          "look_for": "Verify a route exists to the ERSPAN destination and check the outgoing interface and next-hop",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <erspan-destination-ip>",
+          "confirms_if": "Route present confirms L3 reachability exists; missing route confirms the destination is unreachable",
+          "look_for": "Verify a route exists to the ERSPAN destination and check the outgoing interface and next-hop",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route <erspan-destination-ip>",
+          "confirms_if": "Route present confirms L3 reachability exists; missing route confirms the destination is unreachable",
+          "look_for": "Verify a route exists to the ERSPAN destination and check the outgoing interface and next-hop",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "When multiple high-bandwidth source ports are mirrored to a single destination port, the aggregate mirrored traffic can exceed the destination port's capacity. This causes packet drops on the destination port, resulting in incomplete or misleading packet captures. For example, mirroring four 10G source ports (both directions) to a single 10G destination port can produce up to 80 Gbps of mirrored traffic against a 10G output limit.",
+      "resolutions": [
+        {
+          "action": "Add ACL filters to limit mirrored traffic to only the flows under investigation",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add ACL filters to limit mirrored traffic to only the flows under investigation",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add ACL filters to limit mirrored traffic to only the flows under investigation",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'rx' or 'tx' direction instead of 'both' if only one direction is needed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'rx' or 'tx' direction instead of 'both' if only one direction is needed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'rx' or 'tx' direction instead of 'both' if only one direction is needed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce the number of source ports to match destination capacity",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce the number of source ports to match destination capacity",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce the number of source ports to match destination capacity",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use a higher-speed destination port (e.g., 10G/25G instead of 1G)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use a higher-speed destination port (e.g., 10G/25G instead of 1G)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use a higher-speed destination port (e.g., 10G/25G instead of 1G)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use ERSPAN to distribute captures across multiple remote collectors",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use ERSPAN to distribute captures across multiple remote collectors",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use ERSPAN to distribute captures across multiple remote collectors",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable truncation to reduce mirrored packet size: 'truncation <bytes>' captures only headers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable truncation to reduce mirrored packet size: 'truncation <bytes>' captures only headers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable truncation to reduce mirrored packet size: 'truncation <bytes>' captures only headers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Multiple source ports with high utilization all mirrored to a single lower-speed destination",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Bidirectional mirroring (both rx and tx) doubles the mirrored traffic volume",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No ingress or egress filter to limit mirrored traffic to only the flows of interest",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Destination port speed is lower than aggregate source traffic (e.g., 1G destination for 10G sources)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "SPAN oversubscription — mirrored traffic exceeds destination port capacity",
+      "symptoms": [
+        "Drops or output discards on the SPAN destination port",
+        "Packet capture shows gaps, missing TCP segments, or retransmissions that don't exist on the source",
+        "Capture analysis shows asymmetric flows — one direction captured, other direction dropped",
+        "Wireshark reports 'previous segment not captured' or 'out of order' on the destination port"
+      ],
+      "verify_commands": [
+        {
+          "command": "show interface <destination-port>",
+          "confirms_if": "Non-zero and incrementing output drops on the destination port confirm SPAN oversubscription",
+          "look_for": "Check output drops, output discards, and TX rate — high output drops confirm oversubscription",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <destination-port>",
+          "confirms_if": "Non-zero and incrementing output drops on the destination port confirm SPAN oversubscription",
+          "look_for": "Check output drops, output discards, and TX rate — high output drops confirm oversubscription",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface <destination-port>",
+          "confirms_if": "Non-zero and incrementing output drops on the destination port confirm SPAN oversubscription",
+          "look_for": "Check output drops, output discards, and TX rate — high output drops confirm oversubscription",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session <id>",
+          "confirms_if": "Multiple high-bandwidth source ports with 'both' direction mirrored to a single port confirms oversubscription risk",
+          "look_for": "Count the number of source ports and check direction (both/rx/tx) to estimate aggregate mirrored bandwidth",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session <id>",
+          "confirms_if": "Multiple high-bandwidth source ports with 'both' direction mirrored to a single port confirms oversubscription risk",
+          "look_for": "Count the number of source ports and check direction (both/rx/tx) to estimate aggregate mirrored bandwidth",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session <id>",
+          "confirms_if": "Multiple high-bandwidth source ports with 'both' direction mirrored to a single port confirms oversubscription risk",
+          "look_for": "Count the number of source ports and check direction (both/rx/tx) to estimate aggregate mirrored bandwidth",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Active SPAN or ERSPAN sessions are causing measurable performance degradation on the production switch. This can manifest as high CPU utilization, packet loss on non-SPAN ports, or increased latency. Root causes include ACL-based SPAN consuming TCAM resources, SPAN-to-CPU configurations that punt mirrored traffic to the control plane, too many active sessions exhausting ASIC mirroring resources, or ERSPAN encapsulation overhead impacting the data plane.",
+      "resolutions": [
+        {
+          "action": "Remove ACL-based SPAN sessions that are no longer needed to free TCAM",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove ACL-based SPAN sessions that are no longer needed to free TCAM",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove ACL-based SPAN sessions that are no longer needed to free TCAM",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Avoid SPAN-to-CPU; use a physical destination port instead",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Avoid SPAN-to-CPU; use a physical destination port instead",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Avoid SPAN-to-CPU; use a physical destination port instead",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce the number of active SPAN sessions to the minimum required",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce the number of active SPAN sessions to the minimum required",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce the number of active SPAN sessions to the minimum required",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use traffic filters to limit mirrored volume and reduce ASIC load",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use traffic filters to limit mirrored volume and reduce ASIC load",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use traffic filters to limit mirrored volume and reduce ASIC load",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Schedule SPAN sessions during maintenance windows for high-traffic sources",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Schedule SPAN sessions during maintenance windows for high-traffic sources",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Schedule SPAN sessions during maintenance windows for high-traffic sources",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor TCAM usage before and after enabling ACL-based SPAN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor TCAM usage before and after enabling ACL-based SPAN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor TCAM usage before and after enabling ACL-based SPAN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "ACL-based SPAN consuming TCAM entries — reduces available TCAM for production ACLs and routing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SPAN to CPU (punt) — mirrored traffic is punted to the control plane, overwhelming CoPP and the CPU",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Too many active SPAN sessions exhausting ASIC mirroring hardware resources",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ERSPAN encapsulation/decapsulation overhead on the data plane",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SPAN source is a high-traffic uplink — mirroring copies consume forwarding bandwidth",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "SPAN causing performance impact — CPU or ASIC impact from mirroring",
+      "symptoms": [
+        "High CPU utilization on the switch correlated with SPAN session activation",
+        "Packet loss or increased latency on production (non-SPAN) ports",
+        "TCAM utilization increase after enabling ACL-filtered SPAN",
+        "Control plane policing (CoPP) drops increase when SPAN-to-CPU is active"
+      ],
+      "verify_commands": [
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "Elevated CPU with SPAN-related processes in the top list confirms CPU impact from mirroring",
+          "look_for": "Check for high CPU utilization and identify top processes — look for SPAN/mirror-related processes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "Elevated CPU with SPAN-related processes in the top list confirms CPU impact from mirroring",
+          "look_for": "Check for high CPU utilization and identify top processes — look for SPAN/mirror-related processes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "Elevated CPU with SPAN-related processes in the top list confirms CPU impact from mirroring",
+          "look_for": "Check for high CPU utilization and identify top processes — look for SPAN/mirror-related processes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show platform hardware capacity",
+          "confirms_if": "High TCAM usage or exhausted mirror resources confirm SPAN is impacting platform capacity",
+          "look_for": "Check TCAM utilization and mirroring hardware resource usage",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show platform hardware capacity",
+          "confirms_if": "High TCAM usage or exhausted mirror resources confirm SPAN is impacting platform capacity",
+          "look_for": "Check TCAM utilization and mirroring hardware resource usage",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show platform hardware capacity",
+          "confirms_if": "High TCAM usage or exhausted mirror resources confirm SPAN is impacting platform capacity",
+          "look_for": "Check TCAM utilization and mirroring hardware resource usage",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session all",
+          "confirms_if": "Multiple active sessions with broad source scope confirms potential resource exhaustion",
+          "look_for": "Count the total number of active SPAN/ERSPAN sessions and their source scope",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session all",
+          "confirms_if": "Multiple active sessions with broad source scope confirms potential resource exhaustion",
+          "look_for": "Count the total number of active SPAN/ERSPAN sessions and their source scope",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show monitor session all",
+          "confirms_if": "Multiple active sessions with broad source scope confirms potential resource exhaustion",
+          "look_for": "Count the total number of active SPAN/ERSPAN sessions and their source scope",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "operates_at": "Layer 2-3",
+  "protocol_family": "services",
+  "protocol_id": "span-erspan",
+  "protocol_name": "SPAN/ERSPAN",
+  "purpose": "Traffic mirroring for packet capture and monitoring — SPAN mirrors locally, ERSPAN encapsulates in GRE for remote delivery",
+  "related_protocols": [
+    "l2-infrastructure"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "agent-cisco-kb:services/span-erspan.json",
+      "title": "agent-cisco-kb knowledge base — services/span-erspan.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "IETF draft (ERSPAN Type II/III), Cisco proprietary (SPAN/RSPAN)",
+  "states": [],
+  "tags": [
+    "span",
+    "erspan",
+    "rspan",
+    "mirror",
+    "capture",
+    "monitoring",
+    "packet-capture",
+    "services"
+  ],
+  "transport": "GRE IP Protocol 47 (ERSPAN)",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "monitor session 1 type erspan-source\n source interface GigabitEthernet1/0/1 both\n destination\n  erspan-id 100\n  ip address 10.10.10.100\n  origin ip address 10.1.1.1\n no shutdown"
+      ],
+      "notes": [
+        {
+          "note": "'monitor session <id> source/destination'. ERSPAN via 'monitor session <id> type erspan-source'. Catalyst 9K: max sessions vary by platform. Supports flow-based SPAN with 'sampler'. Truncation: 'monitor session <id> destination truncation <bytes>'.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "config_examples": [
+        "monitor-session erspan1 ethernet\n destination interface tunnel-ip1\n source interface TenGigE0/0/0/1 rx"
+      ],
+      "notes": [
+        {
+          "note": "SPAN via 'monitor-session <name>'. ERSPAN supported on NCS 5500 and Cisco 8000. 'ethernet-services access-list' for filtered SPAN. Per-NPU mirroring limitations.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "monitor session 1 type erspan-source\n  source interface Ethernet1/1 both\n  destination ip 10.10.10.100\n  erspan-id 100\n  origin ip address 10.1.1.1\n  no shut"
+      ],
+      "notes": [
+        {
+          "note": "'monitor session <id> type span/erspan-source/erspan-destination'. Max 2 local SPAN + 4 ERSPAN on most Nexus 9000. ERSPAN Type II/III supported. ACL filter: 'filter access-group <acl>'. SPAN on FEX ports has limitations.",
+          "versions": "9.3+"
+        }
+      ]
+    },
+    "sonic": {
+      "config_examples": [
+        "config mirror_session add session1 10.1.1.1 10.10.10.100 8 100 Ethernet0"
+      ],
+      "notes": [
+        {
+          "note": "'config mirror_session add' for SPAN. ERSPAN supported. Config in CONFIG_DB MIRROR_SESSION table. Limited to 1-2 sessions on most Cisco 8000-O platforms.",
+          "versions": "202311+"
+        }
+      ]
+    }
+  }
+}

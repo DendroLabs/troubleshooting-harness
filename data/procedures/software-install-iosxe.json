@@ -1,0 +1,189 @@
+{
+  "applicable_os": [
+    "iosxe"
+  ],
+  "category": "system-operations",
+  "confidence": "medium",
+  "prerequisites": [
+    "Verify current image: show version",
+    "Check available disk space: dir bootflash: (NX-OS/IOS-XE) or show media (IOS-XR)",
+    "Backup running configuration to external server",
+    "Verify new image integrity (MD5/SHA512 checksum against cisco.com)",
+    "Review release notes for target version — check for known caveats and ISSU support",
+    "Confirm hardware compatibility (image must support installed line cards / supervisors)",
+    "Schedule maintenance window with change control approval",
+    "Ensure console access is available (not just SSH/VTY)",
+    "For dual-sup systems: verify standby sup is online and in sync"
+  ],
+  "procedure_id": "software-install-iosxe",
+  "procedure_name": "Software Installation / Image Upgrade (iosxe)",
+  "purpose": "Upgrade, downgrade, or patch the OS image on a network device [iosxe — method: install mode (add/activate/commit); platforms: Catalyst 9000, Catalyst 8000, ASR 1000, ISR 4000]",
+  "risk_level": "high",
+  "rollback": [
+    {
+      "action": "install rollback to <point> — rolls back to a previous install point",
+      "commands": [],
+      "step_id": "rollback-1"
+    },
+    {
+      "action": "If auto-abort-timer was set and commit not done: device auto-rolls back on reload",
+      "commands": [],
+      "step_id": "rollback-2"
+    },
+    {
+      "action": "Bundle mode fallback: boot system flash:<old_image>.bin, then reload from rommon if needed",
+      "commands": [],
+      "step_id": "rollback-3"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco:procedures/software-install.json",
+      "title": "cisco knowledge base — procedures/software-install.json",
+      "type": "documentation"
+    }
+  ],
+  "steps": [
+    {
+      "action": "Copy image to flash",
+      "commands": [
+        {
+          "command": "copy scp://user@server/path/cat9k_iosxe.17.15.01.SPA.bin flash:",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "Verify MD5: verify /md5 flash:<image>. Ensure sufficient space: dir flash:",
+      "step": 1,
+      "step_id": "step-1"
+    },
+    {
+      "action": "Set boot mode to install mode (if not already)",
+      "commands": [
+        {
+          "command": "boot system flash:packages.conf",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "Install mode uses packages.conf. Bundle mode (boot system flash:<image>.bin) is legacy. Check current mode: show version | include Installation mode",
+      "step": 2,
+      "step_id": "step-2"
+    },
+    {
+      "action": "Install add — stage the image",
+      "commands": [
+        {
+          "command": "install add file flash:<image>.bin",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "Extracts packages from the bundle. Does NOT activate yet.",
+      "step": 3,
+      "step_id": "step-3"
+    },
+    {
+      "action": "Install activate — activate and reload",
+      "commands": [
+        {
+          "command": "install activate",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "Activates staged packages. Will prompt for reload confirmation. Add 'auto-abort-timer <min>' for automatic rollback if you don't commit within the timer.",
+      "step": 4,
+      "step_id": "step-4"
+    },
+    {
+      "action": "Install commit — make permanent",
+      "commands": [
+        {
+          "command": "install commit",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "notes": "CRITICAL: If you don't commit, the device rolls back to the previous version on next reload. Commit after verifying the new version is stable.",
+      "step": 5,
+      "step_id": "step-5"
+    },
+    {
+      "action": "Verify the procedure completed successfully",
+      "commands": [],
+      "step": 6,
+      "step_id": "verify",
+      "verification": [
+        {
+          "command": "show version",
+          "confirms_if": "Target version is running",
+          "look_for": "Cisco IOS XE Software, Version <target>",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show install summary",
+          "confirms_if": "Image is committed (persists across reload)",
+          "look_for": "IMG: type=IMG, state=C (committed)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show switch",
+          "confirms_if": "Stack is healthy post-upgrade (stacking platforms only)",
+          "look_for": "All stack members show 'Ready' with same version",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show platform resources",
+          "confirms_if": "System resources are stable post-upgrade",
+          "look_for": "CPU and memory within normal range",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    "ISSU is NOT supported on all platforms or between all version combinations — always verify the ISSU compatibility matrix",
+    "Always have console access before starting an upgrade — if the device fails to boot you need console to recover",
+    "Verify boot variables after upgrade to prevent boot loop on next reload",
+    "On dual-sup systems, upgrade BOTH supervisors — mismatched versions cause unpredictable behavior",
+    "SMU/GISO patches may have dependencies — install in the order specified by release notes",
+    "Never delete the currently running image until the new image is confirmed stable",
+    "On stacks: 'install activate' upgrades ALL stack members and reloads the entire stack",
+    "ISSU on IOS-XE requires StackWise Virtual or redundant sup — single-sup platforms always reload",
+    "Bundle mode (boot system flash:<image>.bin) is simpler but does not support rollback or SMU",
+    "After V-major upgrade (e.g., 16.x → 17.x), verify SDM template and feature compatibility"
+  ]
+}

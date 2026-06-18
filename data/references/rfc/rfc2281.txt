@@ -1,0 +1,68 @@
+Network Working Group                                              T. Li
+Request for Comments: 2281                              Juniper Networks
+Category: Informational                                          B. Cole
+                                                        Juniper Networks
+                                                               P. Morton
+                                                           Cisco Systems
+                                                                   D. Li
+                                                           Cisco Systems
+                                                              March 1998
+
+
+                Cisco Hot Standby Router Protocol (HSRP)
+
+Status of this Memo
+
+   This memo provides information for the Internet community.  It does
+   not specify an Internet standard of any kind.  Distribution of this
+   memo is unlimited.
+
+Abstract
+
+   The memo specifies the Hot Standby Router Protocol (HSRP).  The goal
+   of the protocol is to allow hosts to appear to use a single router
+   and to maintain connectivity even if the actual first hop router they
+   are using fails.  Multiple routers participate in this protocol and
+   in concert create the illusion of a single virtual router.  The
+   protocol insures that one and only one of the routers is forwarding
+   packets on behalf of the virtual router.  End hosts forward their
+   packets to the virtual router.
+
+   The router forwarding packets is known as the active router.  A
+   standby router is selected to replace the active router should it
+   fail.
+
+1. Introduction
+
+   The Hot Standby Router Protocol, HSRP, provides a mechanism which is
+   designed to support non-disruptive failover of IP traffic in certain
+   circumstances.  In particular, the protocol protects against the
+   failure of the first hop router when the source host cannot learn the
+   IP address of the first hop router dynamically.  The protocol is
+   designed for use over multi-access, multicast or broadcast capable
+   LANs (e.g., Ethernet).
+
+5.1  Packet formats
+
+   The standby protocol runs on top of UDP, and uses port number 1985.
+   Packets are sent to multicast address 224.0.0.2 with TTL 1.
+
+5.3 States
+
+   1. Initial - This is the starting state and indicates that HSRP is
+      not running.
+   2. Learn - The router has not determined the virtual IP address, and
+      not yet seen an authenticated Hello message from the active router.
+   3. Listen - The router knows the virtual IP address, but is neither
+      the active router nor the standby router.
+   4. Speak - The router sends periodic Hello messages and is actively
+      participating in the election of the active and/or standby router.
+   5. Standby - The router is a candidate to become the next active
+      router and sends periodic Hello messages.
+   6. Active - The router is currently forwarding packets that are sent
+      to the group's virtual MAC address.
+
+6.1 General
+
+   On other media, the virtual MAC addresses are 0x00 0x00 0x0C 0x07
+   0xAC XX where XX represents the HSRP group number.

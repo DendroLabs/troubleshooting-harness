@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "bgp-high-cpu-after-topology-change",
+  "display_name": "High CPU on BGP process after topology change is expected, not a bug",
+  "category": "expected-behavior",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Observing high CPU utilization on the BGP process after a link failure, peer reset, or large route withdrawal/advertisement",
+  "observation": "BGP process (bgpd, bgp_speaker) shows 80-100% CPU utilization after a topology event",
+  "naive_interpretation": "The BGP process is stuck or has a bug causing excessive CPU consumption",
+  "correct_interpretation": "After a topology change, BGP must recalculate best paths, run the decision process, update the RIB/FIB, and send updates to all affected peers. This is compute-intensive and expected to spike CPU temporarily. The question is not whether CPU is high, but whether it returns to normal within a reasonable convergence window.",
+  "why": [
+    "BGP best-path calculation is O(n) per prefix where n is the number of paths — with a full internet table this is millions of comparisons",
+    "Route updates must be generated per peer group with appropriate policy application",
+    "FIB updates via the RIB-to-hardware programming pipeline add additional processing load",
+    "This is the routing protocol doing exactly what it is designed to do"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp convergence",
+      "purpose": "Check if BGP has finished converging — if convergence is complete and CPU is still high, then investigate further"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp summary | include Total|Peers",
+      "purpose": "Check peer count and total prefixes to gauge expected convergence time"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show processes cpu sorted | include BGP",
+      "purpose": "Observe CPU trend for the BGP process — take multiple samples to see if it is decreasing"
+    }
+  ],
+  "traps": [
+    "Opening a TAC case for high BGP CPU that is actually normal post-convergence processing",
+    "Restarting the BGP process to fix CPU that would have resolved on its own, causing a second convergence event",
+    "Not differentiating between transient post-event CPU spike and sustained high CPU indicating a genuine problem",
+    "Using a single CPU sample rather than trending over 2-5 minutes to determine if the spike is resolving"
+  ],
+  "related_rules": [
+    "single-log-message-not-causation"
+  ],
+  "related_protocols": ["bgp-4"],
+  "keywords": ["BGP", "CPU", "convergence", "topology change", "best path", "high CPU"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

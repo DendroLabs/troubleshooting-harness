@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "vlan-trunk-pruning-blocks-traffic",
+  "display_name": "A trunk link being up does not mean all VLANs traverse it — check the allowed VLAN list and pruning state",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Traffic for a specific VLAN does not cross a trunk link between switches, even though the trunk interface shows up/up and other VLANs work fine",
+  "observation": "Hosts in a VLAN on one switch cannot reach hosts in the same VLAN on another switch; the trunk between the switches is operational (up/up) and other VLANs communicate normally",
+  "naive_interpretation": "There is a spanning-tree issue, a MAC learning problem, or a hardware fault on the trunk link causing traffic drops for this specific VLAN",
+  "correct_interpretation": "A trunk interface in up/up state carries only the VLANs in its allowed list that also exist locally AND are not pruned by VTP or manual configuration. If a VLAN is not in the trunk's allowed list ('switchport trunk allowed vlan'), or VTP pruning has removed it, or the VLAN does not exist in the local VLAN database, traffic for that VLAN simply does not traverse the trunk — silently. The trunk shows no errors, no drops, no log messages. The VLAN effectively does not exist on that link. This is the most common cause of single-VLAN reachability failures across trunk links. Always verify three things: the VLAN exists on both switches, the VLAN is in the trunk's allowed list on both ends, and VTP pruning has not removed it.",
+  "why": [
+    "Trunk interfaces default to allowing all VLANs (1-4094) but operators frequently restrict the allowed list for security or performance — a new VLAN must be explicitly added to both ends of every trunk it needs to cross",
+    "VTP pruning dynamically removes VLANs from trunks where no access port in that VLAN exists — if the last access port in a VLAN is removed from a switch, VTP prunes the VLAN from all trunks on that switch, breaking transit",
+    "The VLAN must exist in the local database on both sides of the trunk — if a VLAN is in the allowed list but not created locally (especially in VTP transparent mode), the switch ignores frames tagged with that VLAN ID",
+    "No counter, log message, or interface error is generated when a VLAN is pruned or not in the allowed list — the trunk simply does not carry those frames, making this a silent failure"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interface trunk",
+      "purpose": "Display the allowed, active, and forwarding VLAN lists per trunk — compare 'VLANs allowed' vs 'VLANs in spanning tree forwarding state' to find pruned or blocked VLANs"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces trunk",
+      "purpose": "Show allowed, active, and forwarding VLANs on each trunk interface to identify whether the target VLAN is being carried"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show vlan id <vlan-id>",
+      "purpose": "Verify the VLAN exists in the local database and see which ports are assigned to it"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show vlan id <vlan-id>",
+      "purpose": "Confirm the VLAN exists locally and check its state (active/suspended) and assigned ports"
+    },
+    {
+      "os": "eos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show interfaces trunk",
+      "purpose": "Display trunk VLAN membership including the allowed, native, and active VLAN lists"
+    }
+  ],
+  "traps": [
+    "Assuming that because a trunk is up/up and some VLANs work, all VLANs are being carried — each VLAN must independently satisfy the allowed-list, VTP-pruning, and local-existence requirements",
+    "Checking only one end of the trunk — the VLAN must be allowed and exist on BOTH switches for bidirectional traffic",
+    "Forgetting that VTP pruning is dynamic and automatic — a VLAN that was flowing yesterday can be pruned today if the last access port in that VLAN was removed",
+    "In VTP transparent mode, assuming that creating a VLAN on one switch propagates it — in transparent mode, VLANs must be created independently on every switch",
+    "Not checking the 'forwarding' column in 'show interface trunk' — a VLAN can be allowed but blocked by spanning tree, which is a different problem from pruning"
+  ],
+  "related_rules": [
+    "stp-port-role-vs-port-state",
+    "stp-bpduguard-errdisable-is-not-loop"
+  ],
+  "related_protocols": ["stp", "vtp"],
+  "keywords": ["VLAN", "trunk", "allowed VLAN", "pruning", "VTP", "switchport", "tagged", "802.1Q", "VLAN not flowing", "silent drop"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

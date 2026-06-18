@@ -1,0 +1,573 @@
+{
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9000",
+  "platform_id": "nexus-9000",
+  "platform_name": "Nexus 9000 Series",
+  "scalability": {
+    "nxos-10.4(4)": {
+      "os": "nxos",
+      "sections": [
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "GX2A; 512K on FX3",
+                  "resource": "IPv4 Unicast Routes (LPM)",
+                  "value": "1M"
+                },
+                {
+                  "notes": "GX2A; 256K on FX3",
+                  "resource": "IPv6 Unicast Routes (LPM)",
+                  "value": "512K"
+                },
+                {
+                  "notes": "",
+                  "resource": "VRFs",
+                  "value": "1,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP Paths",
+                  "value": "128"
+                },
+                {
+                  "notes": "",
+                  "resource": "Adjacencies",
+                  "value": "512K"
+                }
+              ],
+              "profile_name": "Nexus 9300-FX3/GX/GX2A (10.4)"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "new-generation ASIC",
+                  "resource": "IPv4 Unicast Routes (LPM)",
+                  "value": "2M"
+                },
+                {
+                  "notes": "",
+                  "resource": "IPv6 Unicast Routes (LPM)",
+                  "value": "1M"
+                },
+                {
+                  "notes": "",
+                  "resource": "VRFs",
+                  "value": "2,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP Paths",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "Adjacencies",
+                  "value": "1M"
+                }
+              ],
+              "profile_name": "Nexus 9800 (10.4)"
+            }
+          ],
+          "section_name": "L3 Forwarding — Unicast"
+        },
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "VXLAN VNIs",
+                  "value": "16K"
+                },
+                {
+                  "notes": "increased from 256 in 9.3",
+                  "resource": "VXLAN Tunnels (Remote VTEPs)",
+                  "value": "512"
+                },
+                {
+                  "notes": "",
+                  "resource": "EVPN Type-2 Routes (MAC+IP)",
+                  "value": "256K"
+                },
+                {
+                  "notes": "",
+                  "resource": "EVPN Type-5 Routes (IP Prefix)",
+                  "value": "1M"
+                },
+                {
+                  "notes": "",
+                  "resource": "EVPN Peers (BGP)",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "Multi-Site VTEPs",
+                  "value": "128"
+                }
+              ],
+              "profile_name": "Nexus 9300-FX3/GX (VXLAN 10.4)"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "VXLAN VNIs",
+                  "value": "16K"
+                },
+                {
+                  "notes": "",
+                  "resource": "VXLAN Tunnels (Remote VTEPs)",
+                  "value": "1K"
+                },
+                {
+                  "notes": "",
+                  "resource": "EVPN Type-2 Routes (MAC+IP)",
+                  "value": "512K"
+                },
+                {
+                  "notes": "",
+                  "resource": "EVPN Type-5 Routes (IP Prefix)",
+                  "value": "2M"
+                },
+                {
+                  "notes": "",
+                  "resource": "EVPN Peers (BGP)",
+                  "value": "512"
+                }
+              ],
+              "profile_name": "Nexus 9800 (VXLAN 10.4)"
+            }
+          ],
+          "section_name": "VXLAN EVPN Overlay (10.4)"
+        }
+      ],
+      "source_url": "https://www.cisco.com/c/en/us/td/docs/dcn/nx-os/nexus9000/104x/configuration/scalability/cisco-nexus-9000-series-nx-os-verified-scalability-guide-1044.html",
+      "version": "10.4(4)"
+    },
+    "nxos-9.3(14)": {
+      "os": "nxos",
+      "sections": [
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "host+LPM combined in unified table",
+                  "resource": "IPv4 Unicast Routes (LPM)",
+                  "value": "512K"
+                },
+                {
+                  "notes": "from unified forwarding table",
+                  "resource": "IPv4 Host Routes",
+                  "value": "256K"
+                },
+                {
+                  "notes": "",
+                  "resource": "IPv6 Unicast Routes (LPM)",
+                  "value": "256K"
+                },
+                {
+                  "notes": "",
+                  "resource": "IPv6 Host Routes",
+                  "value": "128K"
+                },
+                {
+                  "notes": "",
+                  "resource": "VRFs",
+                  "value": "1,000"
+                },
+                {
+                  "notes": "64 in some modes; check 'hardware ecmp hash-offset'",
+                  "resource": "ECMP Paths",
+                  "value": "128"
+                },
+                {
+                  "notes": "",
+                  "resource": "Adjacencies",
+                  "value": "256K"
+                }
+              ],
+              "profile_name": "Nexus 9300-FX/FX2/FX3 (CloudScale)"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "IPv4 Unicast Routes (LPM)",
+                  "value": "1M"
+                },
+                {
+                  "notes": "",
+                  "resource": "IPv6 Unicast Routes (LPM)",
+                  "value": "512K"
+                },
+                {
+                  "notes": "",
+                  "resource": "VRFs",
+                  "value": "1,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP Paths",
+                  "value": "128"
+                },
+                {
+                  "notes": "",
+                  "resource": "Adjacencies",
+                  "value": "512K"
+                }
+              ],
+              "profile_name": "Nexus 9300-GX/GX2 (400G CloudScale)"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "IPv4 Unicast Routes (LPM)",
+                  "value": "128K"
+                },
+                {
+                  "notes": "",
+                  "resource": "IPv6 Unicast Routes (LPM)",
+                  "value": "64K"
+                },
+                {
+                  "notes": "",
+                  "resource": "VRFs",
+                  "value": "1,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP Paths",
+                  "value": "64"
+                }
+              ],
+              "profile_name": "Nexus 9300-EX (Memory-based)"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "per line card, same CloudScale ASIC",
+                  "resource": "IPv4 Unicast Routes (LPM)",
+                  "value": "512K"
+                },
+                {
+                  "notes": "",
+                  "resource": "IPv6 Unicast Routes (LPM)",
+                  "value": "256K"
+                },
+                {
+                  "notes": "",
+                  "resource": "VRFs",
+                  "value": "1,000"
+                },
+                {
+                  "notes": "",
+                  "resource": "ECMP Paths",
+                  "value": "128"
+                }
+              ],
+              "profile_name": "Nexus 9500 with X9732C-EX/X9736C-FX line cards"
+            }
+          ],
+          "section_name": "L3 Forwarding — Unicast"
+        },
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "MAC Addresses",
+                  "value": "128K"
+                },
+                {
+                  "notes": "",
+                  "resource": "VLANs",
+                  "value": "4,094"
+                },
+                {
+                  "notes": "",
+                  "resource": "SVIs",
+                  "value": "1,024"
+                },
+                {
+                  "notes": "practical limit with all VLANs",
+                  "resource": "Rapid PVST+ Instances",
+                  "value": "3,967"
+                },
+                {
+                  "notes": "",
+                  "resource": "MST Instances",
+                  "value": "64"
+                },
+                {
+                  "notes": "",
+                  "resource": "Port-Channels",
+                  "value": "512"
+                },
+                {
+                  "notes": "per port-channel",
+                  "resource": "Port-Channel Members",
+                  "value": "32"
+                },
+                {
+                  "notes": "",
+                  "resource": "Spanning Tree Virtual Ports",
+                  "value": "16,000"
+                }
+              ],
+              "profile_name": "Nexus 9300-FX/FX2/FX3"
+            }
+          ],
+          "section_name": "L2 Forwarding — MAC / VLAN / STP"
+        },
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "IPv4 Multicast Routes (S,G)",
+                  "value": "32K"
+                },
+                {
+                  "notes": "",
+                  "resource": "IPv4 Multicast Routes (*,G)",
+                  "value": "8K"
+                },
+                {
+                  "notes": "",
+                  "resource": "IPv6 Multicast Routes",
+                  "value": "16K"
+                },
+                {
+                  "notes": "",
+                  "resource": "IGMP Groups",
+                  "value": "8K"
+                },
+                {
+                  "notes": "",
+                  "resource": "PIM Neighbors",
+                  "value": "128"
+                }
+              ],
+              "profile_name": "Nexus 9300-FX/FX2/FX3"
+            }
+          ],
+          "section_name": "Multicast"
+        },
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "per-switch L2+L3 combined",
+                  "resource": "VXLAN VNIs",
+                  "value": "16K"
+                },
+                {
+                  "notes": "",
+                  "resource": "VXLAN Tunnels (Remote VTEPs)",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "EVPN Type-2 Routes (MAC+IP)",
+                  "value": "128K"
+                },
+                {
+                  "notes": "",
+                  "resource": "EVPN Type-5 Routes (IP Prefix)",
+                  "value": "512K"
+                },
+                {
+                  "notes": "",
+                  "resource": "EVPN Peers (BGP)",
+                  "value": "128"
+                },
+                {
+                  "notes": "",
+                  "resource": "VRFs (Tenant)",
+                  "value": "1,000"
+                },
+                {
+                  "notes": "shared with underlay",
+                  "resource": "Overlay IPv4 Routes per VRF",
+                  "value": "512K"
+                }
+              ],
+              "profile_name": "Nexus 9300-FX/FX2/FX3"
+            },
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "VXLAN VNIs",
+                  "value": "16K"
+                },
+                {
+                  "notes": "",
+                  "resource": "VXLAN Tunnels (Remote VTEPs)",
+                  "value": "256"
+                },
+                {
+                  "notes": "",
+                  "resource": "EVPN Type-2 Routes (MAC+IP)",
+                  "value": "64K"
+                },
+                {
+                  "notes": "",
+                  "resource": "EVPN Type-5 Routes (IP Prefix)",
+                  "value": "128K"
+                },
+                {
+                  "notes": "",
+                  "resource": "EVPN Peers (BGP)",
+                  "value": "64"
+                }
+              ],
+              "profile_name": "Nexus 9300-EX (VXLAN)"
+            }
+          ],
+          "section_name": "VXLAN EVPN Overlay"
+        },
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "per slice; varies with double-wide entries",
+                  "resource": "RACL Entries (ingress)",
+                  "value": "4K"
+                },
+                {
+                  "notes": "",
+                  "resource": "VACL Entries",
+                  "value": "4K"
+                },
+                {
+                  "notes": "",
+                  "resource": "QoS Entries (ingress)",
+                  "value": "2K"
+                },
+                {
+                  "notes": "",
+                  "resource": "PBR Entries",
+                  "value": "1K"
+                },
+                {
+                  "notes": "",
+                  "resource": "CoPP ACE",
+                  "value": "512"
+                }
+              ],
+              "profile_name": "Nexus 9300-FX/FX2/FX3"
+            }
+          ],
+          "section_name": "ACL / QoS / PBR"
+        },
+        {
+          "profiles": [
+            {
+              "entries": [
+                {
+                  "notes": "",
+                  "resource": "BGP Peers",
+                  "value": "128"
+                },
+                {
+                  "notes": "",
+                  "resource": "OSPF Neighbors",
+                  "value": "128"
+                },
+                {
+                  "notes": "",
+                  "resource": "OSPF Areas",
+                  "value": "30"
+                },
+                {
+                  "notes": "",
+                  "resource": "OSPF LSAs",
+                  "value": "100K"
+                },
+                {
+                  "notes": "",
+                  "resource": "IS-IS Adjacencies",
+                  "value": "128"
+                },
+                {
+                  "notes": "",
+                  "resource": "Static Routes",
+                  "value": "4K"
+                },
+                {
+                  "notes": "",
+                  "resource": "MPLS Labels (LSD)",
+                  "value": "16K"
+                },
+                {
+                  "notes": "",
+                  "resource": "ARP Entries",
+                  "value": "128K"
+                },
+                {
+                  "notes": "",
+                  "resource": "ND Entries",
+                  "value": "32K"
+                },
+                {
+                  "notes": "",
+                  "resource": "IP SLA Probes",
+                  "value": "2,000"
+                },
+                {
+                  "notes": "2 local + 2 ERSPAN typically",
+                  "resource": "SPAN Sessions",
+                  "value": "4"
+                },
+                {
+                  "notes": "",
+                  "resource": "AAA Sessions",
+                  "value": "100"
+                }
+              ],
+              "profile_name": "Nexus 9300 (all models)"
+            }
+          ],
+          "section_name": "System Resources"
+        }
+      ],
+      "source_url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/93x/scalability/guide-9313/cisco-nexus-9000-series-nx-os-verified-scalability-guide-9314.html",
+      "version": "9.3(14)"
+    }
+  },
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco:verified-scalability/nxos/nexus-9000-10.44.json",
+      "title": "cisco knowledge base — verified-scalability/nxos/nexus-9000-10.44.json",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco-scale-nxos-10.4(4)",
+      "title": "Cisco Verified Scalability Guide — Nexus 9000 Series 10.4(4)",
+      "type": "vendor_doc",
+      "url": "https://www.cisco.com/c/en/us/td/docs/dcn/nx-os/nexus9000/104x/configuration/scalability/cisco-nexus-9000-series-nx-os-verified-scalability-guide-1044.html"
+    },
+    {
+      "id": "cisco:verified-scalability/nxos/nexus-9000-9.314.json",
+      "title": "cisco knowledge base — verified-scalability/nxos/nexus-9000-9.314.json",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco-scale-nxos-9.3(14)",
+      "title": "Cisco Verified Scalability Guide — Nexus 9000 Series 9.3(14)",
+      "type": "vendor_doc",
+      "url": "https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/93x/scalability/guide-9313/cisco-nexus-9000-series-nx-os-verified-scalability-guide-9314.html"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "hsrp-vrrp-dual-active-is-keepalive-loss",
+  "display_name": "HSRP/VRRP dual-active (two masters) is usually a keepalive failure, not a config conflict",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Two routers in an HSRP or VRRP group both claim the active/master role simultaneously",
+  "observation": "Both peers show active/master state for the same HSRP group or VRRP VRID at the same time",
+  "naive_interpretation": "The priorities or preempt settings are misconfigured, or the group numbers don't match, causing both routers to believe they should be active",
+  "correct_interpretation": "Dual-active is almost always a split-brain caused by peer keepalive (hello) loss — not a configuration conflict. If hellos stop arriving (due to an L2 failure, CoPP drops, ACL blocking, or an interface issue on the FHRP VLAN), each peer concludes the other is dead and both assume active. The config may be perfectly correct. Investigate the hello path: the VLAN/interface carrying hellos, any filtering, and CoPP policy for multicast control traffic. A true config mismatch (different group/VRID, auth mismatch) typically prevents peering entirely rather than producing dual-active.",
+  "why": [
+    "HSRP/VRRP use periodic hellos — if the active peer's hellos stop arriving, the standby promotes itself after the holdtime expires, creating dual-active even with correct config",
+    "The hello path can fail independently of the data path: a trunk pruning the HSRP VLAN, an SVI going down, or CoPP rate-limiting multicast all break hellos while data forwarding may still work",
+    "Config mismatches (auth failure, wrong group/VRID) prevent hello acceptance — the standby sees NO valid hellos and goes active, but this still presents as keepalive loss, not a config error visible in 'show standby'",
+    "RFC 5798 (VRRPv3) specifies the master-down timer: if no advertisement is received within Master_Down_Interval, the backup transitions to master"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show hsrp brief",
+      "purpose": "Check if both local groups show Active; compare with peer's output to confirm dual-active"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show hsrp detail",
+      "purpose": "Check hello/holdtime timers, last state change reason, and whether hellos are being received"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show standby brief",
+      "purpose": "Identify groups in Active state and compare with the peer to confirm split-brain"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show standby detail",
+      "purpose": "Check last coup/resign events, hello timer receipt, and authentication status"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show policy-map interface control-plane",
+      "purpose": "Check if CoPP is rate-limiting or dropping HSRP/VRRP multicast hellos"
+    }
+  ],
+  "traps": [
+    "Changing HSRP/VRRP priorities or preempt settings when the real problem is hello loss on the VLAN",
+    "Assuming config is correct because 'show running-config' matches on both peers — the config can be identical and dual-active still occurs from L2 hello path failure",
+    "Overlooking CoPP as a cause: HSRP uses multicast 224.0.0.2/224.0.0.102, VRRP uses 224.0.0.18 — all subject to CoPP class-default or explicit policing",
+    "Fixing the dual-active without finding the root cause of hello loss, leading to recurrence"
+  ],
+  "related_rules": [
+    "copp-drops-mimic-protocol-failure",
+    "interface-up-line-down"
+  ],
+  "related_protocols": ["hsrp", "vrrp"],
+  "keywords": ["HSRP", "VRRP", "dual-active", "split-brain", "keepalive", "hello", "FHRP", "master", "standby", "preempt", "holdtime"],
+  "sources": [
+    {
+      "id": "rfc-5798",
+      "title": "RFC 5798 — Virtual Router Redundancy Protocol (VRRP) Version 3",
+      "type": "rfc",
+      "rfc_number": 5798,
+      "url": "https://www.rfc-editor.org/rfc/rfc5798.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "cdp-lldp-missing-neighbor-not-absent",
+  "display_name": "Missing CDP/LLDP neighbor entry does not mean no device is connected — discovery may be disabled, filtered, or using a different protocol",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "sonic", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Operator checks CDP or LLDP neighbor table and does not see an expected neighbor on a port, or sees no neighbors at all on a connected interface",
+  "observation": "The interface is up/up and passes traffic, but 'show cdp neighbors' or 'show lldp neighbors' shows no entry for that interface",
+  "naive_interpretation": "Nothing is connected to that port, or the connected device is powered off or not functioning — investigate physical connectivity",
+  "correct_interpretation": "CDP and LLDP are optional discovery protocols that must be enabled on both ends to work. A missing neighbor entry has many causes besides an absent device: (1) The remote device does not support or has disabled CDP/LLDP entirely (common on servers, firewalls, load balancers, and non-Cisco devices for CDP). (2) CDP and LLDP are different protocols — Cisco devices default to CDP, most non-Cisco devices use LLDP, and neither understands the other; both must run on at least one side for cross-vendor discovery. (3) The protocol is disabled on the specific interface via configuration ('no cdp enable' or 'no lldp transmit/receive'). (4) A Layer 2 device between them (a non-managed switch, media converter, or patch panel with an active tap) passes data traffic but does not forward or generate CDP/LLDP frames. (5) The neighbor holdtime expired and the entry aged out — this can happen if the remote device's CDP/LLDP transmit interval was increased or if a few packets were lost. Always check BOTH CDP and LLDP tables, and verify the protocol is enabled on both ends before concluding nothing is connected.",
+  "why": [
+    "CDP is Cisco-proprietary — non-Cisco devices (Juniper, Arista, SONiC, Linux servers, firewalls) do not run CDP by default and many cannot run it at all; only LLDP (IEEE 802.1AB) is vendor-neutral",
+    "Security best practices often recommend disabling CDP/LLDP on external-facing ports to prevent information leakage — a missing neighbor may be intentional security hardening, not a connectivity issue",
+    "Managed switches and some media converters terminate CDP/LLDP — they appear as the neighbor instead of the actual end device behind them, and unmanaged switches/converters neither forward nor generate discovery frames",
+    "CDP/LLDP use a holdtime timer (typically 120-180 seconds) — if a few consecutive advertisements are lost due to high CPU, congestion, or brief link issues, the entry ages out and disappears even though the device is still connected and forwarding traffic"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show cdp neighbors interface <interface>",
+      "purpose": "Check CDP specifically on the interface in question — absence here means check LLDP next, not that nothing is connected"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show lldp neighbors interface <interface>",
+      "purpose": "Check LLDP on the same interface — non-Cisco devices appear here, not in CDP"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show cdp interface <interface>",
+      "purpose": "Verify CDP is enabled on this interface — if disabled, no neighbor will appear regardless of what is connected"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show lldp interface <interface>",
+      "purpose": "Verify LLDP transmit and receive are enabled on the interface"
+    },
+    {
+      "os": "sonic",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show lldp neighbors",
+      "purpose": "SONiC uses LLDP only (no CDP) — check for neighbors here"
+    },
+    {
+      "os": "junos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show lldp neighbors interface <interface>",
+      "purpose": "Junos uses LLDP — check for discovered neighbors on the specific interface"
+    }
+  ],
+  "traps": [
+    "Checking only CDP on a port connected to a non-Cisco device — non-Cisco devices use LLDP, and the neighbor will never appear in 'show cdp neighbors'",
+    "Checking only LLDP on an older Cisco-only network where CDP is the configured protocol — both tables must be checked",
+    "Concluding a port is unused because no neighbor appears — the connected device may simply not run discovery protocols; check MAC address table and interface counters instead",
+    "Not checking whether CDP/LLDP is disabled per-interface — global enable does not override per-interface disable; 'show cdp interface' / 'show lldp interface' reveals the per-port state",
+    "Trusting CDP/LLDP neighbor information as authoritative for physical topology — an unmanaged switch or media converter between two devices is invisible to CDP/LLDP and makes the topology appear directly connected when it is not"
+  ],
+  "related_rules": [
+    "debug-no-output-is-not-proof-of-absence"
+  ],
+  "related_protocols": ["lldp"],
+  "keywords": ["CDP", "LLDP", "neighbor discovery", "missing neighbor", "802.1AB", "topology", "no cdp", "no lldp", "holdtime", "discovery protocol"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

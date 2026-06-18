@@ -1,0 +1,1226 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "IS-IS runs directly over Layer 2 (SAP 0xFE) and does not require IP connectivity for neighbor formation. L2 reachability is sufficient.",
+      "name": "Layer 2 connectivity",
+      "type": "infrastructure"
+    },
+    {
+      "description": "A Network Entity Title (NET) must be configured under the IS-IS process. The NET encodes the area address and system ID (e.g., 49.0001.1921.6800.1001.00).",
+      "name": "NET address configured",
+      "type": "infrastructure"
+    },
+    {
+      "description": "IS-IS must be explicitly enabled on each participating interface (NX-OS/IOS-XR: under router isis; IOS-XE: 'ip router isis' under interface).",
+      "name": "IS-IS enabled on interfaces",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Neighbors must share at least one common level (L1 or L2). L1 neighbors must also share at least one area address.",
+      "name": "Matching level/area configuration",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "A neighbor remains in INITIALIZING state indefinitely. IIHs are being received from the neighbor, but the neighbor does not include our system ID in its IIH, indicating one-way communication or a configuration mismatch preventing the adjacency from completing the three-way handshake.",
+      "resolutions": [
+        {
+          "action": "Verify area addresses match: 'show isis protocol' on both routers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area addresses match: 'show isis protocol' on both routers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify area addresses match: 'show isis protocol' on both routers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check level configuration: ensure both sides share at least one common level (L1, L2, or L1L2)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check level configuration: ensure both sides share at least one common level (L1, L2, or L1L2)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check level configuration: ensure both sides share at least one common level (L1, L2, or L1L2)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify authentication: compare key-chain and auth mode on both ends",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify authentication: compare key-chain and auth mode on both ends",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify authentication: compare key-chain and auth mode on both ends",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MTU: IS-IS runs directly on L2 and PDUs are not IP-fragmented — ensure MTU matches",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MTU: IS-IS runs directly on L2 and PDUs are not IP-fragmented — ensure MTU matches",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check MTU: IS-IS runs directly on L2 and PDUs are not IP-fragmented — ensure MTU matches",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify system IDs are unique across the IS-IS domain",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify system IDs are unique across the IS-IS domain",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify system IDs are unique across the IS-IS domain",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Area address mismatch between neighbors",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Level mismatch (one side L1-only, other L2-only)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Authentication mismatch (key or type)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MTU issue — IS-IS PDUs can be up to interface MTU and are not fragmented",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "System ID conflict (duplicate system IDs in the domain)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Adjacency stuck in INIT",
+      "symptoms": [
+        "show isis neighbors shows neighbor in INIT, not UP",
+        "Adjacency does not progress beyond INITIALIZING state"
+      ],
+      "verify_commands": [
+        {
+          "command": "show isis neighbors",
+          "confirms_if": "Confirms one-way adjacency — bidirectional handshake not completing",
+          "look_for": "Look for neighbors stuck in INIT state that do not progress to UP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis neighbors",
+          "confirms_if": "Confirms one-way adjacency — bidirectional handshake not completing",
+          "look_for": "Look for neighbors stuck in INIT state that do not progress to UP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis neighbors",
+          "confirms_if": "Confirms one-way adjacency — bidirectional handshake not completing",
+          "look_for": "Look for neighbors stuck in INIT state that do not progress to UP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis interface",
+          "confirms_if": "Shows IS-IS interface parameters for comparison between neighbors",
+          "look_for": "Check circuit type (L1, L2, L1L2), MTU, authentication, and area address",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis interface",
+          "confirms_if": "Shows IS-IS interface parameters for comparison between neighbors",
+          "look_for": "Check circuit type (L1, L2, L1L2), MTU, authentication, and area address",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis interface",
+          "confirms_if": "Shows IS-IS interface parameters for comparison between neighbors",
+          "look_for": "Check circuit type (L1, L2, L1L2), MTU, authentication, and area address",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis protocol",
+          "confirms_if": "Confirms IS-IS process-level parameters that must align between neighbors",
+          "look_for": "Check NET address, area addresses, level configuration, and system ID",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis protocol",
+          "confirms_if": "Confirms IS-IS process-level parameters that must align between neighbors",
+          "look_for": "Check NET address, area addresses, level configuration, and system ID",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis protocol",
+          "confirms_if": "Confirms IS-IS process-level parameters that must align between neighbors",
+          "look_for": "Check NET address, area addresses, level configuration, and system ID",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Adjacency is UP but routes are missing from the routing table. The LSDB is incomplete or not converging, often due to LSP fragmentation issues, CSNP/PSNP drops, or metric style incompatibility between routers.",
+      "resolutions": [
+        {
+          "action": "Verify MTU consistency: IS-IS LSPs can be up to the interface MTU; ensure all links in the area have matching MTU",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU consistency: IS-IS LSPs can be up to the interface MTU; ensure all links in the area have matching MTU",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MTU consistency: IS-IS LSPs can be up to the interface MTU; ensure all links in the area have matching MTU",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CSNP/PSNP counters: 'show isis neighbors detail' — look for sent/received imbalance",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CSNP/PSNP counters: 'show isis neighbors detail' — look for sent/received imbalance",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CSNP/PSNP counters: 'show isis neighbors detail' — look for sent/received imbalance",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Standardize metric style: configure 'metric-style wide' across the domain",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Standardize metric style: configure 'metric-style wide' across the domain",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Standardize metric style: configure 'metric-style wide' across the domain",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for LSP overload bit: 'show isis database detail' — look for ATT/OL flags",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for LSP overload bit: 'show isis database detail' — look for ATT/OL flags",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for LSP overload bit: 'show isis database detail' — look for ATT/OL flags",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "MTU preventing large LSPs from being received (LSPs are not fragmented at IP level)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "CSNP or PSNP being dropped (L2 filtering or queuing issue)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Metric style mismatch — narrow metrics (max 63) vs wide metrics (max 16777215)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "LSP corruption or database overload",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "LSDB not synchronizing",
+      "symptoms": [
+        "Routes missing despite adjacency showing UP",
+        "show isis database shows fewer LSPs than expected",
+        "CSNP/PSNP counters incrementing but LSDB incomplete"
+      ],
+      "verify_commands": [
+        {
+          "command": "show isis database",
+          "confirms_if": "Identifies which LSPs are missing from the local LSDB",
+          "look_for": "Compare LSP count between neighbors — missing LSPs indicate synchronization failure",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis database",
+          "confirms_if": "Identifies which LSPs are missing from the local LSDB",
+          "look_for": "Compare LSP count between neighbors — missing LSPs indicate synchronization failure",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis database",
+          "confirms_if": "Identifies which LSPs are missing from the local LSDB",
+          "look_for": "Compare LSP count between neighbors — missing LSPs indicate synchronization failure",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis neighbors detail",
+          "confirms_if": "Reveals whether LSDB synchronization PDUs are being exchanged properly",
+          "look_for": "Check CSNP and PSNP counters for sent/received imbalance",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis neighbors detail",
+          "confirms_if": "Reveals whether LSDB synchronization PDUs are being exchanged properly",
+          "look_for": "Check CSNP and PSNP counters for sent/received imbalance",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis neighbors detail",
+          "confirms_if": "Reveals whether LSDB synchronization PDUs are being exchanged properly",
+          "look_for": "Check CSNP and PSNP counters for sent/received imbalance",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis database detail",
+          "confirms_if": "Shows LSP details including metric types and overload bits",
+          "look_for": "Check metric style (narrow vs wide), remaining lifetime, and sequence numbers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis database detail",
+          "confirms_if": "Shows LSP details including metric types and overload bits",
+          "look_for": "Check metric style (narrow vs wide), remaining lifetime, and sequence numbers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis database detail",
+          "confirms_if": "Shows LSP details including metric types and overload bits",
+          "look_for": "Check metric style (narrow vs wide), remaining lifetime, and sequence numbers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "L1 routers cannot see L2 routes, unexpected route leaking occurs, or adjacency fails to form because of incompatible level or area configurations between neighbors.",
+      "resolutions": [
+        {
+          "action": "Verify level configuration: 'show isis protocol' — ensure neighbors share a common level",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify level configuration: 'show isis protocol' — ensure neighbors share a common level",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify level configuration: 'show isis protocol' — ensure neighbors share a common level",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure route leaking if L1 routes need to reach L2 or vice versa",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure route leaking if L1 routes need to reach L2 or vice versa",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure route leaking if L1 routes need to reach L2 or vice versa",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check area addresses: all routers in the same L1 area must share at least one area address",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check area addresses: all routers in the same L1 area must share at least one area address",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check area addresses: all routers in the same L1 area must share at least one area address",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface-level circuit type: 'show isis interface' — ensure correct level assignment",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface-level circuit type: 'show isis interface' — ensure correct level assignment",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface-level circuit type: 'show isis interface' — ensure correct level assignment",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Circuit-type mismatch (one side L1, other L2 with no common level)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Missing L1-to-L2 route leaking configuration",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NSEL or area address mismatch between neighbors",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Incorrect level assignment on interfaces",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Level/area mismatch",
+      "symptoms": [
+        "L1 router cannot see L2 routes or vice versa",
+        "Unexpected route leaking between levels",
+        "Adjacency fails to form despite IIHs being exchanged"
+      ],
+      "verify_commands": [
+        {
+          "command": "show isis protocol",
+          "confirms_if": "Confirms level and area configuration for the IS-IS process",
+          "look_for": "Check configured levels (L1, L2, L1L2) and area addresses",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis protocol",
+          "confirms_if": "Confirms level and area configuration for the IS-IS process",
+          "look_for": "Check configured levels (L1, L2, L1L2) and area addresses",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis protocol",
+          "confirms_if": "Confirms level and area configuration for the IS-IS process",
+          "look_for": "Check configured levels (L1, L2, L1L2) and area addresses",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis neighbors",
+          "confirms_if": "Shows which level the adjacency formed at, if any",
+          "look_for": "Check adjacency level column — ensure neighbors form at the expected level",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis neighbors",
+          "confirms_if": "Shows which level the adjacency formed at, if any",
+          "look_for": "Check adjacency level column — ensure neighbors form at the expected level",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis neighbors",
+          "confirms_if": "Shows which level the adjacency formed at, if any",
+          "look_for": "Check adjacency level column — ensure neighbors form at the expected level",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis interface",
+          "confirms_if": "Confirms per-interface level assignment",
+          "look_for": "Check circuit type and level on each interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis interface",
+          "confirms_if": "Confirms per-interface level assignment",
+          "look_for": "Check circuit type and level on each interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis interface",
+          "confirms_if": "Confirms per-interface level assignment",
+          "look_for": "Check circuit type and level on each interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Suboptimal routing or unexpected path selection caused by inconsistent metric styles within the IS-IS domain. Narrow metrics cap at 63 per hop (1023 total path), while wide metrics allow up to 16,777,215 — mixing them causes unpredictable behavior.",
+      "resolutions": [
+        {
+          "action": "Standardize on 'metric-style wide' across all routers in the domain",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Standardize on 'metric-style wide' across all routers in the domain",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Standardize on 'metric-style wide' across all routers in the domain",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface metrics: 'show isis interface' — check metric values",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface metrics: 'show isis interface' — check metric values",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface metrics: 'show isis interface' — check metric values",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'metric-style transition' temporarily during migration from narrow to wide",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'metric-style transition' temporarily during migration from narrow to wide",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use 'metric-style transition' temporarily during migration from narrow to wide",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set explicit interface metrics to ensure consistent path costs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set explicit interface metrics to ensure consistent path costs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Set explicit interface metrics to ensure consistent path costs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Mixed narrow and wide metric configurations in the domain",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Default interface metric not explicitly set (defaults may differ by OS)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Legacy routers still using narrow metrics after migration",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "metric-style transition mode masking the mismatch",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Metric mismatch (narrow vs wide)",
+      "symptoms": [
+        "Suboptimal routing — traffic takes unexpected paths",
+        "Metrics capped at 63 per hop in show isis database",
+        "Segment routing or TE not functioning (requires wide metrics)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show isis interface",
+          "confirms_if": "Shows per-interface metric and metric style",
+          "look_for": "Check metric values on each interface — values over 63 confirm wide metrics are in use",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis interface",
+          "confirms_if": "Shows per-interface metric and metric style",
+          "look_for": "Check metric values on each interface — values over 63 confirm wide metrics are in use",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis interface",
+          "confirms_if": "Shows per-interface metric and metric style",
+          "look_for": "Check metric values on each interface — values over 63 confirm wide metrics are in use",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis database detail",
+          "confirms_if": "Confirms which metric TLVs are being originated by each router",
+          "look_for": "Look for both old-style (IS Reachability) and extended (Extended IS Reachability) TLVs — presence of both indicates transition mode",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis database detail",
+          "confirms_if": "Confirms which metric TLVs are being originated by each router",
+          "look_for": "Look for both old-style (IS Reachability) and extended (Extended IS Reachability) TLVs — presence of both indicates transition mode",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis database detail",
+          "confirms_if": "Confirms which metric TLVs are being originated by each router",
+          "look_for": "Look for both old-style (IS Reachability) and extended (Extended IS Reachability) TLVs — presence of both indicates transition mode",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis protocol",
+          "confirms_if": "Confirms the configured metric style for the IS-IS process",
+          "look_for": "Check metric-style configuration (narrow, wide, or transition)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis protocol",
+          "confirms_if": "Confirms the configured metric style for the IS-IS process",
+          "look_for": "Check metric-style configuration (narrow, wide, or transition)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show isis protocol",
+          "confirms_if": "Confirms the configured metric style for the IS-IS process",
+          "look_for": "Check metric-style configuration (narrow, wide, or transition)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Discovers neighbors and maintains adjacencies",
+      "key_fields": [
+        "Circuit Type (L1, L2, L1L2)",
+        "Source ID (System ID)",
+        "Holding Time",
+        "PDU Length",
+        "Priority (LAN DIS election)",
+        "LAN ID",
+        "Area Addresses TLV",
+        "IP Interface Address TLV",
+        "Protocols Supported TLV",
+        "IS Neighbors TLV (3-way handshake)"
+      ],
+      "name": "IIH (IS-IS Hello)",
+      "when_sent": "Every hello-interval"
+    },
+    {
+      "description": "Carries link-state information",
+      "key_fields": [
+        "LSP ID (SystemID.Pseudonode-Fragment)",
+        "Sequence Number",
+        "Remaining Lifetime",
+        "IS Reachability TLV",
+        "IP Reachability TLV",
+        "Extended IS Reachability TLV (wide metrics)",
+        "Extended IP Reachability TLV (wide metrics)"
+      ],
+      "name": "LSP (Link State PDU)",
+      "when_sent": "On topology change or periodic refresh"
+    },
+    {
+      "description": "Synchronizes LSDBs — lists all LSPs known",
+      "key_fields": [
+        "Source ID",
+        "Start LSP-ID",
+        "End LSP-ID",
+        "LSP Entries"
+      ],
+      "name": "CSNP (Complete Sequence Number PDU)",
+      "when_sent": "Periodically by DIS on LAN, at startup on P2P"
+    },
+    {
+      "description": "Requests missing LSPs or acknowledges received LSPs",
+      "key_fields": [
+        "Source ID",
+        "LSP Entries (requested)"
+      ],
+      "name": "PSNP (Partial Sequence Number PDU)",
+      "when_sent": "When CSNP reveals missing or newer LSP in LSDB"
+    }
+  ],
+  "operates_at": "Layer 2/3",
+  "protocol_family": "routing",
+  "protocol_id": "isis",
+  "protocol_name": "IS-IS",
+  "purpose": "Intermediate System to Intermediate System — link-state IGP supporting IPv4, IPv6, and segment routing",
+  "related_protocols": [
+    "ospfv2",
+    "ospfv3",
+    "bfd"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-1195",
+      "rfc_number": 1195,
+      "title": "RFC 1195",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc1195.txt"
+    },
+    {
+      "id": "cisco:routing/isis.json",
+      "title": "cisco knowledge base — routing/isis.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 1195 / ISO 10589",
+  "states": [
+    {
+      "description": "No IS-IS Hello (IIH) received from neighbor. Initial state for all adjacencies. The local system has no knowledge of the remote IS on this circuit.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "DOWN"
+    },
+    {
+      "description": "An IIH has been received from the neighbor, but our own SNPA or system ID has not yet been seen in the neighbor's IIH. Communication is one-way at this point. Being stuck in INITIALIZING indicates a problem with bidirectional communication.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "INITIALIZING"
+    },
+    {
+      "description": "Bidirectional adjacency established — own system ID has been seen in the neighbor's IIH (three-way handshake passed). LSP exchange is in progress or complete and the LSDB is synchronizing.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "UP"
+    }
+  ],
+  "tags": [
+    "igp",
+    "link-state",
+    "spf",
+    "clns",
+    "segment-routing",
+    "routing",
+    "level1",
+    "level2"
+  ],
+  "timers": [
+    {
+      "default_rfc": "10s (LAN), 10s (P2P)",
+      "description": "IIH transmission interval",
+      "name": "hello-interval",
+      "on_expiry": "Send IIH",
+      "range": "1-65535s",
+      "tuning_advice": "Must match all neighbors on a segment for LAN circuits. Lower values speed detection but increase overhead; consider BFD for sub-second detection instead."
+    },
+    {
+      "default_rfc": "3 (hold=30s)",
+      "description": "Hold time = hello-interval x multiplier",
+      "name": "hello-multiplier",
+      "on_expiry": "Neighbor declared down",
+      "range": "3-1000",
+      "tuning_advice": "Increasing the multiplier improves tolerance for missed Hellos but slows failure detection."
+    },
+    {
+      "default_rfc": "10s",
+      "description": "Complete Sequence Number PDU interval (LAN DIS only)",
+      "name": "CSNP interval",
+      "on_expiry": "DIS sends CSNP to synchronize LSDBs",
+      "tuning_advice": "Rarely needs tuning. The DIS sends CSNPs periodically to keep LSDBs synchronized on multi-access segments."
+    },
+    {
+      "default_rfc": "900s",
+      "description": "Interval to refresh self-originated LSPs",
+      "name": "LSP refresh",
+      "on_expiry": "LSP re-originated with incremented sequence number",
+      "tuning_advice": "Must be less than LSP max-age to prevent premature purge. Default is appropriate for most networks."
+    },
+    {
+      "default_rfc": "1200s",
+      "description": "Maximum LSP lifetime",
+      "name": "LSP max-age",
+      "on_expiry": "LSP purged from LSDB",
+      "tuning_advice": "Increase in large or unstable networks to avoid premature purges. Must be greater than LSP refresh interval."
+    },
+    {
+      "default_rfc": "varies by OS",
+      "description": "Delay before SPF calculation",
+      "name": "SPF delay",
+      "on_expiry": "SPF algorithm runs",
+      "os_defaults": [
+        {
+          "default": "200ms/1000ms/5000ms",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "5000ms/10000ms/10000ms (older defaults)",
+          "notes": "Recommended: 50ms/200ms/5000ms for modern deployments",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "5ms/200ms/5000ms",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "tuning_advice": "Use aggressive SPF timers (e.g., 50ms/200ms/5000ms) for sub-second convergence. The three values represent initial-delay / hold-time / max-wait."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "DOWN",
+      "to_state": "INITIALIZING",
+      "trigger": "IS-IS Hello (IIH) received from neighbor"
+    },
+    {
+      "from_state": "INITIALIZING",
+      "to_state": "UP",
+      "trigger": "Own system ID seen in neighbor's IIH (bidirectional check passed)"
+    },
+    {
+      "from_state": "UP",
+      "to_state": "DOWN",
+      "trigger": "Hold timer expired or interface down"
+    },
+    {
+      "failure_if_stuck": "One-way communication — possible L2 filtering, MTU issue, or area/level mismatch",
+      "from_state": "INITIALIZING",
+      "to_state": "DOWN",
+      "trigger": "Hold timer expired"
+    }
+  ],
+  "transport": "ISO CLNP — directly over Layer 2 (SAP 0xFE), no IP required",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "IS-IS uses 'router isis' with NET configuration. Supports both narrow and wide metrics. 'metric-style wide' recommended for modern deployments and required for SR.",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "IS-IS is the preferred IGP on IOS-XR platforms. Configured under 'router isis <tag>' with interface hierarchy. Wide metrics and SR support built-in. Supports TI-LFA and microloop avoidance.",
+          "versions": "all"
+        },
+        {
+          "note": "IOS-XR IS-IS supports single-topology and multi-topology modes for IPv4/IPv6. Multi-topology required when IPv4 and IPv6 topologies differ.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "IS-IS requires 'feature isis'. Uses wide metrics by default. Configure NET under 'router isis' and enable per-interface. Supports segment routing TI-LFA.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,472 @@
+{
+  "applicable_os": [
+    "sonic"
+  ],
+  "confidence": "medium",
+  "display_name": "Interface/port down",
+  "entry_symptom": "Interface shows operationally down or no link detected",
+  "nodes": [
+    {
+      "branches": {
+        "no": "n3",
+        "yes": "n2"
+      },
+      "commands": [
+        {
+          "command": "show interfaces status",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 4 HGETALL 'PORT|<port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "node_id": "n1",
+      "node_type": "branch",
+      "question": "Is the port administratively enabled (admin_status = up)?"
+    },
+    {
+      "branches": {
+        "no": "n4",
+        "yes": "n5"
+      },
+      "commands": [
+        {
+          "command": "show interfaces transceiver eeprom <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 6 HGETALL 'TRANSCEIVER_INFO|<port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "node_id": "n2",
+      "node_type": "branch",
+      "question": "Is a transceiver detected in the port (EEPROM readable)?"
+    },
+    {
+      "action": "Enable the port with: config interface startup <port>. Verify admin_status changes to 'up' in CONFIG_DB and APPL_DB: redis-cli -n 4 HGETALL 'PORT|<port>' | grep admin_status; redis-cli -n 0 HGETALL 'PORT_TABLE|<port>' | grep admin_status. If the port was shut via a change to CONFIG_DB outside of the config CLI, ensure portmgrd has processed the update (check journalctl -u swss | grep portmgrd).",
+      "commands": [
+        {
+          "command": "config interface startup <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show interfaces status <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 0 HGETALL 'PORT_TABLE|<port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "finding": "Port is administratively shut down (admin_status = down)",
+      "node_id": "n3",
+      "node_type": "leaf"
+    },
+    {
+      "branches": {
+        "no (SFP/QSFP slot is empty or EEPROM unreadable)": "n7",
+        "yes (DAC or copper)": "n6"
+      },
+      "commands": [
+        {
+          "command": "show interfaces transceiver eeprom <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec pmon bash -c 'cat /var/log/syslog | grep xcvrd | grep <port> | tail -20'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "node_id": "n4",
+      "node_type": "branch",
+      "question": "Is this a DAC/copper cable or a direct-attach port (no SFP/QSFP module)?"
+    },
+    {
+      "branches": {
+        "no": "n9",
+        "yes": "n8"
+      },
+      "commands": [
+        {
+          "command": "show interfaces transceiver status <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 6 HGETALL 'TRANSCEIVER_INFO|<port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "cat /usr/share/sonic/platform/media_settings.json 2>/dev/null | python3 -m json.tool | grep -i vendor",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "node_id": "n5",
+      "node_type": "branch",
+      "question": "Is the transceiver on the platform vendor-approved list (show interfaces transceiver status)?"
+    },
+    {
+      "action": "For DAC cables: (1) Reseat both ends of the cable, (2) Try a known-good cable in the same port, (3) Check for bent or damaged pins, (4) Verify the DAC cable length and type is supported by the platform. For onboard copper ports: check physical cable continuity with a tester. Check xcvrd logs for any insertion/removal events: docker exec pmon bash -c 'grep xcvrd /var/log/syslog | grep <port> | tail -30'. If port was previously up, check counters for physical-layer errors: show interfaces counters <port>.",
+      "commands": [
+        {
+          "command": "show interfaces counters <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec pmon bash -c 'grep xcvrd /var/log/syslog | grep <port> | tail -30'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 6 HGETALL 'TRANSCEIVER_INFO|<port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "finding": "DAC or copper cable detected but no link — likely a cable seating or compatibility issue",
+      "node_id": "n6",
+      "node_type": "leaf"
+    },
+    {
+      "action": "Check whether the module is physically seated. Reseat the optic and wait ~10s for xcvrd to re-poll. Check xcvrd for EEPROM read failures: docker exec pmon bash -c 'grep -i eeprom /var/log/syslog | grep <port> | tail -20'. If the optic is seated and xcvrd still cannot read EEPROM, the module may be faulty (try a known-good SFP/QSFP). Check STATE_DB for transceiver presence: redis-cli -n 6 HGET 'TRANSCEIVER_INFO|<port>' type. On multi-ASIC platforms, verify the port maps to the correct PMON namespace.",
+      "commands": [
+        {
+          "command": "redis-cli -n 6 HGETALL 'TRANSCEIVER_INFO|<port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec pmon bash -c 'grep -i eeprom /var/log/syslog | grep <port> | tail -20'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show interfaces transceiver eeprom <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "finding": "No transceiver detected — EEPROM unreadable or module absent",
+      "node_id": "n7",
+      "node_type": "leaf"
+    },
+    {
+      "branches": {
+        "no": "n11",
+        "yes": "n10"
+      },
+      "commands": [
+        {
+          "command": "show interfaces status <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 4 HGETALL 'PORT|<port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 0 HGETALL 'PORT_TABLE|<port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "node_id": "n8",
+      "node_type": "branch",
+      "question": "Do the configured speed and FEC settings match what the remote side expects?"
+    },
+    {
+      "action": "Some SONiC platform images enforce a media/transceiver approved list and will not bring up a port with an unapproved optic. Options: (1) Replace with a vendor-approved transceiver, (2) Add a media_settings.json override for the part number (platform-specific), (3) Check if the platform image has an override flag (some allow unsupported optics via config). Verify: cat /usr/share/sonic/platform/media_settings.json. Check xcvrd for rejection messages: docker exec pmon bash -c 'grep -i unsupported /var/log/syslog | grep <port> | tail -20'.",
+      "commands": [
+        {
+          "command": "show interfaces transceiver status <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "cat /usr/share/sonic/platform/media_settings.json 2>/dev/null | python3 -m json.tool",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec pmon bash -c 'grep -i unsupported /var/log/syslog | grep <port> | tail -20'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "finding": "Transceiver vendor or part number is not on the platform approved list — port may be blocked",
+      "node_id": "n9",
+      "node_type": "leaf"
+    },
+    {
+      "branches": {
+        "no": "n13",
+        "yes": "n12"
+      },
+      "commands": [
+        {
+          "command": "show interfaces transceiver dom <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 6 HGETALL 'TRANSCEIVER_DOM_SENSOR|<port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "node_id": "n10",
+      "node_type": "branch",
+      "question": "Are DOM optical power levels within acceptable range (Rx and Tx power not alarmed)?"
+    },
+    {
+      "action": "Align speed and FEC on both ends: (1) Set speed: config interface speed <port> <speed_mbps> (e.g., 100000 for 100G), (2) Set FEC: config interface fec <port> <rs|fc|none>, (3) Verify settings applied in APPL_DB: redis-cli -n 0 HGETALL 'PORT_TABLE|<port>' | grep -E 'speed|fec', (4) Confirm the remote side matches. Common mismatches: 100G port with FEC=none against a remote expecting FEC=rs; 40G vs 100G speed negotiation failure on DAC cables. After fixing, wait 5-10s for link to come up.",
+      "commands": [
+        {
+          "command": "config interface speed <port> <speed>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "config interface fec <port> <fec_mode>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 0 HGETALL 'PORT_TABLE|<port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show interfaces status <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "finding": "Speed or FEC mismatch between local port configuration and remote side",
+      "node_id": "n11",
+      "node_type": "leaf"
+    },
+    {
+      "branches": {
+        "no (oper_status=down or port missing from APPL_DB)": "n14",
+        "yes (oper_status=up in APPL_DB)": "n14"
+      },
+      "commands": [
+        {
+          "command": "redis-cli -n 0 HGETALL 'PORT_TABLE|<port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec swss bash -c 'grep portsyncd /var/log/syslog | grep <port> | tail -20'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec swss bash -c 'grep portmgrd /var/log/syslog | grep <port> | tail -20'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "node_id": "n12",
+      "node_type": "branch",
+      "question": "Is the port present in APPL_DB PORT_TABLE with oper_status = up after portsyncd processing?"
+    },
+    {
+      "action": "Rx power low (below threshold): (1) Check fiber continuity end-to-end, (2) Clean both fiber connectors with appropriate cleaner, (3) Check for fiber bends, kinks, or excessive length beyond optic budget, (4) Replace the fiber patch cable, (5) If Rx power is still low after fiber checks, the remote transmitter optic may be failing. Tx power low: the local optic transmitter may be failing — replace the transceiver. DOM alarm thresholds: redis-cli -n 6 HGETALL 'TRANSCEIVER_DOM_THRESHOLD|<port>'. Check xcvrd alarm events: docker exec pmon bash -c 'grep -i alarm /var/log/syslog | grep <port> | tail -20'.",
+      "commands": [
+        {
+          "command": "show interfaces transceiver dom <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "redis-cli -n 6 HGETALL 'TRANSCEIVER_DOM_THRESHOLD|<port>'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec pmon bash -c 'grep -i alarm /var/log/syslog | grep <port> | tail -20'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "finding": "DOM optical power levels out of range — fiber or optic issue",
+      "node_id": "n13",
+      "node_type": "leaf"
+    },
+    {
+      "action": "The port has a transceiver, correct settings, and good optics, but oper_status is still down. This indicates a SAI/platform-layer issue: (1) Check syncd for SAI port creation or attribute set failures: docker exec syncd bash -c 'grep -i error /var/log/syslog | grep -i port | tail -30', (2) Check portsyncd processing: docker exec swss bash -c 'grep portsyncd /var/log/syslog | tail -30', (3) Check orchagent for port init errors: docker exec swss bash -c 'grep orchagent /var/log/syslog | grep -i port | tail -30', (4) Verify port exists in ASIC_DB: redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_PORT:*' | wc -l, (5) If a port is missing from ASIC_DB, the SAI init failed -- check platform driver and try: sudo reboot or config reload. (6) On some platforms, a portsyncd restart resolves stale state: docker exec swss supervisorctl restart portsyncd.",
+      "commands": [
+        {
+          "command": "redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_PORT:*'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec syncd bash -c 'grep -i error /var/log/syslog | grep -i port | tail -30'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "docker exec swss bash -c 'grep -E \"portsyncd|portmgrd|orchagent\" /var/log/syslog | grep -i \"<port>\" | tail -30'",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        },
+        {
+          "command": "show interfaces status <port>",
+          "os": "sonic",
+          "version_range": {
+            "max": "*",
+            "min": "202511"
+          }
+        }
+      ],
+      "finding": "Physical layer looks healthy but port remains operationally down — SAI or platform driver failure",
+      "node_id": "n14",
+      "node_type": "leaf"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "sonic:diagnostics/port-down.json",
+      "title": "sonic knowledge base — diagnostics/port-down.json",
+      "type": "documentation"
+    }
+  ],
+  "tree_id": "port-down"
+}

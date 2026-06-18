@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "tcam-utilization-high-is-by-feature-scale",
+  "display_name": "High TCAM utilization reflects configured feature scale — it only matters when programming fails",
+  "category": "baseline-awareness",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "sonic"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Reviewing hardware TCAM/ACL resource utilization on a switch and seeing one or more regions at high percentage",
+  "observation": "A TCAM region (ACL, QoS, routing, or PBR) shows high utilization, e.g. 85-100% in one carve-out",
+  "naive_interpretation": "The device is about to fail and TCAM must be expanded or the switch replaced immediately",
+  "correct_interpretation": "TCAM is statically carved into regions sized by the configured feature profile, and utilization simply reflects how many entries that feature is using. A region at high utilization is fine as long as new entries still program successfully. The real failure signal is a TCAM/resource-exhaustion log or an entry that fails to install (silently software-switched or dropped), not the percentage alone. Also, one region can be exhausted while overall TCAM looks low, because the carve-outs are independent.",
+  "why": [
+    "TCAM is partitioned into fixed regions at boot per the hardware/feature profile; utilization is per-region, not a single pool",
+    "A region at 90% is harmless if the feature is stable and not adding entries; the danger is only at the moment an install is attempted and fails",
+    "Exhaustion manifests as explicit log events (e.g. ACL/FIB TCAM full) or entries falling back to software/CPU forwarding, which is the actionable symptom",
+    "Aggregate TCAM percentage hides per-region exhaustion — the relevant number is the specific carve-out the feature uses"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show hardware access-list resource utilization",
+      "purpose": "Show per-region TCAM utilization to find the specific carve-out that is full rather than the aggregate"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show logging | include TCAM|FULL|EXHAUST|hardware",
+      "purpose": "Look for explicit resource-exhaustion or entry-install-failure events, the real signal of impact"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show platform hardware fed switch active fwd-asic resource tcam utilization",
+      "purpose": "Per-region TCAM utilization on Catalyst platforms to identify the exhausted partition"
+    }
+  ],
+  "traps": [
+    "Panicking over a high percentage in one region when entries still program fine and no exhaustion has been logged",
+    "Reading the aggregate TCAM figure and missing that a single region is actually full",
+    "Not checking whether failed installs caused silent software/CPU forwarding, which is the genuine impact",
+    "Re-carving TCAM regions (which requires a reload) without confirming which region is actually constrained"
+  ],
+  "related_rules": [
+    "nos-memory-high-is-cache-not-leak",
+    "system-uptime-as-counter-context"
+  ],
+  "related_protocols": [],
+  "keywords": ["TCAM", "ACL", "hardware resource", "utilization", "carve", "region", "exhaustion", "FIB", "scale"],
+  "sources": [
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Generated SQLite databases (rebuild with: cd tools/migrate && python3 build_sqlite.py)
+data/db/*.db
+
+# macOS
+.DS_Store
+
+# Local symlinks to source KBs (machine-specific paths)
+archived-kb/
+
+# Claude Code local settings
+.claude/
+.mcp.json
+
+# Session-specific files
+continue.txt
+tasks/
+
+# Runtime case files
+harness/cases/*.md

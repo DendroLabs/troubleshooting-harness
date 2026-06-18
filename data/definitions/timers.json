@@ -1,0 +1,207 @@
+{
+  "schema_version": "1.0.0",
+  "def_type": "timers",
+  "description": "Protocol timer atoms shared across the datastore.",
+  "entries": [
+    {
+      "def_id": "timer:bgp-hold",
+      "def_type": "timer",
+      "name": "BGP Hold Timer",
+      "description": "BGP Hold Timer (bgp-4 timer).",
+      "protocol": "bgp-4",
+      "default_rfc": "180s",
+      "range": "0 (disabled) or 3–65535s",
+      "on_expiry": "Peer declared dead; session torn down. All routes learned from the peer are withdrawn and re-evaluated by best-path selection."
+    },
+    {
+      "def_id": "timer:bgp-keepalive",
+      "def_type": "timer",
+      "name": "BGP Keepalive Timer",
+      "description": "BGP Keepalive Timer (bgp-4 timer).",
+      "protocol": "bgp-4",
+      "default_rfc": "60s",
+      "range": "1–21845s (must be <= hold/3)",
+      "on_expiry": "A KEEPALIVE message is sent to the peer to reset the hold timer. If sending fails, the session is considered failed."
+    },
+    {
+      "def_id": "timer:bgp-connect-retry",
+      "def_type": "timer",
+      "name": "BGP Connect-Retry Timer",
+      "description": "BGP Connect-Retry Timer (bgp-4 timer).",
+      "protocol": "bgp-4",
+      "default_rfc": "120s",
+      "range": "1–65535s",
+      "on_expiry": "A new TCP connection attempt is made to the configured peer. Used in the IDLE and CONNECT states to pace reconnection attempts after a session failure."
+    },
+    {
+      "def_id": "timer:ospf-hello",
+      "def_type": "timer",
+      "name": "OSPF Hello Interval",
+      "description": "OSPF Hello Interval (ospfv2 timer).",
+      "protocol": "ospfv2",
+      "default_rfc": "10s (broadcast/point-to-point), 30s (NBMA/point-to-multipoint)",
+      "range": "1–65535s",
+      "on_expiry": "A Hello packet is sent out the interface. Used for neighbor discovery, keepalive, and DR/BDR election on multi-access networks."
+    },
+    {
+      "def_id": "timer:ospf-dead",
+      "def_type": "timer",
+      "name": "OSPF Dead Interval",
+      "description": "OSPF Dead Interval (ospfv2 timer).",
+      "protocol": "ospfv2",
+      "default_rfc": "40s (broadcast/point-to-point), 120s (NBMA)",
+      "range": "1–65535s",
+      "on_expiry": "Neighbor declared dead; adjacency torn down. All LSAs learned from the neighbor are aged out and SPF is triggered."
+    },
+    {
+      "def_id": "timer:ospf-lsa-age",
+      "def_type": "timer",
+      "name": "OSPF LSA MaxAge",
+      "description": "OSPF LSA MaxAge (ospfv2 timer).",
+      "protocol": "ospfv2",
+      "default_rfc": "3600s (1 hour)",
+      "range": "Fixed at 3600s per RFC 2328",
+      "on_expiry": "LSA is flushed from the LSDB. If the originating router is still present, it re-originates the LSA with age 0. Used to bound LSDB size and prevent stale topology information."
+    },
+    {
+      "def_id": "timer:ospf-spf-delay",
+      "def_type": "timer",
+      "name": "OSPF SPF Delay / Throttle",
+      "description": "OSPF SPF Delay / Throttle (ospfv2 timer).",
+      "protocol": "ospfv2",
+      "default_rfc": "Initial delay: 0ms; Min hold: 50ms; Max hold: 5000ms (FRR defaults)",
+      "range": "0–600000ms for each of the three throttle parameters",
+      "on_expiry": "SPF calculation is triggered after the delay expires post topology change. The hold time doubles after each successive trigger (exponential backoff) up to the max-hold value."
+    },
+    {
+      "def_id": "timer:bfd-detect-multiplier",
+      "def_type": "timer",
+      "name": "BFD Detection Multiplier",
+      "description": "BFD Detection Multiplier (bfd timer).",
+      "protocol": "bfd",
+      "default_rfc": "3",
+      "range": "2–255",
+      "on_expiry": "N/A — this is a multiplier, not a countdown. Detection time = remote tx-interval * local detect-multiplier. When no control packets are received for the detection time, the session declares DOWN."
+    },
+    {
+      "def_id": "timer:bfd-tx-interval",
+      "def_type": "timer",
+      "name": "BFD Desired Min Tx Interval",
+      "description": "BFD Desired Min Tx Interval (bfd timer).",
+      "protocol": "bfd",
+      "default_rfc": "300ms",
+      "range": "50–60000ms (platform-dependent; hardware BFD may support lower values)",
+      "on_expiry": "A BFD control packet is sent to the peer. The actual transmitted interval is max(local desired-min-tx, remote required-min-rx)."
+    },
+    {
+      "def_id": "timer:bfd-rx-interval",
+      "def_type": "timer",
+      "name": "BFD Required Min Rx Interval",
+      "description": "BFD Required Min Rx Interval (bfd timer).",
+      "protocol": "bfd",
+      "default_rfc": "300ms",
+      "range": "50–60000ms",
+      "on_expiry": "N/A — this is the minimum rate at which the local system is willing to receive BFD packets. Actual rx interval is negotiated as max(local required-min-rx, remote desired-min-tx)."
+    },
+    {
+      "def_id": "timer:lacp-actor-timeout",
+      "def_type": "timer",
+      "name": "LACP Actor Timeout (Short/Long)",
+      "description": "LACP Actor Timeout (Short/Long) (lacp timer).",
+      "protocol": "lacp",
+      "default_rfc": "Long timeout: 90s; Short timeout: 3s",
+      "range": "Long or Short (not an arbitrary number; defined by IEEE 802.3ad)",
+      "on_expiry": "Partner declared expired; LAG member port is removed from the active aggregation. In SHORT timeout mode the actor expects LACPDUs every 1s (FAST rate); in LONG mode every 30s (SLOW rate)."
+    },
+    {
+      "def_id": "timer:lacp-pdu-interval",
+      "def_type": "timer",
+      "name": "LACP PDU Transmission Interval",
+      "description": "LACP PDU Transmission Interval (lacp timer).",
+      "protocol": "lacp",
+      "default_rfc": "Slow rate: 30s; Fast rate: 1s",
+      "range": "1s (fast) or 30s (slow) — IEEE 802.3ad defines only these two rates",
+      "on_expiry": "A LACPDU (Link Aggregation Control Protocol Data Unit) is transmitted to the partner. Contains the actor's system priority, key, port priority, and state flags."
+    },
+    {
+      "def_id": "timer:lldp-tx-interval",
+      "def_type": "timer",
+      "name": "LLDP Transmit Interval",
+      "description": "LLDP Transmit Interval (lldp timer).",
+      "protocol": "lldp",
+      "default_rfc": "30s",
+      "range": "5–32768s",
+      "on_expiry": "An LLDPDU (LLDP Data Unit) is transmitted out each enabled interface. Carries chassis ID, port ID, TTL, system name, capabilities, and management address TLVs."
+    },
+    {
+      "def_id": "timer:lldp-tx-hold",
+      "def_type": "timer",
+      "name": "LLDP Transmit Hold Multiplier",
+      "description": "LLDP Transmit Hold Multiplier (lldp timer).",
+      "protocol": "lldp",
+      "default_rfc": "4",
+      "range": "2–10",
+      "on_expiry": "N/A — multiplier used to compute TTL: TTL = tx-interval * tx-hold (default: 30 * 4 = 120s). When a neighbor's LLDPDU TTL expires without refresh, the neighbor entry is removed from the LLDP MIB."
+    },
+    {
+      "def_id": "timer:lldp-reinit-delay",
+      "def_type": "timer",
+      "name": "LLDP Re-initialization Delay",
+      "description": "LLDP Re-initialization Delay (lldp timer).",
+      "protocol": "lldp",
+      "default_rfc": "2s",
+      "range": "1–10s",
+      "on_expiry": "After an LLDP port is disabled and then re-enabled, this delay must elapse before LLDP transmission resumes. Prevents LLDP frame storms during rapid link flapping."
+    },
+    {
+      "def_id": "timer:stp-hello",
+      "def_type": "timer",
+      "name": "STP/RSTP Hello Timer",
+      "description": "STP/RSTP Hello Timer (rstp timer).",
+      "protocol": "rstp",
+      "default_rfc": "2s",
+      "range": "1–10s",
+      "on_expiry": "The root bridge sends a BPDU (Bridge Protocol Data Unit) out all designated ports. Non-root bridges relay BPDUs downstream. Used to confirm root bridge liveness and maintain the spanning tree topology."
+    },
+    {
+      "def_id": "timer:stp-forward-delay",
+      "def_type": "timer",
+      "name": "STP/RSTP Forward Delay",
+      "description": "STP/RSTP Forward Delay (rstp timer).",
+      "protocol": "rstp",
+      "default_rfc": "15s",
+      "range": "4–30s",
+      "on_expiry": "A port transitions from Listening to Learning (after first expiry) and from Learning to Forwarding (after second expiry) in classic STP. In RSTP, the forward-delay is used only as a fallback when rapid transition is not available (e.g., on edge ports or with legacy 802.1D bridges)."
+    },
+    {
+      "def_id": "timer:stp-max-age",
+      "def_type": "timer",
+      "name": "STP/RSTP Max Age",
+      "description": "STP/RSTP Max Age (rstp timer).",
+      "protocol": "rstp",
+      "default_rfc": "20s",
+      "range": "6–40s",
+      "on_expiry": "A non-root bridge declares that BPDUs from the root are stale. The bridge assumes the root has failed and initiates a topology change by re-running root bridge election. In RSTP, max-age bounds the time before a port without recent BPDUs becomes a Designated Port."
+    },
+    {
+      "def_id": "timer:mclag-keepalive",
+      "def_type": "timer",
+      "name": "MC-LAG Keepalive Interval",
+      "description": "MC-LAG Keepalive Interval (mclag timer).",
+      "protocol": "mclag",
+      "default_rfc": "1s",
+      "range": "1–60s",
+      "on_expiry": "A keepalive message is sent to the MC-LAG peer over the keepalive link (separate from the peer link). If the peer does not respond within the session-timeout, it is declared dead and failover begins."
+    },
+    {
+      "def_id": "timer:mclag-session-timeout",
+      "def_type": "timer",
+      "name": "MC-LAG Session Timeout",
+      "description": "MC-LAG Session Timeout (mclag timer).",
+      "protocol": "mclag",
+      "default_rfc": "15s",
+      "range": "3–3600s",
+      "on_expiry": "MC-LAG peer declared dead. The surviving peer assumes sole ownership of all MC-LAG port-channels, withdraws the peer's MAC addresses, and begins forwarding traffic as a standalone device. Orphan ports on the failed peer lose connectivity."
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "evpn-vtep-nve-source-flap",
+  "display_name": "Fabric-wide VXLAN loss often traces to a single flapping NVE source loopback, not many VNI problems",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "eos", "sonic", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Multiple VNIs or many hosts behind a leaf lose connectivity at the same time in a VXLAN/EVPN fabric",
+  "observation": "Simultaneous reachability loss across many VNIs and tenants on one leaf, often correlated with brief recoveries",
+  "naive_interpretation": "Many separate VNI/tenant problems, or a control-plane (EVPN) outage affecting numerous routes at once",
+  "correct_interpretation": "Every VNI on a leaf shares one VXLAN tunnel endpoint, sourced from the NVE source-interface (a loopback). If that loopback — or the IGP route to it, or the underlay path — flaps, the VTEP goes down and all overlay traffic for that leaf drops together. The blast radius looks like dozens of problems but the root cause is a single shared dependency. Check NVE/VTEP state and the source loopback reachability before chasing individual VNIs.",
+  "why": [
+    "RFC 7348 defines the VTEP as the encap/decap point; all VNIs on a device share the same source VTEP IP",
+    "RFC 8365 uses EVPN as the control plane but forwarding still depends on the underlay route to the remote VTEP being present",
+    "A flapping loopback or its IGP advertisement withdraws the VTEP reachability for every overlay simultaneously, producing correlated multi-VNI loss",
+    "The correlation in time across unrelated tenants is the tell that the failure is a shared underlay/VTEP dependency, not per-VNI"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show nve peers",
+      "purpose": "Check whether VTEP peers are flapping or down, which points to a shared source/underlay issue"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show nve interface nve1 detail",
+      "purpose": "Confirm the NVE source-interface (loopback) and its operational state"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route <vtep-source-loopback>",
+      "purpose": "Verify the underlay/IGP route to the source loopback is stable rather than flapping"
+    }
+  ],
+  "traps": [
+    "Opening separate investigations per VNI when all of them share one VTEP source and went down together",
+    "Blaming the EVPN control plane when the underlay route to the VTEP is what actually withdrew",
+    "Not checking the source loopback and its IGP advertisement, the single point all overlays depend on",
+    "Missing the time correlation across tenants that distinguishes a shared-dependency failure from many independent ones"
+  ],
+  "related_rules": [
+    "evpn-arp-suppression-hides-arp",
+    "evpn-mac-mobility-sequence-increment",
+    "bgp-inactive-route-nexthop-unreachable"
+  ],
+  "related_protocols": ["vxlan-evpn", "vxlan", "evpn"],
+  "keywords": ["VXLAN", "EVPN", "VTEP", "NVE", "source-interface", "loopback", "underlay", "flap", "fabric", "blast radius"],
+  "sources": [
+    {
+      "id": "rfc-7348",
+      "title": "RFC 7348 — Virtual eXtensible Local Area Network (VXLAN)",
+      "type": "rfc",
+      "rfc_number": 7348,
+      "url": "https://www.rfc-editor.org/rfc/rfc7348.txt"
+    },
+    {
+      "id": "rfc-8365",
+      "title": "RFC 8365 — A Network Virtualization Overlay Solution Using EVPN",
+      "type": "rfc",
+      "rfc_number": 8365,
+      "url": "https://www.rfc-editor.org/rfc/rfc8365.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

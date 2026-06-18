@@ -1,0 +1,46 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:cloud-scale-fabric",
+      "asic_id": 0,
+      "asic_model": "Lacrosse 1",
+      "hbm_gb": 0.0,
+      "memory_tables": [],
+      "slices": [],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 0.0
+    },
+    {
+      "asic_family": "asic:cloud-scale-fabric",
+      "asic_id": 1,
+      "asic_model": "Lacrosse 2",
+      "hbm_gb": 0.0,
+      "memory_tables": [],
+      "slices": [],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 0.0
+    }
+  ],
+  "chassis_type": "modular",
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9500",
+  "platform_id": "c9508fm-e",
+  "platform_name": "Nexus 9508 FM-E (Shawnee)",
+  "platform_pid": "N9K-C9508-FM-E",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-c9508fm-e",
+      "title": "Tech Zone: Nexus 9k ASIC Mappings, Shawnee FM diagram",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-9500/c9508fm-e.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-9500/c9508fm-e.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 0.0,
+  "total_ports": 0
+}

@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "multicast-rpf-failure-is-unicast-path",
+  "display_name": "Multicast not forwarding is often an RPF failure rooted in unicast routing, not a multicast problem",
+  "category": "correlation-method",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "A multicast group is not being forwarded to receivers even though PIM and IGMP appear configured",
+  "observation": "No multicast traffic reaches receivers; the mroute shows an RPF failure, a null incoming interface, or drops attributed to RPF",
+  "naive_interpretation": "The multicast configuration (PIM, RP, IGMP) is broken and the fix is somewhere in multicast",
+  "correct_interpretation": "Multicast forwarding requires the packet to arrive on the interface that unicast routing says is the path back to the source (the RPF check). If unicast routing toward the source points out a different interface than where the multicast actually arrives — common with asymmetric paths, ECMP, or a missing/wrong unicast route to the source/RP — the RPF check fails and the router drops the traffic. The root cause lives in unicast routing or path asymmetry, not in PIM/IGMP. Verify the RPF interface against the actual arrival interface first.",
+  "why": [
+    "RFC 7761 (PIM-SM) requires the RPF check: traffic must arrive on the interface toward the source/RP per the unicast RIB",
+    "Asymmetric routing and ECMP can make multicast arrive on an interface that is not the unicast path back, failing RPF",
+    "A missing or incorrect unicast route to the source or RP causes RPF to resolve to the wrong (or no) interface",
+    "Because RPF is driven by the unicast table, the fix is frequently a unicast routing correction or a static mroute, not a PIM change"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip mroute <group>",
+      "purpose": "Show the incoming (RPF) interface and whether traffic is arriving where RPF expects it"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip rpf <source-address>",
+      "purpose": "Reveal which interface the unicast table selects toward the source, the basis of the RPF check"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip route <source-address>",
+      "purpose": "Confirm a correct unicast route to the source/RP exists, since RPF depends on it"
+    }
+  ],
+  "traps": [
+    "Reconfiguring PIM/RP/IGMP when the mroute clearly shows an RPF failure rooted in unicast routing",
+    "Not comparing the RPF interface against the interface the traffic actually arrives on",
+    "Overlooking asymmetric paths and ECMP, which break RPF even when unicast reachability exists",
+    "Forgetting that a missing unicast route to the source or RP is enough to fail RPF entirely"
+  ],
+  "related_rules": [
+    "bgp-inactive-route-nexthop-unreachable",
+    "route-table-entry-ad-determines-source"
+  ],
+  "related_protocols": ["pim-sparse-mode", "igmp"],
+  "keywords": ["multicast", "RPF", "reverse path forwarding", "PIM", "mroute", "unicast", "asymmetric", "RP", "source", "incoming interface"],
+  "sources": [
+    {
+      "id": "rfc-7761",
+      "title": "RFC 7761 — Protocol Independent Multicast - Sparse Mode (PIM-SM)",
+      "type": "rfc",
+      "rfc_number": 7761,
+      "url": "https://www.rfc-editor.org/rfc/rfc7761.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

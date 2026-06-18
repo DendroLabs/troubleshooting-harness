@@ -1,0 +1,98 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:cloud-scale",
+      "asic_id": 0,
+      "asic_model": "Heavenly",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "ALPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 6,
+          "ifg_serdes": "HS0-HS12, FC0",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP28",
+              "end_port": 24,
+              "label": "Eth1/1-24 (SFP28)",
+              "native_speed": "25G",
+              "start_port": 1
+            },
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 54,
+              "label": "Eth1/49-54 (QSFP28)",
+              "native_speed": "100G",
+              "start_port": 49
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        },
+        {
+          "buffer_mb": 20.0,
+          "ifg_count": 6,
+          "ifg_serdes": "HS13-HS29, FC1",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "SFP28",
+              "end_port": 48,
+              "label": "Eth1/25-48 (SFP28)",
+              "native_speed": "25G",
+              "start_port": 25
+            },
+            {
+              "breakout_options": [
+                "4x25G",
+                "4x10G"
+              ],
+              "connector": "QSFP28",
+              "end_port": 60,
+              "label": "Eth1/55-60 (QSFP28)",
+              "native_speed": "100G",
+              "start_port": 55
+            }
+          ],
+          "slice_id": 1,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 40.0,
+      "total_bandwidth_gbps": 3600.0
+    }
+  ],
+  "chassis_type": "fixed",
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9300",
+  "platform_id": "n93240yc-fx2",
+  "platform_name": "Nexus 93240YC-FX2",
+  "platform_pid": "N9K-C93240YC-FX2",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-n93240yc-fx2",
+      "title": "Tech Zone: Nexus 9k ASIC Mappings, Heavenly SerDes diagram",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-9300/n93240yc-fx2.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-9300/n93240yc-fx2.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 3.6,
+  "total_ports": 60
+}

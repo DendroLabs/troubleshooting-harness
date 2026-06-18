@@ -1,0 +1,87 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:nurburgring-m1",
+      "asic_id": 0,
+      "asic_model": "Metropolis",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "Bridge Table",
+        "Replication List"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "RJ-45",
+              "end_port": 24,
+              "label": "Eth-slot/1/1-24",
+              "native_speed": "1G",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 24.0
+    },
+    {
+      "asic_family": "asic:nurburgring-m1",
+      "asic_id": 1,
+      "asic_model": "Metropolis",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "Bridge Table",
+        "Replication List"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 0,
+          "ifg_serdes": "",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "RJ-45",
+              "end_port": 48,
+              "label": "Eth-slot/1/25-48",
+              "native_speed": "1G",
+              "start_port": 25
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 24.0
+    }
+  ],
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-7000",
+  "platform_id": "n7k-m148gt-11",
+  "platform_name": "Nexus 7000 M148GT-11 (Nurburgring)",
+  "platform_pid": "N7K-M148GT-11/L",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-n7k-m148gt-11",
+      "title": "Cisco Nexus 7000 M1 (Nurburgring) Architecture",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-7000/n7k-m148gt-11.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-7000/n7k-m148gt-11.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 0.048,
+  "total_ports": 48
+}

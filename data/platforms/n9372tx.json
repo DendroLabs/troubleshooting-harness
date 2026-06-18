@@ -1,0 +1,88 @@
+{
+  "asics": [
+    {
+      "asic_family": "asic:memory-machine",
+      "asic_id": 0,
+      "asic_model": "Memory Machine",
+      "hbm_gb": 0.0,
+      "memory_tables": [
+        "LPM",
+        "Host Table",
+        "TCAM"
+      ],
+      "slices": [
+        {
+          "buffer_mb": 9.0,
+          "ifg_count": 0,
+          "ifg_serdes": "12x Warpcore + 6x DS100DM410 retimers",
+          "ports": [
+            {
+              "breakout_options": [],
+              "connector": "RJ45",
+              "end_port": 48,
+              "label": "Eth1/1-48 (10GbaseT RJ45)",
+              "native_speed": "10G",
+              "start_port": 1
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 9.0,
+      "total_bandwidth_gbps": 1280.0
+    },
+    {
+      "asic_family": "asic:memory-machine",
+      "asic_id": 1,
+      "asic_model": "Donner",
+      "hbm_gb": 0.0,
+      "memory_tables": [],
+      "slices": [
+        {
+          "buffer_mb": 0.0,
+          "ifg_count": 0,
+          "ifg_serdes": "8 network ports + 6 fabric ports",
+          "ports": [
+            {
+              "breakout_options": [
+                "4x10G"
+              ],
+              "connector": "QSFP+",
+              "end_port": 54,
+              "label": "Eth1/49-54 (QSFP+ 40G)",
+              "native_speed": "40G",
+              "start_port": 49
+            }
+          ],
+          "slice_id": 0,
+          "tcam_entries": 0
+        }
+      ],
+      "sms_mb": 0.0,
+      "total_bandwidth_gbps": 160.0
+    }
+  ],
+  "chassis_type": "fixed",
+  "confidence": "medium",
+  "os": "nxos",
+  "platform_family": "nexus-9300",
+  "platform_id": "n9372tx",
+  "platform_name": "Nexus 9372TX",
+  "platform_pid": "N9K-C9372TX",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "cisco-hw-n9372tx",
+      "title": "Tech Zone: Nexus 9k ASIC Mappings, Oslo Block Diagram",
+      "type": "documentation"
+    },
+    {
+      "id": "cisco:hardware-topology/nexus-9300/n9372tx.json",
+      "title": "cisco knowledge base — hardware-topology/nexus-9300/n9372tx.json",
+      "type": "documentation"
+    }
+  ],
+  "total_bandwidth_tbps": 1.44,
+  "total_ports": 54
+}

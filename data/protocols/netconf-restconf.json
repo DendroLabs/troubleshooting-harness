@@ -1,0 +1,1649 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "NETCONF requires SSHv2 (port 830). RESTCONF requires HTTPS (TLS on port 443). gNMI requires gRPC with TLS (port 50051). All three depend on a functioning PKI or pre-shared key infrastructure for secure transport.",
+      "name": "SSH/TLS",
+      "type": "infrastructure"
+    },
+    {
+      "description": "All three interfaces require user authentication — local, TACACS+, or RADIUS. Authorization controls which YANG paths a user can read or modify. Without AAA, sessions are rejected.",
+      "name": "AAA (Authentication, Authorization, Accounting)",
+      "type": "protocol"
+    },
+    {
+      "description": "Clients must use YANG models that match the device's advertised capabilities. Models are bundled with the device software and vary by OS version. OpenConfig models provide cross-vendor compatibility; native models provide full feature coverage.",
+      "name": "YANG models",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "Client cannot establish a NETCONF session. SSH connection to port 830 is refused, times out, or fails authentication. The device never sends the NETCONF hello message. This blocks all programmatic configuration management via NETCONF.",
+      "resolutions": [
+        {
+          "action": "Enable NETCONF: 'netconf-yang' (IOS-XE), 'feature netconf' (NX-OS), 'netconf-yang agent ssh' (IOS-XR)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable NETCONF: 'netconf-yang' (IOS-XE), 'feature netconf' (NX-OS), 'netconf-yang agent ssh' (IOS-XR)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable NETCONF: 'netconf-yang' (IOS-XE), 'feature netconf' (NX-OS), 'netconf-yang agent ssh' (IOS-XR)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SSH is enabled and operational: 'show ip ssh' or 'show ssh server'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SSH is enabled and operational: 'show ip ssh' or 'show ssh server'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify SSH is enabled and operational: 'show ip ssh' or 'show ssh server'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check and adjust ACLs on management interface or VTY lines to permit TCP 830",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check and adjust ACLs on management interface or VTY lines to permit TCP 830",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check and adjust ACLs on management interface or VTY lines to permit TCP 830",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review 'show netconf-yang sessions' and close stale sessions if max is reached",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review 'show netconf-yang sessions' and close stale sessions if max is reached",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review 'show netconf-yang sessions' and close stale sessions if max is reached",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure AAA: local user with privilege 15, or TACACS+/RADIUS method list",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure AAA: local user with privilege 15, or TACACS+/RADIUS method list",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure AAA: local user with privilege 15, or TACACS+/RADIUS method list",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure SSH key exchange algorithms match between client and server",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure SSH key exchange algorithms match between client and server",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure SSH key exchange algorithms match between client and server",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "NETCONF subsystem not enabled on the device (missing 'netconf-yang' on IOS-XE, 'feature netconf' on NX-OS)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SSH not configured or SSH server disabled",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL or control-plane policing blocking TCP port 830",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Maximum concurrent NETCONF sessions reached (platform limit)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "AAA not configured — NETCONF requires valid authentication (local or TACACS+/RADIUS)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SSH version mismatch — client requires SSHv2 but device offers SSHv1 only",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VRF mismatch — SSH listener not bound to the management VRF the client is reaching",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "NETCONF session not establishing — SSH to port 830 fails",
+      "symptoms": [
+        "Client receives SSH connection refused or timeout on port 830",
+        "SSH connects but NETCONF subsystem is not available",
+        "'show netconf-yang sessions' shows no active sessions",
+        "Client log shows authentication failure or capability mismatch",
+        "Max-sessions-reached error in device logs"
+      ],
+      "verify_commands": [
+        {
+          "command": "show netconf-yang sessions",
+          "confirms_if": "Shows active sessions or confirms NETCONF subsystem is running",
+          "look_for": "Check number of active sessions vs. platform max. If no output or command not recognized, NETCONF is not enabled.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show netconf-yang sessions",
+          "confirms_if": "Shows active sessions or confirms NETCONF subsystem is running",
+          "look_for": "Check number of active sessions vs. platform max. If no output or command not recognized, NETCONF is not enabled.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show netconf-yang sessions",
+          "confirms_if": "Shows active sessions or confirms NETCONF subsystem is running",
+          "look_for": "Check number of active sessions vs. platform max. If no output or command not recognized, NETCONF is not enabled.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include netconf",
+          "confirms_if": "Presence of netconf configuration confirms the feature is enabled",
+          "look_for": "Look for 'netconf-yang' (IOS-XE), 'feature netconf' (NX-OS), or 'netconf-yang agent ssh' (IOS-XR) in the running config",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include netconf",
+          "confirms_if": "Presence of netconf configuration confirms the feature is enabled",
+          "look_for": "Look for 'netconf-yang' (IOS-XE), 'feature netconf' (NX-OS), or 'netconf-yang agent ssh' (IOS-XR) in the running config",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include netconf",
+          "confirms_if": "Presence of netconf configuration confirms the feature is enabled",
+          "look_for": "Look for 'netconf-yang' (IOS-XE), 'feature netconf' (NX-OS), or 'netconf-yang agent ssh' (IOS-XR) in the running config",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ssh",
+          "confirms_if": "SSH v2 enabled confirms transport layer is ready for NETCONF",
+          "look_for": "Verify SSH version (must be 2), authentication timeout, and that SSH server is enabled",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ssh",
+          "confirms_if": "SSH v2 enabled confirms transport layer is ready for NETCONF",
+          "look_for": "Verify SSH version (must be 2), authentication timeout, and that SSH server is enabled",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip ssh",
+          "confirms_if": "SSH v2 enabled confirms transport layer is ready for NETCONF",
+          "look_for": "Verify SSH version (must be 2), authentication timeout, and that SSH server is enabled",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Client automation sends NETCONF/RESTCONF/gNMI operations using a YANG model version or structure that does not match what the device supports. The device returns rpc-error with 'unknown element', 'data-missing', or 'invalid-value'. This is the most common programmability issue — especially when mixing OpenConfig and native (Cisco) YANG models, or when the device software was upgraded and YANG models changed.",
+      "resolutions": [
+        {
+          "action": "Retrieve device capabilities first: check hello message or 'show netconf-yang capabilities' to see which models are supported",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Retrieve device capabilities first: check hello message or 'show netconf-yang capabilities' to see which models are supported",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Retrieve device capabilities first: check hello message or 'show netconf-yang capabilities' to see which models are supported",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use YANG Suite, pyang, or yangsuite to validate the model against the device's advertised schema",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use YANG Suite, pyang, or yangsuite to validate the model against the device's advertised schema",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use YANG Suite, pyang, or yangsuite to validate the model against the device's advertised schema",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Match model to device: use Cisco-native models (Cisco-IOS-XE-*, Cisco-NX-OS-*) for full feature coverage, OpenConfig for multi-vendor",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Match model to device: use Cisco-native models (Cisco-IOS-XE-*, Cisco-NX-OS-*) for full feature coverage, OpenConfig for multi-vendor",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Match model to device: use Cisco-native models (Cisco-IOS-XE-*, Cisco-NX-OS-*) for full feature coverage, OpenConfig for multi-vendor",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Pin automation to specific YANG model revisions and test after every software upgrade",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Pin automation to specific YANG model revisions and test after every software upgrade",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Pin automation to specific YANG model revisions and test after every software upgrade",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use NETCONF get-schema RPC to download the exact YANG module from the device",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use NETCONF get-schema RPC to download the exact YANG module from the device",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use NETCONF get-schema RPC to download the exact YANG module from the device",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Client using OpenConfig model but device only supports Cisco-native model (or vice versa)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "YANG model revision changed between software versions — leaf names, containers, or types differ",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Incorrect YANG path — container/list/leaf hierarchy does not match device schema",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Client not filtering capabilities — sending model elements the device did not advertise in hello",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Unsupported leaf type or enumeration value in the specific software version",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "YANG model mismatch — client sends operations with wrong model",
+      "symptoms": [
+        "rpc-error with error-tag 'unknown-element' or 'malformed-message'",
+        "RESTCONF returns 400 Bad Request or 404 Not Found on valid-looking paths",
+        "Partial configuration applied — some leaves accepted, others rejected",
+        "gNMI Get returns empty response for paths that should have data",
+        "Automation scripts fail after device software upgrade"
+      ],
+      "verify_commands": [
+        {
+          "command": "show netconf-yang capabilities",
+          "confirms_if": "Module URI present in capabilities list confirms the device supports that YANG model revision",
+          "look_for": "Search for the YANG module name and revision date that the client is trying to use. If absent, the device does not support that model.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show netconf-yang capabilities",
+          "confirms_if": "Module URI present in capabilities list confirms the device supports that YANG model revision",
+          "look_for": "Search for the YANG module name and revision date that the client is trying to use. If absent, the device does not support that model.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show netconf-yang capabilities",
+          "confirms_if": "Module URI present in capabilities list confirms the device supports that YANG model revision",
+          "look_for": "Search for the YANG module name and revision date that the client is trying to use. If absent, the device does not support that model.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show netconf-yang statistics",
+          "confirms_if": "Rising in-bad-rpcs confirms clients are sending malformed requests",
+          "look_for": "Check 'in-rpcs' vs 'in-bad-rpcs' counters. A high in-bad-rpcs count indicates model/syntax errors from clients.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show netconf-yang statistics",
+          "confirms_if": "Rising in-bad-rpcs confirms clients are sending malformed requests",
+          "look_for": "Check 'in-rpcs' vs 'in-bad-rpcs' counters. A high in-bad-rpcs count indicates model/syntax errors from clients.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show netconf-yang statistics",
+          "confirms_if": "Rising in-bad-rpcs confirms clients are sending malformed requests",
+          "look_for": "Check 'in-rpcs' vs 'in-bad-rpcs' counters. A high in-bad-rpcs count indicates model/syntax errors from clients.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Client receives 401 Unauthorized or 403 Forbidden when attempting RESTCONF operations. The HTTPS connection itself may succeed (TLS handshake completes) but the application-layer authentication or authorization fails. This blocks all REST-based automation and often indicates missing HTTP server configuration or RBAC policy issues.",
+      "resolutions": [
+        {
+          "action": "Enable RESTCONF: 'restconf' (IOS-XE) + 'ip http secure-server' + 'ip http server'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable RESTCONF: 'restconf' (IOS-XE) + 'ip http secure-server' + 'ip http server'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable RESTCONF: 'restconf' (IOS-XE) + 'ip http secure-server' + 'ip http server'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure AAA for HTTP: 'ip http authentication local' or point to TACACS+/RADIUS",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure AAA for HTTP: 'ip http authentication local' or point to TACACS+/RADIUS",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Configure AAA for HTTP: 'ip http authentication local' or point to TACACS+/RADIUS",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Create local user with privilege 15: 'username <user> privilege 15 secret <pass>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Create local user with privilege 15: 'username <user> privilege 15 secret <pass>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Create local user with privilege 15: 'username <user> privilege 15 secret <pass>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Install a trusted certificate or configure client to skip TLS verification for lab/test",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Install a trusted certificate or configure client to skip TLS verification for lab/test",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Install a trusted certificate or configure client to skip TLS verification for lab/test",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RBAC policies: ensure user's privilege level permits the requested YANG path operations",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RBAC policies: ensure user's privilege level permits the requested YANG path operations",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RBAC policies: ensure user's privilege level permits the requested YANG path operations",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Wrong credentials or credentials not configured for RESTCONF access",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "HTTPS server not enabled — missing 'ip http secure-server' (IOS-XE)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RESTCONF feature not enabled — missing 'restconf' configuration command",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Self-signed certificate not trusted by client — TLS verification fails",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RBAC or privilege-level restrictions — user authenticated but lacks permission for the operation",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "'ip http server' not enabled — required on IOS-XE for RESTCONF redirect functionality",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "AAA method list not configured for HTTP — 'ip http authentication' missing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "RESTCONF authentication failure — HTTPS connection rejected",
+      "symptoms": [
+        "HTTP 401 Unauthorized on RESTCONF requests",
+        "HTTP 403 Forbidden — user authenticated but operation denied",
+        "HTTPS connection refused on port 443 (HTTP server not running)",
+        "TLS handshake failure — certificate not trusted by client",
+        "curl/Postman returns 'connection refused' to device RESTCONF URL"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip http server status",
+          "confirms_if": "Both HTTP and HTTPS servers enabled confirms RESTCONF transport is ready",
+          "look_for": "Check 'HTTP server status: Enabled', 'HTTP secure server status: Enabled', and the listening port (443). Also check authentication method in use.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip http server status",
+          "confirms_if": "Both HTTP and HTTPS servers enabled confirms RESTCONF transport is ready",
+          "look_for": "Check 'HTTP server status: Enabled', 'HTTP secure server status: Enabled', and the listening port (443). Also check authentication method in use.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip http server status",
+          "confirms_if": "Both HTTP and HTTPS servers enabled confirms RESTCONF transport is ready",
+          "look_for": "Check 'HTTP server status: Enabled', 'HTTP secure server status: Enabled', and the listening port (443). Also check authentication method in use.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include restconf",
+          "confirms_if": "Presence of 'restconf' confirms the RESTCONF subsystem is enabled",
+          "look_for": "Verify 'restconf' command is present in running configuration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include restconf",
+          "confirms_if": "Presence of 'restconf' confirms the RESTCONF subsystem is enabled",
+          "look_for": "Verify 'restconf' command is present in running configuration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include restconf",
+          "confirms_if": "Presence of 'restconf' confirms the RESTCONF subsystem is enabled",
+          "look_for": "Verify 'restconf' command is present in running configuration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa sessions",
+          "confirms_if": "Failed AAA session from client IP confirms authentication issue",
+          "look_for": "Check for recent authentication attempts from the RESTCONF client IP. Look for failed or rejected sessions.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa sessions",
+          "confirms_if": "Failed AAA session from client IP confirms authentication issue",
+          "look_for": "Check for recent authentication attempts from the RESTCONF client IP. Look for failed or rejected sessions.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show aaa sessions",
+          "confirms_if": "Failed AAA session from client IP confirms authentication issue",
+          "look_for": "Check for recent authentication attempts from the RESTCONF client IP. Look for failed or rejected sessions.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A gNMI telemetry subscription that was previously streaming data stops delivering updates to the collector. The gRPC channel may remain open but no SubscribeResponse messages arrive, or the channel drops entirely. Monitoring dashboards go stale, alerting becomes blind, and network visibility is lost.",
+      "resolutions": [
+        {
+          "action": "Renew TLS certificates before expiry; set up certificate rotation monitoring",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Renew TLS certificates before expiry; set up certificate rotation monitoring",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Renew TLS certificates before expiry; set up certificate rotation monitoring",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check gNMI process health: 'show grpc status' and device syslogs for crashes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check gNMI process health: 'show grpc status' and device syslogs for crashes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check gNMI process health: 'show grpc status' and device syslogs for crashes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce subscription scope: fewer paths, longer sample intervals, use on-change only where appropriate",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce subscription scope: fewer paths, longer sample intervals, use on-change only where appropriate",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Reduce subscription scope: fewer paths, longer sample intervals, use on-change only where appropriate",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify network path: ensure firewalls have long idle timeouts (3600s+) for gRPC streams",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify network path: ensure firewalls have long idle timeouts (3600s+) for gRPC streams",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify network path: ensure firewalls have long idle timeouts (3600s+) for gRPC streams",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Implement client-side reconnect logic with exponential backoff",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Implement client-side reconnect logic with exponential backoff",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Implement client-side reconnect logic with exponential backoff",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor device CPU/memory — telemetry can be resource-intensive with many sensor paths",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor device CPU/memory — telemetry can be resource-intensive with many sensor paths",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor device CPU/memory — telemetry can be resource-intensive with many sensor paths",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "TLS certificate expired — gRPC channel drops on TLS renegotiation",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "gNMI server process crashed or was restarted (software bug, memory exhaustion)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Subscription path invalid or no longer available after software/config change",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Too many subscriptions or sensor paths — device resource exhaustion (CPU, memory, buffer)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Network path issue — MTU problem or firewall state timeout on long-lived gRPC stream",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Client not reading stream fast enough — server-side buffer overflow and stream reset",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "gNMI telemetry subscription dropping — streaming telemetry stops",
+      "symptoms": [
+        "Telemetry collector shows data gap — metrics stop updating",
+        "gRPC stream returns error code UNAVAILABLE or CANCELLED",
+        "Device logs show gNMI/gRPC process crash or restart",
+        "'show telemetry ietf subscription' shows subscription in error state",
+        "Collector sees initial burst of data then silence"
+      ],
+      "verify_commands": [
+        {
+          "command": "show telemetry ietf subscription",
+          "confirms_if": "Subscription in non-Valid state confirms the subscription has failed",
+          "look_for": "Check subscription state — 'Valid' means active, anything else indicates a problem. Look at sensor-path and update interval.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show telemetry ietf subscription",
+          "confirms_if": "Subscription in non-Valid state confirms the subscription has failed",
+          "look_for": "Check subscription state — 'Valid' means active, anything else indicates a problem. Look at sensor-path and update interval.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show telemetry ietf subscription",
+          "confirms_if": "Subscription in non-Valid state confirms the subscription has failed",
+          "look_for": "Check subscription state — 'Valid' means active, anything else indicates a problem. Look at sensor-path and update interval.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show grpc status",
+          "confirms_if": "gRPC server not running or high error count confirms server-side issue",
+          "look_for": "Check if gRPC server is running, listening port, TLS status, and number of active connections. Look for error counters.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show grpc status",
+          "confirms_if": "gRPC server not running or high error count confirms server-side issue",
+          "look_for": "Check if gRPC server is running, listening port, TLS status, and number of active connections. Look for error counters.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show grpc status",
+          "confirms_if": "gRPC server not running or high error count confirms server-side issue",
+          "look_for": "Check if gRPC server is running, listening port, TLS status, and number of active connections. Look for error counters.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu | include gnmi|grpc|telemetry",
+          "confirms_if": "Excessive CPU on telemetry processes confirms resource exhaustion",
+          "look_for": "Check CPU utilization of gNMI/gRPC/telemetry processes. High CPU may indicate too many subscriptions or a process loop.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu | include gnmi|grpc|telemetry",
+          "confirms_if": "Excessive CPU on telemetry processes confirms resource exhaustion",
+          "look_for": "Check CPU utilization of gNMI/gRPC/telemetry processes. High CPU may indicate too many subscriptions or a process loop.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu | include gnmi|grpc|telemetry",
+          "confirms_if": "Excessive CPU on telemetry processes confirms resource exhaustion",
+          "look_for": "Check CPU utilization of gNMI/gRPC/telemetry processes. High CPU may indicate too many subscriptions or a process loop.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A NETCONF edit-config, RESTCONF PUT/PATCH, or gNMI Set operation fails. The device returns rpc-error (NETCONF), HTTP 409/500 (RESTCONF), or gRPC ABORTED/FAILED_PRECONDITION (gNMI). The intended configuration is not applied, leaving the device in its previous state. In the worst case, a partial commit may leave the device in an inconsistent state.",
+      "resolutions": [
+        {
+          "action": "Check for active locks: 'show configuration sessions' (IOS-XR) or 'show netconf-yang sessions' and close stale sessions",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for active locks: 'show configuration sessions' (IOS-XR) or 'show netconf-yang sessions' and close stale sessions",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for active locks: 'show configuration sessions' (IOS-XR) or 'show netconf-yang sessions' and close stale sessions",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use discard-changes RPC to clean up a dirty candidate datastore before retrying",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use discard-changes RPC to clean up a dirty candidate datastore before retrying",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use discard-changes RPC to clean up a dirty candidate datastore before retrying",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For confirmed-commit: send confirming commit within the timeout, or increase the confirm-timeout value",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For confirmed-commit: send confirming commit within the timeout, or increase the confirm-timeout value",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For confirmed-commit: send confirming commit within the timeout, or increase the confirm-timeout value",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Validate config before committing: use test-option 'test-only' to check without applying",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Validate config before committing: use test-option 'test-only' to check without applying",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Validate config before committing: use test-option 'test-only' to check without applying",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure all referenced objects exist before pushing config (interfaces, VRFs, route-maps, ACLs)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure all referenced objects exist before pushing config (interfaces, VRFs, route-maps, ACLs)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure all referenced objects exist before pushing config (interfaces, VRFs, route-maps, ACLs)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use rollback-on-error error-option to prevent partial commits",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use rollback-on-error error-option to prevent partial commits",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use rollback-on-error error-option to prevent partial commits",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Config datastore locked by another NETCONF session — 'lock-denied' error",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Validation error in candidate configuration — conflicting or incomplete config",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Confirmed-commit timeout — commit was conditional and confirm was not sent in time",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Resource unavailable — hardware table full, TCAM exhausted, license missing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Dependency error — config references an object that does not exist (e.g., interface, VRF, ACL)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Device in config-exclusive mode — another user/session has exclusive config access",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Config replace/commit failure — edit-config fails to apply",
+      "symptoms": [
+        "rpc-error with error-tag 'lock-denied', 'in-use', or 'resource-denied'",
+        "RESTCONF 409 Conflict — another session holds the config lock",
+        "edit-config succeeds but commit fails with validation error",
+        "Confirmed-commit timer expires and config is rolled back automatically",
+        "gNMI Set returns FAILED_PRECONDITION — config dependency not met"
+      ],
+      "verify_commands": [
+        {
+          "command": "show configuration sessions",
+          "confirms_if": "Active session with lock confirms lock contention as root cause",
+          "look_for": "Shows active configuration sessions and who holds locks. Look for sessions in 'uncommitted' state or held locks. (IOS-XR primary command; IOS-XE shows config replace sessions.)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show configuration sessions",
+          "confirms_if": "Active session with lock confirms lock contention as root cause",
+          "look_for": "Shows active configuration sessions and who holds locks. Look for sessions in 'uncommitted' state or held locks. (IOS-XR primary command; IOS-XE shows config replace sessions.)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show configuration sessions",
+          "confirms_if": "Active session with lock confirms lock contention as root cause",
+          "look_for": "Shows active configuration sessions and who holds locks. Look for sessions in 'uncommitted' state or held locks. (IOS-XR primary command; IOS-XE shows config replace sessions.)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show netconf-yang sessions",
+          "confirms_if": "Stale session from disconnected client confirms lock-denied cause",
+          "look_for": "List all active NETCONF sessions. Check session IDs, source IPs, and how long they have been connected. Stale sessions may be holding locks.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show netconf-yang sessions",
+          "confirms_if": "Stale session from disconnected client confirms lock-denied cause",
+          "look_for": "List all active NETCONF sessions. Check session IDs, source IPs, and how long they have been connected. Stale sessions may be holding locks.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show netconf-yang sessions",
+          "confirms_if": "Stale session from disconnected client confirms lock-denied cause",
+          "look_for": "List all active NETCONF sessions. Check session IDs, source IPs, and how long they have been connected. Stale sessions may be holding locks.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show configuration failed",
+          "confirms_if": "Specific validation error identifies the exact config element that failed",
+          "look_for": "Shows the last failed configuration attempt with error details. Available on IOS-XR. Look for the specific validation error or dependency failure.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show configuration failed",
+          "confirms_if": "Specific validation error identifies the exact config element that failed",
+          "look_for": "Shows the last failed configuration attempt with error details. Available on IOS-XR. Look for the specific validation error or dependency failure.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show configuration failed",
+          "confirms_if": "Specific validation error identifies the exact config element that failed",
+          "look_for": "Shows the last failed configuration attempt with error details. Available on IOS-XR. Look for the specific validation error or dependency failure.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "NETCONF capability exchange — sent by both client and server immediately after SSH channel establishment. Advertises supported YANG models, NETCONF versions, and optional capabilities (candidate, confirmed-commit, xpath, etc.).",
+      "key_fields": [
+        "session-id",
+        "capabilities (list of YANG model URIs)",
+        "NETCONF base version (1.0 or 1.1)"
+      ],
+      "name": "hello",
+      "when_sent": "Immediately after SSH subsystem 'netconf' is activated"
+    },
+    {
+      "description": "NETCONF retrieval RPCs. 'get' retrieves operational state + config; 'get-config' retrieves only configuration from a specified datastore (running, candidate, startup). RESTCONF equivalents: GET on data resource. gNMI equivalent: Get RPC.",
+      "key_fields": [
+        "source datastore (running/candidate/startup)",
+        "filter (subtree or XPath)",
+        "YANG path"
+      ],
+      "name": "get / get-config",
+      "when_sent": "Client requests operational or configuration data"
+    },
+    {
+      "description": "NETCONF configuration modification RPC. Applies changes to the target datastore with merge/replace/create/delete/remove operations. RESTCONF equivalents: PUT (replace), PATCH (merge), POST (create), DELETE. gNMI equivalent: Set RPC (update/replace/delete).",
+      "key_fields": [
+        "target datastore (running/candidate)",
+        "default-operation (merge/replace/none)",
+        "error-option (stop-on-error/continue-on-error/rollback-on-error)",
+        "test-option (test-then-set/set/test-only)"
+      ],
+      "name": "edit-config",
+      "when_sent": "Client pushes configuration changes to the device"
+    },
+    {
+      "description": "NETCONF server response to any RPC. Contains either the requested data (for get/get-config), an <ok/> confirmation (for edit-config/commit), or <rpc-error> with error details. RESTCONF equivalents: HTTP response with status code + body. gNMI equivalent: GetResponse / SetResponse.",
+      "key_fields": [
+        "message-id (correlates to request)",
+        "rpc-error (error-type, error-tag, error-severity, error-message)",
+        "ok (success confirmation)"
+      ],
+      "name": "rpc-reply",
+      "when_sent": "Server responds to a client RPC request"
+    },
+    {
+      "description": "Asynchronous event or telemetry push. NETCONF: <notification> with eventTime and payload. gNMI: SubscribeResponse with Update messages containing timestamped path-value pairs. Used for streaming telemetry (sample-based or on-change).",
+      "key_fields": [
+        "eventTime / timestamp",
+        "YANG path",
+        "encoding (JSON_IETF, PROTO, bytes)",
+        "subscription-id"
+      ],
+      "name": "notification / Subscribe-Update",
+      "when_sent": "Device pushes data at configured sample interval, on data change (on-change subscription), or on event occurrence"
+    }
+  ],
+  "operates_at": "Layer 7 (Application)",
+  "protocol_family": "services",
+  "protocol_id": "netconf-restconf",
+  "protocol_name": "NETCONF/RESTCONF/gNMI",
+  "purpose": "Model-driven programmatic configuration management, operational state retrieval, and streaming telemetry via YANG-modeled data over SSH (NETCONF), HTTPS (RESTCONF), or gRPC (gNMI)",
+  "related_protocols": [
+    "snmp",
+    "tacacs"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-6241",
+      "rfc_number": 6241,
+      "title": "RFC 6241",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc6241.txt"
+    },
+    {
+      "id": "rfc-8040",
+      "rfc_number": 8040,
+      "title": "RFC 8040",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc8040.txt"
+    },
+    {
+      "id": "agent-cisco-kb:services/netconf-restconf.json",
+      "title": "agent-cisco-kb knowledge base — services/netconf-restconf.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 6241 (NETCONF), RFC 8040 (RESTCONF), gRPC/gNMI (OpenConfig)",
+  "states": [
+    {
+      "description": "No active NETCONF/RESTCONF/gNMI session. Transport is not established — no SSH channel (NETCONF), no HTTPS connection (RESTCONF), and no gRPC channel (gNMI) to the device.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "DISCONNECTED"
+    },
+    {
+      "description": "Transport established and NETCONF hello exchanged (capability negotiation complete), RESTCONF HTTPS session authenticated, or gNMI gRPC channel open. Device is ready to accept RPCs, REST operations, or gNMI requests. This is the normal operational state for request/response interactions.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "SESSION_OPEN"
+    },
+    {
+      "description": "A telemetry subscription is active — the device is streaming updates to the collector via NETCONF notifications or gNMI Subscribe RPCs. Data is pushed at configured intervals (sample/on-change). This is the normal state for telemetry.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "SUBSCRIBED"
+    }
+  ],
+  "tags": [
+    "netconf",
+    "restconf",
+    "gnmi",
+    "yang",
+    "automation",
+    "programmability",
+    "telemetry",
+    "grpc",
+    "openconfig",
+    "services"
+  ],
+  "timers": [
+    {
+      "default_rfc": "3600s (vendor-specific)",
+      "description": "Maximum time a NETCONF session can remain idle (no RPC exchange) before the device closes it. Prevents session leaks from disconnected or abandoned clients.",
+      "name": "netconf-session-idle-timeout",
+      "on_expiry": "Device closes the NETCONF session and releases the session slot. If the client held a config lock, the lock is released.",
+      "range": "0-86400s (0 = no timeout)",
+      "tuning_advice": "Lower to 300-600s in environments with many automation clients to prevent session exhaustion. Set to 0 only for persistent monitoring sessions."
+    },
+    {
+      "default_rfc": "0 (disabled; vendor-specific)",
+      "description": "Interval at which the gNMI server sends a heartbeat message on an active subscription to indicate the stream is still alive, even when no data changes have occurred.",
+      "name": "gnmi-subscription-heartbeat-interval",
+      "on_expiry": "Collector receives a heartbeat update confirming the subscription is still active. If heartbeats stop, the collector should assume the subscription has failed.",
+      "range": "0-3600s",
+      "tuning_advice": "Set to 60-120s for on-change subscriptions so the collector can detect stream failures quickly without waiting for the next data change."
+    }
+  ],
+  "transitions": [
+    {
+      "failure_if_stuck": "Transport or authentication failure — SSH not enabled, certificates invalid, AAA misconfigured, ACL blocking port, or max sessions reached",
+      "from_state": "DISCONNECTED",
+      "to_state": "SESSION_OPEN",
+      "trigger": "SSH connection established on port 830 and NETCONF hello exchanged (capability advertisement); or HTTPS connection established and authenticated (RESTCONF); or gRPC channel opened with TLS handshake (gNMI)"
+    },
+    {
+      "failure_if_stuck": "Subscription path invalid, YANG model not supported, or device resource limits exceeded (too many concurrent subscriptions)",
+      "from_state": "SESSION_OPEN",
+      "to_state": "SUBSCRIBED",
+      "trigger": "Client issues a NETCONF create-subscription RPC, or gNMI Subscribe RPC with valid YANG path and encoding. Device begins streaming telemetry updates."
+    },
+    {
+      "from_state": "SESSION_OPEN",
+      "to_state": "DISCONNECTED",
+      "trigger": "Client sends close-session RPC, idle timeout expires, TCP connection drops, SSH keepalive failure, or TLS session terminated"
+    }
+  ],
+  "transport": "TCP 830 (NETCONF/SSH), TCP 443 (RESTCONF/HTTPS), TCP 50051 (gNMI/gRPC)",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "netconf-yang\nrestconf\nip http server\nip http secure-server\nip http authentication local\n!\ntelemetry ietf subscription 100\n encoding encode-kvgpb\n filter xpath /process-cpu-ios-xe-oper:cpu-usage/cpu-utilization/five-seconds\n source-address 10.1.1.1\n stream yang-push\n update-policy periodic 1000\n receiver ip address 10.2.2.2 57000 protocol grpc-tcp"
+      ],
+      "notes": [
+        {
+          "note": "'netconf-yang' enables NETCONF. RESTCONF requires 'restconf' + 'ip http secure-server'. Model-driven telemetry configured via 'telemetry ietf subscription'. Strong OpenConfig support across all major feature areas. YANG Suite (free tool) recommended for model exploration and RPC testing. gNMI requires 'gnxi' or 'gnmi-yang' depending on version (17.6+).",
+          "versions": "16.12+"
+        }
+      ]
+    },
+    "iosxr": {
+      "config_examples": [
+        "netconf-yang agent ssh\nssh server v2\nssh server netconf vrf default\n!\ngrpc\n port 57400\n no-tls\n address-family ipv4"
+      ],
+      "notes": [
+        {
+          "note": "NETCONF enabled by default on most versions — 'netconf-yang agent ssh' to configure explicitly. gNMI via 'grpc' configuration stanza with TLS certificate. Strong YANG and OpenConfig support — both Cisco-native (Cisco-IOS-XR-*) and OpenConfig models available. 'show netconf-yang clients' shows active NETCONF sessions. Candidate datastore with explicit commit model (commit-confirm, commit-replace supported).",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "feature netconf\nfeature restconf\nfeature grpc\n! NX-API (legacy REST):\nfeature nxapi\nnxapi http port 80\nnxapi https port 443"
+      ],
+      "notes": [
+        {
+          "note": "'feature netconf' enables NETCONF over SSH on port 830. 'feature restconf' enables RESTCONF. NX-API (REST) is the primary programmatic interface on NX-OS and predates RESTCONF support. DME (Data Management Engine) models are the native NX-OS YANG models. OpenConfig support is limited compared to IOS-XE and IOS-XR. For gNMI, use 'feature grpc' (10.2+).",
+          "versions": "9.3+"
+        }
+      ]
+    },
+    "sonic": {
+      "config_examples": [
+        "# sonic-gnmi runs as a container, configured via:\n# /etc/sonic/config_db.json -> GNMI section\n# Or via CLI:\nsudo config feature state gnmi enabled\n# gNMI default port: 8080 (insecure) or 50051 (TLS)\n# TLS certificates: /etc/sonic/telemetry/"
+      ],
+      "notes": [
+        {
+          "note": "gNMI is the primary programmatic interface for SONiC — served by the sonic-gnmi container. OpenConfig models supported for interface, BGP, routing, and system configuration. RESTCONF is not a standard SONiC interface. CONFIG_DB (Redis) is the configuration source of truth; gNMI operations translate to CONFIG_DB writes via the management framework. 'config' CLI, gNMI Set, and direct CONFIG_DB writes all converge on the same datastore.",
+          "versions": "202311+"
+        }
+      ]
+    }
+  }
+}

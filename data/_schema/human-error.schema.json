@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "human-error.schema.json",
+  "title": "Human Error Pattern",
+  "description": "Common operator mistake with detection, prevention, and correct procedure. Scoped to OS/version.",
+
+  "type": "object",
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+    "deprecated": { "type": "boolean", "default": false },
+
+    "error_id": { "type": "string" },
+    "display_name": { "type": "string" },
+    "severity": { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW"] },
+    "category": { "type": "string", "description": "e.g., config-integrity, operational, security" },
+
+    "applicable_os": { "type": "array", "items": { "type": "string" } },
+    "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+
+    "pattern": { "type": "string", "description": "What the operator does wrong" },
+    "what_goes_wrong": { "type": "string", "description": "Technical explanation of the impact" },
+    "why_it_breaks": { "type": "array", "items": { "type": "string" } },
+    "symptoms": { "type": "array", "items": { "type": "string" } },
+
+    "detection_commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "os": { "type": "string" },
+          "version_range": { "$ref": "applicability.schema.json#/$defs/version_range" },
+          "command": { "type": "string" },
+          "purpose": { "type": "string" }
+        },
+        "required": ["os", "version_range", "command", "purpose"],
+        "additionalProperties": false
+      }
+    },
+
+    "correct_procedure": { "type": "string" },
+    "prevention": { "type": "string" },
+
+    "related_errors": { "type": "array", "items": { "type": "string" } },
+    "def_refs": { "type": "array", "items": { "type": "string" } },
+    "keywords": { "type": "array", "items": { "type": "string" } },
+
+    "sources": {
+      "type": "array",
+      "items": { "$ref": "protocol.schema.json#/$defs/source" }
+    }
+  },
+  "required": [
+    "schema_version", "error_id", "display_name", "severity", "category",
+    "applicable_os", "pattern", "what_goes_wrong", "symptoms", "correct_procedure"
+  ],
+  "additionalProperties": false
+}

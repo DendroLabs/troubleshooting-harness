@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "qos-dscp-remarked-at-trust-boundary",
+  "display_name": "DSCP not matching what the host set usually means remarking at the trust boundary, not a marking failure",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Verifying end-to-end QoS and finding that the DSCP value observed on a switch differs from the value the source application set",
+  "observation": "Captured or counted DSCP markings on an interface do not match the DSCP the endpoint was configured to send (often seen as DSCP 0 / best-effort)",
+  "naive_interpretation": "The application is not marking traffic, or QoS marking is broken on the device",
+  "correct_interpretation": "By default an access port is untrusted and the switch rewrites incoming DSCP to 0 (or to a policy-defined value) at the trust boundary. Seeing DSCP 0 or a remapped value is the trust boundary doing its job, not a marking failure. The endpoint may well be marking correctly; the switch is overriding it because the port is not configured to trust DSCP/CoS. Verify the trust state and ingress marking policy before blaming the host.",
+  "why": [
+    "An untrusted port resets incoming CoS/DSCP to a default (commonly 0) so that endpoints cannot self-assign priority — this is the intended security/QoS boundary behavior",
+    "RFC 2474 defines DSCP as mutable per-hop; routers and switches are explicitly allowed to remark it according to local policy at a DiffServ boundary",
+    "Trust must be explicitly enabled (trust dscp / trust cos) or an ingress marking policy applied for host markings to survive",
+    "The observed value reflects post-classification/marking state on that device, not necessarily what arrived on the wire"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show mls qos interface GigabitEthernet1/0/1",
+      "purpose": "Show the port trust state to see whether incoming DSCP/CoS is trusted or being reset"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show policy-map interface Ethernet1/1 input",
+      "purpose": "Reveal the ingress classification/marking policy that may be remarking DSCP at this boundary"
+    },
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show queuing interface Ethernet1/1",
+      "purpose": "Confirm which queue traffic landed in, which reflects the DSCP-to-queue mapping actually applied"
+    }
+  ],
+  "traps": [
+    "Blaming the application or NIC for unmarked traffic when the switch port is simply untrusted and zeroing DSCP",
+    "Assuming DSCP is immutable end to end — any DiffServ boundary is allowed to remark it",
+    "Checking the marking on only one hop and extrapolating to the whole path",
+    "Enabling trust globally to 'fix' the symptom, inadvertently letting endpoints inject high-priority markings"
+  ],
+  "related_rules": [
+    "qos-policer-drops-vs-queue-drops"
+  ],
+  "related_protocols": [],
+  "keywords": ["QoS", "DSCP", "CoS", "trust boundary", "remark", "marking", "untrusted port", "DiffServ", "classification"],
+  "sources": [
+    {
+      "id": "rfc-2474",
+      "title": "RFC 2474 — Definition of the Differentiated Services Field (DS Field)",
+      "type": "rfc",
+      "rfc_number": 2474,
+      "url": "https://www.rfc-editor.org/rfc/rfc2474.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

@@ -1,0 +1,1708 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "IGMP signals group membership from hosts to the first-hop router. Without IGMP joins, PIM has no downstream interest.",
+      "name": "IGMP",
+      "type": "protocol"
+    },
+    {
+      "description": "PIM uses the unicast routing table for RPF checks. Multicast forwarding depends on unicast reachability to sources and RP.",
+      "name": "Unicast Routing (OSPF/BGP/IS-IS/EIGRP)",
+      "type": "protocol"
+    },
+    {
+      "description": "PIM must be explicitly enabled. On NX-OS, 'feature pim' enables the process; interfaces need 'ip pim sparse-mode'. On IOS-XE, 'ip multicast-routing' globally plus 'ip pim sparse-mode' per interface.",
+      "name": "feature pim (NX-OS) / ip pim sparse-mode (IOS-XE)",
+      "type": "infrastructure"
+    },
+    {
+      "description": "PIM-SM requires an RP for shared tree operation. Without RP, only SSM (Source-Specific Multicast) groups in 232.0.0.0/8 will work.",
+      "name": "Rendezvous Point (RP)",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "Source is sending multicast traffic and receivers have joined (IGMP groups present) but data is not flowing end-to-end.",
+      "resolutions": [
+        {
+          "action": "Check RPF with 'show ip pim route' — verify RPF interface points toward source",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RPF with 'show ip pim route' — verify RPF interface points toward source",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check RPF with 'show ip pim route' — verify RPF interface points toward source",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RP with 'show ip pim rp' and 'show ip pim rp-hash <group>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RP with 'show ip pim rp' and 'show ip pim rp-hash <group>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RP with 'show ip pim rp' and 'show ip pim rp-hash <group>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check PIM neighbors along the path with 'show ip pim neighbor'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check PIM neighbors along the path with 'show ip pim neighbor'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check PIM neighbors along the path with 'show ip pim neighbor'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MFIB programming with 'show forwarding multicast route'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MFIB programming with 'show forwarding multicast route'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify MFIB programming with 'show forwarding multicast route'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Run 'show consistency-checker l3 multicast group <group> source <source> vrf <vrf>' for HW vs SW comparison",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Run 'show consistency-checker l3 multicast group <group> source <source> vrf <vrf>' for HW vs SW comparison",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Run 'show consistency-checker l3 multicast group <group> source <source> vrf <vrf>' for HW vs SW comparison",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CoPP with 'show policy-map interface control-plane' for PIM/multicast drops",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CoPP with 'show policy-map interface control-plane' for PIM/multicast drops",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check CoPP with 'show policy-map interface control-plane' for PIM/multicast drops",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "RPF failure — traffic arriving on wrong interface, dropped by RPF check",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RP unreachable — shared tree cannot be built, no (*,G) join reaches RP",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PIM not enabled on an interface in the path — breaks the multicast tree",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Missing PIM neighbor on a transit link — joins cannot propagate",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "MFIB (hardware) not programmed — software has route but ASIC doesn't",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL or CoPP dropping PIM (protocol 103) or multicast data packets",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "No multicast traffic reaching receivers despite active source",
+      "symptoms": [
+        "show ip mroute shows (*,G) or (S,G) but packet counters are zero",
+        "show ip igmp groups shows the group on receiver interface",
+        "Receivers report no multicast stream",
+        "show ip mroute summary shows zero packets"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip mroute {group} summary",
+          "confirms_if": "Packets incrementing = traffic is flowing through this router",
+          "look_for": "Non-zero packet counters",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip mroute {group} summary",
+          "confirms_if": "Packets incrementing = traffic is flowing through this router",
+          "look_for": "Non-zero packet counters",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip mroute {group} summary",
+          "confirms_if": "Packets incrementing = traffic is flowing through this router",
+          "look_for": "Non-zero packet counters",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show forwarding multicast route",
+          "confirms_if": "Hardware is programmed correctly for multicast forwarding",
+          "look_for": "(S,G) or (*,G) entry with correct RPF and OIF list",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show forwarding multicast route",
+          "confirms_if": "Hardware is programmed correctly for multicast forwarding",
+          "look_for": "(S,G) or (*,G) entry with correct RPF and OIF list",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show forwarding multicast route",
+          "confirms_if": "Hardware is programmed correctly for multicast forwarding",
+          "look_for": "(S,G) or (*,G) entry with correct RPF and OIF list",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Multicast packets are arriving on an interface that is not the RPF interface toward the source. Packets are dropped by the RPF check, causing traffic loss for downstream receivers.",
+      "resolutions": [
+        {
+          "action": "Compare 'show ip pim route' RPF with unicast route to source (show ip route <source>)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare 'show ip pim route' RPF with unicast route to source (show ip route <source>)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare 'show ip pim route' RPF with unicast route to source (show ip route <source>)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for static mroutes in running-config ('ip mroute' commands)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for static mroutes in running-config ('ip mroute' commands)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for static mroutes in running-config ('ip mroute' commands)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If routing changed recently, 'clear ip mroute *' forces MFIB reprogramming (brief outage)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If routing changed recently, 'clear ip mroute *' forces MFIB reprogramming (brief outage)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If routing changed recently, 'clear ip mroute *' forces MFIB reprogramming (brief outage)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PIM enabled on all interfaces with 'show ip pim interface'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PIM enabled on all interfaces with 'show ip pim interface'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PIM enabled on all interfaces with 'show ip pim interface'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show routing multicast' for MRIB vs unicast RIB differences",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show routing multicast' for MRIB vs unicast RIB differences",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show routing multicast' for MRIB vs unicast RIB differences",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Asymmetric routing — unicast and multicast paths diverge",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Static mroute ('ip mroute') overriding unicast RPF with wrong interface",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Routing table change — IGP reconvergence caused RPF interface to change, stale MFIB entry",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PIM not enabled on the new RPF interface after topology change",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ECMP — multicast RPF picks one path, but traffic arrives on the other",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "RPF failure — multicast traffic dropped by RPF check",
+      "symptoms": [
+        "show ip mroute <group> summary shows rpf-failed counter incrementing",
+        "show ip mroute summary rpf-failed shows affected groups",
+        "Source is active (packets counted on upstream router) but not on this router",
+        "Traffic loss starts after routing change or topology event"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip mroute {group} summary",
+          "confirms_if": "RPF failure resolved — packets no longer being dropped",
+          "look_for": "rpf-failed counter stops incrementing",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip mroute {group} summary",
+          "confirms_if": "RPF failure resolved — packets no longer being dropped",
+          "look_for": "rpf-failed counter stops incrementing",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip mroute {group} summary",
+          "confirms_if": "RPF failure resolved — packets no longer being dropped",
+          "look_for": "rpf-failed counter stops incrementing",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "PIM Hello messages not being exchanged between two routers on a shared link. Without PIM adjacency, join/prune messages cannot be sent, breaking the multicast tree across this link.",
+      "resolutions": [
+        {
+          "action": "Verify 'feature pim' enabled and 'ip pim sparse-mode' on interface (both sides)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify 'feature pim' enabled and 'ip pim sparse-mode' on interface (both sides)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify 'feature pim' enabled and 'ip pim sparse-mode' on interface (both sides)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs for IP protocol 103 or multicast 224.0.0.13",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs for IP protocol 103 or multicast 224.0.0.13",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ACLs for IP protocol 103 or multicast 224.0.0.13",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify CoPP class for PIM — 'show policy-map interface control-plane'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify CoPP class for PIM — 'show policy-map interface control-plane'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify CoPP class for PIM — 'show policy-map interface control-plane'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm interface VRF assignment matches PIM config",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm interface VRF assignment matches PIM config",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm interface VRF assignment matches PIM config",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Run 'show ip pim config-sanity' for configuration validation",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Run 'show ip pim config-sanity' for configuration validation",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Run 'show ip pim config-sanity' for configuration validation",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "PIM not enabled on one or both sides of the link",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL or CoPP dropping PIM Hello (IP protocol 103, destination 224.0.0.13)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interface down or in error state",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VRF mismatch — PIM configured in different VRFs on each side",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Layer 2 issue — 224.0.0.13 being filtered by IGMP snooping misconfiguration",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "PIM neighbor not forming on a link",
+      "symptoms": [
+        "show ip pim neighbor missing expected peer",
+        "show ip pim interface shows zero neighbors on the affected interface",
+        "Multicast works on other paths but not through this link",
+        "show ip pim statistics shows zero hello RX on the interface"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip pim neighbor",
+          "confirms_if": "PIM adjacency is up",
+          "look_for": "Expected neighbor IP appears with non-zero uptime",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip pim neighbor",
+          "confirms_if": "PIM adjacency is up",
+          "look_for": "Expected neighbor IP appears with non-zero uptime",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip pim neighbor",
+          "confirms_if": "PIM adjacency is up",
+          "look_for": "Expected neighbor IP appears with non-zero uptime",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "PIM-SM shared tree cannot be built because the RP is unreachable, or different routers are selecting different RPs for the same group range.",
+      "resolutions": [
+        {
+          "action": "Verify RP mapping on ALL routers in the path: 'show ip pim rp' and 'show ip pim rp-hash <group>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RP mapping on ALL routers in the path: 'show ip pim rp' and 'show ip pim rp-hash <group>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RP mapping on ALL routers in the path: 'show ip pim rp' and 'show ip pim rp-hash <group>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure RP address is reachable: ping the RP from each router in the path",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure RP address is reachable: ping the RP from each router in the path",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure RP address is reachable: ping the RP from each router in the path",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For BSR: check 'show ip pim group-range' — should show consistent BSR-learned mappings",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For BSR: check 'show ip pim group-range' — should show consistent BSR-learned mappings",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For BSR: check 'show ip pim group-range' — should show consistent BSR-learned mappings",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For static RP: verify consistent 'ip pim rp-address' config on all routers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For static RP: verify consistent 'ip pim rp-address' config on all routers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For static RP: verify consistent 'ip pim rp-address' config on all routers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show ip pim config-sanity' for RP configuration issues",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show ip pim config-sanity' for RP configuration issues",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check 'show ip pim config-sanity' for RP configuration issues",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "RP not configured or static RP pointing to wrong address",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BSR/Auto-RP not propagating RP information to all routers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RP address not reachable via unicast routing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RP-to-group mapping mismatch — different static configs on different routers",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BSR border configured on an interface blocking RP advertisements",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RP overloaded or PIM process down on RP router",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "RP unreachable or RP mismatch between routers",
+      "symptoms": [
+        "show ip mroute shows no (*,G) entry for the group",
+        "show ip pim rp shows no RP for the group range",
+        "show ip pim rp-hash <group> returns different RPs on different routers",
+        "Source can send but receivers never get traffic (no shared tree to RP)"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip pim rp",
+          "confirms_if": "RP is configured and known for this group",
+          "look_for": "RP address present for the affected group range",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip pim rp",
+          "confirms_if": "RP is configured and known for this group",
+          "look_for": "RP address present for the affected group range",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip pim rp",
+          "confirms_if": "RP is configured and known for this group",
+          "look_for": "RP address present for the affected group range",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip pim rp-hash {group}",
+          "confirms_if": "All routers agree on the RP for this group",
+          "look_for": "Same RP address on all routers for this group",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip pim rp-hash {group}",
+          "confirms_if": "All routers agree on the RP for this group",
+          "look_for": "Same RP address on all routers for this group",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip pim rp-hash {group}",
+          "confirms_if": "All routers agree on the RP for this group",
+          "look_for": "Same RP address on all routers for this group",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "MRIB shows the (S,G) or (*,G) entry with correct OIFs, but the hardware MFIB does not have the entry or has stale data. Traffic is either dropped or punt-switched to CPU (slow path).",
+      "resolutions": [
+        {
+          "action": "Check TCAM utilization: 'show hardware capacity forwarding'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check TCAM utilization: 'show hardware capacity forwarding'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check TCAM utilization: 'show hardware capacity forwarding'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Run consistency checker: 'show consistency-checker l3 multicast group <group> source <source> vrf <vrf>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Run consistency checker: 'show consistency-checker l3 multicast group <group> source <source> vrf <vrf>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Run consistency checker: 'show consistency-checker l3 multicast group <group> source <source> vrf <vrf>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear and reprogram: 'clear ip mroute <group>' (brief outage for this group)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear and reprogram: 'clear ip mroute <group>' (brief outage for this group)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear and reprogram: 'clear ip mroute <group>' (brief outage for this group)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On modular chassis: 'show forwarding multicast route module <mod>' to check per-module",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On modular chassis: 'show forwarding multicast route module <mod>' to check per-module",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On modular chassis: 'show forwarding multicast route module <mod>' to check per-module",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If TCAM full: check 'show ip mroute summary' for total route count, consider pruning stale groups",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If TCAM full: check 'show ip mroute summary' for total route count, consider pruning stale groups",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If TCAM full: check 'show ip mroute summary' for total route count, consider pruning stale groups",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Hardware multicast route table (TCAM) full — no space for new entries",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Programming failure between MRIB and MFIB (software bug)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Stale MFIB entry after rapid route changes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Module communication failure on modular chassis — route not pushed to linecard",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Multicast route in software but not programmed in hardware",
+      "symptoms": [
+        "show ip mroute shows entry with non-empty OIF list",
+        "show forwarding multicast route missing the entry or shows different OIF list",
+        "show consistency-checker l3 multicast reports FAILED",
+        "High CPU due to multicast traffic being punt-switched"
+      ],
+      "verify_commands": [
+        {
+          "command": "show consistency-checker l3 multicast group {group} source {source} vrf {vrf}",
+          "confirms_if": "Software and hardware multicast tables are consistent",
+          "look_for": "PASSED for all entries",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show consistency-checker l3 multicast group {group} source {source} vrf {vrf}",
+          "confirms_if": "Software and hardware multicast tables are consistent",
+          "look_for": "PASSED for all entries",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show consistency-checker l3 multicast group {group} source {source} vrf {vrf}",
+          "confirms_if": "Software and hardware multicast tables are consistent",
+          "look_for": "PASSED for all entries",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Hosts are sending IGMP joins but the first-hop L3 router is not creating IGMP group state. Typically an L2/snooping issue between host and router.",
+      "resolutions": [
+        {
+          "action": "Verify PIM enabled on SVI: 'show ip pim interface' should list the SVI",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PIM enabled on SVI: 'show ip pim interface' should list the SVI",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify PIM enabled on SVI: 'show ip pim interface' should list the SVI",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check snooping mrouter ports: 'show ip igmp snooping mrouter' — router port must be listed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check snooping mrouter ports: 'show ip igmp snooping mrouter' — router port must be listed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check snooping mrouter ports: 'show ip igmp snooping mrouter' — router port must be listed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify IGMP version: 'show ip igmp interface <intf>' — match host IGMP version",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify IGMP version: 'show ip igmp interface <intf>' — match host IGMP version",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify IGMP version: 'show ip igmp interface <intf>' — match host IGMP version",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check join policies: 'show ip igmp policy statistics reports' for deny counters",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check join policies: 'show ip igmp policy statistics reports' for deny counters",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check join policies: 'show ip igmp policy statistics reports' for deny counters",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm snooping is passing joins: 'show ip igmp snooping statistics' for join RX counters",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm snooping is passing joins: 'show ip igmp snooping statistics' for join RX counters",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Confirm snooping is passing joins: 'show ip igmp snooping statistics' for join RX counters",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "IGMP snooping filtering/dropping IGMP joins before they reach the router",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "No mrouter port configured or detected — switch not forwarding joins to router",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGMP version mismatch — host sending IGMPv3 but router expects IGMPv2 (or vice versa)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IGMP join policy (access-group/route-map) filtering the group on the router interface",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PIM not enabled on the SVI/interface — IGMP won't be active",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VLAN/SVI mismatch — host in wrong VLAN or SVI not created",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "IGMP joins not reaching the L3 PIM router",
+      "symptoms": [
+        "show ip igmp groups on the router shows no entry for the group",
+        "Host application shows it has joined the group",
+        "show ip igmp snooping groups may or may not show the entry",
+        "show ip igmp snooping mrouter shows no mrouter port"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip igmp groups",
+          "confirms_if": "IGMP join is being processed by the router",
+          "look_for": "Group address present on receiver-facing interface",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp groups",
+          "confirms_if": "IGMP join is being processed by the router",
+          "look_for": "Group address present on receiver-facing interface",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip igmp groups",
+          "confirms_if": "IGMP join is being processed by the router",
+          "look_for": "Group address present on receiver-facing interface",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Periodic neighbor discovery and capability exchange on PIM-enabled interfaces",
+      "key_fields": [
+        "Holdtime",
+        "DR Priority",
+        "Generation ID",
+        "LAN Prune Delay",
+        "Address List"
+      ],
+      "name": "Hello",
+      "when_sent": "Every Hello Interval (default 30s) on each PIM-enabled interface"
+    },
+    {
+      "description": "Request to join or prune a multicast group. Sent toward RP for (*,G) or toward source for (S,G).",
+      "key_fields": [
+        "Upstream Neighbor",
+        "Group Address",
+        "Source Address",
+        "Join or Prune flag",
+        "Holdtime"
+      ],
+      "name": "Join/Prune",
+      "when_sent": "When IGMP join/leave triggers PIM state change, or periodically to refresh (every 60s)"
+    },
+    {
+      "description": "Unicast encapsulation of multicast data from FHR to RP. Used to notify RP of an active source.",
+      "key_fields": [
+        "Border bit",
+        "Null-Register bit",
+        "Encapsulated multicast data packet"
+      ],
+      "name": "Register",
+      "when_sent": "When FHR detects multicast source on directly-connected network and has no (S,G) SPT state"
+    },
+    {
+      "description": "Sent by RP to FHR to stop Register encapsulation. RP has either joined SPT or has no receivers.",
+      "key_fields": [
+        "Group Address",
+        "Source Address"
+      ],
+      "name": "Register-Stop",
+      "when_sent": "When RP receives Register and either has no receivers or has already joined the SPT to source"
+    },
+    {
+      "description": "Sent when multiple routers on a multi-access network are forwarding the same multicast stream. Elects a single forwarder based on metric.",
+      "key_fields": [
+        "Group Address",
+        "Source Address",
+        "Metric Preference",
+        "Metric"
+      ],
+      "name": "Assert",
+      "when_sent": "When a router receives a multicast packet on an outgoing interface (indicates duplicate forwarding)"
+    },
+    {
+      "description": "Bootstrap Router messages for dynamic RP-to-group mapping distribution",
+      "key_fields": [
+        "BSR Address",
+        "BSR Priority",
+        "RP-Set (RP address, group range, RP priority)"
+      ],
+      "name": "Bootstrap (BSR)",
+      "when_sent": "Periodically by the elected BSR to distribute RP-set to all PIM routers (destination 224.0.0.13)"
+    },
+    {
+      "description": "Sent by Candidate-RPs to the BSR to announce willingness to serve as RP for group ranges",
+      "key_fields": [
+        "Candidate-RP Address",
+        "Group Ranges",
+        "RP Priority"
+      ],
+      "name": "Candidate-RP-Advertisement",
+      "when_sent": "Periodically by configured Candidate-RPs to the BSR unicast address"
+    }
+  ],
+  "operates_at": "Layer 3",
+  "protocol_family": "multicast",
+  "protocol_id": "pim-sparse-mode",
+  "protocol_name": "PIM Sparse Mode",
+  "purpose": "Protocol Independent Multicast - Sparse Mode. Builds shared trees rooted at a Rendezvous Point (RP) and source trees (SPT) for multicast forwarding. Used when receivers are sparsely distributed.",
+  "related_protocols": [
+    "igmp",
+    "bgp-4",
+    "ospfv2",
+    "vxlan",
+    "evpn"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-7761",
+      "rfc_number": 7761,
+      "title": "RFC 7761",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc7761.txt"
+    },
+    {
+      "id": "agent-cisco-kb:multicast/pim-sparse-mode.json",
+      "title": "agent-cisco-kb knowledge base — multicast/pim-sparse-mode.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 7761",
+  "states": [
+    {
+      "description": "No state for this (S,G) or (*,G) — no downstream receivers and no local interest. Router has no PIM join state and is not part of the multicast tree for this group.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "NO_INFO"
+    },
+    {
+      "description": "Router has joined the multicast tree. A (*,G) or (S,G) join has been sent upstream toward the RP (shared tree) or source (shortest-path tree). Router is actively receiving or expecting to receive traffic for this group.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "JOIN"
+    },
+    {
+      "description": "A prune has been received from a downstream neighbor. Waiting for Prune-Pending timer (typically 3 seconds) before removing state — allows other downstream routers on the same LAN to override with a join.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "PRUNE_PENDING"
+    },
+    {
+      "description": "Source's first-hop router (FHR) is encapsulating multicast data in PIM Register messages and unicasting them to the RP. Waiting for Register-Stop from RP to stop encapsulation.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "REGISTER_SENT"
+    },
+    {
+      "description": "FHR received Register-Stop from RP. Register encapsulation has stopped. A Register-Probe is sent periodically (every Register-Suppress-Time minus Probe-Time) to check if RP still doesn't need encapsulated data.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "REGISTER_SUPPRESSED"
+    },
+    {
+      "description": "Router is switching from shared tree (*,G via RP) to shortest-path tree (S,G direct to source). An (S,G) join is sent toward the source while (*,G) state is maintained until SPT traffic arrives.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "SPT_SWITCHOVER"
+    }
+  ],
+  "tags": [
+    "multicast",
+    "pim",
+    "sparse-mode",
+    "rp",
+    "rendezvous-point",
+    "rpf",
+    "spt",
+    "shared-tree",
+    "source-tree",
+    "join",
+    "prune",
+    "register",
+    "layer-3",
+    "mroute",
+    "mrib",
+    "mfib"
+  ],
+  "timers": [
+    {
+      "default_rfc": "30s",
+      "description": "Interval between PIM Hello messages on each PIM-enabled interface",
+      "name": "Hello Interval",
+      "on_expiry": "Send PIM Hello on interface",
+      "os_defaults": [
+        {
+          "default": "30s",
+          "notes": "Configure with 'ip pim hello-interval' under interface config",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "30s",
+          "notes": "Configure with 'ip pim query-interval' under interface config",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-65535s",
+      "tuning_advice": "Lower values speed up neighbor detection but add overhead. 30s is appropriate for most networks."
+    },
+    {
+      "default_rfc": "105s",
+      "description": "Time to wait before declaring a PIM neighbor dead after last Hello received",
+      "name": "Neighbor Holdtime",
+      "on_expiry": "PIM neighbor declared dead, all join state via that neighbor is removed, tree rebuilt",
+      "range": "1-65535s",
+      "tuning_advice": "Default is 3.5x hello interval. Reducing below 3x risks false neighbor-down in lossy environments."
+    },
+    {
+      "default_rfc": "60s",
+      "description": "Interval for periodic Join/Prune message refresh to upstream neighbor",
+      "name": "Join/Prune Interval",
+      "on_expiry": "Send Join/Prune refresh upstream to maintain multicast tree state",
+      "os_defaults": [
+        {
+          "default": "60s",
+          "notes": "Configure with 'ip pim jp-interval' in PIM config",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-65535s",
+      "tuning_advice": "Upstream neighbor expects refresh within join holdtime (default 210s = 3.5 x 60s). Do not reduce below 10s."
+    },
+    {
+      "default_rfc": "210s",
+      "description": "How long upstream router holds join state before timing out if no refresh received",
+      "name": "Join/Prune Holdtime",
+      "on_expiry": "Join state expires, router prunes itself from the tree. Traffic loss for downstream receivers.",
+      "tuning_advice": "Automatically set to 3.5x Join/Prune Interval. Do not set manually unless debugging."
+    },
+    {
+      "default_rfc": "60s",
+      "description": "Time FHR suppresses Register encapsulation after receiving Register-Stop from RP",
+      "name": "Register-Suppress Timer",
+      "on_expiry": "FHR sends Register-Probe (null Register) to check if RP still wants suppression",
+      "tuning_advice": "Do not change. Mismatched values between FHR and RP cause periodic traffic loss."
+    },
+    {
+      "default_rfc": "3s",
+      "description": "Delay between receiving a Prune and actually removing the interface from OIF list (allows join override on multi-access networks)",
+      "name": "Prune-Pending Timer",
+      "on_expiry": "Interface removed from OIF list, traffic stops flowing to that downstream neighbor",
+      "tuning_advice": "Should be less than Join/Prune Interval. Do not change unless debugging."
+    },
+    {
+      "default_rfc": "0 kbps (immediate switchover)",
+      "description": "Data rate threshold that triggers switchover from shared tree to shortest-path tree. When exceeded, router sends (S,G) join toward source.",
+      "name": "SPT-Threshold",
+      "on_expiry": "Not timer-based — triggered when data rate exceeds threshold",
+      "os_defaults": [
+        {
+          "default": "0 (immediate)",
+          "notes": "Configure with 'ip pim spt-threshold infinity group-list <prefix-list>' to prevent SPT switchover for specific groups",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "0-4294967 kbps or infinity",
+      "tuning_advice": "Default 0 (immediate) is recommended. 'infinity' keeps traffic on shared tree permanently."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "NO_INFO",
+      "to_state": "JOIN",
+      "trigger": "IGMP join received from host, or PIM join received from downstream router"
+    },
+    {
+      "from_state": "JOIN",
+      "to_state": "PRUNE_PENDING",
+      "trigger": "PIM prune received from downstream neighbor on a multi-access network"
+    },
+    {
+      "from_state": "PRUNE_PENDING",
+      "to_state": "NO_INFO",
+      "trigger": "Prune-Pending timer expires with no join override received"
+    },
+    {
+      "from_state": "PRUNE_PENDING",
+      "to_state": "JOIN",
+      "trigger": "Join override received from another downstream neighbor before Prune-Pending timer expires"
+    },
+    {
+      "from_state": "JOIN",
+      "to_state": "NO_INFO",
+      "trigger": "Last downstream receiver leaves (IGMP leave or PIM prune) and join timer expires"
+    },
+    {
+      "failure_if_stuck": "Source detected but Register not sent — check if RP is reachable and PIM enabled on source interface",
+      "from_state": "NO_INFO",
+      "to_state": "REGISTER_SENT",
+      "trigger": "First-hop router detects multicast source sending on a directly connected network"
+    },
+    {
+      "failure_if_stuck": "Register-Stop never arrives — check RP reachability, ACLs blocking unicast Register packets to RP, or RP not running PIM",
+      "from_state": "REGISTER_SENT",
+      "to_state": "REGISTER_SUPPRESSED",
+      "trigger": "Register-Stop received from RP (RP has built SPT or has no receivers)"
+    },
+    {
+      "from_state": "REGISTER_SUPPRESSED",
+      "to_state": "REGISTER_SENT",
+      "trigger": "Register-Suppress timer expires, Register-Probe sent, no Register-Stop received"
+    },
+    {
+      "failure_if_stuck": "SPT switchover not completing — check RPF to source, PIM adjacency toward source",
+      "from_state": "JOIN",
+      "to_state": "SPT_SWITCHOVER",
+      "trigger": "First (S,G) data packet received on shared tree and SPT-threshold exceeded (NX-OS default: immediate switchover, threshold 0)"
+    },
+    {
+      "from_state": "SPT_SWITCHOVER",
+      "to_state": "JOIN",
+      "trigger": "SPT join reaches source's FHR, (S,G) traffic arrives on SPT"
+    }
+  ],
+  "transport": "IP protocol 103 (destination 224.0.0.13 for hellos, unicast for register)",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "ip multicast-routing\ninterface Vlan100\n  ip pim sparse-mode\nip pim rp-address 10.1.1.1"
+      ],
+      "notes": [
+        {
+          "note": "Requires 'ip multicast-routing' global config and 'ip pim sparse-mode' on each interface. IOS-XE has 'show ip rpf <source>' which NX-OS does not. 'show ip mroute count' for statistics instead of NX-OS 'show ip mroute summary'.",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "feature pim\ninterface Vlan100\n  ip pim sparse-mode\nip pim rp-address 10.1.1.1"
+      ],
+      "notes": [
+        {
+          "note": "Requires 'feature pim' to enable. PIM automatically enables IGMP on PIM-enabled interfaces. SPT-threshold default is 0 (immediate switchover). There is NO 'show ip rpf' command — use 'show ip pim route' or 'show routing multicast' for RPF verification.",
+          "versions": "all"
+        },
+        {
+          "note": "For multicast in VXLAN/EVPN fabrics with TRM (Tenant Routed Multicast), PIM operates in the underlay AND overlay. Check 'show forwarding distribution multicast vxlan mdt-db' for MDT tunnel state.",
+          "versions": "9.3"
+        },
+        {
+          "note": "On modular chassis (N9K-C9500 series), verify multicast route programming per linecard module: 'show forwarding multicast route module <mod>'. Programming failures may be isolated to one module.",
+          "versions": "all"
+        }
+      ]
+    }
+  }
+}

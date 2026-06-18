@@ -1,0 +1,1557 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "NAT requires IP routing to forward translated packets. The order of operations between NAT and routing depends on traffic direction (inside-to-outside vs outside-to-inside).",
+      "name": "IP routing",
+      "type": "protocol"
+    },
+    {
+      "description": "Dynamic NAT and PAT use ACLs or route-maps to identify traffic that should be translated. Incorrect ACLs are a frequent cause of NAT not engaging.",
+      "name": "ACLs (NAT match criteria)",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "The NAT translation table has reached its maximum capacity. New flows cannot create translation entries, causing new connections to fail while existing translations continue to work. Common in CGNAT, PAT-overload, and environments under SYN-flood or scanning attacks that create many half-open entries.",
+      "resolutions": [
+        {
+          "action": "Check current table usage: 'show ip nat statistics' — compare total translations vs max entries",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check current table usage: 'show ip nat statistics' — compare total translations vs max entries",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check current table usage: 'show ip nat statistics' — compare total translations vs max entries",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Lower TCP translation timeout: 'ip nat translation tcp-timeout 3600' (or lower for high-churn environments)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Lower TCP translation timeout: 'ip nat translation tcp-timeout 3600' (or lower for high-churn environments)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Lower TCP translation timeout: 'ip nat translation tcp-timeout 3600' (or lower for high-churn environments)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add more public IPs to the NAT pool to increase available port space",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add more public IPs to the NAT pool to increase available port space",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add more public IPs to the NAT pool to increase available port space",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear stale entries: 'clear ip nat translation *' (caution: drops all active sessions)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear stale entries: 'clear ip nat translation *' (caution: drops all active sessions)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear stale entries: 'clear ip nat translation *' (caution: drops all active sessions)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: check TCAM usage with 'show system internal access-list resource utilization' for NAT region",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: check TCAM usage with 'show system internal access-list resource utilization' for NAT region",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: check TCAM usage with 'show system internal access-list resource utilization' for NAT region",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable NAT translation max-entries per host to prevent a single inside host from consuming the entire table",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable NAT translation max-entries per host to prevent a single inside host from consuming the entire table",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable NAT translation max-entries per host to prevent a single inside host from consuming the entire table",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Too many concurrent sessions for the configured NAT pool or PAT overload (65535 port limit per public IP)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SYN flood or port scan creating thousands of half-open translation entries that consume table space",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Translation timeout too high — stale entries not expiring fast enough to make room for new flows",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NAT table size limit reached on platform (hardware TCAM limit on Nexus, memory limit on ISR/ASR)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Legitimate traffic growth exceeding original NAT pool sizing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "NAT translation table full — max entries exceeded",
+      "symptoms": [
+        "New connections fail while existing connections continue to work",
+        "'NAT: translation creation failed' or '%IP_NAT-4-ADDR_ALLOC_FAIL' syslog message",
+        "'show ip nat statistics' shows 'Hits' incrementing but 'Misses' also growing",
+        "NAT pool utilization at or near 100%",
+        "Users report intermittent connectivity — works for established sessions, fails for new ones"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip nat translations total",
+          "confirms_if": "Translation count at or near maximum confirms table exhaustion",
+          "look_for": "Total number of active translations — compare against platform maximum. On IOS-XE, check if approaching the configured or default limit.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat translations total",
+          "confirms_if": "Translation count at or near maximum confirms table exhaustion",
+          "look_for": "Total number of active translations — compare against platform maximum. On IOS-XE, check if approaching the configured or default limit.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat translations total",
+          "confirms_if": "Translation count at or near maximum confirms table exhaustion",
+          "look_for": "Total number of active translations — compare against platform maximum. On IOS-XE, check if approaching the configured or default limit.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat statistics",
+          "confirms_if": "High miss rate with full table confirms NAT table exhaustion",
+          "look_for": "Check 'Total active translations', 'Hits', 'Misses', 'Expired translations'. High miss count with low hit count indicates new flows failing. Check 'Pool' section for address/port exhaustion.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat statistics",
+          "confirms_if": "High miss rate with full table confirms NAT table exhaustion",
+          "look_for": "Check 'Total active translations', 'Hits', 'Misses', 'Expired translations'. High miss count with low hit count indicates new flows failing. Check 'Pool' section for address/port exhaustion.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat statistics",
+          "confirms_if": "High miss rate with full table confirms NAT table exhaustion",
+          "look_for": "Check 'Total active translations', 'Hits', 'Misses', 'Expired translations'. High miss count with low hit count indicates new flows failing. Check 'Pool' section for address/port exhaustion.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show platform hardware nat",
+          "confirms_if": "Hardware-level flow creation failures confirm TCAM/table exhaustion",
+          "look_for": "Platform-specific NAT hardware counters (IOS-XE on ASR/ISR). Check for 'NAT table full' or 'flow create failed' counters.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show platform hardware nat",
+          "confirms_if": "Hardware-level flow creation failures confirm TCAM/table exhaustion",
+          "look_for": "Platform-specific NAT hardware counters (IOS-XE on ASR/ISR). Check for 'NAT table full' or 'flow create failed' counters.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show platform hardware nat",
+          "confirms_if": "Hardware-level flow creation failures confirm TCAM/table exhaustion",
+          "look_for": "Platform-specific NAT hardware counters (IOS-XE on ASR/ISR). Check for 'NAT table full' or 'flow create failed' counters.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Outbound traffic is correctly translated by the NAT device, but return traffic takes a different path that bypasses the NAT device entirely. The return packets arrive at the inside host with the translated (public) destination IP instead of the original (private) source IP, causing them to be dropped. This is one of the most common NAT issues in multi-homed or redundant topologies.",
+      "resolutions": [
+        {
+          "action": "Ensure symmetric routing: return traffic must traverse the same NAT device as outbound traffic",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure symmetric routing: return traffic must traverse the same NAT device as outbound traffic",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure symmetric routing: return traffic must traverse the same NAT device as outbound traffic",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use ip nat inside/outside on the correct interfaces — verify with 'show ip nat statistics'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use ip nat inside/outside on the correct interfaces — verify with 'show ip nat statistics'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Use ip nat inside/outside on the correct interfaces — verify with 'show ip nat statistics'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "In dual-WAN setups: configure PBR or zone-based routing to pin flows to the correct exit",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "In dual-WAN setups: configure PBR or zone-based routing to pin flows to the correct exit",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "In dual-WAN setups: configure PBR or zone-based routing to pin flows to the correct exit",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For HSRP/VRRP with NAT: use SNAT (Stateful NAT) or ensure NAT state is synchronized between peers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For HSRP/VRRP with NAT: use SNAT (Stateful NAT) or ensure NAT state is synchronized between peers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For HSRP/VRRP with NAT: use SNAT (Stateful NAT) or ensure NAT state is synchronized between peers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify with packet captures on both inside and outside interfaces of the NAT device",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify with packet captures on both inside and outside interfaces of the NAT device",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify with packet captures on both inside and outside interfaces of the NAT device",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Multiple exit points (dual WAN) without policy routing to ensure return traffic uses the same NAT device",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Routing change (IGP reconvergence, BGP best-path change) shifted return path away from the NAT device",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ECMP load balancing sending outbound and return flows through different NAT devices",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Firewall or PBR on the return path overriding normal routing and bypassing the NAT device",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "HSRP/VRRP failover moved the default gateway but NAT translations still reference the old active router",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Asymmetric routing bypassing NAT — return traffic misses NAT device",
+      "symptoms": [
+        "Outbound connections initiate successfully (SYN sent) but never complete (no SYN-ACK received by inside host)",
+        "Packet captures on the inside host show no return traffic, but captures on the outside show replies",
+        "'show ip nat translations' shows the outbound translation but it never becomes 'extended' (no return flow)",
+        "Traceroute from inside to outside works, but return path goes through a different router",
+        "Issue appears after adding a second WAN link or changing routing"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip nat translations",
+          "confirms_if": "One-directional translation without return flow suggests asymmetric path",
+          "look_for": "Check if translations exist for the affected flow. Look for one-directional entries (inside local/global populated but no outside local/global return mapping).",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat translations",
+          "confirms_if": "One-directional translation without return flow suggests asymmetric path",
+          "look_for": "Check if translations exist for the affected flow. Look for one-directional entries (inside local/global populated but no outside local/global return mapping).",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat translations",
+          "confirms_if": "One-directional translation without return flow suggests asymmetric path",
+          "look_for": "Check if translations exist for the affected flow. Look for one-directional entries (inside local/global populated but no outside local/global return mapping).",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "traceroute",
+          "confirms_if": "Different forward/return paths confirm asymmetric routing",
+          "look_for": "Run traceroute from both inside and outside hosts. Compare the forward and return paths — if they differ and the return path does not traverse the NAT device, asymmetric routing is confirmed.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "traceroute",
+          "confirms_if": "Different forward/return paths confirm asymmetric routing",
+          "look_for": "Run traceroute from both inside and outside hosts. Compare the forward and return paths — if they differ and the return path does not traverse the NAT device, asymmetric routing is confirmed.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "traceroute",
+          "confirms_if": "Different forward/return paths confirm asymmetric routing",
+          "look_for": "Run traceroute from both inside and outside hosts. Compare the forward and return paths — if they differ and the return path does not traverse the NAT device, asymmetric routing is confirmed.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route",
+          "confirms_if": "Return route bypassing NAT device confirms the root cause",
+          "look_for": "Check routing table on the NAT device and neighboring routers. Verify return traffic route points back through the NAT device.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route",
+          "confirms_if": "Return route bypassing NAT device confirms the root cause",
+          "look_for": "Check routing table on the NAT device and neighboring routers. Verify return traffic route points back through the NAT device.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route",
+          "confirms_if": "Return route bypassing NAT device confirms the root cause",
+          "look_for": "Check routing table on the NAT device and neighboring routers. Verify return traffic route points back through the NAT device.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "NAT Application Layer Gateways inspect and modify application-layer payloads that embed IP addresses (SIP, FTP, H.323, TFTP, DNS, RTSP). When the ALG malfunctions or is incompatible with the application's implementation, it can corrupt payloads, break signaling, or fail to translate embedded addresses, causing application-level failures even though basic IP connectivity works fine.",
+      "resolutions": [
+        {
+          "action": "For SIP: disable NAT SIP ALG if endpoints support STUN/TURN/ICE: 'no ip nat service sip udp port 5060'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For SIP: disable NAT SIP ALG if endpoints support STUN/TURN/ICE: 'no ip nat service sip udp port 5060'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For SIP: disable NAT SIP ALG if endpoints support STUN/TURN/ICE: 'no ip nat service sip udp port 5060'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For FTP: ensure ALG is enabled on the correct port: 'ip nat service ftp tcp port 21'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For FTP: ensure ALG is enabled on the correct port: 'ip nat service ftp tcp port 21'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For FTP: ensure ALG is enabled on the correct port: 'ip nat service ftp tcp port 21'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ALG status: 'show ip nat translations verbose' — look for ALG-created translations",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ALG status: 'show ip nat translations verbose' — look for ALG-created translations",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify ALG status: 'show ip nat translations verbose' — look for ALG-created translations",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If ALG is the problem, configure the application to handle NAT traversal natively (STUN/TURN for VoIP, EPSV for FTP)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If ALG is the problem, configure the application to handle NAT traversal natively (STUN/TURN for VoIP, EPSV for FTP)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If ALG is the problem, configure the application to handle NAT traversal natively (STUN/TURN for VoIP, EPSV for FTP)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Packet capture on both sides of NAT to compare SDP bodies before and after translation",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Packet capture on both sides of NAT to compare SDP bodies before and after translation",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Packet capture on both sides of NAT to compare SDP bodies before and after translation",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "NAT ALG rewriting embedded IP/port in SIP SDP body incorrectly (especially with non-standard SDP formatting)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ALG not recognizing the application protocol on a non-standard port (e.g., SIP on port 5080 instead of 5060)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Encrypted payload (TLS/SRTP) prevents ALG from inspecting and translating embedded addresses",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ALG and application using different SIP/FTP variants or extensions that the ALG doesn't support",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Multiple NAT devices in the path — ALG on device A rewrites, then ALG on device B corrupts the already-rewritten payload",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "ALG (Application Layer Gateway) issues — embedded IP corruption",
+      "symptoms": [
+        "VoIP/SIP calls fail to establish media (one-way or no audio) even though SIP signaling completes",
+        "FTP passive mode transfers fail — control connection works but data connection times out",
+        "H.323 video calls show 'no media' — signaling succeeds but RTP streams fail",
+        "SIP REGISTER succeeds but INVITE fails or produces one-way audio",
+        "Application works without NAT but fails when NAT is in the path"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip nat translations verbose",
+          "confirms_if": "Missing or incorrect ALG-created translations confirm ALG issue",
+          "look_for": "Look for ALG-created child translations (additional entries created by the ALG for media/data channels). Check if the translated ports and IPs in the verbose output match what the application expects.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat translations verbose",
+          "confirms_if": "Missing or incorrect ALG-created translations confirm ALG issue",
+          "look_for": "Look for ALG-created child translations (additional entries created by the ALG for media/data channels). Check if the translated ports and IPs in the verbose output match what the application expects.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat translations verbose",
+          "confirms_if": "Missing or incorrect ALG-created translations confirm ALG issue",
+          "look_for": "Look for ALG-created child translations (additional entries created by the ALG for media/data channels). Check if the translated ports and IPs in the verbose output match what the application expects.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug ip nat",
+          "confirms_if": "Debug shows ALG rewriting (or failing to rewrite) embedded addresses",
+          "look_for": "Watch for 'NAT*: s=<src>-><translated>, d=<dst>' entries. Look for ALG-specific debug lines showing payload inspection and rewriting. Note: use with caution in production — high CPU impact.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug ip nat",
+          "confirms_if": "Debug shows ALG rewriting (or failing to rewrite) embedded addresses",
+          "look_for": "Watch for 'NAT*: s=<src>-><translated>, d=<dst>' entries. Look for ALG-specific debug lines showing payload inspection and rewriting. Note: use with caution in production — high CPU impact.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "debug ip nat",
+          "confirms_if": "Debug shows ALG rewriting (or failing to rewrite) embedded addresses",
+          "look_for": "Watch for 'NAT*: s=<src>-><translated>, d=<dst>' entries. Look for ALG-specific debug lines showing payload inspection and rewriting. Note: use with caution in production — high CPU impact.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat statistics",
+          "confirms_if": "ALG not listed or zero ALG translations confirms ALG is not engaging",
+          "look_for": "Check 'CEF Translated packets' and 'ALG Statistics' section. Verify that the relevant ALG (SIP, FTP, etc.) is listed as active.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat statistics",
+          "confirms_if": "ALG not listed or zero ALG translations confirms ALG is not engaging",
+          "look_for": "Check 'CEF Translated packets' and 'ALG Statistics' section. Verify that the relevant ALG (SIP, FTP, etc.) is listed as active.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat statistics",
+          "confirms_if": "ALG not listed or zero ALG translations confirms ALG is not engaging",
+          "look_for": "Check 'CEF Translated packets' and 'ALG Statistics' section. Verify that the relevant ALG (SIP, FTP, etc.) is listed as active.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Cisco NAT has a specific order of operations that determines whether ACLs, routing, and other features see pre-NAT or post-NAT addresses. Inside-to-outside: routing occurs BEFORE NAT translation. Outside-to-inside: NAT translation occurs BEFORE routing. When ACLs, route-maps, or PBR reference the wrong address (pre-NAT vs post-NAT), traffic is incorrectly permitted, denied, or misrouted.",
+      "resolutions": [
+        {
+          "action": "Review Cisco NAT order of operations: https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/6209-5.html",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review Cisco NAT order of operations: https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/6209-5.html",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Review Cisco NAT order of operations: https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/6209-5.html",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Inside-to-outside ACLs on the outside interface must reference the TRANSLATED (inside-global) address",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Inside-to-outside ACLs on the outside interface must reference the TRANSLATED (inside-global) address",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Inside-to-outside ACLs on the outside interface must reference the TRANSLATED (inside-global) address",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Outside-to-inside ACLs on the inside interface must reference the TRANSLATED (outside-local) address",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Outside-to-inside ACLs on the inside interface must reference the TRANSLATED (outside-local) address",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Outside-to-inside ACLs on the inside interface must reference the TRANSLATED (outside-local) address",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "When using NVI ('ip nat enable'), the order changes — NAT occurs in the switching path, not at interface boundary",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "When using NVI ('ip nat enable'), the order changes — NAT occurs in the switching path, not at interface boundary",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "When using NVI ('ip nat enable'), the order changes — NAT occurs in the switching path, not at interface boundary",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with 'debug ip nat' and 'debug ip packet' to see exactly when translation and ACL evaluation occur",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with 'debug ip nat' and 'debug ip packet' to see exactly when translation and ACL evaluation occur",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Test with 'debug ip nat' and 'debug ip packet' to see exactly when translation and ACL evaluation occur",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Inside-to-outside order: routing → NAT → output ACL — ACLs on the outside interface see the translated (global) address",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Outside-to-inside order: NAT → routing → input ACL — ACLs on the inside interface see the translated (local) address",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "ACL written using inside-local address on the outside interface (should use inside-global)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "PBR applied on inside interface evaluates BEFORE NAT — must match on the original (pre-NAT) source address",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Confusion between NVI (ip nat enable) and legacy (ip nat inside/outside) — NVI changes the order of operations",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "NAT order of operations mismatch — ACL/routing applied at wrong stage",
+      "symptoms": [
+        "ACL that should match NAT'd traffic does not match (or matches traffic it shouldn't)",
+        "Traffic is translated but then dropped by an output ACL referencing the pre-NAT address",
+        "Policy-based routing is not matching NAT'd flows because PBR evaluates before NAT on inside-to-outside",
+        "QoS policies applied to wrong traffic — classification uses pre-NAT or post-NAT addresses inconsistently",
+        "Logs show ACL denies for addresses that don't appear in the NAT translations"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip nat statistics",
+          "confirms_if": "Interface role mismatch or zero translations confirm order-of-operations issue",
+          "look_for": "Verify which interfaces are marked 'inside' vs 'outside'. Confirm the NAT direction matches the expected order of operations. Check hit counters to confirm translations are occurring.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat statistics",
+          "confirms_if": "Interface role mismatch or zero translations confirm order-of-operations issue",
+          "look_for": "Verify which interfaces are marked 'inside' vs 'outside'. Confirm the NAT direction matches the expected order of operations. Check hit counters to confirm translations are occurring.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat statistics",
+          "confirms_if": "Interface role mismatch or zero translations confirm order-of-operations issue",
+          "look_for": "Verify which interfaces are marked 'inside' vs 'outside'. Confirm the NAT direction matches the expected order of operations. Check hit counters to confirm translations are occurring.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show access-lists",
+          "confirms_if": "Zero ACL hits on expected rule confirms address mismatch in ACL",
+          "look_for": "Check ACL hit counters. If an ACL has zero hits on a rule that should be matching NAT'd traffic, the ACL is likely referencing the wrong address (pre-NAT vs post-NAT).",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show access-lists",
+          "confirms_if": "Zero ACL hits on expected rule confirms address mismatch in ACL",
+          "look_for": "Check ACL hit counters. If an ACL has zero hits on a rule that should be matching NAT'd traffic, the ACL is likely referencing the wrong address (pre-NAT vs post-NAT).",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show access-lists",
+          "confirms_if": "Zero ACL hits on expected rule confirms address mismatch in ACL",
+          "look_for": "Check ACL hit counters. If an ACL has zero hits on a rule that should be matching NAT'd traffic, the ACL is likely referencing the wrong address (pre-NAT vs post-NAT).",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "NAT between VRFs (VRF-aware NAT or NAT-NVI with VRFs) requires specific configuration to translate traffic crossing VRF boundaries. Missing or incorrect VRF references in NAT rules, route-maps, or interface assignments cause translation to silently fail — traffic is either dropped or forwarded without translation.",
+      "resolutions": [
+        {
+          "action": "Verify VRF assignment: 'show ip nat translations vrf <name>' — if empty, NAT is not engaging for this VRF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VRF assignment: 'show ip nat translations vrf <name>' — if empty, NAT is not engaging for this VRF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify VRF assignment: 'show ip nat translations vrf <name>' — if empty, NAT is not engaging for this VRF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add VRF to NAT rule: 'ip nat inside source list <ACL> pool <POOL> vrf <VRF> overload'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add VRF to NAT rule: 'ip nat inside source list <ACL> pool <POOL> vrf <VRF> overload'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add VRF to NAT rule: 'ip nat inside source list <ACL> pool <POOL> vrf <VRF> overload'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure route-map matches VRF traffic: 'match ip address <ACL>' where ACL permits the VRF's inside subnets",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure route-map matches VRF traffic: 'match ip address <ACL>' where ACL permits the VRF's inside subnets",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure route-map matches VRF traffic: 'match ip address <ACL>' where ACL permits the VRF's inside subnets",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface VRF membership: 'show ip interface brief | include <intf>' and 'show vrf'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface VRF membership: 'show ip interface brief | include <intf>' and 'show vrf'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify interface VRF membership: 'show ip interface brief | include <intf>' and 'show vrf'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add return route for translated addresses in the outside VRF or global table",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add return route for translated addresses in the outside VRF or global table",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add return route for translated addresses in the outside VRF or global table",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Missing VRF keyword in NAT rule: 'ip nat inside source' must include 'vrf <name>' for VRF-aware NAT",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Route-map used in NAT rule does not match the VRF's source subnets",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interface assigned to wrong VRF — 'ip nat inside/outside' on interface but interface is in global table, not the target VRF",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NAT-NVI ('ip nat enable') used instead of legacy inside/outside — NVI handles VRF differently",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Missing return route in the outside VRF for the translated (global) addresses",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "VRF-aware NAT misconfiguration — inter-VRF translation not working",
+      "symptoms": [
+        "Inter-VRF traffic is not being translated — packets arrive at destination with original (untranslated) source IP",
+        "'show ip nat translations vrf <name>' shows no entries for the VRF",
+        "Traffic within the same VRF works fine; only cross-VRF traffic fails",
+        "Syslog may show 'NAT: translation failed' or no NAT-related messages at all",
+        "Route leaking between VRFs works (ping succeeds) but NAT translation is not applied"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ip nat translations vrf",
+          "confirms_if": "Empty VRF translation table confirms NAT is not engaging for VRF traffic",
+          "look_for": "Check for active translations in the specific VRF. If no entries exist, the NAT rule is not matching VRF traffic.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat translations vrf",
+          "confirms_if": "Empty VRF translation table confirms NAT is not engaging for VRF traffic",
+          "look_for": "Check for active translations in the specific VRF. If no entries exist, the NAT rule is not matching VRF traffic.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip nat translations vrf",
+          "confirms_if": "Empty VRF translation table confirms NAT is not engaging for VRF traffic",
+          "look_for": "Check for active translations in the specific VRF. If no entries exist, the NAT rule is not matching VRF traffic.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip vrf",
+          "confirms_if": "Interface/VRF mismatch confirms misconfiguration",
+          "look_for": "Verify VRF exists and the correct interfaces are assigned. Cross-reference with 'show ip nat statistics' to confirm inside/outside interfaces are in the expected VRFs.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip vrf",
+          "confirms_if": "Interface/VRF mismatch confirms misconfiguration",
+          "look_for": "Verify VRF exists and the correct interfaces are assigned. Cross-reference with 'show ip nat statistics' to confirm inside/outside interfaces are in the expected VRFs.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip vrf",
+          "confirms_if": "Interface/VRF mismatch confirms misconfiguration",
+          "look_for": "Verify VRF exists and the correct interfaces are assigned. Cross-reference with 'show ip nat statistics' to confirm inside/outside interfaces are in the expected VRFs.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | section ip nat",
+          "confirms_if": "Missing 'vrf' keyword in NAT rules confirms the misconfiguration",
+          "look_for": "Check all NAT rules for 'vrf' keyword. If the VRF keyword is missing from rules that should apply to VRF traffic, that is the root cause.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | section ip nat",
+          "confirms_if": "Missing 'vrf' keyword in NAT rules confirms the misconfiguration",
+          "look_for": "Check all NAT rules for 'vrf' keyword. If the VRF keyword is missing from rules that should apply to VRF traffic, that is the root cause.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | section ip nat",
+          "confirms_if": "Missing 'vrf' keyword in NAT rules confirms the misconfiguration",
+          "look_for": "Check all NAT rules for 'vrf' keyword. If the VRF keyword is missing from rules that should apply to VRF traffic, that is the root cause.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "operates_at": "Layer 3-4",
+  "protocol_family": "services",
+  "protocol_id": "nat",
+  "protocol_name": "NAT (Network Address Translation)",
+  "purpose": "Translates private (inside) IP addresses to public (outside) addresses, enabling connectivity across address domains and conserving IPv4 address space",
+  "related_protocols": [
+    "static-routing",
+    "bgp-4",
+    "ospfv2"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-3022",
+      "rfc_number": 3022,
+      "title": "RFC 3022",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc3022.txt"
+    },
+    {
+      "id": "rfc-2663",
+      "rfc_number": 2663,
+      "title": "RFC 2663",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc2663.txt"
+    },
+    {
+      "id": "agent-cisco-kb:services/nat.json",
+      "title": "agent-cisco-kb knowledge base — services/nat.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 3022 (Traditional NAT), RFC 2663 (NAT Terminology)",
+  "states": [
+    {
+      "description": "No active translation entry for this flow. The NAT device has no state for the source/destination pair — packets matching a NAT rule will trigger dynamic translation creation.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "IDLE"
+    },
+    {
+      "description": "An active translation entry exists in the NAT table. Packets matching this entry are translated inline — source or destination IP (and port for PAT) are rewritten in both directions. The entry is refreshed on each matching packet, resetting the idle timeout.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "TRANSLATING"
+    },
+    {
+      "description": "The translation entry has timed out due to inactivity (no matching packets within the protocol-specific timeout). The entry is marked for removal and will be purged, returning the translated address/port to the available pool.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "EXPIRED"
+    }
+  ],
+  "tags": [
+    "nat",
+    "pat",
+    "translation",
+    "inside",
+    "outside",
+    "overload",
+    "alg",
+    "cgnat",
+    "services"
+  ],
+  "timers": [
+    {
+      "default_rfc": "86400s (24 hours) on IOS-XE",
+      "description": "Idle timeout for TCP NAT translation entries. After this period of inactivity the TCP translation is removed. Significantly longer than UDP/ICMP because TCP sessions are stateful and long-lived.",
+      "name": "TCP translation timeout",
+      "on_expiry": "TCP translation entry removed, address/port returned to pool",
+      "os_defaults": [
+        {
+          "default": "300s",
+          "notes": "NX-OS defaults are much shorter than IOS-XE. Tunable via 'ip nat translation tcp-timeout <seconds>'.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "86400s (24 hours)",
+          "notes": "Tunable via 'ip nat translation tcp-timeout <seconds>'. Separate timeout for TCP FIN-RST: 60s default.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "Varies by platform and NAT mode (stateful NAT44/NAT64)",
+          "notes": "Configured under 'nat translation' service.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-2147483s",
+      "tuning_advice": "Lower to 3600s or less in high-connection-rate environments (web servers, CGNAT) to prevent table exhaustion. Monitor 'show ip nat statistics' for 'Expired translations' rate."
+    },
+    {
+      "default_rfc": "300s (5 minutes)",
+      "description": "Idle timeout for UDP NAT translation entries. Shorter than TCP because UDP is connectionless — there is no session state to indicate whether the flow is still active.",
+      "name": "UDP translation timeout",
+      "on_expiry": "UDP translation entry removed",
+      "os_defaults": [
+        {
+          "default": "300s",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "300s",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-2147483s",
+      "tuning_advice": "For DNS-heavy environments, 30-60s is sufficient. For VoIP (RTP/RTCP), ensure the timeout exceeds the RTP inactivity period or call-on-hold duration."
+    },
+    {
+      "default_rfc": "60s",
+      "description": "Idle timeout for ICMP NAT translation entries. Short because ICMP request/reply exchanges are typically brief.",
+      "name": "ICMP translation timeout",
+      "on_expiry": "ICMP translation entry removed",
+      "os_defaults": [
+        {
+          "default": "60s",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "60s",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "1-2147483s",
+      "tuning_advice": "Default is usually fine. Only increase if long-running ICMP tools (e.g., continuous ping with large intervals) are failing."
+    }
+  ],
+  "transitions": [
+    {
+      "failure_if_stuck": "If translation is not created: NAT pool exhausted, ACL not matching traffic, interface not marked 'ip nat inside/outside', or NAT table full.",
+      "from_state": "IDLE",
+      "to_state": "TRANSLATING",
+      "trigger": "A packet matches a configured NAT rule (inside source, outside source, static, or policy NAT). The router creates a translation entry in the NAT table and rewrites the packet header."
+    },
+    {
+      "failure_if_stuck": "If entries never expire: possible SYN-flood creating half-open entries, keepalive traffic resetting timers, or timeout set too high.",
+      "from_state": "TRANSLATING",
+      "to_state": "EXPIRED",
+      "trigger": "No matching packets seen within the protocol-specific idle timeout (TCP: 86400s default on IOS-XE / 300s on NX-OS, UDP: 300s, ICMP: 60s). The entry is marked expired."
+    },
+    {
+      "failure_if_stuck": "If entries are not purged: NAT table leak, possible memory issue, or 'clear ip nat translation *' needed.",
+      "from_state": "EXPIRED",
+      "to_state": "IDLE",
+      "trigger": "Expired translation entry is removed from the NAT table. The translated address/port is returned to the pool for reuse."
+    }
+  ],
+  "transport": "N/A (operates on IP headers)",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "interface GigabitEthernet0/0\n ip nat inside\ninterface GigabitEthernet0/1\n ip nat outside\nip nat pool POOL1 203.0.113.10 203.0.113.20 netmask 255.255.255.0\nip nat inside source list 10 pool POOL1 overload\naccess-list 10 permit 10.0.0.0 0.0.0.255"
+      ],
+      "notes": [
+        {
+          "note": "Full NAT feature set. 'ip nat inside/outside' on interfaces. NAT-NVI ('ip nat enable') for simplified configuration — eliminates inside/outside distinction but changes order of operations. 'ip nat settings support mapping' for static NAT. Order of operations: inside-to-outside = routing then NAT; outside-to-inside = NAT then routing. TCP timeout defaults to 86400s (24h) — much higher than NX-OS. On ASR/ISR platforms, NAT is processed in QFP — use 'show platform hardware qfp active feature nat' for hardware-level counters.",
+          "versions": "all"
+        }
+      ]
+    },
+    "iosxr": {
+      "config_examples": [
+        "interface GigabitEthernet0/0/0/0\n ipv4 address 10.0.0.1 255.255.255.0\n nat44 inside\ninterface GigabitEthernet0/0/0/1\n ipv4 address 203.0.113.1 255.255.255.0\n nat44 outside"
+      ],
+      "notes": [
+        {
+          "note": "NAT on IOS-XR available via 'ip nat' under interface or via 'nat' service-node configuration. Stateful NAT44 and NAT64 supported on CGN (Carrier-Grade NAT) platforms. More limited NAT support on standard routing platforms compared to IOS-XE. On Cisco 8000 series, NAT is supported in the dataplane via the Silicon One NPU. On NCS 5500, NAT support depends on the line card and ASIC generation (Jericho/Jericho+/Jericho2).",
+          "versions": "all"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "feature nat\nip nat inside\n  # (under inside interface)\nip nat outside\n  # (under outside interface)\nip nat pool POOL1 203.0.113.10 203.0.113.20 prefix-length 24\nip nat source list NAT_ACL pool POOL1 overload"
+      ],
+      "notes": [
+        {
+          "note": "NX-OS NAT is limited compared to IOS-XE. Supported on Nexus 9000 with 'feature nat'. Uses inside/outside interface model. No NAT-NVI support. TCAM-based NAT on CloudScale ASICs — monitor TCAM usage as NAT entries consume hardware resources. Dynamic PAT supported from NX-OS 9.2+. Maximum NAT translations limited by TCAM region size (configurable via 'hardware access-list tcam region nat').",
+          "versions": "9.2+"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "qos-shaper-buffers-policer-drops",
+  "display_name": "A shaper adds latency by buffering excess; a policer drops it — same rate limit, opposite symptom",
+  "category": "expected-behavior",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "Investigating an application complaint (latency or loss) on a link where a rate limit is applied via shaping or policing",
+  "observation": "Traffic exceeding a configured rate is either delayed (rising latency/jitter) or dropped, depending on which mechanism is in use",
+  "naive_interpretation": "Shaping and policing are interchangeable rate limits, so the choice does not affect the symptom",
+  "correct_interpretation": "Both enforce a rate, but the failure mode differs. A shaper queues excess traffic and releases it later, so the symptom is added latency and jitter (and drops only once the shaping buffer overflows) — no loss until then. A policer makes an instantaneous conform/exceed decision and drops or remarks excess immediately, so the symptom is loss with no added delay. If the complaint is latency/jitter, suspect a shaper upstream; if it is loss on an otherwise idle path, suspect a policer.",
+  "why": [
+    "A shaper holds conforming-exceeding packets in a queue and meters them out at the target rate, trading delay for delivery",
+    "A policer uses a token bucket to decide per-packet conform/exceed and acts immediately, trading delivery for zero added delay (RFC 2698 token-bucket model)",
+    "The same configured rate therefore presents as latency in one case and loss in the other — the mechanism, not the rate, determines the symptom",
+    "Shaper buffers are finite, so sustained over-rate eventually drops too, but only after the queue fills"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show policy-map interface Ethernet1/1",
+      "purpose": "Identify whether the class uses shaping (queue depth/latency) or policing (conform/exceed drops)"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show policy-map interface GigabitEthernet1/0/1",
+      "purpose": "Distinguish shape counters and queue depth from police exceed/violate drops"
+    }
+  ],
+  "traps": [
+    "Hunting for packet loss when a shaper is the cause and the real symptom is latency/jitter with no drops yet",
+    "Assuming an idle link cannot add latency — a shaper delays bursts even when average utilization is low",
+    "Treating shaping and policing as the same tool when they produce opposite symptoms for the same rate",
+    "Ignoring shaper buffer overflow, which finally produces drops only after sustained over-rate"
+  ],
+  "related_rules": [
+    "qos-policer-drops-vs-queue-drops",
+    "qos-microburst-drops-hidden-in-averages"
+  ],
+  "related_protocols": [],
+  "keywords": ["QoS", "shaper", "shaping", "policer", "policing", "latency", "jitter", "buffer", "token bucket", "rate limit"],
+  "sources": [
+    {
+      "id": "rfc-2698",
+      "title": "RFC 2698 — A Two Rate Three Color Marker",
+      "type": "rfc",
+      "rfc_number": 2698,
+      "url": "https://www.rfc-editor.org/rfc/rfc2698.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

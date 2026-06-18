@@ -1,0 +1,2247 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "System management behavior depends heavily on the hardware platform: single-sup vs dual-sup, modular vs fixed, stacked vs standalone. Console port behavior, switchover mechanics, and process architecture all vary by platform.",
+      "name": "Hardware platform",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Console and VTY login depend on AAA configuration. If AAA servers are unreachable after switchover, users cannot log in. Local authentication fallback is critical for post-switchover access.",
+      "name": "AAA / Authentication",
+      "type": "service"
+    },
+    {
+      "description": "SSH/VTY access requires the management interface (mgmt0, Gi0/0, MgmtEth0/RPx/CPU0/0) to be up with a valid IP. After switchover, the management interface must re-bind to the new active sup.",
+      "name": "Management interface",
+      "type": "service"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "A show command piped to JSON output hangs indefinitely — no output, no prompt. The CLI rendering engine (DME/mtm on NX-OS, IOSXML on IOS-XE, sysdb/schema on IOS-XR) is unable to serialize the output. This is especially common with large configurations, complex ACLs, or when the JSON rendering process is starved of memory or CPU. The session appears frozen but the underlying process is usually spinning or blocked.",
+      "resolutions": [
+        {
+          "action": "NX-OS: From a working session, check 'show processes | include mtm' and 'show processes | include xmlma' — if PID changed or restart count incremented, the process crashed and recovered",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: From a working session, check 'show processes | include mtm' and 'show processes | include xmlma' — if PID changed or restart count incremented, the process crashed and recovered",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: From a working session, check 'show processes | include mtm' and 'show processes | include xmlma' — if PID changed or restart count incremented, the process crashed and recovered",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: If mtm is hung, TAC may advise restarting it: undocumented and risky — usually safer to collect 'show tech-support' and reload",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: If mtm is hung, TAC may advise restarting it: undocumented and risky — usually safer to collect 'show tech-support' and reload",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: If mtm is hung, TAC may advise restarting it: undocumented and risky — usually safer to collect 'show tech-support' and reload",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: Check 'show processes cpu sorted' for IOSXML or IOSd consuming high CPU — wait or clear the offending session from another VTY",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: Check 'show processes cpu sorted' for IOSXML or IOSd consuming high CPU — wait or clear the offending session from another VTY",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XE: Check 'show processes cpu sorted' for IOSXML or IOSd consuming high CPU — wait or clear the offending session from another VTY",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: Check 'show processes | include schema' — if schema_server is hung, it blocks all CLI formatting",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: Check 'show processes | include schema' — if schema_server is hung, it blocks all CLI formatting",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "IOS-XR: Check 'show processes | include schema' — if schema_server is hung, it blocks all CLI formatting",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "All platforms: If only one session is hung, kill it from another session ('clear line' on NX-OS/IOS-XE, or 'kill' on Linux shell)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "All platforms: If only one session is hung, kill it from another session ('clear line' on NX-OS/IOS-XE, or 'kill' on Linux shell)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "All platforms: If only one session is hung, kill it from another session ('clear line' on NX-OS/IOS-XE, or 'kill' on Linux shell)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "All platforms: If system-wide, collect what you can via console and schedule a maintenance reload",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "All platforms: If system-wide, collect what you can via console and schedule a maintenance reload",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "All platforms: If system-wide, collect what you can via console and schedule a maintenance reload",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Avoid piping very large outputs to | json — break into sections (e.g., 'show running-config interface' rather than full config)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Avoid piping very large outputs to | json — break into sections (e.g., 'show running-config interface' rather than full config)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Avoid piping very large outputs to | json — break into sections (e.g., 'show running-config interface' rather than full config)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "JSON/XML rendering engine OOM — large running-config exceeds process memory allocation",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "DME (Data Management Engine) on NX-OS hung or in deadlock state — mtm process not responding",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NX-OS xmlma process crashed or is in a bad state — handles structured output rendering",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IOS-XE IOSXML agent deadlock — common with very large ACL/prefix-list configs piped to JSON",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IOS-XR sysdb query timeout — the schema server cannot serialize the requested data path in time",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Memory pressure — system is low on memory, causing all malloc-dependent processes to stall",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Process scheduler starvation — a runaway process is consuming all CPU, preventing the CLI process from executing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Known software bug — multiple CSCxx defects exist for JSON rendering hangs across platforms",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "CLI hung — 'show running-config | json' or '| json-pretty' not returning",
+      "symptoms": [
+        "Command entered but no output and no prompt returned",
+        "Session appears frozen — Ctrl+C may or may not work",
+        "Other VTY/console sessions may still be responsive (if issue is session-local)",
+        "If system-wide: all CLI sessions hung, SSH new connections timeout",
+        "NX-OS: 'show processes cpu sort' from another session shows mtm or xmlma at high CPU",
+        "IOS-XE: 'show processes cpu sorted' shows IOSXML or iosd at high CPU"
+      ],
+      "verify_commands": [
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "Rendering process at high CPU confirms it is stuck processing the request",
+          "look_for": "Check if mtm, xmlma, netstack, or iosd are consuming excessive CPU. A stuck CLI session often shows the rendering process at >80% CPU.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "Rendering process at high CPU confirms it is stuck processing the request",
+          "look_for": "Check if mtm, xmlma, netstack, or iosd are consuming excessive CPU. A stuck CLI session often shows the rendering process at >80% CPU.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "Rendering process at high CPU confirms it is stuck processing the request",
+          "look_for": "Check if mtm, xmlma, netstack, or iosd are consuming excessive CPU. A stuck CLI session often shows the rendering process at >80% CPU.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system resources",
+          "confirms_if": "Memory utilization >90% or swap active confirms memory pressure as contributing factor",
+          "look_for": "Check memory utilization — if MemFree is very low or swap is in use, the system is under memory pressure which can cause rendering processes to hang",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system resources",
+          "confirms_if": "Memory utilization >90% or swap active confirms memory pressure as contributing factor",
+          "look_for": "Check memory utilization — if MemFree is very low or swap is in use, the system is under memory pressure which can cause rendering processes to hang",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system resources",
+          "confirms_if": "Memory utilization >90% or swap active confirms memory pressure as contributing factor",
+          "look_for": "Check memory utilization — if MemFree is very low or swap is in use, the system is under memory pressure which can cause rendering processes to hang",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging logfile | last 50",
+          "confirms_if": "Process crash or OOM message confirms the rendering engine failed",
+          "look_for": "Process crash messages (SYSMGR-2-SERVICE_CRASHED), OOM kills, or watchdog timeout messages around the time of the hang",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging logfile | last 50",
+          "confirms_if": "Process crash or OOM message confirms the rendering engine failed",
+          "look_for": "Process crash messages (SYSMGR-2-SERVICE_CRASHED), OOM kills, or watchdog timeout messages around the time of the hang",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging logfile | last 50",
+          "confirms_if": "Process crash or OOM message confirms the rendering engine failed",
+          "look_for": "Process crash messages (SYSMGR-2-SERVICE_CRASHED), OOM kills, or watchdog timeout messages around the time of the hang",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A show command with a pipe filter hangs or produces garbled output. The regex engine or output filter process has encountered an issue — either a bad regex pattern causing catastrophic backtracking, or the pipe process itself has failed.",
+      "resolutions": [
+        {
+          "action": "Simplify the regex — avoid nested quantifiers, use simple string matches where possible",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Simplify the regex — avoid nested quantifiers, use simple string matches where possible",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Simplify the regex — avoid nested quantifiers, use simple string matches where possible",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For large outputs, redirect to file first ('show running-config > bootflash:config.txt') then filter the file",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For large outputs, redirect to file first ('show running-config > bootflash:config.txt') then filter the file",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "For large outputs, redirect to file first ('show running-config > bootflash:config.txt') then filter the file",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: use 'show running-config | json' (if small enough) for structured querying instead of regex",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: use 'show running-config | json' (if small enough) for structured querying instead of regex",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: use 'show running-config | json' (if small enough) for structured querying instead of regex",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Kill the hung session from another session if Ctrl+C does not work",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Kill the hung session from another session if Ctrl+C does not work",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Kill the hung session from another session if Ctrl+C does not work",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Complex regex pattern causing catastrophic backtracking (e.g., nested quantifiers '(a+)+b')",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Very large output being filtered — pipe processes have to buffer the entire output before filtering on some platforms",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "NX-OS: vsh pipe handling has known issues with certain unicode or special characters in config",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "IOS-XE: The pipe engine runs within iosd — a complex filter on a huge output can starve the scheduler",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Output contains unexpected binary or control characters that break the filter parser",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "CLI hung — pipe command processing failure (| include, | grep, | section)",
+      "symptoms": [
+        "Command with '| include <pattern>' or '| grep <pattern>' does not return",
+        "Partial output displayed then session hangs",
+        "Command with '| section' produces garbled or incomplete output",
+        "Ctrl+C eventually works but takes a long time"
+      ],
+      "verify_commands": [
+        {
+          "command": "show users",
+          "confirms_if": "Session listed with active command confirms which session is stuck",
+          "look_for": "Check if the hung user session is still listed and active — helps identify which line to clear",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show users",
+          "confirms_if": "Session listed with active command confirms which session is stuck",
+          "look_for": "Check if the hung user session is still listed and active — helps identify which line to clear",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show users",
+          "confirms_if": "Session listed with active command confirms which session is stuck",
+          "look_for": "Check if the hung user session is still listed and active — helps identify which line to clear",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "vsh or iosd at high CPU correlates with the pipe hang",
+          "look_for": "Check for vsh or iosd at high CPU — indicates the pipe filter is consuming CPU",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "vsh or iosd at high CPU correlates with the pipe hang",
+          "look_for": "Check for vsh or iosd at high CPU — indicates the pipe filter is consuming CPU",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes cpu sort",
+          "confirms_if": "vsh or iosd at high CPU correlates with the pipe hang",
+          "look_for": "Check for vsh or iosd at high CPU — indicates the pipe filter is consuming CPU",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "After a supervisor switchover (manual or crash-triggered), the console port produces no output or is unresponsive. The user cannot access the device via the console. This is typically because the new active supervisor has not yet bound the console TTY to its vsh/iosd/CLI process, or the console hardware mux has not switched to the new active sup.",
+      "resolutions": [
+        {
+          "action": "Wait 2-5 minutes — console binding can take time after switchover, especially on SSO with large state sync",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Wait 2-5 minutes — console binding can take time after switchover, especially on SSO with large state sync",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Wait 2-5 minutes — console binding can take time after switchover, especially on SSO with large state sync",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check if SSH/VTY works — if remote CLI access is available, the device is up and the issue is console-specific",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check if SSH/VTY works — if remote CLI access is available, the device is up and the issue is console-specific",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check if SSH/VTY works — if remote CLI access is available, the device is up and the issue is console-specific",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On dual-sup chassis: try connecting to the OTHER sup's console port — the MUX may not have switched",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On dual-sup chassis: try connecting to the OTHER sup's console port — the MUX may not have switched",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On dual-sup chassis: try connecting to the OTHER sup's console port — the MUX may not have switched",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On Nexus 9500: the console port follows the active sup. If sup2 becomes active, use the sup2 console port",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On Nexus 9500: the console port follows the active sup. If sup2 becomes active, use the sup2 console port",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On Nexus 9500: the console port follows the active sup. If sup2 becomes active, use the sup2 console port",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check baud rate — disconnect and reconnect the terminal at 9600/8/N/1 (default)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check baud rate — disconnect and reconnect the terminal at 9600/8/N/1 (default)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check baud rate — disconnect and reconnect the terminal at 9600/8/N/1 (default)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If console remains dead after 5 minutes, use remote access (SSH) to diagnose. Check 'show module' and 'show system redundancy status'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If console remains dead after 5 minutes, use remote access (SSH) to diagnose. Check 'show module' and 'show system redundancy status'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If console remains dead after 5 minutes, use remote access (SSH) to diagnose. Check 'show module' and 'show system redundancy status'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE stacks: the console follows the active switch. If switch 2 becomes active, console is on switch 2's console port.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE stacks: the console follows the active switch. If switch 2 becomes active, console is on switch 2's console port.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On IOS-XE stacks: the console follows the active switch. If switch 2 becomes active, console is on switch 2's console port.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "As a last resort, perform a controlled reload from SSH if console is needed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "As a last resort, perform a controlled reload from SSH if console is needed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "As a last resort, perform a controlled reload from SSH if console is needed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Console hardware MUX not switching — on some dual-sup chassis (Nexus 7K, Cat 6K, C9400), a physical console MUX routes the console port to the active sup. If the MUX does not switch, console remains connected to the old (now standby/dead) sup.",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Console TTY process not started on new active — sysmgr (NX-OS) or iosd (IOS-XE) has not completed initialization and has not bound the console line",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Process startup order — the console login process depends on AAA, which depends on RADIUS/TACACS reachability. If AAA is slow to start, the console login prompt is delayed.",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Baud rate reset — on some platforms, a firmware/BIOS-level reset during switchover changes the console baud rate to default (9600), but the terminal emulator is set to a different speed",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Known defect — multiple CSC bugs exist for console loss after switchover, especially on Nexus 9500 and Cat 9400",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Console not responding after supervisor switchover",
+      "symptoms": [
+        "Console shows no output after switchover — blank screen, no syslog, no prompt",
+        "Console shows syslog/boot messages but no login prompt appears",
+        "Console shows garbled characters (baud rate mismatch after switchover)",
+        "SSH/VTY access to mgmt IP works but console does not",
+        "Console was working on old active, stopped working when new active took over"
+      ],
+      "verify_commands": [
+        {
+          "command": "show module",
+          "confirms_if": "Active sup changed slot — console cable needs to move to the new active sup's port",
+          "look_for": "Which supervisor is active vs standby. Console should be on the active sup's physical port.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show module",
+          "confirms_if": "Active sup changed slot — console cable needs to move to the new active sup's port",
+          "look_for": "Which supervisor is active vs standby. Console should be on the active sup's physical port.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show module",
+          "confirms_if": "Active sup changed slot — console cable needs to move to the new active sup's port",
+          "look_for": "Which supervisor is active vs standby. Console should be on the active sup's physical port.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system redundancy status",
+          "confirms_if": "Switchover occurred and active sup is now different from console-connected sup",
+          "look_for": "Redundancy mode (HA/SSO/RPR), which sup is active, switchover history",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system redundancy status",
+          "confirms_if": "Switchover occurred and active sup is now different from console-connected sup",
+          "look_for": "Redundancy mode (HA/SSO/RPR), which sup is active, switchover history",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system redundancy status",
+          "confirms_if": "Switchover occurred and active sup is now different from console-connected sup",
+          "look_for": "Redundancy mode (HA/SSO/RPR), which sup is active, switchover history",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show line console",
+          "confirms_if": "Console line shows no active session or wrong baud rate",
+          "look_for": "Console line status — is it active, modem status, speed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show line console",
+          "confirms_if": "Console line shows no active session or wrong baud rate",
+          "look_for": "Console line status — is it active, modem status, speed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show line console",
+          "confirms_if": "Console line shows no active session or wrong baud rate",
+          "look_for": "Console line status — is it active, modem status, speed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The standby supervisor boots and appears online but never reaches 'standby hot' / 'SSO-ready' state. It stays in 'standby cold' or 'RPR' mode. An unplanned switchover in this state means longer convergence and possible traffic loss.",
+      "resolutions": [
+        {
+          "action": "Verify software versions match: 'show module' (NX-OS), 'show redundancy' (IOS-XE), 'show platform' (IOS-XR)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify software versions match: 'show module' (NX-OS), 'show redundancy' (IOS-XE), 'show platform' (IOS-XR)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify software versions match: 'show module' (NX-OS), 'show redundancy' (IOS-XE), 'show platform' (IOS-XR)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check config sync status: 'show redundancy config-sync failures prc' (IOS-XE), 'show system redundancy status' (NX-OS)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check config sync status: 'show redundancy config-sync failures prc' (IOS-XE), 'show system redundancy status' (NX-OS)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check config sync status: 'show redundancy config-sync failures prc' (IOS-XE), 'show system redundancy status' (NX-OS)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If version mismatch: upgrade the standby to match active (ISSU or manual)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If version mismatch: upgrade the standby to match active (ISSU or manual)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If version mismatch: upgrade the standby to match active (ISSU or manual)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If config sync failure: identify the failing config line, fix on active, and re-trigger sync",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If config sync failure: identify the failing config line, fix on active, and re-trigger sync",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If config sync failure: identify the failing config line, fix on active, and re-trigger sync",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor 'show system redundancy status' for sync progress — large configs can take 5-10 minutes",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor 'show system redundancy status' for sync progress — large configs can take 5-10 minutes",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Monitor 'show system redundancy status' for sync progress — large configs can take 5-10 minutes",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Software version mismatch between active and standby — SSO requires identical images on both sups",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Configuration parse error on standby — config contains commands the standby cannot understand (e.g., feature not supported on standby's image)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Insufficient memory on standby — large configs or routing tables exhaust standby memory during sync",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "License mismatch — standby has different license level than active (IOS-XE)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Known defect in config sync — certain config patterns trigger sync failure (e.g., very large ACLs, complex route-maps)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Supervisor switchover — standby not reaching SSO-ready (hot standby)",
+      "symptoms": [
+        "'show redundancy status' shows standby as 'not ready' or 'cold standby'",
+        "Config sync status shows 'failed' or 'in progress' for an extended period",
+        "Standby sup shows different software version than active",
+        "Syslog: %REDUNDANCY-2-CONFIG_SYNC_FAILED or %VPC-2-CFGD_CHANGE_FAILED"
+      ],
+      "verify_commands": [
+        {
+          "command": "show redundancy status",
+          "confirms_if": "Standby state = 'not ready' or 'cold standby' confirms SSO is not operational",
+          "look_for": "Redundancy mode operational (HA/SSO expected). Standby state should show 'standby hot' or 'HA standby'. If it shows 'not ready' or 'disabled', sync has not completed.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show redundancy status",
+          "confirms_if": "Standby state = 'not ready' or 'cold standby' confirms SSO is not operational",
+          "look_for": "Redundancy mode operational (HA/SSO expected). Standby state should show 'standby hot' or 'HA standby'. If it shows 'not ready' or 'disabled', sync has not completed.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show redundancy status",
+          "confirms_if": "Standby state = 'not ready' or 'cold standby' confirms SSO is not operational",
+          "look_for": "Redundancy mode operational (HA/SSO expected). Standby state should show 'standby hot' or 'HA standby'. If it shows 'not ready' or 'disabled', sync has not completed.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show module",
+          "confirms_if": "Version mismatch between sup modules confirms cause of SSO failure",
+          "look_for": "Both sup modules should show matching software versions. Standby should show status 'ha-standby' not 'active(failed)' or 'powered-down'.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show module",
+          "confirms_if": "Version mismatch between sup modules confirms cause of SSO failure",
+          "look_for": "Both sup modules should show matching software versions. Standby should show status 'ha-standby' not 'active(failed)' or 'powered-down'.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show module",
+          "confirms_if": "Version mismatch between sup modules confirms cause of SSO failure",
+          "look_for": "Both sup modules should show matching software versions. Standby should show status 'ha-standby' not 'active(failed)' or 'powered-down'.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "After supervisor switchover, all SSH/VTY sessions to the device drop (expected). However, new SSH connections fail even after the switchover completes. The management interface or VTY ACL/AAA configuration is not functional on the new active.",
+      "resolutions": [
+        {
+          "action": "Wait 1-2 minutes for SSH server and management interface to initialize on new active",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Wait 1-2 minutes for SSH server and management interface to initialize on new active",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Wait 1-2 minutes for SSH server and management interface to initialize on new active",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify mgmt interface is up from console: 'show interface mgmt0' (NX-OS), 'show interface GigabitEthernet0/0' (IOS-XE)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify mgmt interface is up from console: 'show interface mgmt0' (NX-OS), 'show interface GigabitEthernet0/0' (IOS-XE)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify mgmt interface is up from console: 'show interface mgmt0' (NX-OS), 'show interface GigabitEthernet0/0' (IOS-XE)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure local authentication fallback: 'aaa authentication login default group radius local' — the 'local' at the end is critical",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure local authentication fallback: 'aaa authentication login default group radius local' — the 'local' at the end is critical",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Ensure local authentication fallback: 'aaa authentication login default group radius local' — the 'local' at the end is critical",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify crypto keys exist on standby: 'show crypto key mypubkey rsa' from standby sup (before switchover)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify crypto keys exist on standby: 'show crypto key mypubkey rsa' from standby sup (before switchover)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify crypto keys exist on standby: 'show crypto key mypubkey rsa' from standby sup (before switchover)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: 'feature ssh' must be enabled — verify it persists after switchover",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: 'feature ssh' must be enabled — verify it persists after switchover",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "On NX-OS: 'feature ssh' must be enabled — verify it persists after switchover",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Management interface (mgmt0 / GigabitEthernet0/0 / MgmtEth0/RP0/CPU0/0) not coming up on new active sup — interface needs to re-bind to the new active's management port",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "SSH server process slow to start on new active — depends on AAA, crypto key generation",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "AAA server (RADIUS/TACACS+) unreachable from new active — if local auth fallback is not configured, SSH auth fails",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VTY ACL or management ACL misconfigured — the ACL references objects that are not yet programmed on new active",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Crypto key not synced to standby — SSHv2 RSA/ECDSA key must be present on both sups",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Supervisor switchover — VTY sessions dropped and not re-establishing",
+      "symptoms": [
+        "All existing SSH/telnet sessions disconnect during switchover (expected behavior)",
+        "New SSH connections after switchover timeout or get 'connection refused'",
+        "Console access works but SSH does not",
+        "Syslog shows the device is up but SSH server is not responding on management interface"
+      ],
+      "verify_commands": [
+        {
+          "command": "show ssh server",
+          "confirms_if": "SSH server disabled or no key present on new active confirms the issue",
+          "look_for": "SSH server enabled/disabled, version, key type. If SSH server is not running, it explains connection failures.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ssh server",
+          "confirms_if": "SSH server disabled or no key present on new active confirms the issue",
+          "look_for": "SSH server enabled/disabled, version, key type. If SSH server is not running, it explains connection failures.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ssh server",
+          "confirms_if": "SSH server disabled or no key present on new active confirms the issue",
+          "look_for": "SSH server enabled/disabled, version, key type. If SSH server is not running, it explains connection failures.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface mgmt0 brief",
+          "confirms_if": "mgmt0 down or no IP confirms management interface issue",
+          "look_for": "Interface admin state (up), link state (up), IP address assigned. If mgmt0 is down or has no IP, SSH cannot accept connections.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface mgmt0 brief",
+          "confirms_if": "mgmt0 down or no IP confirms management interface issue",
+          "look_for": "Interface admin state (up), link state (up), IP address assigned. If mgmt0 is down or has no IP, SSH cannot accept connections.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface mgmt0 brief",
+          "confirms_if": "mgmt0 down or no IP confirms management interface issue",
+          "look_for": "Interface admin state (up), link state (up), IP address assigned. If mgmt0 is down or has no IP, SSH cannot accept connections.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show users",
+          "confirms_if": "No VTY sessions listed confirms SSH is not accepting connections",
+          "look_for": "List of active VTY/console sessions. If no VTY sessions listed despite attempts, SSH server is not accepting connections.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show users",
+          "confirms_if": "No VTY sessions listed confirms SSH is not accepting connections",
+          "look_for": "List of active VTY/console sessions. If no VTY sessions listed despite attempts, SSH server is not accepting connections.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show users",
+          "confirms_if": "No VTY sessions listed confirms SSH is not accepting connections",
+          "look_for": "List of active VTY/console sessions. If no VTY sessions listed despite attempts, SSH server is not accepting connections.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "An ISSU upgrade was initiated but failed during or after the supervisor switchover phase. The system may be in a split-brain state with different versions on active and standby, or the upgrade may have rolled back leaving the system on the original version.",
+      "resolutions": [
+        {
+          "action": "Check ISSU status: 'show install all status' (NX-OS), 'show issu state detail' (IOS-XE)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISSU status: 'show install all status' (NX-OS), 'show issu state detail' (IOS-XE)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check ISSU status: 'show install all status' (NX-OS), 'show issu state detail' (IOS-XE)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If rolled back: verify the system is stable on the original version before retrying",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If rolled back: verify the system is stable on the original version before retrying",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If rolled back: verify the system is stable on the original version before retrying",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If split version: both sups must run the same version — complete the upgrade or rollback manually",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If split version: both sups must run the same version — complete the upgrade or rollback manually",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If split version: both sups must run the same version — complete the upgrade or rollback manually",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Collect 'show tech-support' for TAC — ISSU failures often hit known defects",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Collect 'show tech-support' for TAC — ISSU failures often hit known defects",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Collect 'show tech-support' for TAC — ISSU failures often hit known defects",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: Check 'show install all failure-reason' for specific failure details",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: Check 'show install all failure-reason' for specific failure details",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "NX-OS: Check 'show install all failure-reason' for specific failure details",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider disruptive upgrade if ISSU keeps failing — schedule a maintenance window",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider disruptive upgrade if ISSU keeps failing — schedule a maintenance window",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider disruptive upgrade if ISSU keeps failing — schedule a maintenance window",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Pre-upgrade compatibility check passed but runtime incompatibility discovered during upgrade",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Standby supervisor failed to boot with new image",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Module (linecard) refused to upgrade or crashed during the ISSU process",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Timeout during ISSU — a phase took longer than allowed",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Insufficient bootflash space for the new image",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "ISSU (In-Service Software Upgrade) failure during supervisor switchover",
+      "symptoms": [
+        "ISSU status shows 'failed' or 'rollback in progress'",
+        "Active and standby supervisors running different software versions",
+        "'show install all status' (NX-OS) or 'show issu state' shows error state",
+        "Post-ISSU: features not working correctly due to version incompatibility during transition"
+      ],
+      "verify_commands": [
+        {
+          "command": "show install all status",
+          "confirms_if": "Status shows 'failed' or 'rollback' confirms ISSU did not complete successfully",
+          "look_for": "Install status, current phase, failure reason. Shows whether ISSU completed, is in progress, or failed.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show install all status",
+          "confirms_if": "Status shows 'failed' or 'rollback' confirms ISSU did not complete successfully",
+          "look_for": "Install status, current phase, failure reason. Shows whether ISSU completed, is in progress, or failed.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show install all status",
+          "confirms_if": "Status shows 'failed' or 'rollback' confirms ISSU did not complete successfully",
+          "look_for": "Install status, current phase, failure reason. Shows whether ISSU completed, is in progress, or failed.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show version",
+          "confirms_if": "Version mismatch between active and standby or line cards confirms incomplete upgrade",
+          "look_for": "Software version on current active. Compare with 'show module' to verify all components are on the same version.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show version",
+          "confirms_if": "Version mismatch between active and standby or line cards confirms incomplete upgrade",
+          "look_for": "Software version on current active. Compare with 'show module' to verify all components are on the same version.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show version",
+          "confirms_if": "Version mismatch between active and standby or line cards confirms incomplete upgrade",
+          "look_for": "Software version on current active. Compare with 'show module' to verify all components are on the same version.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A critical management plane process has crashed, causing CLI unavailability, SSH failures, or console loss. The process manager (sysmgr/processmgr/smand) automatically restarts the process, but during the restart window the management plane is impacted. Repeated crashes indicate a software defect.",
+      "resolutions": [
+        {
+          "action": "Identify the crashing process: 'show cores' (NX-OS), 'dir crashinfo:' (IOS-XE), 'show context' (IOS-XR)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the crashing process: 'show cores' (NX-OS), 'dir crashinfo:' (IOS-XE), 'show context' (IOS-XR)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the crashing process: 'show cores' (NX-OS), 'dir crashinfo:' (IOS-XE), 'show context' (IOS-XR)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check if this is a known defect: search CDETS with the process name and crash signature",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check if this is a known defect: search CDETS with the process name and crash signature",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check if this is a known defect: search CDETS with the process name and crash signature",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Collect core dump + show tech-support for TAC analysis",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Collect core dump + show tech-support for TAC analysis",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Collect core dump + show tech-support for TAC analysis",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If the process is crash-looping (restarting repeatedly), it may need manual intervention or a reload",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If the process is crash-looping (restarting repeatedly), it may need manual intervention or a reload",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If the process is crash-looping (restarting repeatedly), it may need manual intervention or a reload",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for available SMU (Software Maintenance Update) that fixes the crashing process",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for available SMU (Software Maintenance Update) that fixes the crashing process",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for available SMU (Software Maintenance Update) that fixes the crashing process",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If production-impacting: reload the affected module or supervisor as a tactical fix while TAC analyzes the core",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If production-impacting: reload the affected module or supervisor as a tactical fix while TAC analyzes the core",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If production-impacting: reload the affected module or supervisor as a tactical fix while TAC analyzes the core",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Software bug triggered by specific config or operational state",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Memory leak causing eventual OOM and process kill",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Process hit an unhandled exception (SEGV, BUS error, assertion failure)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Timer or IPC deadlock within the process",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Interaction defect between two processes (e.g., CLI process waiting on a response from a data-plane process that is itself stuck)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Process crash causing management plane disruption",
+      "symptoms": [
+        "CLI freezes briefly then resumes with a different PID for the CLI process",
+        "SSH connections drop and reconnect within 30-60 seconds",
+        "Syslog: SYSMGR-2-SERVICE_CRASHED (NX-OS), %IOSD_INFRA-2-IOSD_CRASH (IOS-XE), SYSMGR-2-SERVICE_CRASHED (IOS-XR)",
+        "Core dump files appear in bootflash:/core or harddisk:/dumper",
+        "'show processes log' shows repeated restarts of the same process"
+      ],
+      "verify_commands": [
+        {
+          "command": "show cores",
+          "confirms_if": "Core file present for the management process confirms a crash (not a hang)",
+          "look_for": "Core files with timestamps — most recent core corresponds to the crash. Note the process name and module.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show cores",
+          "confirms_if": "Core file present for the management process confirms a crash (not a hang)",
+          "look_for": "Core files with timestamps — most recent core corresponds to the crash. Note the process name and module.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show cores",
+          "confirms_if": "Core file present for the management process confirms a crash (not a hang)",
+          "look_for": "Core files with timestamps — most recent core corresponds to the crash. Note the process name and module.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes log",
+          "confirms_if": "Multiple restarts of the same process within a short period confirms crash loop",
+          "look_for": "Process restart history — check for repeated restarts of the same process. High restart count = crash loop.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes log",
+          "confirms_if": "Multiple restarts of the same process within a short period confirms crash loop",
+          "look_for": "Process restart history — check for repeated restarts of the same process. High restart count = crash loop.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show processes log",
+          "confirms_if": "Multiple restarts of the same process within a short period confirms crash loop",
+          "look_for": "Process restart history — check for repeated restarts of the same process. High restart count = crash loop.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system resources",
+          "confirms_if": "Very high memory utilization around crash time suggests OOM as root cause",
+          "look_for": "Memory utilization — if the system is under heavy memory pressure, processes may be OOM-killed",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system resources",
+          "confirms_if": "Very high memory utilization around crash time suggests OOM as root cause",
+          "look_for": "Memory utilization — if the system is under heavy memory pressure, processes may be OOM-killed",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system resources",
+          "confirms_if": "Very high memory utilization around crash time suggests OOM as root cause",
+          "look_for": "Memory utilization — if the system is under heavy memory pressure, processes may be OOM-killed",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Syslog generated when the active supervisor changes. The old active becomes standby (or is removed), and the standby becomes the new active.",
+      "key_fields": [
+        "Old active sup slot",
+        "New active sup slot",
+        "Switchover reason",
+        "Switchover duration"
+      ],
+      "name": "Supervisor Switchover Notification",
+      "when_sent": "During supervisor switchover event"
+    },
+    {
+      "description": "Syslog generated when a process crashes and is restarted by the process manager (sysmgr on NX-OS, smand on IOS-XE, processmgr on IOS-XR). Includes process name, PID, restart count.",
+      "key_fields": [
+        "Process name",
+        "PID",
+        "Exit code/signal",
+        "Restart count",
+        "Core dump generated (yes/no)"
+      ],
+      "name": "Process Crash/Restart Notification",
+      "when_sent": "When a managed process exits unexpectedly and is restarted"
+    },
+    {
+      "description": "Notification about the configuration synchronization state between active and standby supervisors. Includes sync completion, sync failure, and bulk sync events.",
+      "key_fields": [
+        "Sync status (in-progress, complete, failed)",
+        "Failure reason (if failed)",
+        "Config lines synced"
+      ],
+      "name": "Config Sync Status",
+      "when_sent": "During config sync operations between active and standby"
+    }
+  ],
+  "operates_at": "Platform internals (control plane / management plane)",
+  "protocol_family": "services",
+  "protocol_id": "system-management",
+  "protocol_name": "System Management",
+  "purpose": "System management infrastructure — covers CLI parser/rendering, supervisor redundancy (SSO/RPR/NSR), console and VTY line management, process lifecycle (sysmgr/processmgr), and JSON/XML output rendering engines. These are the foundational platform services that all other features depend on.",
+  "related_protocols": [
+    "tacacs",
+    "radius"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "std-vendorspecificnorfc",
+      "title": "Vendor-specific (no RFC)",
+      "type": "standard"
+    },
+    {
+      "id": "agent-cisco-kb:services/system-management.json",
+      "title": "agent-cisco-kb knowledge base — services/system-management.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "Vendor-specific (no RFC)",
+  "states": [
+    {
+      "description": "Supervisor is the active/primary RP — owns the CLI, console, VTY lines, and all control-plane processes. This is the normal operating state for a single-sup or the primary sup in a dual-sup system.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "ACTIVE"
+    },
+    {
+      "description": "Standby supervisor is fully synchronized with the active — SSO (Stateful Switchover) mode. Configuration, state tables, and line cards are synced. Switchover will be non-disruptive to most protocols. Console/VTY migrate to new active after switchover.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "STANDBY-HOT"
+    },
+    {
+      "description": "Standby supervisor is present and booted but NOT synchronized with active. This is RPR (Route Processor Redundancy) mode — switchover requires full process restart on the new active. Longer convergence time. Line cards may reload.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "STANDBY-COLD"
+    },
+    {
+      "description": "Active supervisor is transitioning to standby (or failing) and the standby is becoming active. During this window: console is disconnected, VTY sessions drop, CLI is unavailable, processes are restarting on the new active. Duration depends on SSO vs RPR mode.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "SWITCHOVER-IN-PROGRESS"
+    },
+    {
+      "description": "No standby supervisor installed or detected. The system has no redundancy — any active sup failure is a full outage requiring reload. This is the default state on single-sup platforms (e.g., Nexus 9300 fixed, Catalyst 9300 non-stacked).",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "NOT-PRESENT"
+    },
+    {
+      "description": "Supervisor or redundancy subsystem has failed — standby is non-operational (hardware fault, boot failure, incompatible image). The system is running without redundancy protection and the standby needs intervention.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "FAILED"
+    },
+    {
+      "description": "CLI session is unresponsive — command was issued but no prompt returned. The session appears frozen. This is not a protocol state but a management-plane failure state. Underlying causes include: process hang (mtm/xmlma/iosd/sysdb), memory exhaustion, scheduler starvation, or JSON/XML rendering engine deadlock.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "CLI-HUNG"
+    }
+  ],
+  "tags": [
+    "system-management",
+    "cli",
+    "parser",
+    "json",
+    "xml",
+    "console",
+    "vty",
+    "supervisor",
+    "redundancy",
+    "switchover",
+    "sso",
+    "rpr",
+    "nsr",
+    "issu",
+    "process-crash",
+    "sysmgr",
+    "ha",
+    "high-availability",
+    "management-plane",
+    "services"
+  ],
+  "timers": [
+    {
+      "default_rfc": "Platform-dependent (typically 4s keepalive, 16s dead interval on NX-OS; varies on IOS-XE/XR)",
+      "description": "Keepalive interval between active and standby supervisors. If the active does not hear from the standby (or vice versa) within the dead interval, a switchover or standby-declared-dead event occurs.",
+      "name": "sup-keepalive",
+      "on_expiry": "Standby declared dead (from active's perspective) or active declared dead (triggers switchover)",
+      "os_defaults": [
+        {
+          "default": "",
+          "notes": "On StackWise platforms (C9300, C9500), the stack ring uses its own keepalive mechanism. 'show switch' shows ring status. Stack keepalives are ~700ms by default.",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "Not user-tunable on most platforms",
+      "tuning_advice": "Generally not tunable. On NX-OS dual-sup, these are handled by the sysmgr/redundancy framework internally."
+    },
+    {
+      "default_rfc": "Platform-dependent (minutes for large configs)",
+      "description": "Maximum time allowed for the standby to complete initial configuration synchronization with the active. If exceeded, standby remains in cold/non-ready state.",
+      "name": "config-sync-timeout",
+      "on_expiry": "Standby remains in STANDBY-COLD and logs a config sync failure",
+      "range": "Not directly tunable",
+      "tuning_advice": "Reduce config size if sync is consistently timing out. Large ACLs, route-maps, and prefix-lists are the usual culprits."
+    },
+    {
+      "default_rfc": "10 minutes (console), 10 minutes (VTY)",
+      "description": "Maximum idle time on a console or VTY line before automatic disconnect. NOT the same as a command execution timeout — there is no built-in timeout for a running show command.",
+      "name": "cli-exec-timeout",
+      "on_expiry": "Session disconnected. Does NOT kill a hung command — the process behind it continues running.",
+      "os_defaults": [
+        {
+          "default": "",
+          "notes": "exec-timeout under 'line console' and 'line vty'. Default 0 (no timeout) on console, 30 min on VTY.",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "",
+          "notes": "exec-timeout under 'line con 0' and 'line vty 0 15'. Default 10 min both. 'session-timeout' is separate (for reverse telnet).",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "default": "",
+          "notes": "exec-timeout under 'line console' and 'line default'. IOS-XR default is 10 min. Also has 'absolute-timeout' which kills session regardless of activity.",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "range": "0-525600 minutes (0 = never timeout)",
+      "tuning_advice": "Setting exec-timeout 0 on console lines is common in lab but dangerous in production. A hung session with timeout 0 holds the console indefinitely."
+    }
+  ],
+  "transitions": [
+    {
+      "failure_if_stuck": "Standby never reaches hot — check config sync errors: 'show redundancy config-sync failures' (IOS-XE), 'show system redundancy status' (NX-OS), 'show redundancy' (IOS-XR). Common causes: incompatible image version, config parse error on standby, insufficient memory.",
+      "from_state": "STANDBY-COLD",
+      "to_state": "STANDBY-HOT",
+      "trigger": "Standby completes full state sync with active (config sync, FIB sync, adjacency sync). This can take minutes on a large-config device."
+    },
+    {
+      "failure_if_stuck": "Switchover initiated but never completes — standby hangs during activation. Check for process startup failures on new active. May need manual reload.",
+      "from_state": "STANDBY-HOT",
+      "to_state": "SWITCHOVER-IN-PROGRESS",
+      "trigger": "Active supervisor fails (crash, watchdog, manual 'redundancy force-switchover' / 'system switchover'). Standby takes over."
+    },
+    {
+      "failure_if_stuck": "Post-switchover: CLI/console not recovering. Common causes: (1) console TTY not rebinding to new active (NX-OS: check sysmgr/terminal server process), (2) processes slow to start (IOS-XE: iosd init), (3) sysdb unavailable (IOS-XR). See cli-parser-hang and supervisor-switchover-failure workflows.",
+      "from_state": "SWITCHOVER-IN-PROGRESS",
+      "to_state": "ACTIVE",
+      "trigger": "New active supervisor completes process initialization, binds console TTY, and resumes CLI access. Management plane is operational."
+    },
+    {
+      "failure_if_stuck": "Session stuck with no prompt. Open a parallel VTY/console session to diagnose. If all sessions hung, the issue is system-wide (typically OOM or process crash). Recovery: kill the hung process or reload.",
+      "from_state": "ACTIVE",
+      "to_state": "CLI-HUNG",
+      "trigger": "A show command (especially with | json, | xml, | json-pretty, or complex pipe filters) causes the CLI rendering engine to hang. The process servicing the CLI request (mtm/xmlma/iosd/sysdb) is blocked or deadlocked."
+    },
+    {
+      "from_state": "CLI-HUNG",
+      "to_state": "ACTIVE",
+      "trigger": "Hung process completes (timed out), is killed by sysmgr/processmgr, or administrator manually terminates the session. CLI prompt returns."
+    },
+    {
+      "failure_if_stuck": "Standby not coming up — check 'show module' for powered-down/failed state. Common: BIOS incompatibility, image mismatch, hardware fault.",
+      "from_state": "NOT-PRESENT",
+      "to_state": "STANDBY-COLD",
+      "trigger": "Standby supervisor inserted and powered on (or stack member joins). Begins boot and initial sync."
+    },
+    {
+      "failure_if_stuck": "Standby in failed state — check 'show module' and 'show system reset-reason'. May need OIR (online insertion/removal) or RMA.",
+      "from_state": "STANDBY-HOT",
+      "to_state": "FAILED",
+      "trigger": "Standby supervisor crashes, loses keepalive communication with active, or encounters an unrecoverable error."
+    }
+  ],
+  "transport": "N/A (internal IPC, sysdb, DME)",
+  "vendor_notes": {
+    "iosxe": {
+      "config_examples": [
+        "! Redundancy (modular platforms)\nredundancy\n mode sso\n! Console\nline con 0\n exec-timeout 5 0\n logging synchronous\nline vty 0 15\n exec-timeout 30 0\n transport input ssh\n! SSH\nip ssh version 2\ncrypto key generate rsa modulus 2048"
+      ],
+      "notes": [
+        {
+          "note": "IOS-XE system management architecture: runs on Linux with IOSd (the classic IOS daemon) handling most CLI. JSON output uses the IOSXML agent embedded within IOSd. On modular platforms (C9400, C9600), dual-sup SSO is supported — 'show redundancy' shows HA state. On stacked platforms (C9300, C9200), StackWise uses a ring topology with one active, one standby, and members. Console follows the active switch/sup. After switchover: IOSd reinitializes on the new active, management interface re-binds. 'show redundancy switchover history' shows recent switchover events. Key processes: IOSd, smand (Stack Manager daemon), btman (Boot Manager), binos (Binary IOS). The 'show processes cpu sorted' command shows IOSd internals. For stacks: 'show switch' shows the active/standby/member assignment. Console port is always on the physical console of each switch — but CLI access follows the active.",
+          "versions": "all"
+        },
+        {
+          "note": "IOS-XE 17.x (Polaris): JSON output via '| format json' (not '| json'). Older 16.x used '| append' / native JSON support was limited. 17.9+ improved JSON rendering for show commands. 17.15 added JSON support for additional show commands. Key difference from NX-OS: JSON is rendered within the IOSd monolith process, so a JSON rendering hang blocks the entire IOSd scheduler for that session. 'show processes cpu sorted' will show IOSd at high CPU during a JSON hang. Stack switchover on C9300: 'redundancy force-switchover' triggers switchover. Post-switchover console: connect to the new active switch's console port. 'show switch' shows which switch number is active.",
+          "versions": "17.x"
+        }
+      ]
+    },
+    "iosxr": {
+      "config_examples": [
+        "! RP redundancy\nnsr\n process-failures switchover\n!\nline console\n exec-timeout 5 0\nline default\n exec-timeout 30 0\nssh server v2\nssh server vrf default"
+      ],
+      "notes": [
+        {
+          "note": "IOS-XR system management architecture: fully modular — each process runs independently under processmgr. CLI is a separate process that queries sysdb (System Database) for all state. JSON output is rendered by the CLI process querying sysdb schema — if sysdb is slow, the CLI hangs waiting for a response. On dual-RP systems (Cisco 8000, NCS 5500, ASR 9000), redundancy uses NSR (Non-Stop Routing) which is more advanced than SSO — not just config sync but also protocol state sync (BGP NSR, OSPF NSR, etc.). Console is on each RP physically — follows active. 'show redundancy' shows RP0/RP1 state and switchover history. 'show redundancy switchover-history' for detailed event log. Key processes: sysdb, config_mgr, processmgr, schema_server, cli (CLI agent), nsr_fo (NSR Failover). Process crashes: 'show context' for stack trace, 'show processes crashed' for crash history.",
+          "versions": "all"
+        },
+        {
+          "note": "IOS-XR version numbering: 7.x is 'classic' numbering. Starting with release 24.1, Cisco moved to calendar-based numbering (YY.MM format). So 24.2 = second release of 2024, 25.2 = second release of 2025. The CLI infrastructure is the same across both numbering schemes — no behavioral change for system management commands. eXR (64-bit XR on Cisco 8000 and newer NCS) vs classic XR (32-bit on older ASR 9K): eXR runs processes in Linux containers (LXC), classic runs directly on QNX RTOS. On eXR, 'bash' gives you a Linux shell where you can inspect processes with standard Linux tools (ps, top, kill). JSON output: IOS-XR supports '| json' natively since 7.x — queries sysdb and serializes. Large outputs can be slow but typically don't hang (timeout mechanism in place).",
+          "versions": "7.5+/24.2+"
+        }
+      ]
+    },
+    "nxos": {
+      "config_examples": [
+        "! Redundancy mode (dual-sup only)\nsystem redundancy-mode combined-mode\n! Console config\nline console\n  exec-timeout 5\nline vty\n  exec-timeout 30\n  session-limit 10\n! SSH\nfeature ssh\nssh key rsa 2048"
+      ],
+      "notes": [
+        {
+          "note": "NX-OS system management architecture: sysmgr manages all processes (each feature is a separate Linux process). CLI is handled by vsh (Virtual Shell). JSON output is rendered by the DME (Data Management Engine) via mtm process. Structured output also uses xmlma (XML Management Agent) for NX-API calls. On dual-sup systems (N9500, N7K), the active sup owns the console. 'show system redundancy status' and 'show redundancy status' both work. For switchover: 'system switchover' triggers a manual switchover. Key processes to monitor: vsh, mtm, xmlma, netstack, feature-mgr, sysmgr, aaa. Known issue: 'show running-config | json' on very large configs (>5000 lines) can hang mtm — break into sections. Console on N9500: physically on each sup module, follows active. Console on N9300: single console (fixed chassis, no switchover).",
+          "versions": "all"
+        },
+        {
+          "note": "NX-OS 10.4+ changes: JSON output improvements — larger configs handled better by mtm. New 'show system internal sysmgr service running' output format (note: this is an undocumented command namespace). 10.4 also introduced improved ISSU resilience on N9K-C93xxx platforms. Process restart behavior: sysmgr classifies processes by restart type — some crash-restart silently, others trigger a sup switchover. 'show processes' shows restart count per process.",
+          "versions": "10.4+"
+        }
+      ]
+    }
+  }
+}

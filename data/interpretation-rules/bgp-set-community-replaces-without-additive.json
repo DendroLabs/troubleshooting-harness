@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "bgp-set-community-replaces-without-additive",
+  "display_name": "set community without 'additive' replaces all existing communities — downstream policy then misfires",
+  "category": "output-semantics",
+  "applicable_os": ["nxos", "iosxe", "iosxr", "eos", "junos"],
+  "version_range": { "min": "*", "max": "*" },
+  "context": "A route-map/route-policy sets a BGP community and a downstream device no longer matches communities it expected",
+  "observation": "Communities that should be present on a prefix are missing downstream, or a downstream match clause unexpectedly fails",
+  "naive_interpretation": "The communities were stripped by a bug, or a downstream filter is incorrectly removing them",
+  "correct_interpretation": "By default, 'set community <value>' overwrites the entire community list — any communities the route already carried are discarded unless 'additive' is specified. So a route that arrived tagged with several communities can leave carrying only the one just set. Downstream policy that keys on the original communities then fails to match. The communities were not lost in transit; they were replaced at the device whose route-map omitted 'additive'.",
+  "why": [
+    "RFC 1997 defines the COMMUNITIES attribute as a set; vendor 'set community' semantics replace that set unless the additive keyword preserves existing members",
+    "An omitted 'additive' is a silent overwrite, not an error, so nothing is logged when communities are dropped",
+    "Downstream match clauses operate on whatever set survived the last replacing 'set community', explaining the apparent mismatch",
+    "The fix is at the device that replaced the set, by adding 'additive', not at the downstream matcher"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show bgp ipv4 unicast <prefix>",
+      "purpose": "Show the communities currently attached to the prefix to see which survived"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show ip bgp <prefix>",
+      "purpose": "Display the prefix's community list to confirm earlier communities were replaced"
+    },
+    {
+      "os": "iosxe",
+      "version_range": { "min": "*", "max": "*" },
+      "command": "show route-map <name>",
+      "purpose": "Check whether the set community clause uses 'additive' or silently overwrites"
+    }
+  ],
+  "traps": [
+    "Assuming a downstream filter removed communities when an upstream 'set community' replaced them",
+    "Forgetting that 'additive' is required to preserve existing communities when adding a new one",
+    "Debugging the matching device instead of the device whose route-map omitted additive",
+    "Not viewing the prefix's actual community list at the point where matching fails"
+  ],
+  "related_rules": [
+    "bgp-received-not-installed-vs-filtered",
+    "bgp-as-path-prepend-loses-to-earlier-tiebreakers",
+    "bgp-communities-stripped-without-send-community"
+  ],
+  "related_protocols": ["bgp-4"],
+  "keywords": ["BGP", "community", "communities", "additive", "set community", "route-map", "route-policy", "replace", "overwrite", "match"],
+  "sources": [
+    {
+      "id": "rfc-1997",
+      "title": "RFC 1997 — BGP Communities Attribute",
+      "type": "rfc",
+      "rfc_number": 1997,
+      "url": "https://www.rfc-editor.org/rfc/rfc1997.txt"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

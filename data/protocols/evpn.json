@@ -1,0 +1,2382 @@
+{
+  "confidence": "medium",
+  "dependencies": [
+    {
+      "description": "EVPN requires a BGP session with the L2VPN EVPN address family (AFI 25, SAFI 70) negotiated with a spine or route-reflector",
+      "name": "BGP session with L2VPN EVPN AFI/SAFI",
+      "type": "protocol"
+    },
+    {
+      "description": "EVPN serves as the control plane for VXLAN; the NVE interface and VNI mappings must be configured for EVPN routes to be generated",
+      "name": "VXLAN overlay (NVE interface with VNIs)",
+      "type": "infrastructure"
+    },
+    {
+      "description": "Route Distinguisher must be unique per VTEP; Route Targets must match (export on originator, import on receiver) for routes to be accepted",
+      "name": "Matching RD/RT configuration",
+      "type": "infrastructure"
+    },
+    {
+      "description": "The underlay network must provide IP connectivity between VTEP loopback addresses for both BGP sessions and VXLAN data-plane encapsulation",
+      "name": "Underlay reachability between VTEPs",
+      "type": "infrastructure"
+    }
+  ],
+  "failure_modes": [
+    {
+      "description": "BGP EVPN session is established but no EVPN routes are being received from the peer. show bgp l2vpn evpn shows 0 routes from the remote VTEP or route-reflector.",
+      "resolutions": [
+        {
+          "action": "Verify address-family activation: 'show bgp l2vpn evpn summary' -- check session is up",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify address-family activation: 'show bgp l2vpn evpn summary' -- check session is up",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify address-family activation: 'show bgp l2vpn evpn summary' -- check session is up",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare RT import/export on both VTEPs: 'show running-config | section evpn'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare RT import/export on both VTEPs: 'show running-config | section evpn'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare RT import/export on both VTEPs: 'show running-config | section evpn'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check if route-map is applied to EVPN peer: 'show bgp neighbor <ip>' -- look for inbound/outbound policy",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check if route-map is applied to EVPN peer: 'show bgp neighbor <ip>' -- look for inbound/outbound policy",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check if route-map is applied to EVPN peer: 'show bgp neighbor <ip>' -- look for inbound/outbound policy",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RD is unique per VTEP and RT matches across VTEPs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RD is unique per VTEP and RT matches across VTEPs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RD is unique per VTEP and RT matches across VTEPs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "L2VPN EVPN address family not activated under BGP neighbor",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RT (route-target) mismatch between VTEPs",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RD/RT auto-derivation failure",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Route-map filtering EVPN routes",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "EVPN routes not being exchanged",
+      "symptoms": [
+        "show bgp l2vpn evpn shows 0 routes from peer",
+        "No remote MAC/IP entries learned via EVPN",
+        "show bgp l2vpn evpn summary shows 0 in PfxRcd column"
+      ],
+      "verify_commands": [
+        {
+          "command": "show bgp l2vpn evpn summary",
+          "confirms_if": "Shows whether EVPN session is up and routes are being exchanged",
+          "look_for": "Look for BGP EVPN peer state and number of prefixes received (PfxRcd column)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn summary",
+          "confirms_if": "Shows whether EVPN session is up and routes are being exchanged",
+          "look_for": "Look for BGP EVPN peer state and number of prefixes received (PfxRcd column)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn summary",
+          "confirms_if": "Shows whether EVPN session is up and routes are being exchanged",
+          "look_for": "Look for BGP EVPN peer state and number of prefixes received (PfxRcd column)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn",
+          "confirms_if": "Shows all EVPN routes in the BGP table with their attributes",
+          "look_for": "Look for expected RT values in route entries; filter by RT to check import",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn",
+          "confirms_if": "Shows all EVPN routes in the BGP table with their attributes",
+          "look_for": "Look for expected RT values in route entries; filter by RT to check import",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn",
+          "confirms_if": "Shows all EVPN routes in the BGP table with their attributes",
+          "look_for": "Look for expected RT values in route entries; filter by RT to check import",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp neighbor <ip>",
+          "confirms_if": "Confirms L2VPN EVPN address family is negotiated and shows applied policies",
+          "look_for": "Look for AFI/SAFI negotiated (should include L2VPN EVPN), inbound/outbound policies",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp neighbor <ip>",
+          "confirms_if": "Confirms L2VPN EVPN address family is negotiated and shows applied policies",
+          "look_for": "Look for AFI/SAFI negotiated (should include L2VPN EVPN), inbound/outbound policies",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp neighbor <ip>",
+          "confirms_if": "Confirms L2VPN EVPN address family is negotiated and shows applied policies",
+          "look_for": "Look for AFI/SAFI negotiated (should include L2VPN EVPN), inbound/outbound policies",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Remote host MAC addresses are not being learned via EVPN type-2 routes. ARP fails across the fabric because the remote VTEP is not advertising the host's MAC/IP binding.",
+      "resolutions": [
+        {
+          "action": "Check local MAC learning on originating VTEP: 'show mac address-table vlan <vlan>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check local MAC learning on originating VTEP: 'show mac address-table vlan <vlan>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check local MAC learning on originating VTEP: 'show mac address-table vlan <vlan>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify L2VNI is configured under EVPN: 'show nve vni' and 'show bgp l2vpn evpn'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify L2VNI is configured under EVPN: 'show nve vni' and 'show bgp l2vpn evpn'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify L2VNI is configured under EVPN: 'show nve vni' and 'show bgp l2vpn evpn'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check suppress-ARP configuration: 'show running-config interface nve1'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check suppress-ARP configuration: 'show running-config interface nve1'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check suppress-ARP configuration: 'show running-config interface nve1'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify EVPN instance-to-VNI mapping",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify EVPN instance-to-VNI mapping",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify EVPN instance-to-VNI mapping",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "VNI not in BGP EVPN (missing L2VNI configuration)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Host not learned locally on originating VTEP",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "suppress-ARP misconfiguration",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "EVPN instance not associated with the correct VNI",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Type-2 (MAC/IP) routes missing",
+      "symptoms": [
+        "Remote host MAC not learned via EVPN",
+        "ARP fails across fabric",
+        "show bgp l2vpn evpn route-type 2 missing expected entries"
+      ],
+      "verify_commands": [
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows all type-2 routes -- missing entries confirm the failure",
+          "look_for": "Look for type-2 MAC/IP routes; check MAC address, associated IP, and originating VTEP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows all type-2 routes -- missing entries confirm the failure",
+          "look_for": "Look for type-2 MAC/IP routes; check MAC address, associated IP, and originating VTEP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows all type-2 routes -- missing entries confirm the failure",
+          "look_for": "Look for type-2 MAC/IP routes; check MAC address, associated IP, and originating VTEP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Shows L2 route table entries populated by EVPN",
+          "look_for": "Look for MAC entries with their topology ID (VNI), flags, and next-hop (VTEP IP)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Shows L2 route table entries populated by EVPN",
+          "look_for": "Look for MAC entries with their topology ID (VNI), flags, and next-hop (VTEP IP)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Shows L2 route table entries populated by EVPN",
+          "look_for": "Look for MAC entries with their topology ID (VNI), flags, and next-hop (VTEP IP)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "Shows whether remote MACs are present in the forwarding table",
+          "look_for": "Look for remote MAC entries learned via nve interface vs locally learned",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "Shows whether remote MACs are present in the forwarding table",
+          "look_for": "Look for remote MAC entries learned via nve interface vs locally learned",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "Shows whether remote MACs are present in the forwarding table",
+          "look_for": "Look for remote MAC entries learned via nve interface vs locally learned",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Inter-subnet routing fails across the VXLAN fabric. Hosts in different subnets (VLANs) cannot communicate through the overlay because EVPN type-5 IP prefix routes are missing or not being installed in the routing table.",
+      "resolutions": [
+        {
+          "action": "Verify L3VNI configuration: 'show nve vni' -- look for L3 type VNI",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify L3VNI configuration: 'show nve vni' -- look for L3 type VNI",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify L3VNI configuration: 'show nve vni' -- look for L3 type VNI",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VRF-to-L3VNI mapping: 'show running-config vrf <name>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VRF-to-L3VNI mapping: 'show running-config vrf <name>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check VRF-to-L3VNI mapping: 'show running-config vrf <name>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare RT import/export for L3VNI on all VTEPs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare RT import/export for L3VNI on all VTEPs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Compare RT import/export for L3VNI on all VTEPs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify anycast gateway MAC is consistent: 'show fabric forwarding anycast-gateway-mac' (NX-OS)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify anycast gateway MAC is consistent: 'show fabric forwarding anycast-gateway-mac' (NX-OS)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify anycast gateway MAC is consistent: 'show fabric forwarding anycast-gateway-mac' (NX-OS)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "L3VNI not configured",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VRF-to-VNI mapping missing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Route-target import/export mismatch for L3VNI",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Anycast gateway MAC mismatch between VTEPs",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Type-5 (IP prefix) routes not working",
+      "symptoms": [
+        "Inter-subnet routing fails across VXLAN fabric",
+        "Hosts in different VLANs cannot communicate through overlay",
+        "show bgp l2vpn evpn route-type 5 missing expected prefixes"
+      ],
+      "verify_commands": [
+        {
+          "command": "show bgp l2vpn evpn route-type 5",
+          "confirms_if": "Shows type-5 routes -- missing entries confirm the failure",
+          "look_for": "Look for IP prefix routes with expected subnets, VNI, and originating VTEP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 5",
+          "confirms_if": "Shows type-5 routes -- missing entries confirm the failure",
+          "look_for": "Look for IP prefix routes with expected subnets, VNI, and originating VTEP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 5",
+          "confirms_if": "Shows type-5 routes -- missing entries confirm the failure",
+          "look_for": "Look for IP prefix routes with expected subnets, VNI, and originating VTEP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name>",
+          "confirms_if": "Shows whether EVPN-learned routes are installed in the VRF RIB",
+          "look_for": "Look for routes learned via BGP EVPN in the VRF routing table",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name>",
+          "confirms_if": "Shows whether EVPN-learned routes are installed in the VRF RIB",
+          "look_for": "Look for routes learned via BGP EVPN in the VRF routing table",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show ip route vrf <name>",
+          "confirms_if": "Shows whether EVPN-learned routes are installed in the VRF RIB",
+          "look_for": "Look for routes learned via BGP EVPN in the VRF routing table",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve vni",
+          "confirms_if": "Confirms L3VNI is operational and mapped to the correct VRF",
+          "look_for": "Look for L3 VNI entry associated with the VRF; verify it is in Up state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve vni",
+          "confirms_if": "Confirms L3VNI is operational and mapped to the correct VRF",
+          "look_for": "Look for L3 VNI entry associated with the VRF; verify it is in Up state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve vni",
+          "confirms_if": "Confirms L3VNI is operational and mapped to the correct VRF",
+          "look_for": "Look for L3 VNI entry associated with the VRF; verify it is in Up state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The fabric detects duplicate MAC addresses -- the same MAC is being advertised by multiple VTEPs with increasing sequence numbers. The MAC may be frozen to prevent forwarding loops, causing connectivity loss for the host.",
+      "resolutions": [
+        {
+          "action": "Check for frozen MACs: 'show l2route evpn mac all' -- look for 'frozen' flag",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for frozen MACs: 'show l2route evpn mac all' -- look for 'frozen' flag",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for frozen MACs: 'show l2route evpn mac all' -- look for 'frozen' flag",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify which VTEPs are advertising the MAC: 'show bgp l2vpn evpn route-type 2' -- filter by MAC",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify which VTEPs are advertising the MAC: 'show bgp l2vpn evpn route-type 2' -- filter by MAC",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify which VTEPs are advertising the MAC: 'show bgp l2vpn evpn route-type 2' -- filter by MAC",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If legitimate multi-homing, configure ESI on both VTEPs",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If legitimate multi-homing, configure ESI on both VTEPs",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If legitimate multi-homing, configure ESI on both VTEPs",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If physical loop, trace cabling and shut offending port",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If physical loop, trace cabling and shut offending port",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If physical loop, trace cabling and shut offending port",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear frozen MAC after fixing root cause: 'clear l2route evpn mac <mac>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear frozen MAC after fixing root cause: 'clear l2route evpn mac <mac>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear frozen MAC after fixing root cause: 'clear l2route evpn mac <mac>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Physical loop in fabric (e.g., miscabled server NIC)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Host connected to multiple VTEPs without proper ESI multi-homing",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "VM migration without proper MAC mobility configuration",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Misconfigured static MAC on multiple switches",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Duplicate MAC detected / MAC flapping",
+      "symptoms": [
+        "Syslog: 'duplicate MAC detected'",
+        "MAC address frozen in EVPN table",
+        "Host intermittently losing connectivity",
+        "Rapidly incrementing sequence numbers in type-2 routes"
+      ],
+      "verify_commands": [
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Shows MAC entries with duplicate/frozen status",
+          "look_for": "Look for 'frozen' or 'duplicate' flags on MAC entries and which VTEP they point to",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Shows MAC entries with duplicate/frozen status",
+          "look_for": "Look for 'frozen' or 'duplicate' flags on MAC entries and which VTEP they point to",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac all",
+          "confirms_if": "Shows MAC entries with duplicate/frozen status",
+          "look_for": "Look for 'frozen' or 'duplicate' flags on MAC entries and which VTEP they point to",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows which VTEPs are advertising the MAC and their sequence numbers",
+          "look_for": "Look for same MAC advertised from multiple next-hops with increasing sequence numbers",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows which VTEPs are advertising the MAC and their sequence numbers",
+          "look_for": "Look for same MAC advertised from multiple next-hops with increasing sequence numbers",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows which VTEPs are advertising the MAC and their sequence numbers",
+          "look_for": "Look for same MAC advertised from multiple next-hops with increasing sequence numbers",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system internal l2fwder mac",
+          "confirms_if": "Shows internal L2 forwarding state for the MAC (NX-OS specific)",
+          "look_for": "Look for MAC entry flags and forwarding state (NX-OS internal command)",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system internal l2fwder mac",
+          "confirms_if": "Shows internal L2 forwarding state for the MAC (NX-OS specific)",
+          "look_for": "Look for MAC entry flags and forwarding state (NX-OS internal command)",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show system internal l2fwder mac",
+          "confirms_if": "Shows internal L2 forwarding state for the MAC (NX-OS specific)",
+          "look_for": "Look for MAC entry flags and forwarding state (NX-OS internal command)",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include duplicate",
+          "confirms_if": "Shows timeline of duplicate MAC detection events",
+          "look_for": "Look for 'duplicate MAC' or 'MAC move' syslog messages with timestamps",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include duplicate",
+          "confirms_if": "Shows timeline of duplicate MAC detection events",
+          "look_for": "Look for 'duplicate MAC' or 'MAC move' syslog messages with timestamps",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include duplicate",
+          "confirms_if": "Shows timeline of duplicate MAC detection events",
+          "look_for": "Look for 'duplicate MAC' or 'MAC move' syslog messages with timestamps",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "In a centralized gateway (CGW) design, the border leaf's BVI MAC is not being installed in the MAC address table on remote leaf switches. Traffic destined to the gateway IP is flooded or dropped because the gateway MAC is unknown.",
+      "resolutions": [
+        {
+          "action": "Verify BVI is up on CGW: 'show interface BVI <N>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify BVI is up on CGW: 'show interface BVI <N>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify BVI is up on CGW: 'show interface BVI <N>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check type-2 route for BVI MAC: 'show bgp l2vpn evpn route-type 2' — filter by BVI MAC",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check type-2 route for BVI MAC: 'show bgp l2vpn evpn route-type 2' — filter by BVI MAC",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check type-2 route for BVI MAC: 'show bgp l2vpn evpn route-type 2' — filter by BVI MAC",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RT import on remote leaf matches RT export on CGW",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RT import on remote leaf matches RT export on CGW",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify RT import on remote leaf matches RT export on CGW",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify L2VNI is in the correct bridge-domain with the BVI",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify L2VNI is in the correct bridge-domain with the BVI",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify L2VNI is in the correct bridge-domain with the BVI",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "BVI MAC not being advertised via EVPN type-2 from CGW",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "RT import mismatch preventing BVI MAC route from being accepted on leaf",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "BVI interface down on the CGW border leaf",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "L2VNI not associated with the BVI's bridge-domain on CGW",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Centralized gateway BVI MAC not installed on remote VTEPs",
+      "symptoms": [
+        "Hosts cannot reach default gateway via overlay",
+        "show mac address-table does not show gateway BVI MAC on remote leaf",
+        "ARP for gateway IP succeeds locally but fails from remote VTEPs",
+        "show bgp l2vpn evpn route-type 2 missing the BVI MAC entry"
+      ],
+      "verify_commands": [
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows whether BVI MAC type-2 route exists and its attributes",
+          "look_for": "Filter by BVI MAC — verify the CGW is advertising it with correct RT and VNI",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows whether BVI MAC type-2 route exists and its attributes",
+          "look_for": "Filter by BVI MAC — verify the CGW is advertising it with correct RT and VNI",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows whether BVI MAC type-2 route exists and its attributes",
+          "look_for": "Filter by BVI MAC — verify the CGW is advertising it with correct RT and VNI",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "Confirms whether BVI MAC is installed on remote leaf",
+          "look_for": "Search for BVI MAC on remote leaf — should be learned via NVE/EVPN",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "Confirms whether BVI MAC is installed on remote leaf",
+          "look_for": "Search for BVI MAC on remote leaf — should be learned via NVE/EVPN",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table",
+          "confirms_if": "Confirms whether BVI MAC is installed on remote leaf",
+          "look_for": "Search for BVI MAC on remote leaf — should be learned via NVE/EVPN",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2vpn evpn",
+          "confirms_if": "Shows EVPN instance status and bridge-domain mapping",
+          "look_for": "Check EVI state and bridge-domain association",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2vpn evpn",
+          "confirms_if": "Shows EVPN instance status and bridge-domain mapping",
+          "look_for": "Check EVI state and bridge-domain association",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2vpn evpn",
+          "confirms_if": "Shows EVPN instance status and bridge-domain mapping",
+          "look_for": "Check EVI state and bridge-domain association",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "When a link in an Ethernet Segment (ESI multi-homing) goes down, traffic forwarding to the affected host is delayed for 3-10 seconds while the EVPN control plane converges. The DF (Designated Forwarder) election and mass-withdrawal of type-1 routes take longer than expected.",
+      "resolutions": [
+        {
+          "action": "Enable type-1 per-ES (Ethernet Auto-Discovery per-ES) route for fast mass-withdrawal",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable type-1 per-ES (Ethernet Auto-Discovery per-ES) route for fast mass-withdrawal",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Enable type-1 per-ES (Ethernet Auto-Discovery per-ES) route for fast mass-withdrawal",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune DF election timers if available on the platform",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune DF election timers if available on the platform",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Tune DF election timers if available on the platform",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider BFD on the ESI link for faster failure detection",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider BFD on the ESI link for faster failure detection",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Consider BFD on the ESI link for faster failure detection",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify type-1 route behavior: 'show bgp l2vpn evpn route-type 1 esi <ESI>'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify type-1 route behavior: 'show bgp l2vpn evpn route-type 1 esi <ESI>'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify type-1 route behavior: 'show bgp l2vpn evpn route-type 1 esi <ESI>'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Type-1 per-EVI withdraw/re-advertise takes BGP convergence time",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Remote VTEPs must process type-1 withdrawal before updating forwarding",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "DF election timer adds delay before new DF starts forwarding",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Large number of MACs behind ESI increases convergence time",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "ESI multi-homing convergence delay after link failure",
+      "symptoms": [
+        "3-10 second traffic loss after ESI member link failure",
+        "show bgp l2vpn evpn route-type 1 shows withdrawal and re-advertisement",
+        "show bgp l2vpn evpn route-type 4 shows DF election changes",
+        "Remote VTEPs take time to update forwarding to backup path"
+      ],
+      "verify_commands": [
+        {
+          "command": "show bgp l2vpn evpn route-type 1",
+          "confirms_if": "Shows type-1 routes and whether mass-withdrawal is enabled",
+          "look_for": "Look for per-ES and per-EVI routes — per-ES enables fast mass-withdrawal",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 1",
+          "confirms_if": "Shows type-1 routes and whether mass-withdrawal is enabled",
+          "look_for": "Look for per-ES and per-EVI routes — per-ES enables fast mass-withdrawal",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 1",
+          "confirms_if": "Shows type-1 routes and whether mass-withdrawal is enabled",
+          "look_for": "Look for per-ES and per-EVI routes — per-ES enables fast mass-withdrawal",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 4",
+          "confirms_if": "Shows DF election state and participating VTEPs",
+          "look_for": "Look for DF election state for the ESI — which VTEP is current DF",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 4",
+          "confirms_if": "Shows DF election state and participating VTEPs",
+          "look_for": "Look for DF election state for the ESI — which VTEP is current DF",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 4",
+          "confirms_if": "Shows DF election state and participating VTEPs",
+          "look_for": "Look for DF election state for the ESI — which VTEP is current DF",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2vpn evpn ethernet-segment",
+          "confirms_if": "Shows Ethernet Segment operational details",
+          "look_for": "Look for ESI state, DF status, and member interface state",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2vpn evpn ethernet-segment",
+          "confirms_if": "Shows Ethernet Segment operational details",
+          "look_for": "Look for ESI state, DF status, and member interface state",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2vpn evpn ethernet-segment",
+          "confirms_if": "Shows Ethernet Segment operational details",
+          "look_for": "Look for ESI state, DF status, and member interface state",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "Legitimate IP address mobility (e.g., DHCP re-assignment or container orchestration) triggers EVPN duplicate IP detection. The IP address is frozen on the fabric, preventing the new host from communicating even though the MAC is different.",
+      "resolutions": [
+        {
+          "action": "Clear frozen IP: 'clear l2route evpn mac-ip frozen-ip <ip>' or 'clear l2route evpn mac-ip all'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear frozen IP: 'clear l2route evpn mac-ip frozen-ip <ip>' or 'clear l2route evpn mac-ip all'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Clear frozen IP: 'clear l2route evpn mac-ip frozen-ip <ip>' or 'clear l2route evpn mac-ip all'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase duplicate detection thresholds: 'evpn host-mobility duplicate-default-timer' or 'evpn host-mobility threshold'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase duplicate detection thresholds: 'evpn host-mobility duplicate-default-timer' or 'evpn host-mobility threshold'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Increase duplicate detection thresholds: 'evpn host-mobility duplicate-default-timer' or 'evpn host-mobility threshold'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If IP mobility is expected, consider increasing the max-moves count",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If IP mobility is expected, consider increasing the max-moves count",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "If IP mobility is expected, consider increasing the max-moves count",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify which MAC was last bound to the IP: 'show bgp l2vpn evpn route-type 2' filter by IP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify which MAC was last bound to the IP: 'show bgp l2vpn evpn route-type 2' filter by IP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify which MAC was last bound to the IP: 'show bgp l2vpn evpn route-type 2' filter by IP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "IP reuse faster than duplicate detection timer",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "DHCP server reassigning IP to new host while old entry still in EVPN",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Container/VM orchestration moving IPs between MACs rapidly",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Duplicate detection thresholds too aggressive for the environment",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "IP mobility duplicate detection causing host freeze",
+      "symptoms": [
+        "Host with reassigned IP cannot communicate",
+        "Syslog: 'duplicate IP detected' or 'IP address frozen'",
+        "show l2route evpn mac-ip all shows frozen IP entry",
+        "Different MAC addresses advertising the same IP from different VTEPs"
+      ],
+      "verify_commands": [
+        {
+          "command": "show l2route evpn mac-ip all",
+          "confirms_if": "Shows IP entries with duplicate/frozen status",
+          "look_for": "Look for 'frozen' flag on IP entries and the associated MAC/VTEP",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac-ip all",
+          "confirms_if": "Shows IP entries with duplicate/frozen status",
+          "look_for": "Look for 'frozen' flag on IP entries and the associated MAC/VTEP",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show l2route evpn mac-ip all",
+          "confirms_if": "Shows IP entries with duplicate/frozen status",
+          "look_for": "Look for 'frozen' flag on IP entries and the associated MAC/VTEP",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows which MACs are competing for the IP address",
+          "look_for": "Filter by IP — look for multiple MACs advertising the same IP with increasing sequence",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows which MACs are competing for the IP address",
+          "look_for": "Filter by IP — look for multiple MACs advertising the same IP with increasing sequence",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn route-type 2",
+          "confirms_if": "Shows which MACs are competing for the IP address",
+          "look_for": "Filter by IP — look for multiple MACs advertising the same IP with increasing sequence",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include duplicate",
+          "confirms_if": "Shows timeline and details of IP mobility events",
+          "look_for": "Look for 'duplicate IP' syslog messages with MAC addresses and timestamps",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include duplicate",
+          "confirms_if": "Shows timeline and details of IP mobility events",
+          "look_for": "Look for 'duplicate IP' syslog messages with MAC addresses and timestamps",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show logging | include duplicate",
+          "confirms_if": "Shows timeline and details of IP mobility events",
+          "look_for": "Look for 'duplicate IP' syslog messages with MAC addresses and timestamps",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "A physical Layer-2 loop on the access side (e.g., miscabled server NIC, rogue switch) triggers storm-control on the access interface (AC), which shuts down the port. Since the port is part of an EVPN EVI, the associated type-2 routes are withdrawn, causing all hosts behind that port to lose connectivity.",
+      "resolutions": [
+        {
+          "action": "Identify the loop source: check MAC flap logs before shutdown event",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the loop source: check MAC flap logs before shutdown event",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Identify the loop source: check MAC flap logs before shutdown event",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix physical cabling or remove rogue device",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix physical cabling or remove rogue device",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Fix physical cabling or remove rogue device",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Recover port: 'shutdown' then 'no shutdown', or 'errdisable recovery cause storm-control'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Recover port: 'shutdown' then 'no shutdown', or 'errdisable recovery cause storm-control'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Recover port: 'shutdown' then 'no shutdown', or 'errdisable recovery cause storm-control'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add BPDU guard and storm-control with 'shutdown' action on access ports",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add BPDU guard and storm-control with 'shutdown' action on access ports",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Add BPDU guard and storm-control with 'shutdown' action on access ports",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Physical L2 loop on access side (miscabled NIC, rogue device)",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Broadcast storm exceeding storm-control threshold",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Missing STP BPDU guard on access ports",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "L2 loop causing AC interface shutdown via storm-control",
+      "symptoms": [
+        "Access port error-disabled or shutdown by storm-control",
+        "Multiple hosts behind the port lose connectivity simultaneously",
+        "Syslog: 'storm-control action shutdown' or 'err-disabled'",
+        "MAC flapping detected before shutdown",
+        "EVPN type-2 routes for affected hosts withdrawn"
+      ],
+      "verify_commands": [
+        {
+          "command": "show interface status err-disabled",
+          "confirms_if": "Shows which ports were shut down by storm-control",
+          "look_for": "Look for ports in err-disabled state due to storm-control",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface status err-disabled",
+          "confirms_if": "Shows which ports were shut down by storm-control",
+          "look_for": "Look for ports in err-disabled state due to storm-control",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show interface status err-disabled",
+          "confirms_if": "Shows which ports were shut down by storm-control",
+          "look_for": "Look for ports in err-disabled state due to storm-control",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table notifications mac-move",
+          "confirms_if": "Shows MAC flapping pattern indicating a loop",
+          "look_for": "Look for MAC move notifications before the shutdown event",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table notifications mac-move",
+          "confirms_if": "Shows MAC flapping pattern indicating a loop",
+          "look_for": "Look for MAC move notifications before the shutdown event",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show mac address-table notifications mac-move",
+          "confirms_if": "Shows MAC flapping pattern indicating a loop",
+          "look_for": "Look for MAC move notifications before the shutdown event",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show storm-control",
+          "confirms_if": "Shows storm-control status and threshold violations",
+          "look_for": "Look for interfaces where storm-control action was triggered",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show storm-control",
+          "confirms_if": "Shows storm-control status and threshold violations",
+          "look_for": "Look for interfaces where storm-control action was triggered",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show storm-control",
+          "confirms_if": "Shows storm-control status and threshold violations",
+          "look_for": "Look for interfaces where storm-control action was triggered",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    },
+    {
+      "description": "The 'system nve infra-vlans' cost-out feature or explicit 'nve cost-out' command has been applied (intentionally during maintenance or accidentally left on), causing the VTEP to withdraw all EVPN routes and stop attracting overlay traffic. The NVE interface remains up but the VTEP is effectively isolated from the fabric.",
+      "resolutions": [
+        {
+          "action": "Check for explicit cost-out: 'show running-config | include cost-out'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for explicit cost-out: 'show running-config | include cost-out'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check for explicit cost-out: 'show running-config | include cost-out'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove cost-out: 'no nve cost-out' under NVE interface or 'no system nve cost-out'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove cost-out: 'no nve cost-out' under NVE interface or 'no system nve cost-out'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Remove cost-out: 'no nve cost-out' under NVE interface or 'no system nve cost-out'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify infra-VLANs are properly configured: 'show system nve infra-vlans'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify infra-VLANs are properly configured: 'show system nve infra-vlans'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Verify infra-VLANs are properly configured: 'show system nve infra-vlans'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check vPC status if cost-out is automatic: 'show vpc'",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check vPC status if cost-out is automatic: 'show vpc'",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "action": "Check vPC status if cost-out is automatic: 'show vpc'",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "root_causes": [
+        {
+          "cause": "Explicit 'nve cost-out' applied and not removed after maintenance",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "Missing infra-VLANs configuration causing automatic cost-out",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "cause": "vPC peer-link failure triggering cost-out on secondary",
+          "os": "*",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ],
+      "scenario": "Misconfigured cost-out preventing VTEP from attracting traffic",
+      "symptoms": [
+        "VTEP not receiving any overlay traffic despite NVE being up",
+        "show bgp l2vpn evpn shows 0 advertised routes",
+        "Remote VTEPs do not show this VTEP in 'show nve peers'",
+        "All hosts behind this VTEP unreachable from the fabric"
+      ],
+      "verify_commands": [
+        {
+          "command": "show nve interface",
+          "confirms_if": "Shows NVE interface state",
+          "look_for": "NVE may show Up but check for cost-out indication in detail output",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve interface",
+          "confirms_if": "Shows NVE interface state",
+          "look_for": "NVE may show Up but check for cost-out indication in detail output",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show nve interface",
+          "confirms_if": "Shows NVE interface state",
+          "look_for": "NVE may show Up but check for cost-out indication in detail output",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include cost-out",
+          "confirms_if": "Confirms whether cost-out is explicitly configured",
+          "look_for": "Look for 'nve cost-out' or 'system nve cost-out' in the configuration",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include cost-out",
+          "confirms_if": "Confirms whether cost-out is explicitly configured",
+          "look_for": "Look for 'nve cost-out' or 'system nve cost-out' in the configuration",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show running-config | include cost-out",
+          "confirms_if": "Confirms whether cost-out is explicitly configured",
+          "look_for": "Look for 'nve cost-out' or 'system nve cost-out' in the configuration",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn summary",
+          "confirms_if": "Shows whether this VTEP is advertising routes to the fabric",
+          "look_for": "Check advertised route count — 0 advertised indicates cost-out or route withdrawal",
+          "os": "nxos",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn summary",
+          "confirms_if": "Shows whether this VTEP is advertising routes to the fabric",
+          "look_for": "Check advertised route count — 0 advertised indicates cost-out or route withdrawal",
+          "os": "iosxe",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        },
+        {
+          "command": "show bgp l2vpn evpn summary",
+          "confirms_if": "Shows whether this VTEP is advertising routes to the fabric",
+          "look_for": "Check advertised route count — 0 advertised indicates cost-out or route withdrawal",
+          "os": "iosxr",
+          "version_range": {
+            "max": "*",
+            "min": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "description": "Advertises per-EVI and per-ES routes for fast convergence and split-horizon filtering in multi-homing scenarios",
+      "key_fields": [
+        "RD",
+        "ESI",
+        "Ethernet Tag",
+        "MPLS Label/VNI"
+      ],
+      "name": "Type-1 (Ethernet Auto-Discovery)",
+      "when_sent": "When ESI is configured for multi-homing"
+    },
+    {
+      "description": "Advertises host MAC address and optionally the associated IP address. This is the most common EVPN route type, used for MAC learning across the fabric.",
+      "key_fields": [
+        "RD",
+        "ESI",
+        "Ethernet Tag",
+        "MAC Address",
+        "IP Address (optional)",
+        "MPLS Label/VNI"
+      ],
+      "name": "Type-2 (MAC/IP Advertisement)",
+      "when_sent": "When new MAC or MAC/IP is learned locally"
+    },
+    {
+      "description": "Builds the ingress replication list for BUM traffic handling. Each VTEP joining a VNI advertises a type-3 route so other VTEPs know where to replicate BUM frames.",
+      "key_fields": [
+        "RD",
+        "Ethernet Tag",
+        "Originating Router IP (VTEP IP)"
+      ],
+      "name": "Type-3 (Inclusive Multicast Ethernet Tag)",
+      "when_sent": "When VTEP joins a VNI"
+    },
+    {
+      "description": "Used for Designated Forwarder (DF) election in multi-homing scenarios. VTEPs sharing an Ethernet Segment exchange type-4 routes to elect a DF for each VLAN.",
+      "key_fields": [
+        "RD",
+        "ESI",
+        "Originating Router IP"
+      ],
+      "name": "Type-4 (Ethernet Segment)",
+      "when_sent": "When ESI is configured"
+    },
+    {
+      "description": "Advertises IP prefix routes for inter-subnet routing across the VXLAN fabric. Enables symmetric IRB (Integrated Routing and Bridging) with L3VNI.",
+      "key_fields": [
+        "RD",
+        "ESI",
+        "Ethernet Tag",
+        "IP Prefix Length",
+        "IP Prefix",
+        "Gateway IP",
+        "VNI"
+      ],
+      "name": "Type-5 (IP Prefix)",
+      "when_sent": "When IP prefix is learned or redistributed into EVPN"
+    }
+  ],
+  "operates_at": "Layer 2/3",
+  "protocol_family": "overlay",
+  "protocol_id": "evpn",
+  "protocol_name": "EVPN",
+  "purpose": "Ethernet VPN -- BGP-based control plane for VXLAN providing MAC/IP advertisement, multi-homing, and integrated routing",
+  "related_protocols": [
+    "vxlan",
+    "bgp-4",
+    "vxlan-evpn"
+  ],
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "rfc-7432",
+      "rfc_number": 7432,
+      "title": "RFC 7432",
+      "type": "rfc",
+      "url": "https://www.rfc-editor.org/rfc/rfc7432.txt"
+    },
+    {
+      "id": "cisco:overlay/evpn.json",
+      "title": "cisco knowledge base — overlay/evpn.json",
+      "type": "documentation"
+    }
+  ],
+  "standard": "RFC 7432",
+  "states": [
+    {
+      "description": "BGP L2VPN EVPN session is not established. The underlying TCP/179 session to the BGP EVPN peer (spine, route-reflector) has not come up, so no EVPN routes can be exchanged.",
+      "is_failure": false,
+      "is_steady": false,
+      "name": "BGP_SESSION_DOWN"
+    },
+    {
+      "description": "BGP EVPN session is established with the L2VPN EVPN address family negotiated. EVPN routes can be exchanged. This is the steady state when routes are actively being advertised and received.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "BGP_SESSION_UP"
+    },
+    {
+      "description": "EVPN Instance (EVI) is operational. The VNI is up, BGP session is established, RD/RT are configured, and EVPN routes are being advertised for this instance.",
+      "is_failure": false,
+      "is_steady": true,
+      "name": "EVI_ACTIVE"
+    },
+    {
+      "description": "EVPN Instance is not operational. The underlying VNI may be down, BGP session lost, or RD/RT misconfigured, preventing route advertisement for this instance.",
+      "is_failure": true,
+      "is_steady": false,
+      "name": "EVI_INACTIVE"
+    }
+  ],
+  "tags": [
+    "overlay",
+    "evpn",
+    "vxlan",
+    "bgp",
+    "mac-advertisement",
+    "type-2",
+    "type-5",
+    "data-center",
+    "fabric",
+    "multi-homing"
+  ],
+  "timers": [
+    {
+      "default_rfc": "180s",
+      "description": "Time window to detect MAC mobility events. When a MAC address moves between VTEPs, the sequence number in the EVPN type-2 route is incremented. This timer controls the detection window.",
+      "name": "MAC mobility sequence timer",
+      "on_expiry": "MAC mobility sequence frozen; duplicate MAC detection may trigger",
+      "tuning_advice": "Lower values detect mobility faster but may cause false positives during VM migration storms. Higher values are more tolerant but slower to detect loops."
+    },
+    {
+      "default_rfc": "180s (NX-OS)",
+      "description": "Hold-down time when a duplicate MAC is detected. During this period the MAC address is frozen and not re-learned to prevent forwarding loops.",
+      "name": "Duplicate MAC detection hold-down",
+      "on_expiry": "MAC address unfrozen, learning resumes",
+      "tuning_advice": "If legitimate VM migrations trigger duplicate detection, increase the max-moves threshold before adjusting this timer. The hold-down should be long enough to allow an operator to investigate."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "BGP_SESSION_DOWN",
+      "to_state": "BGP_SESSION_UP",
+      "trigger": "BGP session established with L2VPN EVPN address family negotiated"
+    },
+    {
+      "from_state": "BGP_SESSION_UP",
+      "to_state": "BGP_SESSION_DOWN",
+      "trigger": "BGP session lost (TCP failure, hold timer, notification)"
+    },
+    {
+      "from_state": "EVI_INACTIVE",
+      "to_state": "EVI_ACTIVE",
+      "trigger": "VNI operational and BGP session up; RT/RD configured"
+    },
+    {
+      "from_state": "EVI_ACTIVE",
+      "to_state": "EVI_INACTIVE",
+      "trigger": "VNI goes down or BGP session lost"
+    }
+  ],
+  "transport": "BGP (TCP/179) with AFI 25 (L2VPN), SAFI 70 (EVPN)",
+  "vendor_notes": {
+    "iosxe": {
+      "notes": [
+        {
+          "note": "EVPN VXLAN supported on Catalyst 9000. Uses 'l2vpn evpn' global config and 'address-family l2vpn evpn' under BGP. Distributed anycast gateway supported.",
+          "versions": "17.9+"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "EVPN is a core feature for L2VPN services. Configured under 'evpn' and 'l2vpn bridge group'. Supports EVPN-VPWS, EVPN-MPLS, and EVPN-VXLAN. Multi-homing with ESI LAG natively supported.",
+          "versions": "7.5+"
+        },
+        {
+          "note": "IOS-XR EVPN supports Ethernet Segment with active-active multi-homing natively. DF election uses 'Preference-based' algorithm by default (mod-based also available). 'show evpn ethernet-segment' shows ESI state, DF election results, and convergence timers.",
+          "versions": "7.5+"
+        }
+      ]
+    },
+    "nxos": {
+      "notes": [
+        {
+          "note": "EVPN requires 'nv overlay evpn'. Configure under 'router bgp' with 'address-family l2vpn evpn'. Supports distributed anycast gateway with 'fabric forwarding anycast-gateway-mac'. Type-5 routes require L3VNI with 'vrf context' and SVI for L3VNI.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "EVPN duplicate MAC/IP detection default: 5 moves in 180 seconds triggers freeze for 30 seconds. In environments with frequent VM migrations or container orchestration, increase thresholds with 'evpn host-mobility duplicate-default-timer' and 'evpn host-mobility threshold'. Frozen entries must be cleared manually with 'clear l2route evpn mac' or 'clear l2route evpn mac-ip'.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "In vPC EVPN deployments, 'advertise-pip' controls next-hop advertisement. Without it, all routes use the shared VIP (anycast VTEP IP). With 'advertise-pip', Type-5 (IP prefix) routes use the individual PIP as next-hop while Type-2 (MAC/IP) routes still use VIP. Without advertise-pip, inter-subnet traffic may unnecessarily traverse the peer-link.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "'nve cost-out' or 'system nve cost-out' withdraws all EVPN routes from this VTEP, effectively removing it from the fabric without shutting down NVE. Used for graceful maintenance. CRITICAL: verify cost-out is removed after maintenance — it is a common cause of 'VTEP up but no traffic' issues.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "EVPN Type-1 (Ethernet Auto-Discovery) per-ES route enables fast mass-withdrawal when an ESI member link fails. Without per-ES routes, each MAC behind the ESI must be individually withdrawn via type-2 updates, which is much slower for large MAC tables.",
+          "versions": "9.3+"
+        },
+        {
+          "note": "For vPC VXLAN EVPN fabrics, 'system nve infra-vlans <vlan-list>' designates VLANs carried over the peer-link for infrastructure purposes (backup routing, BUM traffic transfer). These VLANs must be present and trunked on the peer-link. Missing infra-VLANs can cause silent forwarding failures for BUM traffic and backup routing.",
+          "versions": "9.3+"
+        }
+      ]
+    }
+  }
+}
