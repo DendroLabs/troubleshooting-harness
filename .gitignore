@@ -3,6 +3,12 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Installer-created virtualenv
+.venv/
+
+# Web-research scratch (emberwalk/PIF fetches)
+research_output/
+
 # Generated SQLite databases (rebuild with: cd tools/migrate && python3 build_sqlite.py)
 data/db/*.db
 
