@@ -1,0 +1,1191 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "medium",
+  "protocol_id": "dhcpv6",
+  "protocol_name": "DHCPv6",
+  "protocol_family": "services",
+  "standard": "RFC 8415",
+  "operates_at": "Application (UDP)",
+  "transport": "UDP 546 (client) / 547 (server, relay); client multicast to ff02::1:2 (All_DHCP_Relay_Agents_and_Servers)",
+  "purpose": "DHCPv6 configures IPv6 hosts with addresses, prefixes (Prefix Delegation), and other parameters. It runs in two modes selected by the Router Advertisement M/O flags: stateful (M=1, the server assigns addresses in an IA_NA) and stateless (O=1, SLAAC provides the address while DHCPv6 supplies options such as DNS). The client/server exchange is Solicit -> Advertise -> Request -> Reply, with Renew/Rebind to extend leases. Relay agents (RELAY-FORW/RELAY-REPL) carry messages across links when the server is off-link. Prefix Delegation (IA_PD) hands a routable prefix to a downstream router.",
+  "def_refs": [
+    "db:config_db"
+  ],
+  "states": [
+    {
+      "name": "SOLICIT",
+      "is_failure": false,
+      "is_steady": false,
+      "description": "Client multicasts Solicit to locate DHCPv6 servers; no lease yet."
+    },
+    {
+      "name": "REQUESTING",
+      "is_failure": false,
+      "is_steady": false,
+      "description": "Client received one or more Advertise messages, selected a server, and sent Request for the offered addresses/prefixes."
+    },
+    {
+      "name": "BOUND",
+      "is_failure": false,
+      "is_steady": true,
+      "description": "Client received Reply and has valid address(es)/prefix(es) with T1/T2 timers running. Steady operational state."
+    },
+    {
+      "name": "RENEWING",
+      "is_failure": false,
+      "is_steady": false,
+      "description": "T1 elapsed; client unicasts Renew to the leasing server to extend lifetimes."
+    },
+    {
+      "name": "REBINDING",
+      "is_failure": false,
+      "is_steady": false,
+      "description": "T2 elapsed without a Renew reply; client multicasts Rebind to any server to extend lifetimes."
+    },
+    {
+      "name": "NO-BINDING",
+      "is_failure": true,
+      "is_steady": false,
+      "description": "Solicit/Request never yields a usable Reply (no server, relay broken, or NoAddrsAvail) — the client has no DHCPv6 address/prefix."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "SOLICIT",
+      "to_state": "REQUESTING",
+      "trigger": "One or more Advertise messages received; best server selected."
+    },
+    {
+      "from_state": "SOLICIT",
+      "to_state": "NO-BINDING",
+      "trigger": "No Advertise received after SOL_MAX_RT backoff (no server/relay reachable)."
+    },
+    {
+      "from_state": "REQUESTING",
+      "to_state": "BOUND",
+      "trigger": "Reply with assigned IA_NA/IA_PD received."
+    },
+    {
+      "from_state": "REQUESTING",
+      "to_state": "NO-BINDING",
+      "trigger": "Reply carries NoAddrsAvail/NoPrefixAvail or no Reply arrives."
+    },
+    {
+      "from_state": "BOUND",
+      "to_state": "RENEWING",
+      "trigger": "T1 lease timer elapsed."
+    },
+    {
+      "from_state": "RENEWING",
+      "to_state": "BOUND",
+      "trigger": "Reply to Renew received."
+    },
+    {
+      "from_state": "RENEWING",
+      "to_state": "REBINDING",
+      "trigger": "T2 elapsed with no Renew reply."
+    },
+    {
+      "from_state": "REBINDING",
+      "to_state": "BOUND",
+      "trigger": "Reply to Rebind received."
+    },
+    {
+      "from_state": "REBINDING",
+      "to_state": "NO-BINDING",
+      "trigger": "Valid lifetime expires with no Reply; binding lost."
+    }
+  ],
+  "timers": [
+    {
+      "name": "T1 (Renew time)",
+      "default_rfc": "0.5 x preferred lifetime (server-chosen)",
+      "description": "When the client begins renewing its lease with the original server.",
+      "on_expiry": "Client enters RENEWING and unicasts Renew.",
+      "range": "0 .. T2",
+      "tuning_advice": "Server-controlled; lower for tighter lease control.",
+      "os_defaults": [
+        {
+          "os": "nxos",
+          "default": "server-assigned (typically 0.5x preferred lifetime)",
+          "config_path": "DHCPv6 server pool lifetime configuration",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxe",
+          "default": "server-assigned (typically 0.5x preferred lifetime)",
+          "config_path": "DHCPv6 server pool lifetime configuration",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxr",
+          "default": "server-assigned (typically 0.5x preferred lifetime)",
+          "config_path": "DHCPv6 server pool lifetime configuration",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "name": "T2 (Rebind time)",
+      "default_rfc": "0.8 x preferred lifetime (server-chosen)",
+      "description": "When the client begins rebinding with any server if Renew failed.",
+      "on_expiry": "Client enters REBINDING and multicasts Rebind.",
+      "range": "T1 .. valid lifetime",
+      "tuning_advice": "Server-controlled.",
+      "os_defaults": [
+        {
+          "os": "nxos",
+          "default": "server-assigned (typically 0.8x preferred lifetime)",
+          "config_path": "DHCPv6 server pool lifetime configuration",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxe",
+          "default": "server-assigned (typically 0.8x preferred lifetime)",
+          "config_path": "DHCPv6 server pool lifetime configuration",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxr",
+          "default": "server-assigned (typically 0.8x preferred lifetime)",
+          "config_path": "DHCPv6 server pool lifetime configuration",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "name": "SOL_MAX_RT",
+      "default_rfc": "3600 s (RFC 8415)",
+      "description": "Maximum Solicit retransmission interval; bounds how often a client with no server keeps soliciting.",
+      "on_expiry": "Solicit is retransmitted (capped at SOL_MAX_RT).",
+      "range": "up to 3600 s",
+      "tuning_advice": "Rarely tuned; server may override via option.",
+      "os_defaults": [
+        {
+          "os": "nxos",
+          "default": "3600 s",
+          "config_path": "RFC constant / server option 82",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxe",
+          "default": "3600 s",
+          "config_path": "RFC constant / server option 82",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxr",
+          "default": "3600 s",
+          "config_path": "RFC constant / server option 82",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "name": "SOLICIT (type 1)",
+      "description": "Client locates DHCPv6 servers.",
+      "when_sent": "Client multicasts to ff02::1:2 at startup to find servers.",
+      "key_fields": [
+        "Client Identifier (DUID)",
+        "IA_NA / IA_TA / IA_PD requested",
+        "Option Request Option (ORO)",
+        "Elapsed Time, Rapid Commit (optional)"
+      ]
+    },
+    {
+      "name": "ADVERTISE (type 2)",
+      "description": "Server offers configuration.",
+      "when_sent": "Server responds to a Solicit indicating availability.",
+      "key_fields": [
+        "Server Identifier (DUID)",
+        "offered IA_NA/IA_PD with addresses/prefixes",
+        "preference, status code"
+      ]
+    },
+    {
+      "name": "REQUEST (type 3)",
+      "description": "Client requests configuration from a chosen server.",
+      "when_sent": "Client unicasts after selecting an Advertise.",
+      "key_fields": [
+        "Client + Server Identifier",
+        "requested IA options"
+      ]
+    },
+    {
+      "name": "REPLY (type 7)",
+      "description": "Server commits the assignment.",
+      "when_sent": "Server answers Request/Renew/Rebind/Information-Request (or Solicit with Rapid Commit).",
+      "key_fields": [
+        "assigned IA_NA/IA_PD with valid/preferred lifetimes, T1/T2",
+        "Status Code (Success/NoAddrsAvail/NoPrefixAvail)",
+        "options (DNS, etc.)"
+      ]
+    },
+    {
+      "name": "RENEW (type 5) / REBIND (type 6)",
+      "description": "Lease extension.",
+      "when_sent": "Renew unicast at T1 to the leasing server; Rebind multicast at T2 to any server.",
+      "key_fields": [
+        "IA bindings to extend",
+        "Client/Server Identifier (Renew only)"
+      ]
+    },
+    {
+      "name": "INFORMATION-REQUEST (type 11)",
+      "description": "Stateless option fetch (no address).",
+      "when_sent": "Client with O=1 (and M=0) requests only options such as DNS.",
+      "key_fields": [
+        "Option Request Option (DNS, NTP, ...)",
+        "Client Identifier"
+      ]
+    },
+    {
+      "name": "RELAY-FORW (type 12) / RELAY-REPL (type 13)",
+      "description": "Relay agent encapsulation.",
+      "when_sent": "Relay wraps client messages toward the server (FORW) and unwraps server replies toward the client (REPL).",
+      "key_fields": [
+        "Relay Message option (encapsulated client/server message)",
+        "Interface-Id, link-address, peer-address"
+      ]
+    },
+    {
+      "name": "DECLINE (type 9)",
+      "description": "Client rejects an assigned address.",
+      "when_sent": "Client found the DHCPv6-assigned address already in use (DAD failed).",
+      "key_fields": [
+        "IA containing the declined address",
+        "Client/Server Identifier"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Router Advertisement M/O flags",
+      "type": "protocol",
+      "description": "Hosts only run stateful DHCPv6 when the RA M flag is set, and only fetch stateless options when the O flag is set. Wrong flags mean clients never start DHCPv6 (see IPv6 ND)."
+    },
+    {
+      "name": "DHCPv6 relay agent",
+      "type": "infrastructure",
+      "description": "When the server is off-link, a relay must forward Solicit/Request (RELAY-FORW) and return RELAY-REPL to the client. Misconfigured or one-way relays are a top failure cause."
+    },
+    {
+      "name": "UDP 546/547 + multicast reachability",
+      "type": "infrastructure",
+      "description": "Client uses UDP 546, server/relay UDP 547, and client multicast ff02::1:2. ACLs blocking these or pruned multicast break DHCPv6."
+    },
+    {
+      "name": "ICMPv6 / DAD",
+      "type": "protocol",
+      "description": "A client runs DAD on a DHCPv6-assigned address and will DECLINE it if a duplicate is detected, looping the assignment."
+    }
+  ],
+  "vendor_notes": {
+    "nxos": {
+      "notes": [
+        {
+          "note": "Relay with 'ipv6 dhcp relay address <server>' per interface; inspect 'show ipv6 dhcp relay' and bindings. NX-OS is usually a relay, not the server.",
+          "versions": "all"
+        }
+      ]
+    },
+    "iosxe": {
+      "notes": [
+        {
+          "note": "Server pools via 'ipv6 dhcp pool'; relay via 'ipv6 dhcp relay destination'. 'show ipv6 dhcp binding', 'show ipv6 dhcp interface', 'debug ipv6 dhcp' are the core tools. Prefix delegation via 'prefix-delegation pool'.",
+          "versions": "all"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "DHCPv6 proxy/server/relay configured under 'dhcp ipv6'; verify with 'show dhcp ipv6 relay binding' / 'show dhcp ipv6 proxy binding' and relay statistics.",
+          "versions": "all"
+        }
+      ]
+    },
+    "sonic": {
+      "notes": [
+        {
+          "note": "SONiC acts as a DHCPv6 relay via the dhcp_relay container (dhcp6relay), driven by CONFIG_DB DHCP_RELAY entries. Inspect 'redis-cli -n 4 KEYS \"DHCP_RELAY*\"' and 'docker logs dhcp_relay'. No on-box DHCPv6 server.",
+          "versions": "202511+"
+        }
+      ]
+    }
+  },
+  "related_protocols": [
+    "dhcp",
+    "ipv6-nd",
+    "static-routing"
+  ],
+  "tags": [
+    "dhcpv6",
+    "ipv6",
+    "prefix-delegation",
+    "ia-pd",
+    "ia-na",
+    "relay",
+    "slaac",
+    "addressing"
+  ],
+  "sources": [
+    {
+      "id": "rfc8415",
+      "type": "rfc",
+      "rfc_number": 8415,
+      "title": "RFC 8415 — Dynamic Host Configuration Protocol for IPv6 (DHCPv6) [Mrugalski et al., 2018]",
+      "url": "https://www.rfc-editor.org/rfc/rfc8415.txt",
+      "verifying_quote": "Clients and servers exchange DHCP messages using UDP. The client uses a link-local address or addresses determined through other mechanisms for transmitting and receiving DHCP messages."
+    },
+    {
+      "id": "kb-dhcpv6",
+      "type": "documentation",
+      "title": "Internal KB D5 — DHCP and DHCPv6 (kb/networking/ip-addressing/dhcp-and-dhcpv6.json)",
+      "verifying_quote": "Identity Association (IA) containers hold address info: IA_NA (non-temporary), IA_TA (temporary), IA_PD (prefix delegation for downstream networks)."
+    }
+  ],
+  "failure_modes": [
+    {
+      "scenario": "Client gets no DHCPv6 address — Solicit unanswered (no Advertise/Reply)",
+      "description": "The client multicasts Solicit but never receives Advertise/Reply, so it stays with a link-local only. Either no server/relay is reachable, the RA M flag is not set (so the host never starts stateful DHCPv6), or UDP 546/547/multicast is filtered.",
+      "symptoms": [
+        "Host has only a link-local (or a SLAAC address) and no DHCPv6-assigned address",
+        "DHCPv6 server/relay shows no Solicit received from the segment",
+        "Client repeatedly retransmits Solicit (backing off to SOL_MAX_RT)"
+      ],
+      "root_causes": [
+        {
+          "cause": "RA M flag is 0, so hosts never initiate stateful DHCPv6 (they SLAAC instead)",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "No DHCPv6 relay configured on the client's gateway and the server is off-link",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "ACL/firewall blocking UDP 546/547 or the ff02::1:2 multicast",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Server out of addresses (NoAddrsAvail) or wrong pool bound to the link",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ],
+      "resolutions": [
+        {
+          "action": "Confirm the RA M flag is set on the client's segment (otherwise hosts won't do stateful DHCPv6) — see ipv6-nd RA failure modes",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Confirm the RA M flag is set on the client's segment (otherwise hosts won't do stateful DHCPv6) — see ipv6-nd RA failure modes",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Confirm the RA M flag is set on the client's segment (otherwise hosts won't do stateful DHCPv6) — see ipv6-nd RA failure modes",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Verify a relay is configured pointing at the server, or the server is on-link",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Verify a relay is configured pointing at the server, or the server is on-link",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Verify a relay is configured pointing at the server, or the server is on-link",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Permit UDP 546/547 and ff02::1:2 multicast end-to-end",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Permit UDP 546/547 and ff02::1:2 multicast end-to-end",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Permit UDP 546/547 and ff02::1:2 multicast end-to-end",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "sonic: confirm DHCP_RELAY is configured for the VLAN and the dhcp_relay container is running: 'redis-cli -n 4 KEYS \"DHCP_RELAY*\"' and 'docker ps | grep dhcp_relay'",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "verify_commands": [
+        {
+          "command": "show ipv6 dhcp relay",
+          "confirms_if": "Relay not configured/forwarding confirms why Solicit is unanswered",
+          "look_for": "relay destination(s) and per-interface relay state",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 dhcp interface",
+          "confirms_if": "Interface DHCPv6 role confirms relay/server is active",
+          "look_for": "interface in relay or server mode with the right destination",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 dhcp binding",
+          "confirms_if": "No binding for the client confirms it never completed",
+          "look_for": "a binding for the client's DUID; absence = no Reply issued",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show dhcp ipv6 relay binding",
+          "confirms_if": "No relay binding confirms Solicit/Request not relayed",
+          "look_for": "relay bindings for the segment",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "redis-cli -n 4 KEYS 'DHCP_RELAY*'",
+          "confirms_if": "Missing DHCP_RELAY config confirms relay not set up",
+          "look_for": "DHCP_RELAY entries for the client's VLAN",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        },
+        {
+          "command": "docker logs dhcp_relay 2>&1 | tail -50",
+          "confirms_if": "Relay logs show whether Solicit is seen/forwarded",
+          "look_for": "Solicit received and RELAY-FORW sent to the server",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "Relay forwards Solicit but RELAY-REPLY is dropped — client never gets the Reply",
+      "description": "The relay sends RELAY-FORW and the server answers with RELAY-REPL that reaches the relay, but the relay does not deliver the unwrapped Reply to the client. A packet capture on the relay shows the RELAY-REPL arriving and then disappearing. This matches Cisco bug CSCvs22896 on Catalyst 9500 (16.11.1 / 16.12.x) for Information-Request relay-reply, and also occurs with relay interface/VLAN misbinding.",
+      "symptoms": [
+        "Capture on the relay shows DHCPv6 RELAY-REPL arriving from the server",
+        "Client never receives the Reply and keeps retransmitting",
+        "Server logs show it answered, but the client side stays unconfigured"
+      ],
+      "root_causes": [
+        {
+          "cause": "Relay software defect dropping RELAY-REPL (e.g. IOS-XE CSCvs22896 on Cat9500 16.11.1/16.12.1-16.12.3a)",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Relay output interface/VLAN for the client not correctly bound, so the unwrapped Reply is sent on the wrong interface",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Interface-Id/link-address mismatch so the relay cannot map the Reply back to the client link",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Asymmetric path / uRPF dropping the server-sourced RELAY-REPL at the relay",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ],
+      "resolutions": [
+        {
+          "action": "Capture on the relay to confirm RELAY-REPL ingress and whether it is re-emitted toward the client",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Capture on the relay to confirm RELAY-REPL ingress and whether it is re-emitted toward the client",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Capture on the relay to confirm RELAY-REPL ingress and whether it is re-emitted toward the client",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Verify the relay's client-facing interface and the relay destination/source addressing",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Verify the relay's client-facing interface and the relay destination/source addressing",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Verify the relay's client-facing interface and the relay destination/source addressing",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "iosxe: if running an affected Cat9500 release for CSCvs22896, upgrade past the fixed release (no workaround documented)",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "sonic: inspect 'docker logs dhcp_relay' for RELAY-REPL handling and confirm the client-facing VLAN binding in DHCP_RELAY",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "verify_commands": [
+        {
+          "command": "show ipv6 dhcp relay binding",
+          "confirms_if": "Relay binding present but client unconfigured points to a reply-delivery drop",
+          "look_for": "relay binding state for the client link",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 dhcp relay binding",
+          "confirms_if": "Confirms relay has the binding while client gets nothing",
+          "look_for": "binding for the client; reply-side delivery is the gap",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "debug ipv6 dhcp relay",
+          "confirms_if": "Live relay trace shows RELAY-REPL received and forwarding result",
+          "look_for": "RELAY-REPL received and whether a Reply is sent to the client",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show dhcp ipv6 relay statistics",
+          "confirms_if": "Counters show received vs forwarded replies",
+          "look_for": "relay-reply received vs transmitted counts (a gap = dropped replies)",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "docker logs dhcp_relay 2>&1 | grep -iE 'reply|relay' | tail -50",
+          "confirms_if": "Relay log shows reply received but not delivered",
+          "look_for": "RELAY-REPL/Reply handling and any error delivering to the client VLAN",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "IA_PD prefix not delegated or not routed to the downstream network",
+      "description": "A requesting router asks for a delegated prefix (IA_PD) but either receives none (NoPrefixAvail / pool exhausted / PD not configured) or receives one that is not installed as a route toward the downstream, so downstream hosts have no connectivity even though the WAN side is up.",
+      "symptoms": [
+        "Requesting router has a WAN/uplink address but no delegated prefix on the LAN side",
+        "Downstream hosts get no global prefix to SLAAC from",
+        "Server shows NoPrefixAvail or no IA_PD in the Reply",
+        "Delegated prefix present on the router but no route toward the LAN"
+      ],
+      "root_causes": [
+        {
+          "cause": "DHCPv6 server/delegating router has no PD pool or it is exhausted",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Requesting router not configured to request IA_PD (only IA_NA requested)",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Delegated prefix not redistributed/installed as a route toward the downstream interface",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Relay in the path not configured to relay PD, or PD route not added on the delegating side",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ],
+      "resolutions": [
+        {
+          "action": "Confirm the delegating side has a PD pool with available prefixes",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Confirm the delegating side has a PD pool with available prefixes",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Confirm the delegating side has a PD pool with available prefixes",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Verify the requesting router requests IA_PD and binds the prefix to the LAN interface",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Verify the requesting router requests IA_PD and binds the prefix to the LAN interface",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Verify the requesting router requests IA_PD and binds the prefix to the LAN interface",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Ensure the delegated prefix is installed/redistributed as a route toward the downstream",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Ensure the delegated prefix is installed/redistributed as a route toward the downstream",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Ensure the delegated prefix is installed/redistributed as a route toward the downstream",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ],
+      "verify_commands": [
+        {
+          "command": "show ipv6 dhcp binding",
+          "confirms_if": "Presence/absence of an IA_PD binding confirms delegation status",
+          "look_for": "IA_PD prefix in the binding vs only IA_NA",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 dhcp pool",
+          "confirms_if": "Pool prefix exhaustion/misconfig confirms why PD is not delegated",
+          "look_for": "PD prefix pool size and current utilization",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 route",
+          "confirms_if": "Missing route for the delegated prefix confirms a routing gap",
+          "look_for": "a route covering the delegated prefix toward the LAN",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show dhcp ipv6 proxy binding",
+          "confirms_if": "Confirms delegated-prefix binding on IOS-XR",
+          "look_for": "IA_PD prefix bound for the client",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 dhcp relay",
+          "confirms_if": "Relay PD handling confirms whether PD is carried in the path",
+          "look_for": "relay configured to forward DHCPv6 including PD",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "M/O flag mismatch — clients use SLAAC vs DHCPv6 unexpectedly",
+      "description": "Address-source selection is driven entirely by the RA M/O flags. If operators expect DHCPv6 addressing but the RA has M=0, hosts SLAAC and never ask DHCPv6; if they expect SLAAC but M=1, hosts wait on stateful DHCPv6. The DHCPv6 server may be perfectly healthy while no client uses it.",
+      "symptoms": [
+        "DHCPv6 server shows no/low Solicit volume despite many hosts",
+        "Hosts have SLAAC addresses when DHCPv6 assignment was intended (or vice versa)",
+        "Mixed behavior across vendors/OSes on the same VLAN"
+      ],
+      "root_causes": [
+        {
+          "cause": "RA M flag not set, so hosts never start stateful DHCPv6",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "RA O flag not set, so hosts never fetch stateless options (DNS) via DHCPv6",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Prefix advertised with the Autonomous (A) flag, so hosts SLAAC even when DHCPv6 was intended",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Inconsistent RA flags across redundant routers on the same segment",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ],
+      "resolutions": [
+        {
+          "action": "Decide the addressing model and set RA flags to match: M=1 for stateful DHCPv6, O=1 for stateless options, clear A on the prefix to force DHCPv6-only addressing",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Decide the addressing model and set RA flags to match: M=1 for stateful DHCPv6, O=1 for stateless options, clear A on the prefix to force DHCPv6-only addressing",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Decide the addressing model and set RA flags to match: M=1 for stateful DHCPv6, O=1 for stateless options, clear A on the prefix to force DHCPv6-only addressing",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Make RA flags consistent across all routers on the segment",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Make RA flags consistent across all routers on the segment",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Make RA flags consistent across all routers on the segment",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ],
+      "verify_commands": [
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "RA M/O/A flag values confirm the actual address-selection policy",
+          "look_for": "Managed/Other config flags and prefix Autonomous flag in the RA",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "RA flag values confirm SLAAC-vs-DHCPv6 policy",
+          "look_for": "'Hosts use ... DHCP' / managed-config-flag and other-config-flag",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 nd ra",
+          "confirms_if": "Advertised flags confirm the addressing model in effect",
+          "look_for": "M/O flags and prefix A/L flags in the RA",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "ip -6 route show",
+          "confirms_if": "Default route + prefix source hints at which mode hosts followed",
+          "look_for": "SLAAC prefix vs reliance on DHCPv6",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "Client DECLINEs the DHCPv6 address (DAD failure) — assignment loops",
+      "description": "After the server assigns an address, the client runs DAD on it. If a duplicate is detected (another node already uses it, often a stale lease or an overlapping static address), the client sends DECLINE and asks again, looping the assignment and leaving the host without a stable address.",
+      "symptoms": [
+        "Server logs repeated Decline messages for assigned addresses",
+        "Client cycles through addresses without settling",
+        "Duplicate-address / DAD syslog on the client for the assigned address"
+      ],
+      "root_causes": [
+        {
+          "cause": "Server pool overlaps a statically configured address on the segment",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Stale server bindings handing out an address still in use elsewhere",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Two DHCPv6 servers with overlapping pools on the same link",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "L2 loop reflecting the client's DAD NS, making every address look duplicate",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ],
+      "resolutions": [
+        {
+          "action": "Reconcile the server pool against static assignments and remove overlaps",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Reconcile the server pool against static assignments and remove overlaps",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Reconcile the server pool against static assignments and remove overlaps",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Clear stale bindings on the server and ensure a single authoritative pool per link",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Clear stale bindings on the server and ensure a single authoritative pool per link",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Clear stale bindings on the server and ensure a single authoritative pool per link",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Rule out a L2 loop reflecting DAD before blaming the pool (see ipv6-nd DAD failure)",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Rule out a L2 loop reflecting DAD before blaming the pool (see ipv6-nd DAD failure)",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Rule out a L2 loop reflecting DAD before blaming the pool (see ipv6-nd DAD failure)",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ],
+      "verify_commands": [
+        {
+          "command": "show ipv6 dhcp binding",
+          "confirms_if": "Bindings overlapping a static/duplicate address confirm the cause",
+          "look_for": "assigned addresses vs known static addresses on the segment",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "debug ipv6 dhcp",
+          "confirms_if": "Live trace shows Decline and re-Solicit looping",
+          "look_for": "Decline messages and the address being rejected",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show dhcp ipv6 proxy binding",
+          "confirms_if": "Binding churn confirms repeated decline/reassign",
+          "look_for": "rapidly changing bindings for the same client",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 dhcp relay binding",
+          "confirms_if": "Relay sees the client repeatedly restarting the exchange",
+          "look_for": "binding state cycling for the client",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ]
+    }
+  ]
+}

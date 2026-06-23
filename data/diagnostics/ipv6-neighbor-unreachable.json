@@ -1,0 +1,274 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "medium",
+  "tree_id": "ipv6-neighbor-unreachable",
+  "display_name": "IPv6 next-hop/host unreachable — ND not resolving",
+  "entry_symptom": "An IPv6 next-hop or on-link host is unreachable: the neighbor entry is INCOMPLETE or missing, traffic to it is black-holed, while the interface is up. (Use this when IPv6 ND fails to resolve a neighbor.)",
+  "related_protocol": "ipv6-nd",
+  "related_errors": [],
+  "applicable_os": [
+    "nxos",
+    "iosxe",
+    "iosxr",
+    "sonic"
+  ],
+  "def_refs": [
+    "daemon:neighsyncd",
+    "daemon:orchagent",
+    "db:state_db",
+    "db:asic_db"
+  ],
+  "nodes": [
+    {
+      "node_id": "n1",
+      "node_type": "branch",
+      "question": "Does the interface have a valid IPv6 link-local (fe80::) address and is IPv6 enabled? (ND sources every NS/NA/RS from the link-local; without it nothing resolves.)",
+      "commands": [
+        {
+          "command": "show ipv6 interface <intf>",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interfaces",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "branches": {
+        "No link-local / IPv6 not enabled / link-local TENTATIVE-stuck": "n2",
+        "Valid link-local present": "n3"
+      }
+    },
+    {
+      "node_id": "n2",
+      "node_type": "leaf",
+      "finding": "No usable link-local address — IPv6 ND cannot operate on the interface, so every neighbor will appear unresolved.",
+      "action": "Enable IPv6 on the interface (e.g. 'ipv6 enable' or configure a global address to derive a link-local). If the link-local itself shows DUPLICATE/DAD-failed, resolve the fe80:: duplicate (often a duplicate MAC across redundancy groups) and bounce the interface. On SONiC, verify IPv6 is up on the port and link-local mode where required ('show ipv6 interfaces', 'show ipv6 link-local-mode')."
+    },
+    {
+      "node_id": "n3",
+      "node_type": "branch",
+      "question": "What state is the neighbor cache entry for the target IPv6 address in?",
+      "commands": [
+        {
+          "command": "show ipv6 neighbor <ipv6-address>",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 neighbors",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 neighbors",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ndp <ipv6-address>",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "branches": {
+        "INCOMPLETE or no entry": "n4",
+        "REACHABLE / STALE / DELAY / PROBE (has a MAC)": "n5",
+        "DUPLICATE / DAD failed": "n6"
+      }
+    },
+    {
+      "node_id": "n4",
+      "node_type": "branch",
+      "question": "The neighbor is stuck INCOMPLETE (NS sent, no NA). Is ICMPv6 ND (types 135/136) permitted on the path, and is the target host up on the same VLAN/segment?",
+      "commands": [
+        {
+          "command": "show ipv6 access-list <name>",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 access-list <name>",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 access-lists <name>",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show acl rule",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "branches": {
+        "ICMPv6 NS/NA denied by an ACL or CoPP": "n7",
+        "ICMPv6 permitted but host down / wrong VLAN / multicast not delivered": "n8",
+        "SONiC: kernel resolved the neighbor but ASIC_DB has no entry": "n9"
+      }
+    },
+    {
+      "node_id": "n5",
+      "node_type": "leaf",
+      "finding": "The neighbor resolves (REACHABLE/STALE/DELAY/PROBE with a MAC) — ND itself is healthy. STALE is normal and is NOT a failure; the cached MAC is still used to forward.",
+      "action": "Stop investigating ND. Look beyond it: routing/next-hop selection, ACLs on the forwarding path, MTU/PMTUD (ICMPv6 Packet Too Big filtering), or hardware forwarding programming. On SONiC confirm the neighbor is also in ASIC_DB ('redis-cli -n 1 KEYS \"ASIC_STATE:SAI_OBJECT_TYPE_NEIGHBOR_ENTRY*\" | grep <ipv6>')."
+    },
+    {
+      "node_id": "n6",
+      "node_type": "leaf",
+      "finding": "The address failed Duplicate Address Detection (DUPLICATE) — it is NOT assigned, and if it is the interface link-local, IPv6 on the interface is disabled (RFC 4862 5.4.5).",
+      "action": "Find the conflicting node (another device with the same address, a duplicate virtual MAC for HSRPv6/VRRPv3, or a re-used static address). Rule out an L2 loop reflecting the node's own DAD NS. Resolve the duplicate, then re-run DAD by bouncing the interface or reconfiguring the address. IOS-XR: 'show ipv6 nd dadfail' lists DAD-failed addresses; SONiC: 'ip -6 address show dev <ifname>' shows the 'dadfailed' flag.",
+      "commands": [
+        {
+          "command": "show ipv6 nd dadfail",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "ip -6 address show dev <ifname>",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "node_id": "n7",
+      "node_type": "leaf",
+      "finding": "ICMPv6 ND messages are being dropped by an ACL or control-plane policy. ND is ICMPv6 — a 'deny icmp' ported from IPv4 kills neighbor and router discovery (and type 2 Packet Too Big filtering also breaks IPv6 PMTUD).",
+      "action": "Explicitly permit ICMPv6 ND types 133,134,135,136 (and 137 if redirects are used) plus type 2 (Packet Too Big) before any ICMPv6 deny, and permit link-local (fe80::/10) and solicited-node multicast (ff02::1:ff00:0/104). Re-test resolution and large-flow PMTUD after the change. SONiC: ensure control-plane/data ACLs permit ICMPv6 (IP protocol 58) ND types.",
+      "commands": [
+        {
+          "command": "show ipv6 access-list <name>",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show acl rule",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "node_id": "n8",
+      "node_type": "leaf",
+      "finding": "ICMPv6 is permitted but the neighbor still will not resolve — the target host is down, is on a different VLAN/SVI than ND is sent on, or the solicited-node multicast (ff02::1:ffXX:XXXX) is not being delivered (MLD-snooping pruning or the node never joined the group).",
+      "action": "Confirm the host is up and on the same L2 segment; verify the SVI/VLAN mapping; check the MAC is learned in the L2 table; and verify MLD-snooping is not pruning the solicited-node multicast. Ping the target to force re-resolution and watch the cache leave INCOMPLETE.",
+      "commands": [
+        {
+          "command": "show mac address-table address <mac>",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 nd",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "node_id": "n9",
+      "node_type": "leaf",
+      "finding": "SONiC-specific: the Linux kernel resolved the neighbor (present in STATE_DB NEIGH_TABLE) but orchagent did not program the SAI_OBJECT_TYPE_NEIGHBOR_ENTRY into ASIC_DB, so hardware drops the traffic despite a healthy software cache.",
+      "action": "Compare kernel vs ASIC: 'redis-cli -n 6 HGETALL \"NEIGH_TABLE|<ifname>|<ipv6>\"' (kernel) against 'redis-cli -n 1 KEYS \"ASIC_STATE:SAI_OBJECT_TYPE_NEIGHBOR_ENTRY*\" | grep <ipv6>' (ASIC). If the ASIC entry is missing, check 'docker logs swss' for SAI neighbor errors; a swss restart forces a resync (disruptive — brief traffic impact).",
+      "commands": [
+        {
+          "command": "redis-cli -n 6 HGETALL 'NEIGH_TABLE|<ifname>|<ipv6>'",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        },
+        {
+          "command": "docker logs swss 2>&1 | grep -iE 'neighbor|SAI' | tail -50",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "ipv6-nd",
+      "type": "documentation",
+      "title": "TSH protocol — IPv6 Neighbor Discovery (data/protocols/ipv6-nd.json)"
+    },
+    {
+      "id": "rfc4861",
+      "type": "rfc",
+      "title": "RFC 4861 — Neighbor Discovery for IPv6 (neighbor cache state machine)"
+    }
+  ]
+}

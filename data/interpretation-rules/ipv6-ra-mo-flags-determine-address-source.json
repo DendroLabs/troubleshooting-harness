@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "ipv6-ra-mo-flags-determine-address-source",
+  "display_name": "Whether hosts use SLAAC or DHCPv6 is decided by the RA M/O flags — an idle DHCPv6 server is not necessarily broken",
+  "category": "expected-behavior",
+  "applicable_os": [
+    "nxos",
+    "iosxe",
+    "iosxr",
+    "sonic",
+    "eos",
+    "junos"
+  ],
+  "version_range": {
+    "min": "*",
+    "max": "*"
+  },
+  "context": "Hosts are not getting addresses from the DHCPv6 server (or are getting SLAAC addresses when DHCPv6 was intended), while the DHCPv6 server itself appears healthy",
+  "observation": "DHCPv6 server shows little or no Solicit traffic, and hosts have SLAAC addresses; or hosts wait without any global address",
+  "naive_interpretation": "The DHCPv6 server, relay, or scope is broken",
+  "correct_interpretation": "Host address-source selection in IPv6 is driven entirely by two flags in the Router Advertisement, not by the DHCPv6 server. The M (Managed) flag tells hosts to obtain addresses via stateful DHCPv6; the O (Other) flag tells them to obtain other parameters (DNS, etc.) via stateless DHCPv6. If M=0, hosts will SLAAC and never even send a Solicit — so a perfectly healthy DHCPv6 server sits idle, which is not a server fault. Conversely, if M=1 but no working DHCPv6 server/relay answers, hosts wait and get no global address. Additionally, the prefix's Autonomous (A) flag controls whether hosts SLAAC from that prefix at all. Before debugging the DHCPv6 server, read the RA flags on the segment and confirm they match the intended addressing model; fix the flags on the router, not the server.",
+  "why": [
+    "RFC 4861 RA M/O flags select stateful vs stateless configuration; hosts that see M=0 never initiate DHCPv6",
+    "The DHCPv6 server cannot make hosts use it — only the RA can — so 'no Solicits' often means a flag problem, not a server problem",
+    "The prefix Autonomous (A) flag independently controls SLAAC, so addressing can split between SLAAC and DHCPv6 depending on flag combinations"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 interface <intf>",
+      "purpose": "Read the advertised Managed/Other config flags and prefix Autonomous flag"
+    },
+    {
+      "os": "iosxe",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 interface <intf>",
+      "purpose": "Check 'managed-config-flag'/'other-config-flag' and how hosts are told to configure"
+    },
+    {
+      "os": "iosxr",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 nd ra",
+      "purpose": "Inspect advertised M/O flags and prefix flags"
+    },
+    {
+      "os": "sonic",
+      "version_range": {
+        "min": "202511",
+        "max": "*"
+      },
+      "command": "ip -6 route show",
+      "purpose": "Infer whether hosts followed SLAAC (prefix route) or waited on DHCPv6"
+    }
+  ],
+  "traps": [
+    "Debugging the DHCPv6 server when M=0 means hosts never ask it",
+    "Setting M=1 without a reachable DHCPv6 server/relay, leaving hosts with no global address",
+    "Forgetting the prefix A flag — hosts can SLAAC even when DHCPv6 addressing was intended",
+    "Inconsistent M/O flags across redundant routers on the same segment producing mixed behavior"
+  ],
+  "related_rules": [
+    "rogue-ra-hijacks-ipv6-default-gateway"
+  ],
+  "related_protocols": [
+    "ipv6-nd",
+    "dhcpv6"
+  ],
+  "keywords": [
+    "IPv6",
+    "RA",
+    "M flag",
+    "O flag",
+    "managed-config",
+    "other-config",
+    "SLAAC",
+    "DHCPv6",
+    "router advertisement",
+    "addressing model"
+  ],
+  "sources": [
+    {
+      "id": "rfc4861",
+      "type": "rfc",
+      "title": "RFC 4861 — Neighbor Discovery for IPv6 (neighbor cache states 7.3.2)"
+    },
+    {
+      "id": "rfc8415",
+      "type": "rfc",
+      "title": "RFC 8415 — DHCPv6 (stateful/stateless modes)"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

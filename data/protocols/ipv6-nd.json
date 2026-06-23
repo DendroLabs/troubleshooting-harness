@@ -1,0 +1,1863 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "medium",
+  "protocol_id": "ipv6-nd",
+  "protocol_name": "IPv6 Neighbor Discovery",
+  "protocol_family": "adjacency",
+  "standard": "RFC 4861 (ND), RFC 4862 (SLAAC), RFC 4443 (ICMPv6)",
+  "operates_at": "Layer 3 control plane over Layer 2 (ICMPv6)",
+  "transport": "ICMPv6 message types 133-137 (RS/RA/NS/NA/Redirect)",
+  "purpose": "IPv6 Neighbor Discovery (ND) is the IPv6 replacement for IPv4 ARP plus ICMP router discovery. It resolves on-link IPv6 addresses to link-layer (MAC) addresses using Neighbor Solicitation/Advertisement (NS/NA), discovers routers and on-link prefixes via Router Solicitation/Advertisement (RS/RA), drives Stateless Address Autoconfiguration (SLAAC), runs Duplicate Address Detection (DAD) before an address is used, and continuously tracks neighbor reachability through Neighbor Unreachability Detection (NUD). All ND messages are ICMPv6 (types 133-137) and use the link-local source address, so a working link-local address and unfiltered ICMPv6 are prerequisites for any IPv6 forwarding on the segment.",
+  "def_refs": [
+    "daemon:neighsyncd",
+    "daemon:orchagent",
+    "daemon:syncd",
+    "db:appl_db",
+    "db:asic_db",
+    "db:state_db",
+    "db:config_db"
+  ],
+  "states": [
+    {
+      "name": "INCOMPLETE",
+      "is_failure": false,
+      "is_steady": false,
+      "description": "Address resolution is in progress: a Neighbor Solicitation has been multicast to the target's solicited-node multicast address, but no Neighbor Advertisement has been received yet. Packets to the neighbor are queued (a small number) and dropped if resolution never completes."
+    },
+    {
+      "name": "REACHABLE",
+      "is_failure": false,
+      "is_steady": true,
+      "description": "Positive confirmation was received within the last ReachableTime milliseconds that the forward path to the neighbor is working. No probing is needed while in this state."
+    },
+    {
+      "name": "STALE",
+      "is_failure": false,
+      "is_steady": true,
+      "description": "More than ReachableTime has elapsed since the last reachability confirmation. The cached link-layer address is still used to send, but reachability is unverified. STALE is normal and is NOT a failure."
+    },
+    {
+      "name": "DELAY",
+      "is_failure": false,
+      "is_steady": false,
+      "description": "A packet was sent to a STALE neighbor; the node waits DELAY_FIRST_PROBE_TIME for an upper-layer reachability hint before actively probing. Transient state."
+    },
+    {
+      "name": "PROBE",
+      "is_failure": false,
+      "is_steady": false,
+      "description": "Reachability is being actively verified by retransmitting unicast Neighbor Solicitations every RetransTimer. If MAX_UNICAST_SOLICIT probes go unanswered the entry is deleted and resolution restarts."
+    },
+    {
+      "name": "TENTATIVE",
+      "is_failure": false,
+      "is_steady": false,
+      "description": "An address (link-local or SLAAC/configured) is undergoing Duplicate Address Detection. It is not yet assigned and cannot be used as a source/destination until DAD completes."
+    },
+    {
+      "name": "DUPLICATE",
+      "is_failure": true,
+      "is_steady": true,
+      "description": "DAD detected another node defending the address (a NA or a competing NS was received for the tentative address). The address is NOT assigned; if it is the interface link-local, IPv6 operation on the interface is disabled (RFC 4862 5.4.5)."
+    }
+  ],
+  "transitions": [
+    {
+      "from_state": "REACHABLE",
+      "to_state": "INCOMPLETE",
+      "trigger": "No cache entry exists (or it was flushed) and a packet must be sent: a multicast NS is issued to the solicited-node multicast address."
+    },
+    {
+      "from_state": "INCOMPLETE",
+      "to_state": "REACHABLE",
+      "trigger": "A solicited Neighbor Advertisement with the Solicited flag set is received."
+    },
+    {
+      "from_state": "INCOMPLETE",
+      "to_state": "DUPLICATE",
+      "trigger": "After MAX_MULTICAST_SOLICIT (3) NS retransmissions with no NA the entry is discarded and packets to the neighbor are dropped (address unresolvable)."
+    },
+    {
+      "from_state": "REACHABLE",
+      "to_state": "STALE",
+      "trigger": "ReachableTime (default 30s) elapses since the last positive confirmation, or an unsolicited NA/NS with a different link-layer address is received."
+    },
+    {
+      "from_state": "STALE",
+      "to_state": "DELAY",
+      "trigger": "A packet is sent to a neighbor whose entry is STALE."
+    },
+    {
+      "from_state": "DELAY",
+      "to_state": "PROBE",
+      "trigger": "DELAY_FIRST_PROBE_TIME (5s) elapses with no upper-layer reachability confirmation; unicast NS probing begins."
+    },
+    {
+      "from_state": "PROBE",
+      "to_state": "REACHABLE",
+      "trigger": "A solicited NA is received in response to a unicast probe."
+    },
+    {
+      "from_state": "PROBE",
+      "to_state": "INCOMPLETE",
+      "trigger": "MAX_UNICAST_SOLICIT (3) unicast probes go unanswered; the entry is deleted and the neighbor must be re-resolved from scratch."
+    },
+    {
+      "from_state": "TENTATIVE",
+      "to_state": "REACHABLE",
+      "trigger": "DAD completes with no defending NA after DupAddrDetectTransmits probes; the address is assigned and usable."
+    },
+    {
+      "from_state": "TENTATIVE",
+      "to_state": "DUPLICATE",
+      "trigger": "A Neighbor Advertisement (or a simultaneous DAD NS) is received for the tentative address, proving another node owns it."
+    }
+  ],
+  "timers": [
+    {
+      "name": "ReachableTime",
+      "default_rfc": "30,000 ms (BaseReachableTime; randomized 0.5-1.5x per RFC 4861 §6.3.2)",
+      "description": "Time a neighbor remains in REACHABLE after a confirmation before transitioning to STALE. Advertised to hosts in the Router Advertisement Reachable Time field.",
+      "on_expiry": "Neighbor cache entry moves REACHABLE -> STALE (still usable; not a failure).",
+      "range": "implementation/RFC constant",
+      "tuning_advice": "Tens of seconds. Lower for faster failure detection at the cost of more NS probes.",
+      "os_defaults": [
+        {
+          "os": "nxos",
+          "default": "30000 ms",
+          "config_path": "interface: ipv6 nd reachable-time <ms>",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxe",
+          "default": "30000 ms (0 = unspecified, host picks)",
+          "config_path": "interface: ipv6 nd reachable-time <ms>",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxr",
+          "default": "30000 ms",
+          "config_path": "interface: ipv6 nd reachable-time <ms>",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "sonic",
+          "default": "Linux kernel base_reachable_time_ms (default 30000)",
+          "config_path": "sysctl net.ipv6.neigh.<ifname>.base_reachable_time_ms; managed via kernel + neighsyncd",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          },
+          "frr_path": "neighsyncd mirrors kernel NEIGH state into STATE_DB NEIGH_TABLE"
+        }
+      ]
+    },
+    {
+      "name": "RetransTimer",
+      "default_rfc": "1,000 ms (RFC 4861 §10)",
+      "description": "Interval between retransmitted Neighbor Solicitations while resolving (INCOMPLETE) or probing (PROBE). Advertised to hosts in the RA Retrans Timer field.",
+      "on_expiry": "Another NS is retransmitted; after MAX_*_SOLICIT attempts the entry is discarded.",
+      "range": "implementation/RFC constant",
+      "tuning_advice": "1-2 s typical. Too low floods NS; too high slows resolution.",
+      "os_defaults": [
+        {
+          "os": "nxos",
+          "default": "1000 ms",
+          "config_path": "interface: ipv6 nd retrans-timer <ms>",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxe",
+          "default": "1000 ms",
+          "config_path": "interface: ipv6 nd ns-interval <ms>",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxr",
+          "default": "1000 ms",
+          "config_path": "interface: ipv6 nd retrans-timer <ms>",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "sonic",
+          "default": "Linux kernel retrans_time_ms (default 1000)",
+          "config_path": "sysctl net.ipv6.neigh.<ifname>.retrans_time_ms",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "name": "DELAY_FIRST_PROBE_TIME",
+      "default_rfc": "5 s (RFC 4861 §10)",
+      "description": "After sending to a STALE neighbor, how long the node waits in DELAY for an upper-layer reachability confirmation before unicast probing (NUD).",
+      "on_expiry": "Neighbor cache entry moves DELAY -> PROBE and unicast NS probing begins.",
+      "range": "implementation/RFC constant",
+      "tuning_advice": "Rarely tuned; kernel/platform constant.",
+      "os_defaults": [
+        {
+          "os": "nxos",
+          "default": "5 s",
+          "config_path": "Not directly configurable (RFC constant)",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxe",
+          "default": "5 s",
+          "config_path": "Not directly configurable (RFC constant)",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxr",
+          "default": "5 s",
+          "config_path": "Not directly configurable (RFC constant)",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "sonic",
+          "default": "5 s (Linux delay_first_probe_time)",
+          "config_path": "sysctl net.ipv6.neigh.<ifname>.delay_first_probe_time",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "name": "MaxRtrAdvInterval",
+      "default_rfc": "600 s default (RFC 4861 §6.2.1; MinRtrAdvInterval = 0.33x Max)",
+      "description": "Maximum interval between unsolicited multicast Router Advertisements on an advertising interface. Hosts that miss RAs lose default-gateway/prefix info.",
+      "on_expiry": "Next unsolicited RA is due; if RAs stop, host default route and SLAAC prefixes age out.",
+      "range": "implementation/RFC constant",
+      "tuning_advice": "200-600 s typical. Lower for faster host convergence; raises multicast RA load.",
+      "os_defaults": [
+        {
+          "os": "nxos",
+          "default": "600 s",
+          "config_path": "interface: ipv6 nd ra-interval <sec> (0 disables RA via suppress)",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxe",
+          "default": "200 s (IOS-XE default differs from RFC)",
+          "config_path": "interface: ipv6 nd ra interval <sec>",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxr",
+          "default": "200 s",
+          "config_path": "interface: ipv6 nd ra-interval <sec>",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "sonic",
+          "default": "radvd/FRR ipv6 nd ra-interval (when acting as RA sender)",
+          "config_path": "FRR: interface <ifname> / no ipv6 nd suppress-ra / ipv6 nd ra-interval <sec>",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          },
+          "frr_path": "FRR zebra rtadv (zebra/rtadv.c)"
+        }
+      ]
+    },
+    {
+      "name": "DupAddrDetectTransmits",
+      "default_rfc": "1 (RFC 4862 §5.1)",
+      "description": "Number of Neighbor Solicitations sent during Duplicate Address Detection before an address is considered unique and assignable. 0 disables DAD.",
+      "on_expiry": "If no defending NA arrives, the tentative address is assigned; if one does, the address is marked DUPLICATE and not assigned.",
+      "range": "implementation/RFC constant",
+      "tuning_advice": "Keep >=1. Disabling DAD risks silent duplicate-address black holes.",
+      "os_defaults": [
+        {
+          "os": "nxos",
+          "default": "1",
+          "config_path": "interface: ipv6 nd dad attempts <n>",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxe",
+          "default": "1",
+          "config_path": "interface: ipv6 nd dad attempts <n>",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "iosxr",
+          "default": "1",
+          "config_path": "interface: ipv6 nd dad attempts <n>",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "os": "sonic",
+          "default": "1 (Linux dad_transmits)",
+          "config_path": "sysctl net.ipv6.conf.<ifname>.dad_transmits",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "name": "Router Solicitation (RS) — ICMPv6 type 133",
+      "description": "Prompts routers to send Router Advertisements immediately rather than waiting for the next periodic RA. Destination is ff02::2 (all-routers multicast).",
+      "when_sent": "Sent by a host, typically at interface bring-up / boot, to discover routers quickly.",
+      "key_fields": [
+        "source: host link-local (or :: before address config)",
+        "destination: ff02::2 (all-routers multicast)",
+        "option: Source Link-Layer Address (omitted when source is ::)"
+      ]
+    },
+    {
+      "name": "Router Advertisement (RA) — ICMPv6 type 134",
+      "description": "Carries on-link prefix(es), router lifetime (default gateway), MTU, and the M/O flags that decide SLAAC vs DHCPv6. The basis of SLAAC and IPv6 default-gateway discovery.",
+      "when_sent": "Sent by routers periodically (every MaxRtrAdvInterval) and in response to an RS.",
+      "key_fields": [
+        "Cur Hop Limit, Router Lifetime (0 = not a default router)",
+        "M flag (Managed: addresses via DHCPv6), O flag (Other config via DHCPv6)",
+        "Prefix Information option: prefix, L/A flags, valid & preferred lifetimes",
+        "MTU option, Source Link-Layer Address option, RDNSS (RFC 8106)"
+      ]
+    },
+    {
+      "name": "Neighbor Solicitation (NS) — ICMPv6 type 135",
+      "description": "Resolves a neighbor's link-layer address (to the target's solicited-node multicast ff02::1:ffXX:XXXX), probes reachability (unicast, NUD), and performs DAD.",
+      "when_sent": "Sent to resolve an unknown neighbor, to probe a STALE/PROBE neighbor (unicast), or during DAD (source ::, target = tentative address).",
+      "key_fields": [
+        "target address being resolved/probed/DAD-tested",
+        "source: :: during DAD, otherwise the sender's address",
+        "Source Link-Layer Address option (present except during DAD)"
+      ]
+    },
+    {
+      "name": "Neighbor Advertisement (NA) — ICMPv6 type 136",
+      "description": "Carries the Router (R), Solicited (S) and Override (O) flags plus the Target Link-Layer Address; the response that resolves or confirms a neighbor.",
+      "when_sent": "Sent in response to an NS, or unsolicited (multicast) when a node's link-layer address changes.",
+      "key_fields": [
+        "R flag (sender is a router), S flag (solicited response), O flag (override cache)",
+        "Target Link-Layer Address option (the resolved MAC)"
+      ]
+    },
+    {
+      "name": "Redirect — ICMPv6 type 137",
+      "description": "Informs a host of a better first-hop for a destination (a more specific on-link neighbor or a different router).",
+      "when_sent": "Sent by a router when it forwards a packet out the same interface it arrived on and a better first-hop exists.",
+      "key_fields": [
+        "Target Address (better first-hop), Destination Address being redirected",
+        "optional Redirected Header / Target Link-Layer Address options"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "ICMPv6",
+      "type": "protocol",
+      "description": "All ND messages (types 133-137) are ICMPv6. An ACL or control-plane policy that drops ICMPv6 breaks ND entirely — not just ping. ICMPv6 Packet Too Big (type 2) is also required for IPv6 PMTUD."
+    },
+    {
+      "name": "Link-local address",
+      "type": "infrastructure",
+      "description": "Every IPv6 interface needs a link-local (fe80::/10) address. ND uses it as the source of NS/NA/RS and routers source RAs from it. Without a valid link-local, ND and all IPv6 routing adjacencies (OSPFv3, BGP over fe80::) fail."
+    },
+    {
+      "name": "Solicited-node multicast / MLD",
+      "type": "protocol",
+      "description": "NS for resolution is sent to the target's solicited-node multicast group (ff02::1:ffXX:XXXX). Nodes must join it (MLD) and the L2 fabric must deliver the multicast; MLD-snooping misconfiguration can starve ND."
+    },
+    {
+      "name": "Control-plane policing (CoPP)",
+      "type": "infrastructure",
+      "description": "ND packets are punted to the CPU. Aggressive CoPP or an ND scan can rate-limit/drop NS/NA, causing intermittent resolution failures under load."
+    },
+    {
+      "name": "neighsyncd (SONiC)",
+      "type": "daemon",
+      "description": "In SONiC, the Linux kernel runs ND; neighsyncd mirrors kernel NEIGH entries into STATE_DB NEIGH_TABLE, and orchagent programs the resolved neighbor as a SAI_OBJECT_TYPE_NEIGHBOR_ENTRY in ASIC_DB for hardware forwarding."
+    }
+  ],
+  "failure_modes": [
+    {
+      "scenario": "IPv6 neighbor stuck INCOMPLETE — ND not resolving the next-hop/host",
+      "description": "A neighbor entry never leaves INCOMPLETE: NS is multicast to the solicited-node address but no NA returns, so packets to that IPv6 are dropped. Causes mirror IPv4 'incomplete ARP' (host down, wrong VLAN, L2 break) plus IPv6-specific ones: ICMPv6/NS filtered by an ACL, the node never joined the solicited-node multicast group, or MLD-snooping is pruning the NS.",
+      "symptoms": [
+        "show ipv6 neighbor shows the address in INCOMPLETE state with no MAC",
+        "Ping to the IPv6 next-hop/host fails while the interface is up",
+        "Traffic to destinations via that next-hop is black-holed",
+        "NS transmit counters increment with no matching NA received"
+      ],
+      "root_causes": [
+        {
+          "cause": "Target host is down, or its IPv6 stack/interface is not up to answer NS",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Neighbor is on a different VLAN/SVI than the one ND is sent on (L2/L3 mismatch)",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "An ACL or CoPP policy is dropping ICMPv6 NS/NA (types 135/136) on the path",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Solicited-node multicast (ff02::1:ffXX:XXXX) not delivered — MLD-snooping pruning or the node never joined the group",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Wrong/duplicate link-layer (MAC) mapping, or the neighbor uses a different link-local than expected",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "sonic: kernel resolved the neighbor but orchagent failed to program the SAI_OBJECT_TYPE_NEIGHBOR_ENTRY into ASIC_DB",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "resolutions": [
+        {
+          "action": "Confirm the neighbor is reachable at L2: verify it is up and on the same VLAN/segment",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Confirm the neighbor is reachable at L2: verify it is up and on the same VLAN/segment",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Confirm the neighbor is reachable at L2: verify it is up and on the same VLAN/segment",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Check that ICMPv6 NS/NA (types 135/136) and RS/RA (133/134) are permitted by any interface/CoPP ACL on the path",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Check that ICMPv6 NS/NA (types 135/136) and RS/RA (133/134) are permitted by any interface/CoPP ACL on the path",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Check that ICMPv6 NS/NA (types 135/136) and RS/RA (133/134) are permitted by any interface/CoPP ACL on the path",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Ping the neighbor to force re-resolution and watch the cache transition out of INCOMPLETE",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Ping the neighbor to force re-resolution and watch the cache transition out of INCOMPLETE",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Ping the neighbor to force re-resolution and watch the cache transition out of INCOMPLETE",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "sonic: verify kernel resolution then ASIC programming: 'show ndp <ip>' -> 'redis-cli -n 6 HGETALL \"NEIGH_TABLE|<ifname>|<ip>\"' -> 'redis-cli -n 1 KEYS \"ASIC_STATE:SAI_OBJECT_TYPE_NEIGHBOR_ENTRY*\" | grep <ip>'",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        },
+        {
+          "action": "sonic: if kernel has the neighbor but ASIC_DB does not, check 'docker logs swss' for SAI neighbor errors; restarting swss forces a resync (disruptive)",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "verify_commands": [
+        {
+          "command": "show ipv6 neighbor",
+          "confirms_if": "Entry shown INCOMPLETE with no MAC confirms unresolved ND",
+          "look_for": "State column: INCOMPLETE vs REACH/STALE; and whether a MAC is present",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 neighbor <ipv6-address>",
+          "confirms_if": "Per-address state confirms resolution status",
+          "look_for": "State and link-layer address for the specific neighbor",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "Confirms the interface has a link-local and ND is enabled",
+          "look_for": "link-local address present, ND DAD/RA settings, ICMP redirects",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 neighbors",
+          "confirms_if": "Entry INCOMPLETE confirms unresolved ND",
+          "look_for": "State: INCMP vs REACH/STALE",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "Confirms link-local + ND settings",
+          "look_for": "link-local, ND DAD attempts, RA",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "debug ipv6 nd",
+          "confirms_if": "Live NS/NA exchange shows whether NA ever returns",
+          "look_for": "Outgoing NS and any incoming NA for the target (use with care on production)",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 neighbors",
+          "confirms_if": "Entry INCOMPLETE confirms unresolved ND",
+          "look_for": "REACH/STALE/INCMP state",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 nd",
+          "confirms_if": "ND interface/operational view confirms ND is running on the interface",
+          "look_for": "ND state and per-interface ND parameters",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 nd dadfail",
+          "confirms_if": "Rules out a DAD conflict masquerading as a resolution failure",
+          "look_for": "any addresses flagged as DAD-failed",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ndp <ipv6-address>",
+          "confirms_if": "Kernel neighbor state confirms resolution status",
+          "look_for": "REACHABLE/STALE/INCOMPLETE/FAILED for the address",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        },
+        {
+          "command": "redis-cli -n 6 HGETALL 'NEIGH_TABLE|<ifname>|<ipv6>'",
+          "confirms_if": "STATE_DB neighbor entry confirms neighsyncd mirrored the kernel resolution",
+          "look_for": "neigh (MAC) and family fields populated; absence = not resolved in kernel",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        },
+        {
+          "command": "redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_NEIGHBOR_ENTRY*' | grep <ipv6>",
+          "confirms_if": "Missing ASIC neighbor entry confirms hardware programming gap despite kernel resolution",
+          "look_for": "a matching SAI neighbor object for the address",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "Duplicate Address Detection (DAD) failure silently unconfigures the IPv6 address",
+      "description": "When an address is configured (link-local, SLAAC, or static), the node runs DAD by soliciting the tentative address. If a defending NA (or competing NS) is received, the address is DUPLICATE and is NOT assigned. If the duplicate is the interface link-local, RFC 4862 5.4.5 requires IPv6 operation on the interface to be disabled — so IPv6 silently fails to come up with little more than a log line. Common with duplicate static addresses, a looped segment reflecting the node's own NS, or duplicate virtual MACs (HSRPv6/VRRPv3).",
+      "symptoms": [
+        "Configured IPv6 address is missing from the interface despite being in config",
+        "Interface shows the address as DUPLICATE / DAD failed / TENTATIVE-stuck",
+        "%IPV6 / DAD duplicate-address syslog for the address",
+        "IPv6 does not come up on the interface at all when the link-local is the duplicate"
+      ],
+      "root_causes": [
+        {
+          "cause": "Another node on the link is genuinely configured with the same IPv6 address",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "A L2 loop (or hairpin) reflects the node's own DAD NS back, so it appears defended",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Duplicate virtual MAC across redundancy groups (HSRPv6/VRRPv3) generating the same EUI-64 / link-local",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Re-used static address after a device swap while the old neighbor is still online",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ],
+      "resolutions": [
+        {
+          "action": "Identify the address state and the conflicting node, then change one address or remove the duplicate",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Identify the address state and the conflicting node, then change one address or remove the duplicate",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Identify the address state and the conflicting node, then change one address or remove the duplicate",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Check for an L2 loop reflecting DAD NS (STP topology, dual-homing) before assuming a real duplicate",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Check for an L2 loop reflecting DAD NS (STP topology, dual-homing) before assuming a real duplicate",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Check for an L2 loop reflecting DAD NS (STP topology, dual-homing) before assuming a real duplicate",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "After resolving the conflict, bounce the interface (shut/no shut) or reconfigure the address to re-run DAD",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "After resolving the conflict, bounce the interface (shut/no shut) or reconfigure the address to re-run DAD",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "After resolving the conflict, bounce the interface (shut/no shut) or reconfigure the address to re-run DAD",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "sonic: check 'show ipv6 interfaces' for dadfailed/tentative, inspect 'ip -6 address show dev <ifname>' for 'dadfailed', then correct the duplicate and 'config interface ip remove/add' to re-run DAD",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "verify_commands": [
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "Address shown DUP/DUPLICATE confirms DAD failure",
+          "look_for": "address state: TENTATIVE/DUPLICATE vs valid; DAD attempts",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "Address flagged duplicate confirms DAD failure",
+          "look_for": "'[DUP]' / duplicate marker next to the address",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 nd dadfail",
+          "confirms_if": "Lists addresses that failed DAD — direct confirmation",
+          "look_for": "the tentative address among DAD-failed entries",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "Address state confirms DAD outcome",
+          "look_for": "address TENTATIVE/DUPLICATE/valid state",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interfaces",
+          "confirms_if": "Missing/duplicate address confirms DAD failure",
+          "look_for": "the expected address present and not flagged dadfailed",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        },
+        {
+          "command": "ip -6 address show dev <ifname>",
+          "confirms_if": "Kernel 'dadfailed' flag confirms the duplicate",
+          "look_for": "'dadfailed' or 'tentative' flag on the address",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "Missing or failed link-local address breaks ND and all IPv6 forwarding on the link",
+      "description": "ND sources NS/NA/RS from the interface link-local (fe80::/10) and routers source RAs from it; routing protocols use link-local next-hops. If the link-local is absent (IPv6 not enabled on the interface) or itself failed DAD, no ND happens: neighbors never resolve, RAs are neither sent nor accepted, and OSPFv3/BGP-over-link-local adjacencies never form — even though global addresses look configured.",
+      "symptoms": [
+        "No fe80:: address on the interface in show ipv6 interface",
+        "All neighbors on the segment stuck INCOMPLETE despite correct global addressing",
+        "OSPFv3 / IS-IS / BGP sessions that rely on link-local next-hops never come up",
+        "Router neither sends nor is seen in host 'show ipv6 routers'"
+      ],
+      "root_causes": [
+        {
+          "cause": "IPv6 not enabled on the interface (no 'ipv6 enable' / no global address to auto-derive a link-local)",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "The link-local itself failed DAD (duplicate fe80::), disabling IPv6 on the interface",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Interface is L2/down or in the wrong VRF so the link-local is not installed",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "sonic: interface has no IPv6 enabled / 'ipv6 link-local' mode not set",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "resolutions": [
+        {
+          "action": "Enable IPv6 on the interface so a link-local is derived ('ipv6 enable' or configure a global address)",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Enable IPv6 on the interface so a link-local is derived ('ipv6 enable' or configure a global address)",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Enable IPv6 on the interface so a link-local is derived ('ipv6 enable' or configure a global address)",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "If the link-local failed DAD, resolve the fe80:: duplicate (often a duplicate MAC) then re-enable the interface",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "If the link-local failed DAD, resolve the fe80:: duplicate (often a duplicate MAC) then re-enable the interface",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "If the link-local failed DAD, resolve the fe80:: duplicate (often a duplicate MAC) then re-enable the interface",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "sonic: verify IPv6/link-local with 'show ipv6 interfaces' and 'show ipv6 link-local-mode'; enable link-local mode if required for the interface",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "verify_commands": [
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "Absent link-local confirms ND cannot operate",
+          "look_for": "a fe80:: link-local listed as valid (not TENTATIVE/DUPLICATE)",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "Absent link-local confirms ND cannot operate",
+          "look_for": "'IPv6 is enabled, link-local address is fe80::...'",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "Absent link-local confirms ND cannot operate",
+          "look_for": "link-local address line present and valid",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interfaces",
+          "confirms_if": "Missing link-local confirms IPv6 not operational on the port",
+          "look_for": "fe80:: address on the interface",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 link-local-mode",
+          "confirms_if": "Confirms whether link-local-only mode is enabled where needed",
+          "look_for": "per-interface link-local mode state",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "Rogue or unexpected Router Advertisement hijacks the IPv6 default gateway / prefix",
+      "description": "Any node on the link can send RAs. A rogue RA (a misconfigured host sharing its connection, a stray router, or an attacker) makes hosts install a wrong default gateway and SLAAC a wrong prefix, causing black-holing or interception. The fix is RA Guard on access ports plus controlling who may advertise.",
+      "symptoms": [
+        "Hosts intermittently get a default gateway / prefix from an unexpected router",
+        "Two default routers appear in host 'show ipv6 routers' / 'ip -6 route'",
+        "IPv6 connectivity flaps as hosts oscillate between the real and rogue RA",
+        "Unexpected source link-local listed as a router on the segment"
+      ],
+      "root_causes": [
+        {
+          "cause": "A host with IPv6 forwarding/ICS enabled is emitting RAs",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "An unauthorized or misconfigured router on the access VLAN is advertising",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "No RA Guard / ND inspection on access ports to drop RAs from non-router ports",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Deliberate RA spoofing (man-in-the-middle) on an unsecured segment",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ],
+      "resolutions": [
+        {
+          "action": "Identify the rogue RA source link-local and locate the port/MAC, then shut or remediate it",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Identify the rogue RA source link-local and locate the port/MAC, then shut or remediate it",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Identify the rogue RA source link-local and locate the port/MAC, then shut or remediate it",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Enable RA Guard on access ports so only authorized router ports may send RAs (nxos/iosxe: 'ipv6 nd raguard')",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Enable RA Guard on access ports so only authorized router ports may send RAs (nxos/iosxe: 'ipv6 nd raguard')",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "iosxr: apply ICMPv6 RA filtering / use a router-port policy to block RAs from host ports",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "sonic: filter inbound ICMPv6 type 134 (RA) on host-facing ports via ACL, allowing it only on uplinks to legitimate routers",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "verify_commands": [
+        {
+          "command": "show ipv6 routers",
+          "confirms_if": "More than one router / an unexpected source confirms a rogue RA",
+          "look_for": "router link-local addresses heard and their advertised lifetime/prefix",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 nd raguard policy",
+          "confirms_if": "Confirms whether RA Guard policy exists to block rogue RAs",
+          "look_for": "RA Guard policy and where it is applied",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 routers",
+          "confirms_if": "Unexpected router entry confirms a rogue RA on the segment",
+          "look_for": "all routers heard; compare against the known-good gateway",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 nd raguard policy",
+          "confirms_if": "Confirms RA Guard configuration",
+          "look_for": "configured raguard policies and bindings",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 nd ra",
+          "confirms_if": "Shows RA send/receive state to spot unexpected advertisers",
+          "look_for": "RA parameters and any anomalous router",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "ip -6 route show",
+          "confirms_if": "Multiple default routes with different next-hops confirm a rogue RA",
+          "look_for": "default via fe80::... entries; an unexpected next-hop link-local",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "Router not advertising RA / prefix — hosts get no SLAAC address or default gateway",
+      "description": "Hosts depend on RAs to learn the default gateway (non-zero Router Lifetime) and the on-link prefix with the Autonomous (A) flag for SLAAC. If RAs are suppressed, the router lifetime is 0, or the prefix lacks the A flag, hosts get a link-local only, no default route, and no global SLAAC address.",
+      "symptoms": [
+        "Hosts have only a link-local (fe80::) and no global IPv6 address",
+        "Hosts have no IPv6 default route despite a working router on the link",
+        "show ipv6 routers on a host is empty",
+        "SLAAC works for some prefixes but not others (A-flag missing on one)"
+      ],
+      "root_causes": [
+        {
+          "cause": "RA suppressed on the interface ('ipv6 nd suppress-ra' / FRR 'ipv6 nd suppress-ra' default)",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Router Lifetime advertised as 0, so the router is not used as a default gateway",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Prefix advertised without the Autonomous (A) flag, so hosts will not SLAAC from it",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "M flag set (managed) with no working DHCPv6, so hosts wait for DHCPv6 that never answers",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "sonic/FRR: 'no ipv6 nd suppress-ra' was never configured on the interface",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "resolutions": [
+        {
+          "action": "Confirm RA is enabled (not suppressed) on the downstream interface",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Confirm RA is enabled (not suppressed) on the downstream interface",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Confirm RA is enabled (not suppressed) on the downstream interface",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Ensure a non-zero RA lifetime and that the on-link prefix carries the Autonomous flag for SLAAC",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Ensure a non-zero RA lifetime and that the on-link prefix carries the Autonomous flag for SLAAC",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Ensure a non-zero RA lifetime and that the on-link prefix carries the Autonomous flag for SLAAC",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "If M=1 is intended, verify DHCPv6 server/relay is reachable; otherwise clear M to allow SLAAC",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "If M=1 is intended, verify DHCPv6 server/relay is reachable; otherwise clear M to allow SLAAC",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "If M=1 is intended, verify DHCPv6 server/relay is reachable; otherwise clear M to allow SLAAC",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "sonic/FRR: enable RA on the interface: 'interface <ifname>' / 'no ipv6 nd suppress-ra' and set 'ipv6 nd ra-interval'/prefix as needed",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "verify_commands": [
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "RA suppressed / lifetime 0 confirms why hosts get nothing",
+          "look_for": "ND RA suppression state, RA lifetime, advertised prefixes and flags",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 nd ra",
+          "confirms_if": "RA send state confirms whether RAs are leaving the interface",
+          "look_for": "RA interval, lifetime, prefixes/flags being advertised",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interface <intf>",
+          "confirms_if": "Shows advertised RA parameters",
+          "look_for": "RA suppress, lifetime, prefix A/L flags",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 nd ra",
+          "confirms_if": "Confirms RA transmission and advertised parameters",
+          "look_for": "RA enabled/suppressed, lifetime, prefix flags",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "docker exec bgp vtysh -c 'show ipv6 nd ra-interfaces'",
+          "confirms_if": "FRR RA state confirms whether the interface advertises RAs",
+          "look_for": "interface listed as advertising with interval/lifetime",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 interfaces",
+          "confirms_if": "Confirms interface IPv6/RA posture",
+          "look_for": "interface up with link-local; RA sending where expected",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "ND cache exhaustion / neighbor scan — INCOMPLETE entries flood the control plane",
+      "description": "The huge IPv6 host space means scanning a /64 (or a misrouted prefix) makes the router create an INCOMPLETE entry and emit NS for every probed address. This fills the ND cache, saturates CoPP, and starves legitimate resolution — the IPv6 analogue of the IPv4 interface-static proxy-ARP storm.",
+      "symptoms": [
+        "ND cache near or at platform capacity with thousands of INCOMPLETE entries",
+        "High control-plane CPU and NS transmit rate",
+        "Legitimate neighbors intermittently fail to resolve under the load",
+        "CoPP drop counters for ICMPv6/ND climbing"
+      ],
+      "root_causes": [
+        {
+          "cause": "External scan or misconfiguration directing traffic to many unused addresses in an on-link /64",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "A glue/static route pointing at a large on-link prefix forces ND for every destination",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "No ND cache limit / unreachable-entry throttling configured for the interface",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "CoPP class for ICMPv6/ND too permissive, letting the scan reach the CPU unbounded",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ],
+      "resolutions": [
+        {
+          "action": "Identify the scanned prefix and source, then filter or rate-limit it upstream",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Identify the scanned prefix and source, then filter or rate-limit it upstream",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Identify the scanned prefix and source, then filter or rate-limit it upstream",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Apply an ND cache limit / destination-guard and tune CoPP for ICMPv6 to bound NS generation",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Apply an ND cache limit / destination-guard and tune CoPP for ICMPv6 to bound NS generation",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Apply an ND cache limit / destination-guard and tune CoPP for ICMPv6 to bound NS generation",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Prefer routed (off-link) addressing over a giant on-link /64 where many addresses are unused",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Prefer routed (off-link) addressing over a giant on-link /64 where many addresses are unused",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Prefer routed (off-link) addressing over a giant on-link /64 where many addresses are unused",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "sonic: rate-limit ICMPv6/ND to the CPU via CoPP/control-plane ACL and watch STATE_DB NEIGH_TABLE growth",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "verify_commands": [
+        {
+          "command": "show ipv6 neighbor summary",
+          "confirms_if": "High INCOMPLETE count confirms cache exhaustion/scan",
+          "look_for": "total vs INCOMPLETE entry counts",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 icmp interface <intf>",
+          "confirms_if": "Elevated NS/ND rate confirms the storm",
+          "look_for": "ICMPv6/ND message rates on the interface",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 neighbors statistics",
+          "confirms_if": "High NS-sent with low NA confirms scan-driven resolution",
+          "look_for": "NS sent vs NA received counts",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 nd idb interface",
+          "confirms_if": "Per-interface ND state confirms which interface is flooded",
+          "look_for": "ND interface entries and counts",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 nd",
+          "confirms_if": "ND operational counters confirm the surge",
+          "look_for": "NS/NA counters and cache size",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "redis-cli -n 6 KEYS 'NEIGH_TABLE*' | wc -l",
+          "confirms_if": "Large neighbor-table count confirms exhaustion",
+          "look_for": "number of NEIGH_TABLE entries vs platform norm",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "ICMPv6 filtered by ACL breaks ND (and PMTUD) — not just ping",
+      "description": "Operators often port IPv4 ACLs that 'deny icmp' to IPv6, not realizing ND itself is ICMPv6. Filtering ICMPv6 types 133-136 kills neighbor and router discovery; filtering type 2 (Packet Too Big) silently breaks IPv6 Path MTU Discovery. The result looks like a routing or link problem but is an ACL problem.",
+      "symptoms": [
+        "Neighbors stop resolving (INCOMPLETE) right after an ACL change",
+        "Hosts lose their default gateway/prefix because RS/RA are dropped",
+        "Large flows hang while small packets pass (Packet Too Big filtered -> PMTUD black hole)",
+        "Connectivity returns when the ICMPv6 ACL is removed"
+      ],
+      "root_causes": [
+        {
+          "cause": "ACL denies ICMPv6 broadly, dropping ND types 133-136",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "ACL drops ICMPv6 type 2 (Packet Too Big), breaking IPv6 PMTUD",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Infrastructure/uRPF/CoPP policy not permitting link-local-sourced ND",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "cause": "Reflexive/stateful rule not accounting for multicast-destined NS (solicited-node)",
+          "os": "*",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        }
+      ],
+      "resolutions": [
+        {
+          "action": "Explicitly permit ND ICMPv6 types 133,134,135,136 (and 137 if used) plus type 2 (Packet Too Big) before any ICMPv6 deny",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Explicitly permit ND ICMPv6 types 133,134,135,136 (and 137 if used) plus type 2 (Packet Too Big) before any ICMPv6 deny",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Explicitly permit ND ICMPv6 types 133,134,135,136 (and 137 if used) plus type 2 (Packet Too Big) before any ICMPv6 deny",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Permit link-local (fe80::/10) and solicited-node multicast (ff02::1:ff00:0/104) sources/destinations needed by ND",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Permit link-local (fe80::/10) and solicited-node multicast (ff02::1:ff00:0/104) sources/destinations needed by ND",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Permit link-local (fe80::/10) and solicited-node multicast (ff02::1:ff00:0/104) sources/destinations needed by ND",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Re-test resolution and large-flow PMTUD after the ACL change",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Re-test resolution and large-flow PMTUD after the ACL change",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "Re-test resolution and large-flow PMTUD after the ACL change",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "action": "sonic: ensure control-plane/data ACLs permit ICMPv6 ND (133-136) and Packet Too Big (2); verify with 'show acl rule'",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ],
+      "verify_commands": [
+        {
+          "command": "show ipv6 access-list <name>",
+          "confirms_if": "ICMPv6 deny hit-count rising with ND failures confirms the cause",
+          "look_for": "deny entries matching ICMPv6 and their hit counters",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 neighbor",
+          "confirms_if": "Neighbors flipping to INCOMPLETE after an ACL change confirms ND is filtered",
+          "look_for": "state regressions correlated with the ACL edit",
+          "os": "nxos",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 access-list <name>",
+          "confirms_if": "ICMPv6 denies confirm filtered ND",
+          "look_for": "permit/deny lines for ICMPv6 types and their counters",
+          "os": "iosxe",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show ipv6 access-lists <name>",
+          "confirms_if": "ICMPv6 denies confirm filtered ND",
+          "look_for": "ICMPv6 entries and hardware/sw hit counts",
+          "os": "iosxr",
+          "version_range": {
+            "min": "*",
+            "max": "*"
+          }
+        },
+        {
+          "command": "show acl rule",
+          "confirms_if": "ACL rules dropping ICMPv6 confirm the filter is breaking ND",
+          "look_for": "rules matching ICMPv6 / IP protocol 58 and their action",
+          "os": "sonic",
+          "version_range": {
+            "min": "202511",
+            "max": "*"
+          }
+        }
+      ]
+    }
+  ],
+  "vendor_notes": {
+    "nxos": {
+      "notes": [
+        {
+          "note": "Neighbor cache: 'show ipv6 neighbor [detail]'. RA control per interface with 'ipv6 nd ra-interval/ra-lifetime/suppress-ra'; RA Guard via 'ipv6 nd raguard'. DAD attempts via 'ipv6 nd dad attempts'. In VXLAN/EVPN, ND suppression and the distributed anycast gateway change where NS/NA are answered.",
+          "versions": "all"
+        }
+      ]
+    },
+    "iosxe": {
+      "notes": [
+        {
+          "note": "Neighbor cache: 'show ipv6 neighbors'. 'show ipv6 interface <intf>' shows the link-local, DAD attempts, and RA parameters; '[DUP]' marks a DAD-failed address. RA Guard and IPv6 Source Guard/device-tracking ('show device-tracking database') secure ND on access ports. RA interval default is 200 s (not the RFC 600 s).",
+          "versions": "all"
+        }
+      ]
+    },
+    "iosxr": {
+      "notes": [
+        {
+          "note": "Rich ND tooling: 'show ipv6 nd', 'show ipv6 nd dadfail', 'show ipv6 nd slaac location', 'show ipv6 nd packets', 'show ipv6 neighbors'. ND runs per-line-card; use the 'location' keyword to scope to a node when resolving distributed-platform issues.",
+          "versions": "all"
+        }
+      ]
+    },
+    "sonic": {
+      "notes": [
+        {
+          "note": "The Linux kernel performs ND; 'show ndp' renders the kernel neighbor cache and 'ip -6 neighbor show' is the raw view. neighsyncd mirrors kernel NEIGH into STATE_DB NEIGH_TABLE and orchagent programs SAI_OBJECT_TYPE_NEIGHBOR_ENTRY into ASIC_DB for hardware forwarding. When SONiC acts as an RA sender, FRR zebra rtadv drives RAs ('no ipv6 nd suppress-ra').",
+          "versions": "all"
+        }
+      ]
+    }
+  },
+  "related_protocols": [
+    "ospfv3",
+    "static-routing",
+    "dhcpv6",
+    "vrrp",
+    "hsrp"
+  ],
+  "tags": [
+    "ipv6",
+    "neighbor-discovery",
+    "ndp",
+    "slaac",
+    "dad",
+    "ra",
+    "icmpv6",
+    "nud",
+    "router-advertisement",
+    "addressing"
+  ],
+  "sources": [
+    {
+      "id": "rfc4861",
+      "type": "rfc",
+      "rfc_number": 4861,
+      "title": "RFC 4861 — Neighbor Discovery for IP version 6 (IPv6) [Narten et al., 2007]",
+      "url": "https://www.rfc-editor.org/rfc/rfc4861.txt",
+      "verifying_quote": "This document specifies the Neighbor Discovery protocol for IP Version 6. IPv6 nodes on the same link use Neighbor Discovery to discover each other's presence, to determine each other's link-layer addresses, to find routers, and to maintain reachability information about the paths to active neighbors."
+    },
+    {
+      "id": "rfc4861-states",
+      "type": "rfc",
+      "rfc_number": 4861,
+      "title": "RFC 4861 Section 7.3.2 / Section 10 — Neighbor Cache states and protocol constants",
+      "url": "https://www.rfc-editor.org/rfc/rfc4861.txt#section-7.3.2",
+      "verifying_quote": "A Neighbor Cache entry can be in one of five states: INCOMPLETE, REACHABLE, STALE, DELAY, PROBE. (REACHABLE_TIME 30,000 ms; RETRANS_TIMER 1,000 ms; DELAY_FIRST_PROBE_TIME 5 seconds.)"
+    },
+    {
+      "id": "rfc4862",
+      "type": "rfc",
+      "rfc_number": 4862,
+      "title": "RFC 4862 — IPv6 Stateless Address Autoconfiguration (SLAAC / DAD) [Thomson et al., 2007]",
+      "url": "https://www.rfc-editor.org/rfc/rfc4862.txt",
+      "verifying_quote": "Duplicate Address Detection MUST be performed on all unicast addresses prior to assigning them to an interface, regardless of whether they are obtained through stateless autoconfiguration, DHCPv6, or manual configuration."
+    },
+    {
+      "id": "rfc4443",
+      "type": "rfc",
+      "rfc_number": 4443,
+      "title": "RFC 4443 — Internet Control Message Protocol (ICMPv6) for IPv6 [Conta et al., 2006]",
+      "url": "https://www.rfc-editor.org/rfc/rfc4443.txt",
+      "verifying_quote": "ICMPv6 is used by IPv6 nodes to report errors encountered in processing packets, and to perform other internet-layer functions, such as diagnostics. ICMPv6 is an integral part of IPv6, and the base protocol MUST be fully implemented by every IPv6 node."
+    },
+    {
+      "id": "kb-arp-ndp",
+      "type": "documentation",
+      "title": "Internal KB D4 — ARP and Neighbor Discovery (kb/networking/ip-addressing/arp-and-ndp.json)",
+      "verifying_quote": "IPv6 Neighbor Solicitation (NS) replaces ARP, sent to solicited-node multicast address (ff02::1:ff00:0/104 + last 24 bits of target IP). Neighbor cache maintains state: INCOMPLETE, REACHABLE, STALE, DELAY, PROBE."
+    }
+  ]
+}

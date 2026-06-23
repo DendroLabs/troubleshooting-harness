@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "icmpv6-filtering-breaks-nd",
+  "display_name": "Filtering ICMPv6 breaks IPv6 Neighbor Discovery and PMTUD — it is not just 'blocking ping'",
+  "category": "correlation-method",
+  "applicable_os": [
+    "nxos",
+    "iosxe",
+    "iosxr",
+    "sonic",
+    "eos",
+    "junos"
+  ],
+  "version_range": {
+    "min": "*",
+    "max": "*"
+  },
+  "context": "After an IPv6 ACL change, neighbors stop resolving, hosts lose their gateway, or large flows hang, and the symptoms look like a link or routing problem",
+  "observation": "Neighbors flip to INCOMPLETE and/or large transfers stall right after an ICMPv6/IPv6 ACL was applied; removing the ACL restores connectivity",
+  "naive_interpretation": "There is an L2/link problem or an MTU/routing issue on the path",
+  "correct_interpretation": "Operators frequently port an IPv4 'deny icmp' ACL to IPv6 without realizing that IPv6 Neighbor Discovery itself is ICMPv6. Dropping ICMPv6 types 133-136 kills router and neighbor discovery — NS/NA never complete, RS/RA never flow — so neighbors go INCOMPLETE and hosts lose their default gateway. Separately, filtering ICMPv6 type 2 (Packet Too Big) silently breaks IPv6 Path MTU Discovery: small packets pass while large flows black-hole, which mimics an intermittent or application-layer problem. The correlation tell is that connectivity changed exactly when an ACL/CoPP policy changed. The fix is to explicitly permit ND types 133,134,135,136 (and 137 if redirects are used) and type 2, plus link-local (fe80::/10) and solicited-node multicast (ff02::1:ff00:0/104), before any ICMPv6 deny.",
+  "why": [
+    "ND is carried in ICMPv6, so an ICMPv6 deny removes the control messages that resolve neighbors and discover routers",
+    "IPv6 has no in-network fragmentation; PMTUD relies entirely on ICMPv6 Packet Too Big, so filtering type 2 black-holes large packets",
+    "The failure correlates tightly with the ACL/CoPP change time, distinguishing it from a real link or routing fault"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 access-list <name>",
+      "purpose": "Check for ICMPv6 deny entries and rising hit counters correlated with ND failures"
+    },
+    {
+      "os": "iosxe",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 access-list <name>",
+      "purpose": "Inspect permit/deny lines for ICMPv6 types and their counters"
+    },
+    {
+      "os": "iosxr",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 access-lists <name>",
+      "purpose": "Inspect ICMPv6 entries and hardware/software hit counts"
+    },
+    {
+      "os": "sonic",
+      "version_range": {
+        "min": "202511",
+        "max": "*"
+      },
+      "command": "show acl rule",
+      "purpose": "Look for rules matching ICMPv6 (IP protocol 58) and their action"
+    }
+  ],
+  "traps": [
+    "Treating an ICMPv6 deny as merely 'blocking ping' when it also kills ND",
+    "Permitting Echo (128/129) but forgetting ND types 133-136, so ping works in tests but real resolution fails",
+    "Filtering type 2 Packet Too Big and then chasing a phantom MTU/application bug",
+    "Not permitting link-local and solicited-node multicast that ND requires"
+  ],
+  "related_rules": [
+    "ipv6-nd-incomplete-not-always-host-down",
+    "mtu-path-discovery-mimics-intermittent-loss"
+  ],
+  "related_protocols": [
+    "ipv6-nd"
+  ],
+  "keywords": [
+    "IPv6",
+    "ICMPv6",
+    "ACL",
+    "ND",
+    "neighbor discovery",
+    "Packet Too Big",
+    "PMTUD",
+    "type 135",
+    "type 136",
+    "CoPP"
+  ],
+  "sources": [
+    {
+      "id": "rfc4443",
+      "type": "rfc",
+      "title": "RFC 4443 — ICMPv6 for IPv6 (message types)"
+    },
+    {
+      "id": "rfc4861",
+      "type": "rfc",
+      "title": "RFC 4861 — Neighbor Discovery for IPv6 (neighbor cache states 7.3.2)"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

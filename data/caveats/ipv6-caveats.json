@@ -1,0 +1,66 @@
+{
+  "_comment": "Curated IPv6 caveats committed to the repo so caveats.db is reproducible without the external archived-kb bug file. Ingested by tools/migrate/populate_caveats.py. Source: Cisco public bug IDs (agent-cisco-kb bug-details.json).",
+  "schema_version": "1.0.0",
+  "caveats": [
+    {
+      "os": "nxos",
+      "csc_id": "CSCwe43450",
+      "headline": "Kernel panic due to \"Fatal Module Error\" after ND ISSU on N9K-C9348GC-FXP",
+      "description": "After a Non-Disruptive (ND) ISSU upgrade to an impacted release, an N9K-C9348GC-FXP reloads ~2 minutes later with 'Reset Requested due to Fatal Module Error' (visible in 'show system reset-reason' / 'show logging onboard internal reset-reason'). Workaround: use the disruptive/normal upgrade procedure instead of ND ISSU.",
+      "severity": "3",
+      "affected_versions": "9.3(9)",
+      "affected_platforms": "N9K-C9348GC-FXP",
+      "affected_pids": "N9K-C9348GC-FXP",
+      "fixed_in": null,
+      "keywords": "ipv6 nd issu non-disruptive upgrade kernel panic fatal module error reload reset-reason"
+    },
+    {
+      "os": "nxos",
+      "csc_id": "CSCwe55237",
+      "headline": "Configuring overlapping IPv6 address with different mask on L3 interface does not throw an error",
+      "description": "On Nexus 9000, configuring an IPv6 address that overlaps subnet-wise (different prefix length, e.g. 2001:db0::1/72 then /73) on two different L3 interfaces produces no warning, unlike IPv4 which warns on overlap. Only an exact duplicate address is rejected. Operators can silently misconfigure overlapping IPv6 subnets.",
+      "severity": "3",
+      "affected_versions": "*",
+      "affected_platforms": "Nexus 9000",
+      "affected_pids": "N9K",
+      "fixed_in": null,
+      "keywords": "ipv6 overlapping address subnet no error warning misconfiguration l3 interface svi loopback"
+    },
+    {
+      "os": "iosxe",
+      "csc_id": "CSCvr03905",
+      "headline": "Memory leak on FED due to IPv6 Source Guard",
+      "description": "IPv6 Source Guard (device-tracking / RSC_SI library) leaks memory on the FED process: entries are allocated but not cleaned up, growing FED memory utilization over time. Verify with 'show platform hardware fed switch active fwd-asic resource utilization | i RSC_SI' and 'show device-tracking database'. Workaround: disable IPv6 Source Guard.",
+      "severity": "2",
+      "affected_versions": "*",
+      "affected_platforms": "Catalyst 3850/3650/9000 (FED-based)",
+      "affected_pids": "WS-C3850; C9300; C9500",
+      "fixed_in": null,
+      "keywords": "ipv6 source guard memory leak fed rsc_si device-tracking catalyst"
+    },
+    {
+      "os": "iosxe",
+      "csc_id": "CSCvs22896",
+      "headline": "DHCPv6 RELAY-REPLY packet is being dropped",
+      "description": "A Catalyst 9500 acting as a DHCPv6 relay sends RELAY-FORWARD to the server and the server's RELAY-REPLY arrives at the 9500 (visible in an on-box capture), but the relay does not forward the unwrapped Reply to the client VLAN, so end clients never receive DHCPv6 configuration (e.g. DNS via Information-Request). Affects 16.11.1 and 16.12.1 through 16.12.3a. Workaround: none documented.",
+      "severity": "3",
+      "affected_versions": "16.11.1, 16.12.1-16.12.3a",
+      "affected_platforms": "Catalyst 9500",
+      "affected_pids": "C9500",
+      "fixed_in": null,
+      "keywords": "dhcpv6 relay relay-reply relay-forward dropped not forwarded client cat9500 information-request"
+    },
+    {
+      "os": "iosxe",
+      "csc_id": "CSCvs25428",
+      "headline": "NETCONF incorrectly activates IPv4 address-family for an IPv6 BGP peer",
+      "description": "When activating a second IPv6 BGP peer via NETCONF/YANG, IOS-XE incorrectly emits 'neighbor <ipv6> activate' under address-family ipv4 for the new peer (instead of only under address-family ipv6), unlike the first peer which is correctly deactivated under IPv4. Results in an unintended IPv4 AF activation for an IPv6-only neighbor. Workaround: configure/correct the neighbor activation via CLI.",
+      "severity": "2",
+      "affected_versions": "*",
+      "affected_platforms": "IOS-XE (NETCONF/YANG)",
+      "affected_pids": null,
+      "fixed_in": null,
+      "keywords": "ipv6 bgp netconf yang address-family ipv4 activate neighbor incorrect"
+    }
+  ]
+}

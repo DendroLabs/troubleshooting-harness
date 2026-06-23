@@ -101,6 +101,28 @@
       ]
     },
     {
+      "protocol_id": "dhcpv6",
+      "protocol_name": "DHCPv6",
+      "protocol_family": "services",
+      "file": "protocols/dhcpv6.json",
+      "tags": [
+        "dhcpv6",
+        "ipv6",
+        "prefix-delegation",
+        "ia-pd",
+        "ia-na",
+        "relay",
+        "slaac",
+        "addressing"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
+      ]
+    },
+    {
       "protocol_id": "dot1x",
       "protocol_name": "802.1X",
       "protocol_family": "adjacency",
@@ -252,6 +274,30 @@
         "iosxe",
         "iosxr",
         "nxos"
+      ]
+    },
+    {
+      "protocol_id": "ipv6-nd",
+      "protocol_name": "IPv6 Neighbor Discovery",
+      "protocol_family": "adjacency",
+      "file": "protocols/ipv6-nd.json",
+      "tags": [
+        "ipv6",
+        "neighbor-discovery",
+        "ndp",
+        "slaac",
+        "dad",
+        "ra",
+        "icmpv6",
+        "nud",
+        "router-advertisement",
+        "addressing"
+      ],
+      "os_coverage": [
+        "iosxe",
+        "iosxr",
+        "nxos",
+        "sonic"
       ]
     },
     {
