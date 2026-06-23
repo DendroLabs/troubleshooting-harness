@@ -1,0 +1,9 @@
+# TSH runtime + tooling dependencies.
+# Installed into a per-install venv by install.sh.
+
+# MCP server runtime (harness/interfaces/mcp/server.py)
+mcp>=1.2
+
+# JSON Schema validation (tools/validate/validate_all.py)
+jsonschema>=4.0
+referencing>=0.30
