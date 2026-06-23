@@ -7,8 +7,24 @@ from harness.src.retrieval.sqlite_query import CommandQuery
 class ValidationStatus(Enum):
     EXACT = "exact"
     PREFIX = "prefix"
+    VERSION_MISMATCH = "version_mismatch"
     FTS = "fts"
     NOT_FOUND = "not_found"
+
+
+def _dedup(items) -> list[str]:
+    return list(dict.fromkeys(items))
+
+
+def _fmt_range(row: dict) -> str:
+    """Human-readable applicability for a command row, e.g. '202511+' or '9.3-10.4'."""
+    vmin = row.get("version_min")
+    vmax = row.get("version_max")
+    if not vmin and not vmax:
+        return row.get("version") or "*"
+    lo = vmin or "*"
+    hi = vmax or "*"
+    return f"{lo}+" if hi == "*" else f"{lo}-{hi}"
 
 
 @dataclass
@@ -61,15 +77,30 @@ class CommandValidator:
                 status=ValidationStatus.PREFIX,
                 matched_syntax=rows[0]["syntax"],
                 description=rows[0].get("description"),
-                suggestions=[r["syntax"] for r in rows],
+                suggestions=_dedup(r["syntax"] for r in rows),
                 kb_coverage="indexed",
                 warning="Matched as command prefix; confirm full syntax",
             )
 
-        rows = self._q.fts_search(syntax, os=os, limit=5)
-        suggestions = [r["syntax"] for r in rows]
+        # Exact command text exists for this OS, but not for the requested version.
+        existing = self._q.syntax_rows(syntax, os)
+        if existing:
+            ranges = ", ".join(sorted({_fmt_range(r) for r in existing}))
+            return ValidationResult(
+                status=ValidationStatus.VERSION_MISMATCH,
+                matched_syntax=existing[0]["syntax"],
+                description=existing[0].get("description"),
+                kb_coverage="indexed",
+                warning=(
+                    f"Command is documented for {os} {ranges}, but version "
+                    f"{version} was requested. Confirm it applies to your release."
+                ),
+            )
 
-        if rows:
+        rows = self._q.fts_search(syntax, os=os, limit=5)
+        suggestions = _dedup(r["syntax"] for r in rows)
+
+        if suggestions:
             return ValidationResult(
                 status=ValidationStatus.FTS,
                 suggestions=suggestions,

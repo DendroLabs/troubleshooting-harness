@@ -1,4 +1,28 @@
+import re
+
 from harness.src.tools.base import ToolContext, wrap_result
+
+# Short/common words that would over-match if treated as topic keywords.
+_STOPWORDS = {
+    "the", "and", "for", "with", "that", "this", "not", "was", "are", "has",
+    "show", "from", "into", "out", "off", "all", "any", "its", "your",
+}
+
+
+def _topic_tokens(query: str) -> list[str]:
+    """Significant keywords from a topic phrase (len >= 3, minus stopwords)."""
+    return [
+        t for t in re.split(r"[^a-z0-9]+", query)
+        if len(t) >= 3 and t not in _STOPWORDS
+    ]
+
+
+def _topic_hit(query: str, tokens: list[str], *fields: str) -> bool:
+    """Match the whole phrase OR any significant token against the fields."""
+    text = " ".join(f for f in fields if f).lower()
+    if query and query in text:
+        return True
+    return any(t in text for t in tokens)
 
 
 class GroundingTool:
@@ -8,12 +32,13 @@ class GroundingTool:
 
     def check_kb_coverage(self, topic: str, os: str) -> dict:
         matches = []
-        query = topic.lower()
+        query = topic.lower().strip()
+        tokens = _topic_tokens(query)
 
         for p in self._ctx.loader.list_protocols():
             name = (p.get("protocol_name", "") + " " + p.get("protocol_id", "")).lower()
             tags = " ".join(p.get("tags", [])).lower()
-            if query in name or query in tags:
+            if _topic_hit(query, tokens, name, tags):
                 os_coverage = p.get("os_coverage", [])
                 if os == "*" or os in os_coverage:
                     matches.append({
@@ -26,7 +51,7 @@ class GroundingTool:
         for doc in self._ctx.loader.list_all("diagnostics"):
             name = (doc.get("display_name", "") + " " + doc.get("tree_id", "")).lower()
             symptom = doc.get("entry_symptom", "").lower()
-            if query in name or query in symptom:
+            if _topic_hit(query, tokens, name, symptom):
                 applicable = doc.get("applicable_os", [])
                 if os == "*" or os in applicable:
                     matches.append({
@@ -37,7 +62,7 @@ class GroundingTool:
 
         for doc in self._ctx.loader.list_all("procedures"):
             name = (doc.get("procedure_name", "") + " " + doc.get("procedure_id", "")).lower()
-            if query in name:
+            if _topic_hit(query, tokens, name):
                 applicable = doc.get("applicable_os", [])
                 if os == "*" or os in applicable:
                     matches.append({
@@ -48,7 +73,7 @@ class GroundingTool:
 
         for doc in self._ctx.loader.list_all("human-errors"):
             name = (doc.get("display_name", "") + " " + doc.get("error_id", "")).lower()
-            if query in name:
+            if _topic_hit(query, tokens, name):
                 applicable = doc.get("applicable_os", [])
                 if os == "*" or os in applicable:
                     matches.append({
@@ -63,7 +88,7 @@ class GroundingTool:
                 doc.get("rule_id", "") + " " +
                 " ".join(doc.get("keywords", []))
             ).lower()
-            if query in searchable:
+            if _topic_hit(query, tokens, searchable):
                 applicable = doc.get("applicable_os", [])
                 if os == "*" or os in applicable:
                     matches.append({
