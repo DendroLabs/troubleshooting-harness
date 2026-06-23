@@ -250,5 +250,9 @@ def _sanitize_fts(query: str) -> str:
     result = "".join(cleaned).strip()
     if not result:
         return ""
+    # Wrap each term as an FTS5 phrase literal. Bare terms containing a hyphen
+    # (e.g. "bridge-domain") are parsed by FTS5 as column-filter/operator syntax
+    # and raise "no such column: ..."; quoting makes the tokenizer treat them as
+    # plain text. The sanitizer already stripped any embedded double quotes.
     terms = result.split()
-    return " ".join(terms)
+    return " ".join(f'"{t}"' for t in terms)
