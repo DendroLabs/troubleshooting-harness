@@ -85,6 +85,9 @@ cd tools/migrate && python3 build_sqlite.py
 # Export vendor-specific subset
 python tools/export/subset.py --os sonic --output ./sonic-only/
 
+# Install as an MCP server for Claude Code / OpenCode (also self-updates from GitHub)
+./install.sh                 # see INSTALL.md / README.md
+
 # Start MCP server (stdio transport)
 python harness/interfaces/mcp/server.py
 
@@ -114,7 +117,7 @@ print(d['validate_command'](command='show bgp summary', os='nxos', version='*'))
 harness/
   src/
     retrieval/          scope_filter, json_loader, sqlite_query, resolver
-    validation/         command_validator (3-step: exact -> prefix -> FTS)
+    validation/         command_validator (exact -> prefix -> version_mismatch -> FTS; version-range aware via version_min/version_max)
     tools/              base (ToolContext) + 10 tool modules
     cases/              case_manager (file-backed state with YAML front matter)
   methodology/          phase_rules (7-phase sequence + gates)
