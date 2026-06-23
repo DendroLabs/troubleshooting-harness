@@ -7,27 +7,84 @@ def _rows_to_dicts(cursor: sqlite3.Cursor) -> list[dict]:
     return [dict(zip(cols, row)) for row in cursor.fetchall()]
 
 
+def _parse_version(v: str):
+    """Parse a dotted/numeric version (e.g. '10.4', '202511') into an int tuple,
+    or None if it isn't purely numeric (so callers fall back to string compare)."""
+    parts = []
+    for p in v.replace("-", ".").split("."):
+        if p.isdigit():
+            parts.append(int(p))
+        else:
+            return None
+    return tuple(parts) if parts else None
+
+
+def _ver_cmp(a: str, b: str) -> int:
+    pa, pb = _parse_version(a), _parse_version(b)
+    if pa is not None and pb is not None:
+        return (pa > pb) - (pa < pb)
+    return (a > b) - (a < b)
+
+
+def _version_matches(query_version: str, row: dict) -> bool:
+    """True if the row's applicability covers the requested version.
+
+    A row applies when it is universal ('*'), an exact version hit, or the
+    requested version falls within the row's [version_min, version_max] range.
+    """
+    rv = row.get("version") or "*"
+    if rv == "*" or query_version == "*":
+        return True
+    if rv == query_version:
+        return True
+    vmin = row.get("version_min")
+    vmax = row.get("version_max")
+    if not vmin:
+        return False
+    if _ver_cmp(query_version, vmin) < 0:
+        return False
+    if vmax and vmax != "*" and _ver_cmp(query_version, vmax) > 0:
+        return False
+    return True
+
+
+def _version_rank(query_version: str, row: dict) -> int:
+    """Sort key: exact-version row first, then ranged, then universal ('*')."""
+    rv = row.get("version") or "*"
+    if rv == query_version:
+        return 0
+    if rv == "*":
+        return 2
+    return 1
+
+
 class CommandQuery:
 
     def __init__(self, db_path: Path):
         self._conn = sqlite3.connect(str(db_path), check_same_thread=False)
 
     def exact_match(self, syntax: str, os: str, version: str) -> list[dict]:
-        cur = self._conn.execute(
-            "SELECT * FROM commands "
-            "WHERE LOWER(syntax) = LOWER(?) AND os = ? AND version IN (?, '*') "
-            "ORDER BY CASE WHEN version = '*' THEN 1 ELSE 0 END, version DESC",
-            (syntax, os, version),
-        )
-        return _rows_to_dicts(cur)
+        rows = self.syntax_rows(syntax, os)
+        rows = [r for r in rows if _version_matches(version, r)]
+        rows.sort(key=lambda r: _version_rank(version, r))
+        return rows
 
     def prefix_match(self, prefix: str, os: str, version: str,
                      limit: int = 10) -> list[dict]:
         cur = self._conn.execute(
             "SELECT * FROM commands "
-            "WHERE os = ? AND version IN (?, '*') AND LOWER(syntax) LIKE LOWER(? || '%') "
-            "ORDER BY syntax LIMIT ?",
-            (os, version, prefix, limit),
+            "WHERE os = ? AND LOWER(syntax) LIKE LOWER(? || '%')",
+            (os, prefix),
+        )
+        rows = [r for r in _rows_to_dicts(cur) if _version_matches(version, r)]
+        rows.sort(key=lambda r: (_version_rank(version, r), r["syntax"]))
+        return rows[:limit]
+
+    def syntax_rows(self, syntax: str, os: str) -> list[dict]:
+        """All rows whose syntax exactly matches, any version (for version-mismatch messaging)."""
+        cur = self._conn.execute(
+            "SELECT * FROM commands WHERE LOWER(syntax) = LOWER(?) AND os = ?",
+            (syntax, os),
         )
         return _rows_to_dicts(cur)
 
