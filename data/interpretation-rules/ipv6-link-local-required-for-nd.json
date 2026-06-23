@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "ipv6-link-local-required-for-nd",
+  "display_name": "IPv6 needs a working link-local address — a configured global address is not enough for ND or routing",
+  "category": "expected-behavior",
+  "applicable_os": [
+    "nxos",
+    "iosxe",
+    "iosxr",
+    "sonic",
+    "eos",
+    "junos"
+  ],
+  "version_range": {
+    "min": "*",
+    "max": "*"
+  },
+  "context": "An interface has a correct global IPv6 address configured but neighbors will not resolve and IPv6 routing adjacencies over the link do not form",
+  "observation": "Global IPv6 address is present and 'looks right', yet all neighbors are INCOMPLETE and OSPFv3/IS-IS/BGP-over-link-local sessions never come up",
+  "naive_interpretation": "The global addressing or the routing protocol is misconfigured",
+  "correct_interpretation": "Every operational IPv6 interface needs a link-local (fe80::/10) address, and it does almost all the work: ND sources every NS/NA/RS from the link-local, routers source RAs from it, and IPv6 routing protocols use link-local next-hops (OSPFv3 and IS-IS adjacencies, and eBGP/iBGP sessions peered to fe80:: addresses). If the link-local is absent (IPv6 not actually enabled on the interface) or itself failed DAD (which disables IPv6 on the interface), then no ND happens at all — neighbors never resolve, RAs are neither sent nor accepted, and routing adjacencies never form — even though the global address is configured and visible. The global address is a red herring; verify a valid (non-tentative, non-duplicate) fe80:: address exists first.",
+  "why": [
+    "ND messages are sourced from the link-local address, so without it the node cannot solicit or answer neighbors",
+    "OSPFv3/IS-IS form adjacencies using link-local addresses, and BGP commonly peers over fe80:: — a missing link-local breaks these regardless of global addressing",
+    "A link-local that failed DAD disables IPv6 on the whole interface, producing the same symptom as never enabling IPv6"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 interface <intf>",
+      "purpose": "Confirm a valid fe80:: link-local is listed (not TENTATIVE/DUPLICATE)"
+    },
+    {
+      "os": "iosxe",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 interface <intf>",
+      "purpose": "Look for 'IPv6 is enabled, link-local address is fe80::...'"
+    },
+    {
+      "os": "iosxr",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 interface <intf>",
+      "purpose": "Verify the link-local line is present and valid"
+    },
+    {
+      "os": "sonic",
+      "version_range": {
+        "min": "202511",
+        "max": "*"
+      },
+      "command": "show ipv6 interfaces",
+      "purpose": "Confirm a fe80:: link-local on the interface"
+    }
+  ],
+  "traps": [
+    "Focusing on the global address while the interface has no usable link-local",
+    "Assuming 'ipv6 address <global>' alone enables IPv6 everywhere — if no link-local is derived/valid, ND and routing still fail",
+    "Missing that a duplicate link-local (DAD failure) silently disabled IPv6 on the interface",
+    "Peering BGP/OSPFv3 to a link-local without realizing a missing fe80:: is the root cause"
+  ],
+  "related_rules": [
+    "ipv6-dad-failure-disables-address",
+    "ipv6-nd-incomplete-not-always-host-down"
+  ],
+  "related_protocols": [
+    "ipv6-nd",
+    "ospfv3"
+  ],
+  "keywords": [
+    "IPv6",
+    "link-local",
+    "fe80",
+    "ND",
+    "OSPFv3",
+    "ISIS",
+    "BGP",
+    "adjacency",
+    "neighbor INCOMPLETE",
+    "show ipv6 interface"
+  ],
+  "sources": [
+    {
+      "id": "rfc4861",
+      "type": "rfc",
+      "title": "RFC 4861 — Neighbor Discovery for IPv6 (neighbor cache states 7.3.2)"
+    },
+    {
+      "id": "ipv6-nd",
+      "type": "documentation",
+      "title": "TSH protocol — IPv6 Neighbor Discovery (data/protocols/ipv6-nd.json)"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

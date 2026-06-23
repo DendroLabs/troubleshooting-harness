@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Populate caveats.db from bug-ids-for-lookup.txt."""
 
+import json
 import re
 import sqlite3
 from pathlib import Path
@@ -10,6 +11,8 @@ DATA = REPO_ROOT / "data"
 ARCHIVED = REPO_ROOT / "archived-kb"
 
 BUG_IDS_FILE = ARCHIVED / "agent-cisco-kb" / "bug-ids-for-lookup.txt"
+# Curated caveats committed in the repo (reproducible without archived-kb).
+CAVEATS_DIR = DATA / "caveats"
 
 SECTION_RE = re.compile(r"^===\s+(\w+)\s+\(\d+\s+bugs?\)\s+===$")
 ENTRY_RE = re.compile(r"^(CSC\w+)\s*\|\s*(\S+)\s*\|\s*(\w+)\s*\|\s*(.+)$")
@@ -53,12 +56,48 @@ def _parse_bug_ids(path: Path) -> list[dict]:
     return entries
 
 
+def _load_curated_caveats() -> list[dict]:
+    """Load committed curated caveats from data/caveats/*.json (full column set)."""
+    rows = []
+    if not CAVEATS_DIR.exists():
+        return rows
+    for path in sorted(CAVEATS_DIR.glob("*.json")):
+        if path.name.startswith("_"):
+            continue
+        doc = json.loads(path.read_text())
+        for c in doc.get("caveats", []):
+            rows.append(c)
+    return rows
+
+
 def populate(db_path: Path) -> int:
     entries = _parse_bug_ids(BUG_IDS_FILE)
+    curated = _load_curated_caveats()
 
     conn = sqlite3.connect(str(db_path))
     conn.execute("DELETE FROM caveats")
     conn.execute("DELETE FROM caveats_fts")
+
+    for c in curated:
+        conn.execute(
+            "INSERT OR IGNORE INTO caveats "
+            "(os, csc_id, headline, description, severity, "
+            "affected_versions, affected_platforms, affected_pids, "
+            "fixed_in, keywords) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                c["os"],
+                c.get("csc_id"),
+                c["headline"],
+                c.get("description"),
+                c.get("severity"),
+                c.get("affected_versions"),
+                c.get("affected_platforms"),
+                c.get("affected_pids"),
+                c.get("fixed_in"),
+                c.get("keywords"),
+            ),
+        )
 
     for e in entries:
         fixed_in = e["version"] if e["status"] == "resolved" else None

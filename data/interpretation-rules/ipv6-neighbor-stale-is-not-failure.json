@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "ipv6-neighbor-stale-is-not-failure",
+  "display_name": "An IPv6 neighbor in STALE state is normal — STALE is not a reachability failure",
+  "category": "output-semantics",
+  "applicable_os": [
+    "nxos",
+    "iosxe",
+    "iosxr",
+    "sonic",
+    "eos",
+    "junos"
+  ],
+  "version_range": {
+    "min": "*",
+    "max": "*"
+  },
+  "context": "An operator sees a neighbor in the IPv6 neighbor cache marked STALE and assumes the neighbor is unreachable or the entry is broken",
+  "observation": "'show ipv6 neighbor' / 'show ndp' shows the target in STALE state while traffic to it appears to have a problem",
+  "naive_interpretation": "STALE means the neighbor entry is stale/expired and the device cannot reach the neighbor — the ND entry needs to be cleared or the neighbor is down",
+  "correct_interpretation": "STALE is an expected, fully usable state in the RFC 4861 Neighbor Unreachability Detection (NUD) state machine. It simply means more than ReachableTime (default 30s) has elapsed since the last positive reachability confirmation — the cached link-layer address is still valid and is used to forward traffic. The node only actively re-verifies reachability (DELAY -> PROBE) when it next sends to that neighbor. Most idle neighbors sit in STALE the vast majority of the time. The states that actually indicate a problem are INCOMPLETE (resolution never completed, no MAC) and a neighbor that repeatedly falls out of the cache. Clearing a STALE entry to 'fix' it just forces an unnecessary re-resolution.",
+  "why": [
+    "RFC 4861 NUD defines five states; STALE is a normal steady state meaning reachability is merely unconfirmed, not failed — the cached MAC is still used",
+    "REACHABLE only persists for ReachableTime after a confirmation; thereafter the entry naturally decays to STALE even though nothing is wrong",
+    "Transition out of STALE (DELAY then PROBE) is triggered by sending traffic, so an idle but perfectly reachable neighbor stays STALE indefinitely"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 neighbor <ipv6-address>",
+      "purpose": "Read the state; STALE with a MAC present is healthy, INCOMPLETE with no MAC is the real failure"
+    },
+    {
+      "os": "iosxe",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 neighbors <ipv6-address>",
+      "purpose": "Confirm a link-layer address is present (STALE+MAC = usable)"
+    },
+    {
+      "os": "iosxr",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 neighbors <ipv6-address>",
+      "purpose": "Check REACH/STALE/INCMP; STALE is fine"
+    },
+    {
+      "os": "sonic",
+      "version_range": {
+        "min": "202511",
+        "max": "*"
+      },
+      "command": "show ndp <ipv6-address>",
+      "purpose": "Kernel state REACHABLE/STALE/INCOMPLETE; STALE is normal"
+    }
+  ],
+  "traps": [
+    "Clearing STALE neighbor entries as a 'fix' — this only forces re-resolution and can briefly drop traffic",
+    "Treating STALE as equivalent to the IPv4 ARP 'Incomplete' state — they are not the same; the IPv6 analogue of Incomplete is INCOMPLETE",
+    "Concluding a neighbor is down from STALE without sending traffic to trigger NUD verification"
+  ],
+  "related_rules": [
+    "ipv6-nd-incomplete-not-always-host-down",
+    "arp-incomplete-not-always-host-down"
+  ],
+  "related_protocols": [
+    "ipv6-nd"
+  ],
+  "keywords": [
+    "IPv6",
+    "ND",
+    "neighbor",
+    "STALE",
+    "REACHABLE",
+    "INCOMPLETE",
+    "NUD",
+    "neighbor cache",
+    "show ipv6 neighbor",
+    "show ndp"
+  ],
+  "sources": [
+    {
+      "id": "rfc4861",
+      "type": "rfc",
+      "title": "RFC 4861 — Neighbor Discovery for IPv6 (neighbor cache states 7.3.2)"
+    },
+    {
+      "id": "ipv6-nd",
+      "type": "documentation",
+      "title": "TSH protocol — IPv6 Neighbor Discovery (data/protocols/ipv6-nd.json)"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

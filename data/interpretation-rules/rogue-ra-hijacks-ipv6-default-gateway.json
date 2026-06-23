@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "rogue-ra-hijacks-ipv6-default-gateway",
+  "display_name": "An unexpected IPv6 default gateway or prefix usually means a rogue Router Advertisement, not a routing change",
+  "category": "correlation-method",
+  "applicable_os": [
+    "nxos",
+    "iosxe",
+    "iosxr",
+    "sonic",
+    "eos",
+    "junos"
+  ],
+  "version_range": {
+    "min": "*",
+    "max": "*"
+  },
+  "context": "Hosts on a segment intermittently acquire an IPv6 default gateway or prefix that the operator did not configure, causing black-holing or traffic interception",
+  "observation": "Hosts show two default routers (or an unexpected next-hop link-local) in 'show ipv6 routers' / 'ip -6 route', and IPv6 connectivity flaps",
+  "naive_interpretation": "The routing protocol or first-hop redundancy (HSRPv6/VRRPv3) is misbehaving and advertising an extra gateway",
+  "correct_interpretation": "Any node on an IPv6 link can emit Router Advertisements, and hosts will believe them. A rogue RA — from a misconfigured host with IPv6 forwarding/Internet-Connection-Sharing enabled, a stray or unauthorized router, or an attacker — makes hosts install a wrong default gateway and SLAAC a wrong prefix. The tell is that the unexpected gateway is a host/unknown link-local rather than your real router or FHRP virtual address, and that the problem correlates with a specific access port/MAC. This is a Layer 2 security issue, not a routing one: identify the RA source link-local, trace it to a port/MAC, and remediate it; then prevent recurrence with RA Guard on access ports so only authorized router ports may advertise. Correlate the host's 'show ipv6 routers' against the known-good gateway before touching routing config.",
+  "why": [
+    "RAs are unauthenticated by default; hosts accept the most recent valid RA, so a rogue sender can override the legitimate gateway",
+    "The fix lives at L2 (RA Guard / ND inspection on access ports), so chasing it in the routing control plane wastes time",
+    "Correlating which port/MAC the rogue source link-local lives on pinpoints the offending device"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 routers",
+      "purpose": "List routers heard on the segment; an unexpected source link-local is the rogue"
+    },
+    {
+      "os": "iosxe",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 nd raguard policy",
+      "purpose": "Check whether RA Guard exists to block rogue RAs, and where it is applied"
+    },
+    {
+      "os": "iosxr",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 nd ra",
+      "purpose": "Inspect RA send/receive state to spot an unexpected advertiser"
+    },
+    {
+      "os": "sonic",
+      "version_range": {
+        "min": "202511",
+        "max": "*"
+      },
+      "command": "ip -6 route show",
+      "purpose": "Multiple default routes with different next-hop link-locals confirm a rogue RA"
+    }
+  ],
+  "traps": [
+    "Re-engineering routing/FHRP when the extra gateway is actually a rogue host RA",
+    "Not comparing the advertised router link-local against the known-good gateway/FHRP virtual address",
+    "Leaving access ports without RA Guard, so the problem recurs after the first device is removed",
+    "Assuming RAs are trustworthy because the segment is 'internal'"
+  ],
+  "related_rules": [
+    "ipv6-ra-mo-flags-determine-address-source"
+  ],
+  "related_protocols": [
+    "ipv6-nd"
+  ],
+  "keywords": [
+    "IPv6",
+    "rogue RA",
+    "router advertisement",
+    "RA Guard",
+    "default gateway",
+    "SLAAC",
+    "show ipv6 routers",
+    "ND inspection"
+  ],
+  "sources": [
+    {
+      "id": "rfc4861",
+      "type": "rfc",
+      "title": "RFC 4861 — Neighbor Discovery for IPv6 (neighbor cache states 7.3.2)"
+    },
+    {
+      "id": "ipv6-nd",
+      "type": "documentation",
+      "title": "TSH protocol — IPv6 Neighbor Discovery (data/protocols/ipv6-nd.json)"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

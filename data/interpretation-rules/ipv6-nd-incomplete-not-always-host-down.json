@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "ipv6-nd-incomplete-not-always-host-down",
+  "display_name": "An IPv6 neighbor stuck INCOMPLETE does not always mean the host is down — check VLAN, ICMPv6 ACLs, and solicited-node multicast",
+  "category": "output-semantics",
+  "applicable_os": [
+    "nxos",
+    "iosxe",
+    "iosxr",
+    "sonic",
+    "eos",
+    "junos"
+  ],
+  "version_range": {
+    "min": "*",
+    "max": "*"
+  },
+  "context": "An IPv6 neighbor entry is INCOMPLETE and the operator cannot reach the host from the device",
+  "observation": "'show ipv6 neighbor' / 'show ndp' shows the target IPv6 in INCOMPLETE with no link-layer address; pings to it time out",
+  "naive_interpretation": "The host is powered off or its IPv6 stack is down and not answering Neighbor Solicitations",
+  "correct_interpretation": "INCOMPLETE means the device multicast a Neighbor Solicitation to the target's solicited-node address and received no Neighbor Advertisement. A dead host is one cause, but several network-side causes produce the identical symptom: (1) the host is in a different VLAN than the device's SVI, so the NS never reaches it; (2) an ACL or CoPP policy is dropping ICMPv6 NS/NA (types 135/136) — remember ND is ICMPv6; (3) the solicited-node multicast (ff02::1:ffXX:XXXX) is not being delivered because MLD-snooping pruned it or the node never joined the group; (4) the device has no valid link-local to source the NS from; (5) on SONiC the kernel resolved the neighbor but orchagent failed to program the ASIC neighbor entry, so software looks fine while hardware drops. Always confirm Layer 2 reachability and that ICMPv6 ND is permitted before concluding the host is down.",
+  "why": [
+    "INCOMPLETE only proves no NA was received — it does not distinguish a dead host from an NS that never arrived",
+    "ND is multicast ICMPv6 to a solicited-node group, so VLAN mismatch, ICMPv6 ACLs, or MLD-snooping pruning all suppress resolution while the host is perfectly alive",
+    "On SONiC the software neighbor cache and the ASIC neighbor table can disagree, so a kernel-resolved neighbor can still be dropped in hardware"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 neighbor <ipv6-address>",
+      "purpose": "Confirm INCOMPLETE/no MAC, and which interface/VLAN the NS is sent on"
+    },
+    {
+      "os": "iosxe",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 neighbors <ipv6-address>",
+      "purpose": "Verify INCMP state and the expected egress interface"
+    },
+    {
+      "os": "iosxr",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 neighbors <ipv6-address>",
+      "purpose": "Check INCMP vs REACH/STALE and the interface"
+    },
+    {
+      "os": "sonic",
+      "version_range": {
+        "min": "202511",
+        "max": "*"
+      },
+      "command": "show ndp <ipv6-address>",
+      "purpose": "Kernel state INCOMPLETE/FAILED for the address"
+    },
+    {
+      "os": "sonic",
+      "version_range": {
+        "min": "202511",
+        "max": "*"
+      },
+      "command": "redis-cli -n 1 KEYS 'ASIC_STATE:SAI_OBJECT_TYPE_NEIGHBOR_ENTRY*' | grep <ipv6>",
+      "purpose": "If kernel resolved but this is empty, the failure is ASIC programming, not the host"
+    }
+  ],
+  "traps": [
+    "Blaming the host/NIC when the real problem is a VLAN mismatch or an ICMPv6 ACL",
+    "Forgetting ND is ICMPv6 — an ICMPv6 deny produces INCOMPLETE entries",
+    "Overlooking MLD-snooping pruning the solicited-node multicast that NS depends on",
+    "On SONiC, trusting 'show ndp' alone without checking the ASIC neighbor table",
+    "Not verifying the device has a valid link-local to source the NS"
+  ],
+  "related_rules": [
+    "arp-incomplete-not-always-host-down",
+    "ipv6-neighbor-stale-is-not-failure",
+    "icmpv6-filtering-breaks-nd"
+  ],
+  "related_protocols": [
+    "ipv6-nd"
+  ],
+  "keywords": [
+    "IPv6",
+    "ND",
+    "INCOMPLETE",
+    "neighbor",
+    "solicited-node multicast",
+    "VLAN mismatch",
+    "ICMPv6 ACL",
+    "MLD snooping",
+    "host down",
+    "show ipv6 neighbor",
+    "show ndp"
+  ],
+  "sources": [
+    {
+      "id": "rfc4861",
+      "type": "rfc",
+      "title": "RFC 4861 — Neighbor Discovery for IPv6 (neighbor cache states 7.3.2)"
+    },
+    {
+      "id": "ipv6-nd",
+      "type": "documentation",
+      "title": "TSH protocol — IPv6 Neighbor Discovery (data/protocols/ipv6-nd.json)"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

@@ -28,6 +28,11 @@
       "l2-infrastructure",
       "static-routing"
     ],
+    "dhcpv6": [
+      "dhcp",
+      "ipv6-nd",
+      "static-routing"
+    ],
     "dot1x": [
       "lldp"
     ],
@@ -61,6 +66,13 @@
       "pim-sparse-mode",
       "l2-infrastructure",
       "vpc"
+    ],
+    "ipv6-nd": [
+      "ospfv3",
+      "static-routing",
+      "dhcpv6",
+      "vrrp",
+      "hsrp"
     ],
     "isis": [
       "ospfv2",
@@ -290,6 +302,8 @@
       "mclag"
     ],
     "daemon:neighsyncd": [
+      "ipv6-nd",
+      "ipv6-neighbor-unreachable",
       "restart-swss-during-traffic",
       "wrong-reload-order"
     ],
@@ -299,6 +313,8 @@
       "container-restart",
       "dpkg-force-install",
       "express-reboot",
+      "ipv6-nd",
+      "ipv6-neighbor-unreachable",
       "lacp",
       "lldp",
       "manual-ip-link",
@@ -349,6 +365,7 @@
       "dpkg-force-install",
       "express-reboot",
       "express-reboot-wrong-platform",
+      "ipv6-nd",
       "ospfv2",
       "restart-swss-during-traffic",
       "sonic-upgrade",
@@ -396,6 +413,7 @@
       "container-restart",
       "direct-redis-write",
       "dpkg-force-install",
+      "ipv6-nd",
       "lacp",
       "lldp",
       "manual-ip-link",
@@ -412,6 +430,8 @@
     ],
     "db:asic_db": [
       "dpkg-force-install",
+      "ipv6-nd",
+      "ipv6-neighbor-unreachable",
       "manual-ip-link",
       "ospfv2",
       "restart-swss-during-traffic",
@@ -425,10 +445,12 @@
       "bgp-4",
       "config-reload",
       "container-restart",
+      "dhcpv6",
       "direct-frr-vtysh",
       "direct-redis-write",
       "dpkg-force-install",
       "express-reboot",
+      "ipv6-nd",
       "lacp",
       "lldp",
       "manual-config-db-json-edit",
@@ -453,6 +475,8 @@
       "container-restart",
       "express-reboot",
       "express-reboot-wrong-platform",
+      "ipv6-nd",
+      "ipv6-neighbor-unreachable",
       "lacp",
       "lldp",
       "mclag",

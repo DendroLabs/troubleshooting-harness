@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0.0",
+  "confidence": "high",
+  "rule_id": "ipv6-dad-failure-disables-address",
+  "display_name": "A configured IPv6 address that is 'missing' may have silently failed Duplicate Address Detection (DAD)",
+  "category": "expected-behavior",
+  "applicable_os": [
+    "nxos",
+    "iosxe",
+    "iosxr",
+    "sonic",
+    "eos",
+    "junos"
+  ],
+  "version_range": {
+    "min": "*",
+    "max": "*"
+  },
+  "context": "An IPv6 address is present in the running configuration but does not appear as an active address on the interface, and IPv6 may be down on that interface entirely",
+  "observation": "'show ipv6 interface' does not list the configured global or link-local address (or marks it duplicate/tentative), and IPv6 connectivity on the interface fails",
+  "naive_interpretation": "The configuration did not take, or there is a software bug dropping the address from the interface",
+  "correct_interpretation": "Before any IPv6 unicast address is used it must pass Duplicate Address Detection (RFC 4862 5.4): the node solicits the tentative address and, if another node defends it, the address is declared DUPLICATE and is NOT assigned — quietly, with little more than a syslog line. Worse, if the duplicate is the interface's link-local, RFC 4862 5.4.5 requires IPv6 operation on the interface to be disabled, so the whole interface goes dark for IPv6 even though the global address looks fine in config. Common triggers are a genuinely duplicate static address, a duplicate virtual MAC across HSRPv6/VRRPv3 groups producing the same EUI-64 link-local, a re-used address after a device swap, or an L2 loop that reflects the node's own DAD solicitation back so the address appears defended. The address is in config but not in the data plane — look for a DAD/duplicate state, not a config error.",
+  "why": [
+    "RFC 4862 requires DAD on all unicast addresses prior to assignment; a defended address is never installed",
+    "A link-local DAD failure disables IPv6 on the entire interface (RFC 4862 5.4.5), so a single duplicate fe80:: can take down all IPv6 on a port",
+    "DAD failures are reported softly (a log line and a state flag), so they are easy to miss when scanning the running-config"
+  ],
+  "confirmation_commands": [
+    {
+      "os": "nxos",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 interface <intf>",
+      "purpose": "Look for the address state — TENTATIVE/DUPLICATE vs valid, and DAD attempts"
+    },
+    {
+      "os": "iosxe",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 interface <intf>",
+      "purpose": "A '[DUP]' marker next to the address confirms a DAD failure"
+    },
+    {
+      "os": "iosxr",
+      "version_range": {
+        "min": "*",
+        "max": "*"
+      },
+      "command": "show ipv6 nd dadfail",
+      "purpose": "Directly lists addresses that failed DAD"
+    },
+    {
+      "os": "sonic",
+      "version_range": {
+        "min": "202511",
+        "max": "*"
+      },
+      "command": "ip -6 address show dev <ifname>",
+      "purpose": "Kernel 'dadfailed'/'tentative' flag confirms the duplicate"
+    }
+  ],
+  "traps": [
+    "Re-entering the address config to 'fix' it without finding the duplicate — DAD just fails again",
+    "Overlooking that a duplicate link-local disables ALL IPv6 on the interface, not just one address",
+    "Assuming an L2 loop is not involved — a hairpin/loop reflecting the DAD NS makes a unique address look duplicate",
+    "Forgetting duplicate virtual MACs in HSRPv6/VRRPv3 can collide on the derived link-local"
+  ],
+  "related_rules": [
+    "ipv6-link-local-required-for-nd"
+  ],
+  "related_protocols": [
+    "ipv6-nd"
+  ],
+  "keywords": [
+    "IPv6",
+    "DAD",
+    "duplicate address",
+    "tentative",
+    "link-local",
+    "RFC 4862",
+    "address missing",
+    "show ipv6 interface",
+    "dadfailed"
+  ],
+  "sources": [
+    {
+      "id": "rfc4862",
+      "type": "rfc",
+      "title": "RFC 4862 — IPv6 Stateless Address Autoconfiguration (DAD 5.4)"
+    },
+    {
+      "id": "ipv6-nd",
+      "type": "documentation",
+      "title": "TSH protocol — IPv6 Neighbor Discovery (data/protocols/ipv6-nd.json)"
+    },
+    {
+      "id": "operational-experience",
+      "title": "Network engineering operational experience",
+      "type": "lab_verified"
+    }
+  ]
+}

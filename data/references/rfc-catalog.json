@@ -42,6 +42,30 @@
       ]
     },
     {
+      "rfc_number": 4443,
+      "title": "Internet Control Message Protocol (ICMPv6) for the Internet Protocol Version 6 (IPv6) Specification",
+      "url": "https://www.rfc-editor.org/rfc/rfc4443.txt",
+      "protocols_referencing": [
+        "ipv6-nd"
+      ]
+    },
+    {
+      "rfc_number": 4861,
+      "title": "Neighbor Discovery for IP version 6 (IPv6)",
+      "url": "https://www.rfc-editor.org/rfc/rfc4861.txt",
+      "protocols_referencing": [
+        "ipv6-nd"
+      ]
+    },
+    {
+      "rfc_number": 4862,
+      "title": "IPv6 Stateless Address Autoconfiguration",
+      "url": "https://www.rfc-editor.org/rfc/rfc4862.txt",
+      "protocols_referencing": [
+        "ipv6-nd"
+      ]
+    },
+    {
       "rfc_number": 5036,
       "title": "LDP Specification",
       "url": "https://www.rfc-editor.org/rfc/rfc5036.txt",
@@ -120,6 +144,14 @@
       "url": "https://www.rfc-editor.org/rfc/rfc8365.txt",
       "protocols_referencing": [
         "vxlan-evpn"
+      ]
+    },
+    {
+      "rfc_number": 8415,
+      "title": "Dynamic Host Configuration Protocol for IPv6 (DHCPv6)",
+      "url": "https://www.rfc-editor.org/rfc/rfc8415.txt",
+      "protocols_referencing": [
+        "dhcpv6"
       ]
     }
   ]

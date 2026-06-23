@@ -2,14 +2,14 @@
   "schema_version": "1.0.0",
   "datasets": {
     "protocols": {
-      "count": 44,
+      "count": 46,
       "index": "protocols/_index.json"
     },
     "definitions": {
       "count": 4
     },
     "diagnostics": {
-      "count": 7
+      "count": 8
     },
     "procedures": {
       "count": 11
@@ -27,7 +27,7 @@
       "count": 3
     },
     "interpretation-rules": {
-      "count": 65
+      "count": 72
     }
   }
 }
